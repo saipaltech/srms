@@ -1,0 +1,89 @@
+<div class="row g-5 justify-content-center">
+  <div class="col-md-7 col-lg-8">
+    <div class="row">
+      <div class="col-md-8 text-start">
+        <h4 class="mb-3">सोझै बैंकमा कर जम्मा गर्दा</h4>
+      </div>
+      <div class="col-md-4 text-end">
+        <button type="button" class="btn btn-warning" (click)="showSuccess()">
+          List of Vouchers
+        </button>
+      </div>
+    </div>
+
+    <form class="needs-validation" novalidate="">
+      <div class="row g-3">
+        <div class="col-12">
+          <label for="username" class="form-label">जम्मा गरेको मिति</label>
+          <div class="input-group has-validation">
+            <input
+              type="text"
+              class="form-control"
+            />
+            <div class="invalid-feedback">Your username is required.</div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <label for="firstName" class="form-label">पालिका (Dropdown)</label>
+          <input
+            type="text"
+            class="form-control"
+          />
+          <div class="invalid-feedback">Valid first name is required.</div>
+        </div>
+
+        <div class="col-sm-6">
+          <label for="lastName" class="form-label">संकलन केन्द्र</label>
+          <input
+            type="text"
+            class="form-control"
+
+          />
+          <div class="invalid-feedback">Valid last name is required.</div>
+        </div>
+
+        <!--
+          <div class="col-12">
+            <label for="email" class="form-label">Email <span class="text-muted">(Optional)</span></label>
+            <input type="email" class="form-control" id="email" placeholder="you@example.com">
+            <div class="invalid-feedback">
+              Please enter a valid email address for shipping updates.
+            </div>
+          </div>-->
+
+        <div class="col-12">
+          <label for="address" class="form-label">Deposited By</label>
+          <input
+            type="text"
+            class="form-control"
+            id="address"
+            placeholder=""
+            required=""
+          />
+          <div class="invalid-feedback">
+            Please enter your shipping address.
+          </div>
+        </div>
+
+        <div class="col-12">
+          <label for="username" class="form-label">Deposite Date</label>
+          <div class="input-group has-validation">
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              placeholder="03/22/2023"
+              required=""
+            />
+            <div class="invalid-feedback">Your username is required.</div>
+          </div>
+        </div>
+      </div>
+
+      <br />
+
+      <button class="w-100 btn btn-primary btn-lg" type="submit">Submit</button>
+    </form>
+  </div>
+</div>

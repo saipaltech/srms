@@ -8,6 +8,9 @@ import { HeaderComponent } from './header/header.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { MainBodyComponent } from './main-body/main-body.component';
 import { LoginComponent } from './login/login.component';
+import { VoucherBankComponent } from './voucher-bank/voucher-bank.component';
+
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -15,12 +18,14 @@ import { LoginComponent } from './login/login.component';
     HeaderComponent,
     NavbarComponent,
     MainBodyComponent,
-    LoginComponent
+    LoginComponent,
+    VoucherBankComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]
