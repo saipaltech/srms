@@ -11,6 +11,8 @@ import { LoginComponent } from './login/login.component';
 import { VoucherBankComponent } from './voucher-bank/voucher-bank.component';
 
 import { ToastrModule } from 'ngx-toastr';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -26,6 +28,9 @@ import { ToastrModule } from 'ngx-toastr';
     AppRoutingModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
+    NgSelectModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

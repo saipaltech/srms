@@ -11,3 +11,10 @@
 body{
     background-color: #f8f9fa;
 }
+
+@import "~@ng-select/ng-select/themes/default.theme.css";
+
+.req::after{
+    content: " *";
+    color: red;
+}

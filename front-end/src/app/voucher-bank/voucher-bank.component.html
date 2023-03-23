@@ -11,79 +11,147 @@
       </div>
     </div>
 
-    <form class="needs-validation" novalidate="">
+    <form class="needs-validation" [formGroup]= "voucherBankForm" (ngSubmit)= "voucherBankFormSubmit()">
       <div class="row g-3">
         <div class="col-12">
-          <label for="username" class="form-label">जम्मा गरेको मिति</label>
+          <label for="username" class="form-label req">जम्मा गरेको मिति</label>
           <div class="input-group has-validation">
-            <input
+            <input [disabled]="true"
+            formControlName="date"
               type="text"
-              class="form-control"
-            />
-            <div class="invalid-feedback">Your username is required.</div>
+              class="form-control form-control-sm"
+              placeholder ="{{myDate | date: 'shortDate' }}"/>
           </div>
         </div>
 
         <div class="col-sm-6">
-          <label for="firstName" class="form-label">पालिका (Dropdown)</label>
-          <input
-            type="text"
-            class="form-control"
-          />
-          <div class="invalid-feedback">Valid first name is required.</div>
+          <label for="firstName" class="form-label req">पालिका</label>
+          <ng-select [(ngModel)]="selectedCar"  formControlName="palika">
+            <ng-option *ngFor="let car of cars" [value]="car.id">{{car.name}}</ng-option>
+         </ng-select>
         </div>
 
         <div class="col-sm-6">
-          <label for="lastName" class="form-label">संकलन केन्द्र</label>
-          <input
-            type="text"
-            class="form-control"
-
-          />
-          <div class="invalid-feedback">Valid last name is required.</div>
+          <label for="lastName" class="form-label req">संकलन केन्द्र</label>
+          <ng-select [(ngModel)]="selectedCars"  formControlName="kendra">
+            <ng-option *ngFor="let cars of car" [value]="cars.id">{{cars.name}}</ng-option>
+         </ng-select>
         </div>
 
-        <!--
-          <div class="col-12">
-            <label for="email" class="form-label">Email <span class="text-muted">(Optional)</span></label>
-            <input type="email" class="form-control" id="email" placeholder="you@example.com">
-            <div class="invalid-feedback">
-              Please enter a valid email address for shipping updates.
+        <div class="col-12">
+          <label for="address" class="form-label req">बैंक भौचर नंबर</label>
+          <input formControlName="voucherno"
+            type="text"
+            class="form-control form-control-sm"
+          />
+        </div>
+
+        <div class="col-12">
+          <label for="username" class="form-label req">खाता नंबर</label>
+          <div class="input-group has-validation">
+            <input formControlName="accountno"
+              type="text"
+              class="form-control form-control-sm"
+            />
+          </div>
+        </div>
+
+        <div class="col-12">
+            <label for="username" class="form-label req">रकम</label>
+            <div class="input-group has-validation">
+              <input formControlName="amount"
+                type="text"
+                class="form-control form-control-sm"
+              />
             </div>
-          </div>-->
-
-        <div class="col-12">
-          <label for="address" class="form-label">Deposited By</label>
-          <input
-            type="text"
-            class="form-control"
-            id="address"
-            placeholder=""
-            required=""
-          />
-          <div class="invalid-feedback">
-            Please enter your shipping address.
           </div>
-        </div>
 
-        <div class="col-12">
-          <label for="username" class="form-label">Deposite Date</label>
-          <div class="input-group has-validation">
-            <input
-              type="text"
-              class="form-control"
-              id="username"
-              placeholder="03/22/2023"
-              required=""
-            />
-            <div class="invalid-feedback">Your username is required.</div>
+
+          <div class="row">
+            <div class="col-md-8 text-start">
+              <h5 class="mt-3 mb-0">करदाताको</h5>
+            </div>
           </div>
-        </div>
+
+          <div class="col-sm-6">
+            <label for="username" class="form-label req">पान नंबर</label>
+            <div class="input-group has-validation">
+              <input formControlName="panno"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <label for="username" class="form-label req">नाम</label>
+            <div class="input-group has-validation">
+              <input formControlName="kardataname"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8 text-start">
+              <h5 class="mt-4 mb-0">जम्मा गर्नेको</h5>
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <label for="username" class="form-label req">नाम</label>
+            <div class="input-group has-validation">
+              <input formControlName="jariname"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <label for="username" class="form-label req">सम्पर्क नंबर</label>
+            <div class="input-group has-validation">
+              <input formControlName="jarinumber"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
+            <ng-select [(ngModel)]="selectedCar" formControlName="rajsahowsirsak">
+              <ng-option *ngFor="let car of cars" [value]="car.id">{{car.name}}</ng-option>
+           </ng-select>
+          </div>
+
+
+          <div class="col-sm-6">
+            <label for="username" class="form-label">प्रयोजन</label>
+            <div class="input-group has-validation">
+              <input formControlName="usecase"
+                type="text"
+                class="form-control form-control-sm"
+              />
+            </div>
+          </div>
+
+
       </div>
 
+      
       <br />
+      <div class="row">
+        <div class="col-md-6 text-center">
+            <button class="w-50 btn btn-danger btn-sm" type="submit">Clear</button>
+        </div>
 
-      <button class="w-100 btn btn-primary btn-lg" type="submit">Submit</button>
+        <div class="col-md-6 text-center">
+            <button class="w-50 btn btn-success btn-sm" type="submit">Submit</button>
+        </div>
+      </div>
+     
     </form>
   </div>
 </div>
