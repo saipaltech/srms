@@ -1,0 +1,23 @@
+body {
+  background-color: rgb(5, 99, 187) !important;
+}
+.main-bg {
+  background: rgb(5, 99, 187) !important;
+}
+
+input:focus,
+button:focus {
+  border: 1px solid rgb(5, 99, 187) !important;
+  box-shadow: none !important;
+}
+
+.form-check-input:checked {
+  background-color: rgb(5, 99, 187) !important;
+  border-color: rgb(5, 99, 187) !important;
+}
+
+.card,
+.btn,
+input {
+  border-radius: 0 !important;
+}
