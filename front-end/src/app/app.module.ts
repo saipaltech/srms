@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -18,6 +18,12 @@ import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient  } from '@angular/commo
 import { BranchComponent } from './branch/branch.component';
 import { UsersComponent } from './users/users.component';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { AppConfig } from './app.config';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { AuthGuard, AuthorizeGuard, LoginGuard } from './auth/auth.guard';
+import { AuthService } from './auth/auth.service';
+import { ApiService } from './api.service';
+import { AuthInterceptor } from './auth-interceptor';
 
 @NgModule({
   declarations: [
@@ -42,7 +48,19 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     HttpClientModule,
     PaginationModule.forRoot(),
   ],
-  providers: [],
+  providers: [
+    AppConfig,
+    { provide: APP_INITIALIZER, useFactory: (config: AppConfig) => () => config.loadConfig(), deps: [AppConfig], multi: true },
+	  { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    },
+    AuthGuard,
+    AuthService,
+    LoginGuard,
+    ApiService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

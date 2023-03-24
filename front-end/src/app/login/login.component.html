@@ -6,17 +6,20 @@
         <div class="card shadow">
           <div class="card-title text-center border-bottom">
             <img class="d-block mx-auto mt-2" src="../../assets/Emblem_of_Nepal.svg" alt="" width="102" height="87">
-            <h2 class="p-3">SRM - Bank Login</h2>
+            <h4>SuTRA Revenue Management System</h4>
+            <h3>(Bank Module)</h3>
           </div>
           <div class="card-body">
-            <form>
+            <form class="row g-3 needs-validation" [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
               <div class="mb-4">
-                <label for="username" class="form-label">Username/Email</label>
-                <input type="text" class="form-control" id="username" />
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" formControlName="username" [ngClass]="vs.getControlClass(loginForm.controls['username'])"/>
+                <div [ngClass]="vs.getMessageClass(loginForm.controls['username'])">{{vs.getMessage(loginForm.controls['username'])}}</div>
               </div>
               <div class="mb-4">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" />
+                <input type="password" class="form-control" id="password" formControlName="password" [ngClass]="vs.getControlClass(loginForm.controls['password'])"/>
+                <div [ngClass]="vs.getMessageClass(loginForm.controls['password'])">{{vs.getMessage(loginForm.controls['password'])}}</div>
               </div>
               <div class="d-grid">
                 <button type="submit" class="btn text-light main-bg">Login</button>
