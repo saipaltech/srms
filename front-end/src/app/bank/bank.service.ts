@@ -9,7 +9,7 @@ import { AppConfig } from '../app.config';
 export class BankService {
 
   baseurl = AppConfig.baseUrl;
-  url = this.baseurl + 'post-setup';
+  url = this.baseurl + 'organization';
 
   create(data: any) {
     // console.log(data);

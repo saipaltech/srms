@@ -91,34 +91,58 @@
        
       </form>
 
-      <table class="table table-striped hide">
-        <thead>
-          <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Code</th>
-            <th scope="col">Name</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td><i class="bi bi-pen text-primary"></i> &nbsp; <i class="bi bi-trash text-danger"></i> </td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td><i class="bi bi-pen text-primary"></i> &nbsp; <i class="bi bi-trash text-danger"></i></td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td><i class="bi bi-pen text-primary"></i> &nbsp; <i class="bi bi-trash text-danger"></i></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="tab hide">
+        <table class="table datatable"> <!--table-borderless-->
+            <thead>
+              <tr>
+
+                <th scope="col">code</th>
+                <th scope="col">nameen</th>
+                <th scope="col">namenp</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+
+
+              <tr *ngFor=" let item of lists; let i = index; ">
+                <td>{{item.code}}</td>
+                <td>{{item.nameen}}</td>
+                <td>{{item.namenp}}</td>
+                <td><a (click)="getUpdateItem(item.id)" href="javascript:void(0)"><i class="bi bi-pencil-square text-success"></i></a> &nbsp;&nbsp;&nbsp;
+                  <a (click)="deleteItem(item.id)"><i class="bi bi-trash3 text-danger" style="cursor:pointer;"></i>
+                  </a>
+                  </td>
+
+              </tr>
+
+            </tbody>
+          </table>
+
+          <div class="row">
+            <div class="col-6 text-start">
+
+                <pagination [rotate]="true" [maxSize]="5" [totalItems]="pagination.total" [(ngModel)]="pagination.currentPage" [boundaryLinks]="true" [itemsPerPage]="pagination.perPage" (pageChanged)="paginatedData($event)"
+                previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"
+                ></pagination>
+
+            </div>
+
+            <div class="col-6 text-end">
+              <form [formGroup]="srchForm">
+                <div class="row" style="float:right">
+                    <div class="col-md-12 smallbr">
+                        Entries <select name="entries" id="entries" formControlName="entries" (change)="search()">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select> &nbsp;&nbsp;&nbsp;&nbsp;
+                    </div>
+                </div>
+            </form>
+            </div>
     </div>
+    </div>
+    
   </div>

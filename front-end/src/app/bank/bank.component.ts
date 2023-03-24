@@ -38,6 +38,7 @@ export class BankComponent {
       
     }
     this.bankForm =fb.group(this.formLayout)
+    
     this.srchForm = new FormGroup({
       entries: new FormControl('10'),
       srch_term: new FormControl('')})
@@ -78,7 +79,7 @@ bankFormSubmit(){
 
 changeFields() {
   var frm = document.getElementsByClassName('needs-validation')[0]
-  var table = document.getElementsByClassName('table-striped')[0]
+  var table = document.getElementsByClassName('tab')[0]
 
   frm.classList.toggle('hide');
   table.classList.toggle('hide')

@@ -15,6 +15,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BankComponent } from './bank/bank.component';
 import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient  } from '@angular/common/http';
+import { BranchComponent } from './branch/branch.component';
+import { UsersComponent } from './users/users.component';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 @NgModule({
   declarations: [
@@ -24,7 +27,9 @@ import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient  } from '@angular/commo
     MainBodyComponent,
     LoginComponent,
     VoucherBankComponent,
-    BankComponent
+    BankComponent,
+    BranchComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,
@@ -35,6 +40,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient  } from '@angular/commo
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    PaginationModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]
