@@ -16,13 +16,21 @@
         <div class="col-12">
           <label for="username" class="form-label req">जम्मा गरेको मिति</label>
           <div class="input-group has-validation">
-            <input [disabled]="true"
+            <input readonly
             formControlName="date"
               type="text"
               class="form-control form-control-sm"
               placeholder ="{{myDate | date: 'shortDate' }}"/>
           </div>
         </div>
+
+        <div class="col-12">
+            <label for="address" class="form-label req">बैंक भौचर नंबर</label>
+            <input formControlName="voucherno"
+              type="text"
+              class="form-control form-control-sm"
+            />
+          </div>
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">पालिका</label>
@@ -38,25 +46,18 @@
          </ng-select>
         </div>
 
-        <div class="col-12">
-          <label for="address" class="form-label req">बैंक भौचर नंबर</label>
-          <input formControlName="voucherno"
-            type="text"
-            class="form-control form-control-sm"
-          />
-        </div>
 
         <div class="col-12">
           <label for="username" class="form-label req">खाता नंबर</label>
-          <div class="input-group has-validation">
-            <input formControlName="accountno"
-              type="text"
-              class="form-control form-control-sm"
-            />
-          </div>
+          <select class="form-select form-select-sm" formControlName="accountno">
+            <option [selected] disabled>Select Account Number</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+          </select>
         </div>
 
-        <div class="col-12">
+        <div class="col-6">
             <label for="username" class="form-label req">रकम</label>
             <div class="input-group has-validation">
               <input formControlName="amount"
@@ -74,7 +75,7 @@
           </div>
 
           <div class="col-sm-6">
-            <label for="username" class="form-label req">पान नंबर</label>
+            <label for="username" class="form-label">पान नंबर</label>
             <div class="input-group has-validation">
               <input formControlName="panno"
                 type="text"

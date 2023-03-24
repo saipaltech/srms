@@ -13,6 +13,8 @@ import { VoucherBankComponent } from './voucher-bank/voucher-bank.component';
 import { ToastrModule } from 'ngx-toastr';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BankComponent } from './bank/bank.component';
+import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient  } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     NavbarComponent,
     MainBodyComponent,
     LoginComponent,
-    VoucherBankComponent
+    VoucherBankComponent,
+    BankComponent
   ],
   imports: [
     BrowserModule,
@@ -31,6 +34,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     NgSelectModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

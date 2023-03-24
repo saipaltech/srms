@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { DatePipe } from '@angular/common';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-voucher-bank',
@@ -19,12 +19,12 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id:[],
-      usecase: ['',Validators.required],
+      usecase: [''],
       rajsahowsirsak: ['',Validators.required],
       jarinumber: ['',Validators.required],
       jariname: ['',Validators.required],
       kardataname: ['',Validators.required],
-      panno: ['',Validators.required],
+      panno: [''],
       amount: ['',Validators.required],
       accountno: ['',Validators.required],
       voucherno: ['',Validators.required],

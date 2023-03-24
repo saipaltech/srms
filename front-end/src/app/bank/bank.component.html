@@ -1,0 +1,124 @@
+<div class="row g-5 justify-content-center">
+    <div class="col-md-7 col-lg-8">
+      <div class="row">
+        <div class="col-md-8 text-start">
+          <h4 class="mb-3">बैंक सिर्जना</h4>
+        </div>
+        <div class="col-md-4 text-end">
+          <button type="button" class="btn btn-warning" (click)="changeFields()">
+            बैंक सूची
+          </button>
+        </div>
+      </div>
+  
+      <form class="needs-validation" [formGroup]= "bankForm" (ngSubmit)= "bankFormSubmit()">
+        <div class="row g-3">
+            
+          <div class="col-6">
+              <label class="form-label req">Code</label>
+              <div class="input-group has-validation">
+                <input formControlName="code"
+                  type="text"
+                  class="form-control form-control-sm"
+                  [class.is-invalid]="bankForm.get('code') && bankForm.get('code')?.invalid && bankForm.get('code')?.touched"
+                          [class.is-valid]="bankForm.get('code') && bankForm.get('code')?.valid && bankForm.get('code')?.touched">
+                          <div class="invalid-feedback">
+                            <span>Field cannot be empty</span>
+                          </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+                <label class="form-label req">नाम</label>
+                <div class="input-group has-validation">
+                  <input formControlName="name"
+                    type="text"
+                    class="form-control form-control-sm"
+                    [class.is-invalid]="bankForm.get('name') && bankForm.get('name')?.invalid && bankForm.get('name')?.touched"
+                    [class.is-valid]="bankForm.get('name') && bankForm.get('name')?.valid && bankForm.get('name')?.touched">
+                    <div class="invalid-feedback">
+                      <span>Field cannot be empty</span>
+                    </div>
+                </div>
+              </div>
+  
+
+  
+            <div class="col-sm-6">
+              <label class="form-label req">Enabled</label>
+              <div class="input-group has-validation">
+                <select class="form-select form-select-sm" formControlName="enabled"
+                [class.is-invalid]="bankForm.get('enabled') && bankForm.get('enabled')?.invalid && bankForm.get('enabled')?.touched"
+                    [class.is-valid]="bankForm.get('enabled') && bankForm.get('enabled')?.valid && bankForm.get('enabled')?.touched">
+                    <div class="invalid-feedback">
+                      <span>Field cannot be empty</span>
+                    </div>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+              </div>
+            </div>
+  
+            <div class="col-sm-6">
+              <label for="username" class="form-label req">Approved</label>
+              <div class="input-group has-validation">
+                <select class="form-select form-select-sm" formControlName="approved"                
+                [class.is-invalid]="bankForm.get('approved') && bankForm.get('approved')?.invalid && bankForm.get('approved')?.touched"
+                [class.is-valid]="bankForm.get('approved') && bankForm.get('approved')?.valid && bankForm.get('approved')?.touched">
+                <div class="invalid-feedback">
+                  <span>Field cannot be empty</span>
+                </div>
+                    <option value="1" [selected]>Yes</option>
+                    <option value="0">No</option>
+                  </select>
+              </div>
+            </div>
+ 
+  
+        </div>
+  
+        
+        <br />
+        <div class="row">
+          <div class="col-md-6 text-center">
+              <button class="w-50 btn btn-danger btn-sm" type="submit" (click)="resetForm()">Clear</button>
+          </div>
+  
+          <div class="col-md-6 text-center">
+              <button class="w-50 btn btn-success btn-sm" type="submit">Submit</button>
+          </div>
+        </div>
+       
+      </form>
+
+      <table class="table table-striped hide">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Code</th>
+            <th scope="col">Name</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td><i class="bi bi-pen text-primary"></i> &nbsp; <i class="bi bi-trash text-danger"></i> </td>
+          </tr>
+          <tr>
+            <th scope="row">2</th>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td><i class="bi bi-pen text-primary"></i> &nbsp; <i class="bi bi-trash text-danger"></i></td>
+          </tr>
+          <tr>
+            <th scope="row">3</th>
+            <td colspan="2">Larry the Bird</td>
+            <td><i class="bi bi-pen text-primary"></i> &nbsp; <i class="bi bi-trash text-danger"></i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
