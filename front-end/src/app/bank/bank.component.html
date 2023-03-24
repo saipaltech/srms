@@ -2,43 +2,37 @@
     <div class="col-md-7 col-lg-8">
       <div class="row">
         <div class="col-md-8 text-start">
-          <h4 class="mb-3">बैंक सिर्जना</h4>
+          <h4 class="mb-3">Bank Setup</h4>
         </div>
         <div class="col-md-4 text-end">
           <button type="button" class="btn btn-warning" (click)="changeFields()">
-            बैंक सूची
+            List of Bank
           </button>
         </div>
       </div>
   
       <form class="needs-validation" [formGroup]= "bankForm" (ngSubmit)= "bankFormSubmit()">
         <div class="row g-3">
-            
+            <input type="hidden" formControlName="id">
           <div class="col-6">
               <label class="form-label req">Code</label>
               <div class="input-group has-validation">
                 <input formControlName="code"
                   type="text"
                   class="form-control form-control-sm"
-                  [class.is-invalid]="bankForm.get('code') && bankForm.get('code')?.invalid && bankForm.get('code')?.touched"
-                          [class.is-valid]="bankForm.get('code') && bankForm.get('code')?.valid && bankForm.get('code')?.touched">
-                          <div class="invalid-feedback">
-                            <span>Field cannot be empty</span>
-                          </div>
+                  [ngClass]="vs.getControlClass(bankForm.controls['code'])">
+                  <div [ngClass]="vs.getMessageClass(bankForm.controls['code'])">{{vs.getMessage(bankForm.controls['code'])}}</div>
               </div>
             </div>
 
             <div class="col-6">
-                <label class="form-label req">नाम</label>
+                <label class="form-label req">Name</label>
                 <div class="input-group has-validation">
                   <input formControlName="name"
                     type="text"
                     class="form-control form-control-sm"
-                    [class.is-invalid]="bankForm.get('name') && bankForm.get('name')?.invalid && bankForm.get('name')?.touched"
-                    [class.is-valid]="bankForm.get('name') && bankForm.get('name')?.valid && bankForm.get('name')?.touched">
-                    <div class="invalid-feedback">
-                      <span>Field cannot be empty</span>
-                    </div>
+                    [ngClass]="vs.getControlClass(bankForm.controls['name'])">
+                    <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">{{vs.getMessage(bankForm.controls['name'])}}</div>
                 </div>
               </div>
   
@@ -48,14 +42,13 @@
               <label class="form-label req">Disabled</label>
               <div class="input-group has-validation">
                 <select class="form-select form-select-sm" formControlName="disabled"
-                [class.is-invalid]="bankForm.get('disabled') && bankForm.get('disabled')?.invalid && bankForm.get('disabled')?.touched"
-                    [class.is-valid]="bankForm.get('disabled') && bankForm.get('disabled')?.valid && bankForm.get('disabled')?.touched">
-                    <div class="invalid-feedback">
-                      <span>Field cannot be empty</span>
-                    </div>
+                [ngClass]="vs.getControlClass(bankForm.controls['disabled'])">
+                   
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['disabled'])">{{vs.getMessage(bankForm.controls['disabled'])}}</div>
+
               </div>
             </div>
   
@@ -63,14 +56,12 @@
               <label for="username" class="form-label req">Approved</label>
               <div class="input-group has-validation">
                 <select class="form-select form-select-sm" formControlName="approved"                
-                [class.is-invalid]="bankForm.get('approved') && bankForm.get('approved')?.invalid && bankForm.get('approved')?.touched"
-                [class.is-valid]="bankForm.get('approved') && bankForm.get('approved')?.valid && bankForm.get('approved')?.touched">
-                <div class="invalid-feedback">
-                  <span>Field cannot be empty</span>
-                </div>
+                [ngClass]="vs.getControlClass(bankForm.controls['approved'])">
+               
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>
+                  <div [ngClass]="vs.getMessageClass(bankForm.controls['approved'])">{{vs.getMessage(bankForm.controls['approved'])}}</div>
               </div>
             </div>
  
@@ -80,25 +71,32 @@
         
         <br />
         <div class="row">
-          <div class="col-md-6 text-center">
-              <button class="w-50 btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
-          </div>
+          <div class="col-md-12">
+            <button class="btn btn-success btn-sm" type="submit">Submit</button>
+            &nbsp;
+            &nbsp;
+            <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
+        </div>
+
   
-          <div class="col-md-6 text-center">
-              <button class="w-50 btn btn-success btn-sm" type="submit">Submit</button>
-          </div>
+          
         </div>
        
       </form>
 
     <div class="tab hide">
+      <form class="form-srch " [formGroup]="srchForm">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Search.." id="srch_term" name="srch_term" formControlName="srch_term" (keyup.enter)="search()">
+          <button class="btn btn-outline-secondary" type="button" (click)="search()"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
         <table class="table datatable"> <!--table-borderless-->
             <thead>
               <tr>
 
-                <th scope="col">code</th>
-                <th scope="col">nameen</th>
-                <th scope="col">namenp</th>
+                <th scope="col">Name</th>
+                <th scope="col">Code</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
@@ -106,9 +104,8 @@
 
 
               <tr *ngFor=" let item of lists; let i = index; ">
+                <td>{{item.name}}</td>
                 <td>{{item.code}}</td>
-                <td>{{item.nameen}}</td>
-                <td>{{item.namenp}}</td>
                 <td><a (click)="getUpdateItem(item.id)" href="javascript:void(0)"><i class="bi bi-pencil-square text-success"></i></a> &nbsp;&nbsp;&nbsp;
                   <a (click)="deleteItem(item.id)"><i class="bi bi-trash3 text-danger" style="cursor:pointer;"></i>
                   </a>

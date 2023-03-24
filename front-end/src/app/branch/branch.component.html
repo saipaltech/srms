@@ -1,1 +1,148 @@
-<p>branch works!</p>
+<div class="row g-5 justify-content-center">
+    <div class="col-md-7 col-lg-8">
+      <div class="row">
+        <div class="col-md-8 text-start">
+          <h4 class="mb-3">बैंक सिर्जना</h4>
+        </div>
+        <div class="col-md-4 text-end">
+          <button type="button" class="btn btn-warning" (click)="changeFields()">
+            बैंक सूची
+          </button>
+        </div>
+      </div>
+  
+      <form class="needs-validation" [formGroup]= "bankForm" (ngSubmit)= "bankFormSubmit()">
+        <div class="row g-3">
+            
+          <div class="col-6">
+              <label class="form-label req">Code</label>
+              <div class="input-group has-validation">
+                <input formControlName="code"
+                  type="text"
+                  class="form-control form-control-sm"
+                  [class.is-invalid]="bankForm.get('code') && bankForm.get('code')?.invalid && bankForm.get('code')?.touched"
+                          [class.is-valid]="bankForm.get('code') && bankForm.get('code')?.valid && bankForm.get('code')?.touched">
+                          <div class="invalid-feedback">
+                            <span>Field cannot be empty</span>
+                          </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+                <label class="form-label req">नाम</label>
+                <div class="input-group has-validation">
+                  <input formControlName="name"
+                    type="text"
+                    class="form-control form-control-sm"
+                    [class.is-invalid]="bankForm.get('name') && bankForm.get('name')?.invalid && bankForm.get('name')?.touched"
+                    [class.is-valid]="bankForm.get('name') && bankForm.get('name')?.valid && bankForm.get('name')?.touched">
+                    <div class="invalid-feedback">
+                      <span>Field cannot be empty</span>
+                    </div>
+                </div>
+              </div>
+  
+
+  
+            <div class="col-sm-6">
+              <label class="form-label req">Disabled</label>
+              <div class="input-group has-validation">
+                <select class="form-select form-select-sm" formControlName="disabled"
+                [class.is-invalid]="bankForm.get('disabled') && bankForm.get('disabled')?.invalid && bankForm.get('disabled')?.touched"
+                    [class.is-valid]="bankForm.get('disabled') && bankForm.get('disabled')?.valid && bankForm.get('disabled')?.touched">
+                    <div class="invalid-feedback">
+                      <span>Field cannot be empty</span>
+                    </div>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+              </div>
+            </div>
+  
+            <div class="col-sm-6">
+              <label for="username" class="form-label req">Approved</label>
+              <div class="input-group has-validation">
+                <select class="form-select form-select-sm" formControlName="approved"                
+                [class.is-invalid]="bankForm.get('approved') && bankForm.get('approved')?.invalid && bankForm.get('approved')?.touched"
+                [class.is-valid]="bankForm.get('approved') && bankForm.get('approved')?.valid && bankForm.get('approved')?.touched">
+                <div class="invalid-feedback">
+                  <span>Field cannot be empty</span>
+                </div>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+              </div>
+            </div>
+ 
+  
+        </div>
+  
+        
+        <br />
+        <div class="row">
+          <div class="col-md-6 text-center">
+              <button class="w-50 btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
+          </div>
+  
+          <div class="col-md-6 text-center">
+              <button class="w-50 btn btn-success btn-sm" type="submit">Submit</button>
+          </div>
+        </div>
+       
+      </form>
+
+    <div class="tab hide">
+        <table class="table datatable"> <!--table-borderless-->
+            <thead>
+              <tr>
+
+                <th scope="col">code</th>
+                <th scope="col">nameen</th>
+                <th scope="col">namenp</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+
+
+              <tr *ngFor=" let item of lists; let i = index; ">
+                <td>{{item.code}}</td>
+                <td>{{item.nameen}}</td>
+                <td>{{item.namenp}}</td>
+                <td><a (click)="getUpdateItem(item.id)" href="javascript:void(0)"><i class="bi bi-pencil-square text-success"></i></a> &nbsp;&nbsp;&nbsp;
+                  <a (click)="deleteItem(item.id)"><i class="bi bi-trash3 text-danger" style="cursor:pointer;"></i>
+                  </a>
+                  </td>
+
+              </tr>
+
+            </tbody>
+          </table>
+
+          <div class="row">
+            <div class="col-6 text-start">
+
+                <pagination [rotate]="true" [maxSize]="5" [totalItems]="pagination.total" [(ngModel)]="pagination.currentPage" [boundaryLinks]="true" [itemsPerPage]="pagination.perPage" (pageChanged)="paginatedData($event)"
+                previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"
+                ></pagination>
+
+            </div>
+
+            <div class="col-6 text-end">
+              <form [formGroup]="srchForm">
+                <div class="row" style="float:right">
+                    <div class="col-md-12 smallbr">
+                        Entries <select name="entries" id="entries" formControlName="entries" (change)="search()">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select> &nbsp;&nbsp;&nbsp;&nbsp;
+                    </div>
+                </div>
+            </form>
+            </div>
+    </div>
+    </div>
+    
+  </div>

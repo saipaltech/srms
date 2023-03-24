@@ -63,9 +63,9 @@ private String table = "organizations";
 		String sql = "";
 		Organization model = new Organization();
 		model.loadData(document);
-		sql = "INSERT INTO organizations(code,name, enabled, approved) VALUES (?,?,?,?)";
+		sql = "INSERT INTO organizations(code,name, disabled, approved) VALUES (?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
-				Arrays.asList(model.code, model.name, model.approved, model.enabled));
+				Arrays.asList(model.code, model.name, model.approved, model.disabled));
 	
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -88,9 +88,9 @@ private String table = "organizations";
 		Organization model = new Organization();
 		model.loadData(document);
 
-		String sql = "UPDATE code=?,approved=?, enabled=?, name=? where id=?";
+		String sql = "UPDATE code=?,approved=?, disabled=?, name=? where id=?";
 		rowEffect = db.execute(sql,
-				Arrays.asList(model.code, model.approved, model.enabled, model.name));
+				Arrays.asList(model.code, model.approved, model.disabled, model.name));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 
@@ -102,7 +102,7 @@ private String table = "organizations";
 
 	public ResponseEntity<Map<String, Object>> destroy(String id) {
 
-		String sql = "delete from admin_local_level_structure where id  = ?";
+		String sql = "delete from "+ table +" where id  = ?";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(id));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();

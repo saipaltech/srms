@@ -13,7 +13,7 @@ public class Organization {
 	public String name;
 	public String code;
 	public String approved;
-	public String enabled;
+	public String disabled;
 
     
 	public void loadData(RequestParser doc) {
@@ -38,7 +38,7 @@ public class Organization {
 		rules.put("code", "required");
 		rules.put("name", "required");
 		rules.put("approved", "required");
-		rules.put("enabled", "required");
+		rules.put("disabled", "required");
 		return rules;
 	}
 

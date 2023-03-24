@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import {BankService} from './bank.service'
+import {BankService} from './bank.service';
+import { ValidationService } from '../validation.service';
+
 
 @Component({
   selector: 'app-bank',
@@ -10,6 +12,7 @@ import {BankService} from './bank.service'
 })
 export class BankComponent {
 
+  vs = ValidationService;
   model: any = {};
   disabled = false;
   error = '';
@@ -85,7 +88,7 @@ changeFields() {
   table.classList.toggle('hide')
 
 
-  this.toastr.success('Hello world!', 'Toastr fun!');
+  // this.toastr.success('Hello world!', 'Toastr fun!');
 }
 
 resetForm(){
