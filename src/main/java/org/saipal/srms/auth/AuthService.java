@@ -31,9 +31,9 @@ public class AuthService {
 	PasswordEncoder pwdEncoder;
 
 	public ResponseEntity<Map<String,Object>> login() {
-		String username = "";
-		String password = "";
-		String sql = "select id,username,password,name from xcs_users where username=?";
+		String username = doc.getElementById("username").value;
+		String password = doc.getElementById("password").value;
+		String sql = "select id,username,password,name from users where username=?";
 		Tuple t = db.getSingleResult(sql,Arrays.asList(username));
 		if(t!=null) {
 			if(pwdEncoder.matches(password, t.get("password")+"")) {

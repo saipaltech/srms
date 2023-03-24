@@ -1,99 +1,140 @@
 package org.saipal.srms.parser;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.saipal.srms.util.DB;
-import org.saipal.srms.util.FmisSession;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class RequestParser {
 
-	// private String syncId = "";
-
-	@Autowired
-	DB db;
+	org.slf4j.Logger log = LoggerFactory.getLogger(RequestParser.class);
 	
 	@Autowired
 	ApplicationContext context;
-	
-	@Autowired
-	FmisSession fmisSession;
-
-	org.slf4j.Logger log = LoggerFactory.getLogger(RequestParser.class);
 
 	public void setRequestParser(HttpServletRequest request) {
 		DocumentStore ds = context.getBean(DocumentStore.class);
-		//Added on 17 Sep by Pankaj Begin
-		HashMap<String, String[]> parmData=new HashMap<String,String[]>();;
-		String _bigdata=""+request.getParameter("m_bigdata");
-		if(_bigdata.equals("1")) {
-			Map<String,String> requestParm=new HashMap<String,String>();
-			String b64data=request.getParameter("m_rawdata");
-			//byte[] decoder = Base64.getDecoder().decode(b64data);
-			String str=b64data;
-			
-			String[] _rawdata=str.split("&");
-			for(int i=0;i<_rawdata.length;i++) {
-				String[] keyA=_rawdata[i].split("=");
-				
-				String key="";
-				String value="";
-				if(keyA.length>1) {
-					key=keyA[0].trim();
-					value=keyA[1];
+		if (MediaType.APPLICATION_JSON.toString().equals(request.getContentType())) {
+			parseJsonRequest(request, ds);
+			parseQueryParams(request, ds);
+		} else {
+			parseFormData(request, ds);
+		}
+	}
+
+	private void parseQueryParams(HttpServletRequest request, DocumentStore ds) {
+		if (request.getQueryString() != null) {
+			String data = request.getQueryString();
+			String[] fragments = data.split("&");
+			for (String it : fragments) {
+				String[] dt = it.split("=");
+				Element element = new Element();
+				element.setId(dt[0]);
+				element.setName(dt[0]);
+				element.setRp(this);
+				ds.elements.put(dt[0], element);
+				if (dt.length == 2) {
+					element.setValueAuto(dt[1]);
+				} else {
+					element.setValueAuto("");
 				}
-				else {
-					key=keyA[0].trim();
-					value="";
-				}
-				
-				try {
-					value=URLDecoder.decode(value,"UTF-8");
-				} catch (UnsupportedEncodingException e1) {
-					e1.printStackTrace();
-				}
-					
-				
-				if(requestParm.containsKey(key)) {
-						value=requestParm.get(key)+":;:"+ value;
-						
-				}
-				requestParm.put(key, value);
-			}
-			
-			for(Map.Entry<String,String> entry : requestParm.entrySet()) {
-				parmData.put(entry.getKey(), entry.getValue().split(":;:"));
 			}
 		}
-		else {
-			for (Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-				parmData.put(entry.getKey(), entry.getValue());
-			}
-			
-		}
-		//Added on 17 Sep by Pankaj End
-		
-		// HashMap<String, Element> elements = new HashMap<String, Element>();
-		// HashMap<String, DataGrid> grids = new HashMap<String, DataGrid>();
-		// Map<String, String[]> reqParam = request.getParameterMap();
+	}
+
+	private void parseJsonRequest(HttpServletRequest request, DocumentStore ds) {
 		Map<String, Integer> gridMap = new HashMap<String, Integer>();
-		//for (Entry<String, String[]> entry : request.getParameterMap().entrySet()) {//OriginalCode
-		for(Map.Entry<String, String[]> entry : parmData.entrySet()) {
+		try {
+			byte[] reqByteArray = request.getInputStream().readAllBytes();
+			if (reqByteArray.length > 0) {
+				String reqBody = new String(reqByteArray, 0, reqByteArray.length, request.getCharacterEncoding());
+				// conform the request is json
+				if (reqBody.trim().startsWith("{")) {
+					try {
+						JSONObject jsonBody = new JSONObject(reqBody);
+						int objLen = jsonBody.names().length();
+						for (int i = 0; i < objLen; i++) {
+							String k = jsonBody.names().getString(i);
+							Object o = jsonBody.get(k);
+							String v = "";
+							if (o instanceof JSONArray) {
+								JSONArray arr = jsonBody.getJSONArray(k);
+								if (arr.length() == 0) {
+									v = "";
+								} else if (arr.length() == 1) {
+									v = arr.getString(0);
+								} else if (arr.length() > 1) {
+									v = arr.toString();
+								}
+							} else if (o instanceof JSONObject) {
+								int len = ((JSONObject) o).length();
+								if (len == 0) {
+									v = "";
+								} else if (len == 1) {
+									v = (String) jsonBody.getJSONObject(k)
+											.get(jsonBody.getJSONObject(k).names().getString(0));
+								} else {
+									v = o.toString();
+								}
+							} else {
+								if (o == null) {
+									v = "";
+								} else {
+									v = o + "";
+								}
+							}
+							Element element = new Element();
+							element.setId(k);
+							element.setName(k);
+							element.setValueAuto(v);
+							element.setRp(this);
+							ds.elements.put(k, element);
+							// check if grid exists
+							if (k.contains("_value") || k.contains("_rowid") || k.contains("_colname")
+									|| k.contains("_datatype")) {
+								String gridName = k.split("_")[0];
+								if (gridMap.containsKey(gridName)) {
+									gridMap.put(gridName, gridMap.get(gridName) + 1);
+								} else {
+									gridMap.put(gridName, 1);
+								}
+							}
+						}
+						parseGrids(gridMap, ds);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void parseFormData(HttpServletRequest request, DocumentStore ds) {
+		Map<String, Integer> gridMap = new HashMap<String, Integer>();
+		for (Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
 			String k = entry.getKey();
 			String[] v = entry.getValue();
-			Element element = context.getBean(Element.class);
+			Element element = new Element();
 			element.setId(k);
 			element.setName(k);
 			if (v.length == 1) {
@@ -119,6 +160,10 @@ public class RequestParser {
 		// ds.addElements(elements);
 
 		// parse all the grids
+		parseGrids(gridMap, ds);
+	}
+
+	private void parseGrids(Map<String, Integer> gridMap, DocumentStore ds) {
 		if (gridMap.size() > 0) {
 			for (Entry<String, Integer> ent : gridMap.entrySet()) {
 				if (ent.getValue() == 4) {
@@ -132,7 +177,11 @@ public class RequestParser {
 			}
 			// ds.addGrids(grids);
 		}
+	}
 
+	public List<String> getElementList() {
+		DocumentStore ds = context.getBean(DocumentStore.class);
+		return new ArrayList<String>(ds.elements.keySet());
 	}
 
 	public Element getElementById(String id) {
@@ -140,7 +189,7 @@ public class RequestParser {
 		// Element el = ds.getElement(id);
 		Element el = ds.elements.get(id);
 		if (el == null) {
-			el = context.getBean(Element.class);
+			el = new Element();
 			el.setId(id);
 			el.setName(id);
 			el.setRp(this);
@@ -156,13 +205,8 @@ public class RequestParser {
 		// return ds.getGrid(id);
 	}
 
-//	public String maketable(String gridId) {
-//		return getGrid(gridId).makeTable(db, fmisSession.session("requestid") + "");
-//		//return "##tbl"+fmisSession.session("requestid");
-//	}
-
 	public String getSyncId() {
-		return fmisSession.session("requestid");
+		return "id";
 	}
 
 //	public void setSyncId(String syncId) {
@@ -297,19 +341,7 @@ public class RequestParser {
 				setJSON(elementid, "value", params);
 
 			}
-			
-		}
-		else if ("setValue2".equals(operation)) {
-			if (params != null) {
-				String js = "document.getElementById('" + elementid + "').setvalue('" + params.replace("'", "\\'")
-						+ "');\n";
-				ds.jsLog.append(js);
-				// insetToDb(js);
-				setJSON(elementid, "value", params);
-
-			}
-			
-		}else if ("focus".equals(operation)) {
+		} else if ("focus".equals(operation)) {
 			String js = "document.getElementById('" + elementid + "').focus();\n";
 			ds.jsLog.append(js);
 			// insetToDb(js);
@@ -525,37 +557,13 @@ public class RequestParser {
 		// end json
 	}
 
-//	protected void insetToDb(String js) {
-//		FmisSession fmisSession = ApplicationContextProvider.getBean(FmisSession.class);
-//		DocumentStore ds = ApplicationContextProvider.getBean(DocumentStore.class);
-//		String requestId = fmisSession.session("requestid");
-//		if (!ds.logjs.containsKey(requestId)) {
-//			ds.logjs.put(requestId, js);
-//		} else {
-//			ds.logjs.put(requestId, ds.logjs.get(requestId) + js);
-//		}
-//
-//	}
-
-//	public String getJsDb() {
-//		DocumentStore ds = ApplicationContextProvider.getBean(DocumentStore.class);
-//		FmisSession fmisSession = ApplicationContextProvider.getBean(FmisSession.class);
-//		String reqid = fmisSession.session("requestid");
-//		String js = "";
-//		if (ds.logjs.containsKey(reqid)) {
-//			js = ds.logjs.get(reqid);
-//			ds.logjs.remove(reqid);
-//		}
-//		return js;
-//	}
-
 	public String getJSON() {
 		DocumentStore ds = context.getBean(DocumentStore.class);
 		return ds.json.toString();
 	}
 
 //	public void clearData() {
-//		// DocumentStore ds = ApplicationContextProvider.getBean(DocumentStore.class);
+//		// DocumentStore ds = context.getBean(DocumentStore.class);
 //		// ds.cleanAll();
 //	}
 }
