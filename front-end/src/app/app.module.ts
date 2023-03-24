@@ -24,6 +24,7 @@ import { AuthGuard, AuthorizeGuard, LoginGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 import { ApiService } from './api.service';
 import { AuthInterceptor } from './auth-interceptor';
+import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { AuthInterceptor } from './auth-interceptor';
     VoucherBankComponent,
     BankComponent,
     BranchComponent,
-    UsersComponent
+    UsersComponent,
+    VerifyVoucherComponent
   ],
   imports: [
     BrowserModule,

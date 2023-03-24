@@ -154,6 +154,7 @@ getUpdateItem(id: any) {
     (result: any) => {
       this.model = result;
       this.bankForm.patchValue(result);
+      this.changeFields();
     },
     (error: any) => {
       this.toastr.error(error.error, 'Error');

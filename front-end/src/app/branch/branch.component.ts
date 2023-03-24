@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {BranchService} from './branch.service'
+import { ValidationService } from '../validation.service';
 
 @Component({
   selector: 'app-branch',
@@ -9,6 +10,8 @@ import {BranchService} from './branch.service'
   styleUrls: ['./branch.component.scss']
 })
 export class BranchComponent {
+
+  vs = ValidationService;
   model: any = {};
   disabled = false;
   error = '';
@@ -30,7 +33,7 @@ export class BranchComponent {
   constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: BranchService){
     this.formLayout = {
       id:[],
-      code: ['',Validators.required],
+      orgid: ['1',Validators.required],
       name: ['',Validators.required],
       disabled: ['0',Validators.required],
       approved: ['1',Validators.required],
@@ -84,7 +87,7 @@ changeFields() {
   table.classList.toggle('hide')
 
 
-  this.toastr.success('Hello world!', 'Toastr fun!');
+  // this.toastr.success('Hello world!', 'Toastr fun!');
 }
 
 resetForm(){
@@ -150,6 +153,7 @@ getUpdateItem(id: any) {
     (result: any) => {
       this.model = result;
       this.bankForm.patchValue(result);
+      this.changeFields();
     },
     (error: any) => {
       this.toastr.error(error.error, 'Error');

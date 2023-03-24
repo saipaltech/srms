@@ -6,7 +6,7 @@ import { AppConfig } from '../app.config';
 @Injectable({
   providedIn: 'root'
 })
-export class BranchService {
+export class UsersService {
   baseurl = "";
   url="";
   create(data: any) {
@@ -21,7 +21,7 @@ export class BranchService {
 
   constructor(private http: HttpClient,appCnfig:AppConfig) { 
     this.baseurl = appCnfig.baseUrl;
-    this.url = this.baseurl + 'branches';
+    this.url = this.baseurl + 'users';
   }
 
   getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean) {
