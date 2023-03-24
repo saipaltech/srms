@@ -45,11 +45,11 @@
 
   
             <div class="col-sm-6">
-              <label class="form-label req">Enabled</label>
+              <label class="form-label req">Disabled</label>
               <div class="input-group has-validation">
-                <select class="form-select form-select-sm" formControlName="enabled"
-                [class.is-invalid]="bankForm.get('enabled') && bankForm.get('enabled')?.invalid && bankForm.get('enabled')?.touched"
-                    [class.is-valid]="bankForm.get('enabled') && bankForm.get('enabled')?.valid && bankForm.get('enabled')?.touched">
+                <select class="form-select form-select-sm" formControlName="disabled"
+                [class.is-invalid]="bankForm.get('disabled') && bankForm.get('disabled')?.invalid && bankForm.get('disabled')?.touched"
+                    [class.is-valid]="bankForm.get('disabled') && bankForm.get('disabled')?.valid && bankForm.get('disabled')?.touched">
                     <div class="invalid-feedback">
                       <span>Field cannot be empty</span>
                     </div>
@@ -68,7 +68,7 @@
                 <div class="invalid-feedback">
                   <span>Field cannot be empty</span>
                 </div>
-                    <option value="1" [selected]>Yes</option>
+                    <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>
               </div>
@@ -81,7 +81,7 @@
         <br />
         <div class="row">
           <div class="col-md-6 text-center">
-              <button class="w-50 btn btn-danger btn-sm" type="submit" (click)="resetForm()">Clear</button>
+              <button class="w-50 btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
           </div>
   
           <div class="col-md-6 text-center">

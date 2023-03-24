@@ -21,7 +21,7 @@ export class BankService {
 
   constructor(private http: HttpClient,appCnfig:AppConfig) { 
     this.baseurl = appCnfig.baseUrl;
-    this.url = this.baseurl + 'post-setup';
+    this.url = this.baseurl + 'organization';
   }
 
   getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean) {

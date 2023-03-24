@@ -33,8 +33,8 @@ export class BankComponent {
       id:[],
       code: ['',Validators.required],
       name: ['',Validators.required],
-      enabled: ['',Validators.required],
-      approved: ['',Validators.required],
+      disabled: ['0',Validators.required],
+      approved: ['1',Validators.required],
       
     }
     this.bankForm =fb.group(this.formLayout)

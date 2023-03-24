@@ -104,10 +104,10 @@ public class Paginator {
 			totalResp = db.getSingleResult(countSql);
 		}
 		// check if rcord exists or not
-		Long totalRecords = 0l;
+		int totalRecords = 0;
 		if(totalResp!=null) {
-			totalRecords = (Long) totalResp.get(0);
-			if (totalRecords.compareTo(0l) > 0) {
+			totalRecords = (int) totalResp.get("total");
+			if (totalRecords > 0) {
 				if (params != null) {
 					rows = db.getResultListMap(paginateSql, params);
 				} else {
