@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -6,6 +8,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
+  constructor(private router:Router ,private authService:AuthService){}
 
   buttonactive(e: any){
     var elem: HTMLElement = e.target;
@@ -20,6 +23,11 @@ export class NavbarComponent {
     
     elem.classList.add('active');
     
+  }
+
+  logout(){
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
 }

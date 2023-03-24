@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard, LoginGuard } from './auth/auth.guard';
 import { BankComponent } from './bank/bank.component';
 import { LoginComponent } from './login/login.component';
 import { MainBodyComponent } from './main-body/main-body.component';
@@ -12,6 +13,7 @@ const routes: Routes = [
       {
         path: '',
         component: MainBodyComponent,
+        canActivate:[AuthGuard],
         children:[
           {
             path: 'voucher-bank',
@@ -24,10 +26,15 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'login',
-        component: LoginComponent
+        path: 'login',        
+        component: LoginComponent,
+        canActivate:[LoginGuard]
       }
     ]
+  },
+  {
+    path:"**",
+    redirectTo:"/login"
   }
   
 ];

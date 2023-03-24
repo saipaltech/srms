@@ -7,22 +7,22 @@ import { AppConfig } from '../app.config';
   providedIn: 'root'
 })
 export class BankService {
-
-  baseurl = AppConfig.baseUrl;
-  url = this.baseurl + 'post-setup';
-
+  baseurl = "";
+  url="";
   create(data: any) {
     // console.log(data);
     return this.http.post(this.url, data);
 
   }
   update(id: any, data: any) {
-
     return this.http.put(this.url + '/' + id, data);
     // return this.api.update(this.path,id,data);
   }
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,appCnfig:AppConfig) { 
+    this.baseurl = appCnfig.baseUrl;
+    this.url = this.baseurl + 'post-setup';
+  }
 
   getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean) {
 
