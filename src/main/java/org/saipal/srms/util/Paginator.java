@@ -96,8 +96,10 @@ public class Paginator {
 		paginateSql = "select " + selections + " " + body;
 		if (!orderField.isBlank()) {
 			paginateSql += " order by " + orderField + " " + (orderDir.isBlank()?"asc":orderDir);
+		}else {
+			paginateSql += " order by (select null) ";
 		}
-		paginateSql += " limit " + offset + "," + perPage;
+		paginateSql += " OFFSET "+offset+" ROWS FETCH NEXT "+perPage+" ROWS ONLY ";
 		if (params != null) {
 			totalResp = db.getSingleResult(countSql, params);
 		} else {
