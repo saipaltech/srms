@@ -1,11 +1,9 @@
-package org.saipal.srms.organizations;
+package org.saipal.srms.users;
 
 import java.util.Arrays;
-
 import java.util.List;
 import java.util.Map;
 
-import jakarta.*;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.util.DB;
@@ -17,19 +15,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrganizationService extends AutoService{
+public class UsersService  extends AutoService{
 	@Autowired
 	DB db;
 	@Autowired
 	Authenticated auth;
 	
-private String table = "organizations";
+private String table = "users";
 	
 
 	public ResponseEntity<Map<String, Object>> index() {
 		String condition = "";
 		if (!request("searchTerm").isEmpty()) {
-			List<String> searchbles = Organization.searchables();
+			List<String> searchbles = Users.searchables();
 			condition += "and (";
 			for (String field : searchbles) {
 				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
@@ -50,7 +48,7 @@ private String table = "organizations";
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage"))
 				.setOrderBy(sort)
-				.select("id,code,name,approved,disabled")
+				.select("id,name,username,password, orgid, sectionid,approved,disabled")
 				.sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -61,11 +59,11 @@ private String table = "organizations";
 
 	public ResponseEntity<Map<String, Object>> store() {
 		String sql = "";
-		Organization model = new Organization();
+		Users model = new Users();
 		model.loadData(document);
-		sql = "INSERT INTO organizations(code,name, enabled, approved) VALUES (?,?,?,?)";
+		sql = "INSERT INTO users(id,name, username, password, orgid, sectionid ,disabled, approved) VALUES (?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
-				Arrays.asList(model.code, model.name, model.approved, model.enabled));
+				Arrays.asList(model.id, model.name,model.username, model.password, model.orgid, model.sectionid, model.disabled , model.approved));
 	
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -77,7 +75,7 @@ private String table = "organizations";
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
 
-		String sql = "select id, code, name ,disabled from "
+		String sql = "select id,name, username, password, orgid, sectionid ,disabled, approved from "
 				+ table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
@@ -85,12 +83,12 @@ private String table = "organizations";
 
 	public ResponseEntity<Map<String, Object>> update(String id) {
 		DbResponse rowEffect;
-		Organization model = new Organization();
+		Users model = new Users();
 		model.loadData(document);
 
-		String sql = "UPDATE code=?,approved=?, enabled=?, name=? where id=?";
+		String sql = "UPDATE name=?, sectionid=? where id=?";
 		rowEffect = db.execute(sql,
-				Arrays.asList(model.code, model.approved, model.enabled, model.name));
+				Arrays.asList(model.name, model.sectionid));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 
@@ -102,7 +100,7 @@ private String table = "organizations";
 
 	public ResponseEntity<Map<String, Object>> destroy(String id) {
 
-		String sql = "delete from admin_local_level_structure where id  = ?";
+		String sql = "delete from users where id  = ?";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(id));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -111,6 +109,5 @@ private String table = "organizations";
 			return Messenger.getMessenger().error();
 		}
 	}
-
 
 }
