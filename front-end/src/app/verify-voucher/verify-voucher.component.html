@@ -1,1 +1,227 @@
-<p>verify-voucher works!</p>
+<div class="row g-5 justify-content-center">
+  <div class="col-md-7 col-lg-8">
+    <div class="row">
+      <div class="col-md-8 text-start">
+        <h4 class="mb-3">Verify Voucher</h4>
+      </div>
+      <div class="col-md-4 text-end">
+        <button type="button" class="btn btn-warning" (click)="changeFields()">
+          List of Vouchers
+        </button>
+      </div>
+    </div>
+    <form class="form-srch" [formGroup]="srchForm">
+      <div class="input-group mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="कारोबार संकेत नंबर"
+          id="srch_term"
+          name="srch_term"
+          formControlName="srch_term"
+          (keyup.enter)="search()"
+        />
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          (click)="search()"
+        >
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </form>
+    <form
+      class="needs-validation"
+      [formGroup]="bankForm"
+      (ngSubmit)="bankFormSubmit()"
+    >
+
+    <div class="card" style="width: 100%;">
+       <div class="card-body">
+          
+          <div class="card-text">
+            कारोबार संकेत नंबर:
+            <br>
+            कार्यालय: वडा नंबर, पालिका
+            <br>
+            भौचर मिति: २०७९/०१/०१
+            <br>
+            खाता नाम: क्ल्स्दफ्ज्ल
+            <br>
+            खाता नंबर: ०१२३५४६५६
+            <br>
+            <br>
+
+            <div class="row g-3">
+                <input type="hidden" formControlName="id" />
+                <div class="col-6">
+                  <label class="form-label req">जम्मा गरेको मिति</label>
+                  <div class="input-group has-validation">
+                    <input
+                      formControlName="kardataSanketNumber"
+                      type="text"
+                      readonly
+                      placeholder="{{ myDate | date : 'shortDate' }}"
+                      class="form-control form-control-sm"
+                      [ngClass]="
+                        vs.getControlClass(bankForm.controls['kardataSanketNumber'])
+                      "
+                    />
+                    <div
+                      [ngClass]="
+                        vs.getMessageClass(bankForm.controls['kardataSanketNumber'])
+                      "
+                    >
+                      {{ vs.getMessage(bankForm.controls["kardataSanketNumber"]) }}
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="col-6">
+                  <label class="form-label req">बैंक भौचर नंबर</label>
+                  <div class="input-group has-validation">
+                    <input
+                      formControlName="name"
+                      type="text"
+                      class="form-control form-control-sm"
+                      [ngClass]="vs.getControlClass(bankForm.controls['name'])"
+                    />
+                    <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">
+                      {{ vs.getMessage(bankForm.controls["name"]) }}
+                    </div>
+                  </div>
+                </div>
+        
+                <div class="col-6">
+                    <label class="form-label req">बिबरण</label>
+                    <div class="input-group has-validation">
+                      <input
+                        formControlName="name"
+                        type="text"
+                        class="form-control form-control-sm"
+                        [ngClass]="vs.getControlClass(bankForm.controls['name'])"
+                      />
+                      <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">
+                        {{ vs.getMessage(bankForm.controls["name"]) }}
+                      </div>
+                    </div>
+                  </div>
+        
+               
+        
+        
+              </div>
+
+          </div>
+        </div>
+      </div>
+     
+
+      <br />
+      <div class="row">
+        <div class="col-md-12">
+          <button class="btn btn-success btn-sm" type="submit">Submit</button>
+          &nbsp; &nbsp;
+          <button
+            class="btn btn-danger btn-sm"
+            type="reset"
+            (click)="resetForm()"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <div class="tab hide">
+      <form class="form-srch">
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search.."
+            id="srch_term"
+            name="srch_term"
+            formControlName="srch_term"
+            (keyup.enter)="search()"
+          />
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            (click)="search()"
+          >
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
+      <table class="table datatable">
+        <!--table-borderless-->
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Code</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of lists; let i = index">
+            <td>{{ item.name }}</td>
+            <td>{{ item.code }}</td>
+            <td>
+              <a (click)="getUpdateItem(item.id)" href="javascript:void(0)"
+                ><i class="bi bi-pencil-square text-success"></i
+              ></a>
+              &nbsp;&nbsp;&nbsp;
+              <a (click)="deleteItem(item.id)"
+                ><i
+                  class="bi bi-trash3 text-danger"
+                  style="cursor: pointer"
+                ></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="row">
+        <div class="col-6 text-start">
+          <pagination
+            [rotate]="true"
+            [maxSize]="5"
+            [totalItems]="pagination.total"
+            [(ngModel)]="pagination.currentPage"
+            [boundaryLinks]="true"
+            [itemsPerPage]="pagination.perPage"
+            (pageChanged)="paginatedData($event)"
+            previousText="&lsaquo;"
+            nextText="&rsaquo;"
+            firstText="&laquo;"
+            lastText="&raquo;"
+          ></pagination>
+        </div>
+
+        <div class="col-6 text-end">
+          <form [formGroup]="srchForm">
+            <div class="row" style="float: right">
+              <div class="col-md-12 smallbr">
+                Entries
+                <select
+                  name="entries"
+                  id="entries"
+                  formControlName="entries"
+                  (change)="search()"
+                >
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

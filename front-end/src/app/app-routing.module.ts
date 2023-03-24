@@ -6,6 +6,7 @@ import { BranchComponent } from './branch/branch.component';
 import { LoginComponent } from './login/login.component';
 import { MainBodyComponent } from './main-body/main-body.component';
 import { UsersComponent } from './users/users.component';
+import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.component';
 import { VoucherBankComponent } from './voucher-bank/voucher-bank.component';
 
 const routes: Routes = [
@@ -32,6 +33,10 @@ const routes: Routes = [
           {
             path: 'users',
             component: UsersComponent
+          },
+          {
+            path: 'verify-voucher',
+            component: VerifyVoucherComponent
           }
         ]
       },
