@@ -1,6 +1,7 @@
-package org.saipal.srms.organizations;
+package org.saipal.srms.banks;
 
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -20,15 +21,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/organization")
-public class OrganizationController {
+@RequestMapping("/bank")
+public class BankController {
 	
 	@Autowired
-	OrganizationService objService;
+	BankService objService;
 
 	@Autowired
 	ValidationService validationService;
-
+	
 	@GetMapping("")
 	public ResponseEntity<Map<String, Object>> index(HttpServletRequest request) {
 		return objService.index();
@@ -36,7 +37,7 @@ public class OrganizationController {
 
 	@PostMapping("")
 	public ResponseEntity<Map<String, Object>> store(HttpServletRequest request) {
-		Validator validator = validationService.validate(Organization.rules());
+		Validator validator = validationService.validate(Bank.rules());
 		if (validator.isFailed()) {
 			return Messenger.getMessenger().setMessage(validator.getErrorMessages()).error();
 		} else {
@@ -44,14 +45,14 @@ public class OrganizationController {
 		}
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("{id}")
 	public ResponseEntity<Map<String, Object>> edit(HttpServletRequest request, @PathVariable String id) {
 		return objService.edit(id);
 	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> update(HttpServletRequest request, @PathVariable String id) {
-		Validator validator = validationService.validate(Organization.rules());
+		Validator validator = validationService.validate(Bank.rules());
 		if (validator.isFailed()) {
 			return Messenger.getMessenger().setMessage(validator.getErrorMessages()).error();
 		} else {
@@ -63,5 +64,9 @@ public class OrganizationController {
 	public ResponseEntity<Map<String, Object>> destroy(HttpServletRequest request, @PathVariable String id) {
 		return objService.destroy(id);
 	}
-
+	
+	@GetMapping("get-list")
+	public ResponseEntity<List<Map<String, Object>>> getList() {
+		return objService.getList();
+	}
 }

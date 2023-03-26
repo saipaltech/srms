@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {UsersService} from './users.service'
 import { ValidationService } from '../validation.service';
+import { BranchService } from '../branch/branch.service';
 
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss']
 })
-export class UsersComponent {
+export class UsersComponent implements OnInit{
 
   vs = ValidationService;
   model: any = {};
@@ -29,13 +30,14 @@ export class UsersComponent {
   
   bankForm!: FormGroup;
   formLayout: any;
+  branches:any
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService){
+  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService,private bs:BranchService){
     this.formLayout = {
       id:[],
-      orgid: ['1',Validators.required],
-      sectionid: ['1',Validators.required],
+      branchid: ['',Validators.required],
       name: ['',Validators.required],
+      post:['',Validators.required],
       username:['', Validators.required],
       password:['', Validators.required],
       disabled: ['0',Validators.required],
@@ -52,6 +54,15 @@ export class UsersComponent {
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
     this.getList();
+    this.getBranches();
+  }
+
+  getBranches(){
+    this.bs.getlist().subscribe({next:(d:any)=>{
+      this.branches = d;
+    },error:err=>{
+
+    }});
   }
 
   getList(pageno?: number | undefined) {

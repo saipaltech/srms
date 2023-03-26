@@ -1,5 +1,6 @@
 package org.saipal.srms.branch;
 
+import java.util.List;
 import java.util.Map;
 
 import org.saipal.srms.util.Messenger;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("/branches")
+@RequestMapping("/branch")
 public class BranchController {
 	
 	
@@ -62,6 +63,9 @@ public class BranchController {
 	public ResponseEntity<Map<String, Object>> destroy(HttpServletRequest request, @PathVariable String id) {
 		return objService.destroy(id);
 	}
-
-
+	
+	@GetMapping("get-list")
+	public ResponseEntity<List<Map<String, Object>>> getList() {
+		return objService.getList();
+	}
 }

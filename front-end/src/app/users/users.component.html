@@ -14,6 +14,24 @@
       <form class="needs-validation" [formGroup]= "bankForm" (ngSubmit)= "bankFormSubmit()">
         <div class="row g-3">
             <input type="hidden" formControlName="id">
+            <!--<input type="hidden" formControlName="bankid">-->
+            <div class="col-6">
+              <label class="form-label req">Branch</label>
+              <div class="input-group has-validation">
+                <select
+                  class="form-select form-select-sm"
+                  formControlName="branchid"
+                  [ngClass]="vs.getControlClass(bankForm.controls['branchid'])"
+                >
+                  <option value="">Select Branch..</option>
+                  <option *ngFor="let op of branches" value="{{op.id}}">{{op.name}}</option>
+                </select>
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['branchid'])">
+                  {{ vs.getMessage(bankForm.controls["branchid"]) }}
+                </div>
+              </div>
+            </div>
+
           <div class="col-6">
               <label class="form-label req">Name</label>
               <div class="input-group has-validation">
@@ -22,6 +40,16 @@
                   class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['name'])">
                   <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">{{vs.getMessage(bankForm.controls['name'])}}</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <label class="form-label req">Post</label>
+              <div class="input-group has-validation">
+                <input formControlName="post"
+                  type="text"
+                  class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['post'])">
+                  <div [ngClass]="vs.getMessageClass(bankForm.controls['post'])">{{vs.getMessage(bankForm.controls['post'])}}</div>
               </div>
             </div>
   
@@ -41,49 +69,18 @@
                 <label class="form-label req">Password</label>
                 <div class="input-group has-validation">
                   <input formControlName="password"
-                    type="text"
+                    type="password"
                     class="form-control form-control-sm"
                     [ngClass]="vs.getControlClass(bankForm.controls['password'])">
                     <div [ngClass]="vs.getMessageClass(bankForm.controls['password'])">{{vs.getMessage(bankForm.controls['password'])}}</div>
                 </div>
               </div>
   
-
-              
-            <div class="col-6">
-                <label class="form-label req">Organization</label>
-                <div class="input-group has-validation">
-                  <input formControlName="orgid"
-                    type="text"
-                    class="form-control form-control-sm"
-                    [ngClass]="vs.getControlClass(bankForm.controls['orgid'])">
-                    <div [ngClass]="vs.getMessageClass(bankForm.controls['orgid'])">{{vs.getMessage(bankForm.controls['orgid'])}}</div>
-                </div>
-              </div>
-
-
-              
-            <div class="col-6">
-                <label class="form-label req">Branch</label>
-                <div class="input-group has-validation">
-                  <input formControlName="orgid"
-                    type="text"
-                    class="form-control form-control-sm"
-                    [ngClass]="vs.getControlClass(bankForm.controls['orgid'])">
-                    <div [ngClass]="vs.getMessageClass(bankForm.controls['orgid'])">{{vs.getMessage(bankForm.controls['orgid'])}}</div>
-                </div>
-              </div>
-  
-  
-  
-  
-  
             <div class="col-sm-6">
               <label class="form-label req">Disabled</label>
               <div class="input-group has-validation">
                 <select class="form-select form-select-sm" formControlName="disabled"
                 [ngClass]="vs.getControlClass(bankForm.controls['disabled'])">
-                   
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                   </select>
@@ -115,7 +112,7 @@
             <button class="btn btn-success btn-sm" type="submit">Submit</button>
             &nbsp;
             &nbsp;
-            <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
+            <button class="btn btn-danger btn-sm" type="button" (click)="resetForm()">Clear</button>
         </div>
   
   

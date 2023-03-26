@@ -62,22 +62,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			try {
 				String sub = jwtHelper.getSubject(jwtToken);
 				auth.setUserId(sub);
+				auth.initSession();
 				UsernamePasswordAuthenticationToken springAuthToken = new UsernamePasswordAuthenticationToken(sub, null,
 						new ArrayList<>());
-				// springAuthToken.setDetails(new
-				// WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(springAuthToken);
 			} catch (ExpiredJwtException e) {
 				setHeaderForEx(response, 0, "Token expired");
 				return;
 			} catch (UnsupportedJwtException e) {
-				setHeaderForEx(response, 0, "Invalid Token");
+				setHeaderForEx(response, 0, "Unsupported Token");
 				return;
 			} catch (MalformedJwtException e) {
-				setHeaderForEx(response, 0, "Invalid Token");
+				setHeaderForEx(response, 0, "Malformed Token");
 				return;
 			} catch (IllegalArgumentException e) {
-				setHeaderForEx(response, 0, "Invalid Token");
+				setHeaderForEx(response, 0, "Illigal Token");
 				return;
 			}
 		}

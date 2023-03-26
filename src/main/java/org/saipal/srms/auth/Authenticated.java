@@ -1,9 +1,13 @@
 package org.saipal.srms.auth;
 
+import java.util.Arrays;
+
 import org.saipal.srms.util.DB;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
+import jakarta.persistence.Tuple;
 
 
 @Component
@@ -26,14 +30,6 @@ public class Authenticated {
 	public void setToken(String token) {
 		getAuthRequest().token = token;
 	}
-	
-	public String getAdminId() {
-		return getAuthRequest().adminId;
-	}
-
-	public void setAdminId(String adminId) {
-		getAuthRequest().adminId = adminId;
-	}
 
 	public String getUserId() {
 		return getAuthRequest().userId;
@@ -43,20 +39,20 @@ public class Authenticated {
 		getAuthRequest().userId = userId;
 	}
 
-	public String getOrgId() {
-		return getAuthRequest().orgId;
+	public String getBankId() {
+		return getAuthRequest().bankId;
 	}
 
-	public void setOrgId(String userId) {
-		getAuthRequest().orgId = userId;
+	public void setBankId(String bankId) {
+		getAuthRequest().bankId = bankId;
 	}
 
-	public void setAppId(String appId) {
-		getAuthRequest().appId = appId;
+	public void setBranchId(String branchId) {
+		getAuthRequest().branchId = branchId;
 	}
 
-	public String getAppId() {
-		return getAuthRequest().appId;
+	public String getBranchId() {
+		return getAuthRequest().branchId;
 	}
 
 	public void setExtraInfo(String key, Object value) {
@@ -73,5 +69,12 @@ public class Authenticated {
 	public String getLang() {
 		Object lang = getAuthRequest().extraInfo.get("lang");
 		return (lang==null)?"Np":lang+"";
+	}
+	
+	public void initSession() {
+		String sql = "select bankid,branchid from users where id=?";
+		Tuple t = db.getSingleResult(sql,Arrays.asList(getUserId()));
+		setBankId(t.get("bankid")+"");
+		setBranchId(t.get("branchid")+"");
 	}
 }

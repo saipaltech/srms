@@ -42,7 +42,8 @@ public class AuthService {
 				data.put("token", token);
 				data.put("name", t.get("name")+"");
 				data.put("username",t.get("username")+"");
-				data.put("orgname", "Truste Technology");
+				data.put("bank", "SYSTEM");
+				data.put("branch", "SYSTEM");
 				return Messenger.getMessenger().setData(data).success();
 			}
 		}

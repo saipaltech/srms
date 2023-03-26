@@ -14,8 +14,8 @@ public class Users {
 	public String name;
 	public String username;
 	public String password;
-	public String orgid;
-	public String sectionid;
+	public String bankid;
+	public String branchid;
 	public String approved;
 	public String disabled;
 
@@ -34,16 +34,16 @@ public class Users {
 	}
 
 	public static List<String> searchables() {
-		return Arrays.asList("name", "username", "orgid");
+		return Arrays.asList("name");
 	}
 
 	public static Map<String, String> rules() {
 		Map<String, String> rules = new HashMap<>();
 		rules.put("username", "required");
 		rules.put("name", "required");
+		rules.put("post", "required");
 		rules.put("password", "required");
-		rules.put("orgid", "required");
-		rules.put("sectionid", "required");
+		rules.put("branchid", "required");
 		rules.put("approved", "required");
 		rules.put("disabled", "required");
 		return rules;

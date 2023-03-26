@@ -12,20 +12,31 @@ import org.saipal.srms.util.Messenger;
 import org.saipal.srms.util.Paginator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UsersService  extends AutoService{
+	
 	@Autowired
 	DB db;
+	
 	@Autowired
 	Authenticated auth;
 	
+	@Autowired
+	PasswordEncoder pe;
+	
 private String table = "users";
 	
-
 	public ResponseEntity<Map<String, Object>> index() {
 		String condition = "";
+		String bankId = auth.getBankId();
+		if (bankId.equals("1")) {
+			condition = " where 1=1 ";
+		} else {
+			condition = " where bankid='"+bankId+"' ";
+		}
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = Users.searchables();
 			condition += "and (";
@@ -34,9 +45,6 @@ private String table = "users";
 			}
 			condition = condition.substring(0, condition.length() - 3);
 			condition += ")";
-		}
-		if (!condition.isBlank()) {
-			condition = " where 1=1 " + condition;
 		}
 		String sort = "";
 		if(!request("sortKey").isBlank()) {
@@ -48,7 +56,7 @@ private String table = "users";
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage"))
 				.setOrderBy(sort)
-				.select("id,name,username,password, orgid, sectionid,approved,disabled")
+				.select("id,name,username, bankid, branchid,approved,disabled")
 				.sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -58,12 +66,15 @@ private String table = "users";
 	}
 
 	public ResponseEntity<Map<String, Object>> store() {
+		
+		String bankId = auth.getBankId();
 		String sql = "";
 		Users model = new Users();
 		model.loadData(document);
-		sql = "INSERT INTO users(id,name, username, password, orgid, sectionid ,disabled, approved) VALUES (?,?,?,?,?,?,?,?)";
+		model.password = pe.encode(model.password);
+		sql = "INSERT INTO users(name, username, password, bankid, branchid ,disabled, approved) VALUES (?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
-				Arrays.asList(model.id, model.name,model.username, model.password, model.orgid, model.sectionid, model.disabled , model.approved));
+				Arrays.asList(model.name,model.username, model.password, bankId, model.branchid, model.disabled , model.approved));
 	
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -75,20 +86,22 @@ private String table = "users";
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
 
-		String sql = "select id,name, username, password, orgid, sectionid ,disabled, approved from "
+		String sql = "select id,name, username, bankid, post	 ,disabled, approved from "
 				+ table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
 	}
 
 	public ResponseEntity<Map<String, Object>> update(String id) {
+		if(id.equals("1")) {
+			return Messenger.getMessenger().setMessage("Cannot Edit System user").error();
+		}
 		DbResponse rowEffect;
 		Users model = new Users();
 		model.loadData(document);
-
-		String sql = "UPDATE name=?, sectionid=? where id=?";
+		String sql = "UPDATE users set name=?, branchid=? where id=?";
 		rowEffect = db.execute(sql,
-				Arrays.asList(model.name, model.sectionid));
+				Arrays.asList(model.name, model.branchid));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 

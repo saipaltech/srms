@@ -1,4 +1,4 @@
-package org.saipal.srms.organizations;
+package org.saipal.srms.banks;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.saipal.srms.parser.RequestParser;
 
-public class Organization {
+public class Bank {
 	
 	public String id;
 	public String name;

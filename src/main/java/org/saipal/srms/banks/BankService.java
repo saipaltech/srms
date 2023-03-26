@@ -1,11 +1,10 @@
-package org.saipal.srms.organizations;
+package org.saipal.srms.banks;
 
 import java.util.Arrays;
 
 import java.util.List;
 import java.util.Map;
 
-import jakarta.*;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.util.DB;
@@ -17,28 +16,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrganizationService extends AutoService{
+public class BankService extends AutoService{
+	
 	@Autowired
 	DB db;
+	
 	@Autowired
 	Authenticated auth;
 	
-private String table = "organizations";
+private String table = "banks";
 	
 
 	public ResponseEntity<Map<String, Object>> index() {
-		String condition = "";
+		String condition = " where id!=1 ";
 		if (!request("searchTerm").isEmpty()) {
-			List<String> searchbles = Organization.searchables();
+			List<String> searchbles = Bank.searchables();
 			condition += "and (";
 			for (String field : searchbles) {
 				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
 			}
 			condition = condition.substring(0, condition.length() - 3);
 			condition += ")";
-		}
-		if (!condition.isBlank()) {
-			condition = " where 1=1 " + condition;
 		}
 		String sort = "";
 		if(!request("sortKey").isBlank()) {
@@ -61,9 +59,9 @@ private String table = "organizations";
 
 	public ResponseEntity<Map<String, Object>> store() {
 		String sql = "";
-		Organization model = new Organization();
+		Bank model = new Bank();
 		model.loadData(document);
-		sql = "INSERT INTO organizations(code,name, disabled, approved) VALUES (?,?,?,?)";
+		sql = "INSERT INTO banks(code,name, disabled, approved) VALUES (?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
 				Arrays.asList(model.code, model.name, model.approved, model.disabled));
 	
@@ -85,10 +83,9 @@ private String table = "organizations";
 
 	public ResponseEntity<Map<String, Object>> update(String id) {
 		DbResponse rowEffect;
-		Organization model = new Organization();
+		Bank model = new Bank();
 		model.loadData(document);
-
-		String sql = "UPDATE code=?,approved=?, disabled=?, name=? where id=?";
+		String sql = "UPDATE "+table+" set code=?,approved=?, disabled=?, name=? where id=?";
 		rowEffect = db.execute(sql,
 				Arrays.asList(model.code, model.approved, model.disabled, model.name));
 		if (rowEffect.getErrorNumber() == 0) {
@@ -110,6 +107,17 @@ private String table = "organizations";
 		} else {
 			return Messenger.getMessenger().error();
 		}
+	}
+
+	public ResponseEntity<List<Map<String, Object>>> getList() {
+		String bankId = auth.getBankId();
+		String sql="";
+		if(bankId.equals("1")) {
+			sql = "select id,name from "+table+" where id !=1";
+		}else {
+			sql = "select id,name from "+table+" where id ='"+bankId+"'";
+		}
+		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
 
 

@@ -19,6 +19,22 @@
       <div class="row g-3">
         <input type="hidden" formControlName="id" />
         <div class="col-6">
+          <label class="form-label req">Bank</label>
+          <div class="input-group has-validation">
+            <select
+              class="form-select form-select-sm"
+              formControlName="bankid"
+              [ngClass]="vs.getControlClass(bankForm.controls['bankid'])"
+            >
+              <option value="">Select Bank..</option>
+              <option *ngFor="let op of banks" value="{{op.id}}">{{op.name}}</option>
+            </select>
+            <div [ngClass]="vs.getMessageClass(bankForm.controls['bankid'])">
+              {{ vs.getMessage(bankForm.controls["bankid"]) }}
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
           <label class="form-label req">Name</label>
           <div class="input-group has-validation">
             <input
@@ -29,21 +45,6 @@
             />
             <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">
               {{ vs.getMessage(bankForm.controls["name"]) }}
-            </div>
-          </div>
-        </div>
-
-        <div class="col-6">
-          <label class="form-label req">Organizaiton</label>
-          <div class="input-group has-validation">
-            <input
-              formControlName="orgid"
-              type="text"
-              class="form-control form-control-sm"
-              [ngClass]="vs.getControlClass(bankForm.controls['orgid'])"
-            />
-            <div [ngClass]="vs.getMessageClass(bankForm.controls['orgid'])">
-              {{ vs.getMessage(bankForm.controls["orgid"]) }}
             </div>
           </div>
         </div>
@@ -90,7 +91,7 @@
           &nbsp; &nbsp;
           <button
             class="btn btn-danger btn-sm"
-            type="reset"
+            type="button"
             (click)="resetForm()"
           >
             Clear

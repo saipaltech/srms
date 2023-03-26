@@ -12,7 +12,7 @@ public class Branch {
 	
 	public String id;
 	public String name;
-	public String orgid;
+	public String bankid;
 	public String approved;
 	public String disabled;
 
@@ -31,13 +31,13 @@ public class Branch {
 	}
 
 	public static List<String> searchables() {
-		return Arrays.asList("name", "username", "orgid");
+		return Arrays.asList("name");
 	}
 
 	public static Map<String, String> rules() {
 		Map<String, String> rules = new HashMap<>();
 		rules.put("name", "required");
-		rules.put("orgid", "required");
+		rules.put("bankid", "required");
 		rules.put("approved", "required");
 		rules.put("disabled", "required");
 		return rules;

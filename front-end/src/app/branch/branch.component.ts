@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {BranchService} from './branch.service'
 import { ValidationService } from '../validation.service';
+import { BankService } from '../bank/bank.service';
 
 @Component({
   selector: 'app-branch',
@@ -29,11 +30,12 @@ export class BranchComponent {
   
   bankForm!: FormGroup;
   formLayout: any;
+  banks:any;
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: BranchService){
+  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: BranchService,private bs:BankService){
     this.formLayout = {
-      id:[],
-      orgid: ['1',Validators.required],
+      id:[''],
+      bankid: ['',Validators.required],
       name: ['',Validators.required],
       disabled: ['0',Validators.required],
       approved: ['1',Validators.required],
@@ -49,6 +51,15 @@ export class BranchComponent {
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
     this.getList();
+    this.getBanks();
+  }
+
+  getBanks(){
+    this.bs.getlist().subscribe({next:(d:any)=>{
+      this.banks = d;
+    },error:err=>{
+
+    }});
   }
 
   getList(pageno?: number | undefined) {
