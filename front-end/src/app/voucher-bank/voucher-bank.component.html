@@ -16,6 +16,8 @@
       [formGroup]="voucherBankForm"
       (ngSubmit)="voucherBankFormSubmit()"
     >
+    <input type="hidden" formControlName="llgcode">
+    <input type="hidden" formControlName="revenuecode">
       <div class="row g-3">
         <div class="col-12">
           <label for="username" class="form-label req">जम्मा गरेको मिति</label>
@@ -41,16 +43,16 @@
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">पालिका</label>
-          <ng-select [(ngModel)]="selectedCar" formControlName="palika">
-            <ng-option *ngFor="let car of cars" [value]="car.id">{{
-              car.name
+          <ng-select [(ngModel)]="selectedCar" formControlName="llgname">
+            <ng-option *ngFor="let l of llgs" [value]="l.code">{{
+              l.name
             }}</ng-option>
           </ng-select>
         </div>
 
         <div class="col-sm-6">
           <label for="lastName" class="form-label req">संकलन केन्द्र</label>
-          <ng-select [(ngModel)]="selectedCars" formControlName="kendra">
+          <ng-select [(ngModel)]="selectedCars" formControlName="costcentername">
             <ng-option *ngFor="let cars of car" [value]="cars.id">{{
               cars.name
             }}</ng-option>
@@ -72,7 +74,7 @@
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
-          <ng-select [(ngModel)]="selectedCar" formControlName="rajsahowsirsak">
+          <ng-select [(ngModel)]="selectedCar" formControlName="revenuetitle">
             <ng-option *ngFor="let car of cars" [value]="car.id">{{
               car.name
             }}</ng-option>
@@ -94,7 +96,7 @@
           <label for="username" class="form-label">प्रयोजन</label>
           <div class="input-group has-validation">
             <input
-              formControlName="usecase"
+              formControlName="purpose"
               type="text"
               class="form-control form-control-sm"
             />
@@ -111,7 +113,7 @@
           <label for="username" class="form-label">पान नंबर</label>
           <div class="input-group has-validation">
             <input
-              formControlName="panno"
+              formControlName="taxpayerpan"
               type="text"
               class="form-control form-control-sm"
             />
@@ -122,7 +124,7 @@
           <label for="username" class="form-label req">नाम</label>
           <div class="input-group has-validation">
             <input
-              formControlName="kardataname"
+              formControlName="taxpayername"
               type="text"
               class="form-control form-control-sm"
             />
@@ -139,7 +141,7 @@
           <label for="username" class="form-label req">नाम</label>
           <div class="input-group has-validation">
             <input
-              formControlName="jariname"
+              formControlName="depositedby"
               type="text"
               class="form-control form-control-sm"
             />
@@ -150,7 +152,7 @@
           <label for="username" class="form-label req">सम्पर्क नंबर</label>
           <div class="input-group has-validation">
             <input
-              formControlName="jarinumber"
+              formControlName="depcontact"
               type="text"
               class="form-control form-control-sm"
             />

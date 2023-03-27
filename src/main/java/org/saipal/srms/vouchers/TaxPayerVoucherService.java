@@ -1,4 +1,4 @@
-package org.saipal.srms.banks;
+package org.saipal.srms.vouchers;
 
 import java.util.Arrays;
 
@@ -20,7 +20,7 @@ import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
 
 @Component
-public class BankService extends AutoService {
+public class TaxPayerVoucherService extends AutoService {
 
 	@Autowired
 	DB db;
@@ -31,15 +31,15 @@ public class BankService extends AutoService {
 	@Autowired
 	ApiManager api;
 
-	private String table = "banks";
+	private String table = "taxvouchers";
 
 	public ResponseEntity<Map<String, Object>> index() {
-		if (!auth.hasPermission("*")) {
+		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String condition = " where id!=1 ";
 		if (!request("searchTerm").isEmpty()) {
-			List<String> searchbles = Bank.searchables();
+			List<String> searchbles = TaxPayerVoucher.searchables();
 			condition += "and (";
 			for (String field : searchbles) {
 				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
@@ -56,7 +56,7 @@ public class BankService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("id,code,name,approved,disabled").sqlBody("from " + table + condition).paginate();
+				.select("voucherno,taxpayername,llgname,amount,revenuetitle").sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -66,23 +66,21 @@ public class BankService extends AutoService {
 
 	@Transactional
 	public ResponseEntity<Map<String, Object>> store() {
-		if (!auth.hasPermission("*")) {
+		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String sql = "";
-		Bank model = new Bank();
+		TaxPayerVoucher model = new TaxPayerVoucher();
 		model.loadData(document);
-		String usq = "select count(code) from banks where code=?";
-		Tuple res = db.getSingleResult(usq, Arrays.asList(model.code));
+		String usq = "select count(voucherno) from taxvouchers where voucherno=?";
+		Tuple res = db.getSingleResult(usq, Arrays.asList(model.voucherno));
 		if ((!(res.get(0) + "").equals("0"))) {
-			return Messenger.getMessenger().setMessage("Bank already exists.").error();
+			return Messenger.getMessenger().setMessage("This voucher No is already used.").error();
 		}
 		sql = "INSERT INTO banks(code,name, disabled, approved) VALUES (?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.code, model.name, model.approved, model.disabled));
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.voucherno, model.llgname, model.llgcode, model.costcentername));
 
-		if (rowEffect.getErrorNumber() == 0) {
-			sql = "INSERT INTO branches(name,bankid, disabled, approved,ishead) VALUES (?,(select top 1 id from banks where code =?),?,?,1)";
-			rowEffect = db.execute(sql, Arrays.asList("Head Branch", model.code, 0, 1));
+		if (rowEffect.getErrorNumber() == 0) {			
 			return Messenger.getMessenger().success();
 		} else {
 			return Messenger.getMessenger().error();
@@ -97,14 +95,14 @@ public class BankService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> update(String id) {
-		if (!auth.hasPermission("*")) {
+		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		DbResponse rowEffect;
-		Bank model = new Bank();
+		TaxPayerVoucher model = new TaxPayerVoucher();
 		model.loadData(document);
 		String sql = "UPDATE " + table + " set approved=?, disabled=? where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.code, model.approved, model.disabled, model.name));
+		rowEffect = db.execute(sql, Arrays.asList(model.voucherno, model.llgcode, model.llgname, model.costcentercode));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 		} else {
@@ -114,7 +112,7 @@ public class BankService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> destroy(String id) {
-		if (!auth.hasPermission("*")) {
+		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String sql = "delete from " + table + " where id  = ?";
@@ -140,6 +138,41 @@ public class BankService extends AutoService {
 
 	public ResponseEntity<String> getBanksFromSutra() {
 		return ResponseEntity.ok(api.getBanks().toString());
+	}
+
+	public ResponseEntity<String> getLocalLevels() {
+		String bankCode = auth.getBankCode();
+		return ResponseEntity.ok(api.localLevels(bankCode).toString());
+	}
+
+	public ResponseEntity<String> getCostCentres() {
+		String llgCode = request("llgcode");
+		return ResponseEntity.ok(api.costCentres(llgCode).toString());
+	}
+
+	public ResponseEntity<String> getBankAccounts() {
+		String bankCode = auth.getBankCode();
+		String llgCode = request("llgcode");
+		if(llgCode.isBlank()) {
+			return ResponseEntity.ok("{status:0,message:,\"Local Level Code is required\"}");
+		}
+		return ResponseEntity.ok(api.bankAccounts(bankCode,llgCode).toString());
+	}
+
+	public ResponseEntity<String> getRevenue() {
+		String llgCode = request("llgcode");
+		if(llgCode.isBlank()) {
+			return ResponseEntity.ok("{status:0,message:,\"Local Level Code is required\"}");
+		}
+		return ResponseEntity.ok(api.revenueCodes(llgCode).toString());
+	}
+	
+	public ResponseEntity<String> getVoucherDetails() {
+		String voucherno = request("voucherno");
+		if(voucherno.isBlank()) {
+			return ResponseEntity.ok("{status:0,message:,\"Local Level Code is required\"}");
+		}
+		return ResponseEntity.ok(api.getVoucherDetails(voucherno).toString());
 	}
 
 }
