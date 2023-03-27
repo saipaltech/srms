@@ -30,6 +30,7 @@ export class BankComponent {
   
   bankForm!: FormGroup;
   formLayout: any;
+  banks:any;
 
   constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: BankService){
     this.formLayout = {
@@ -50,8 +51,15 @@ export class BankComponent {
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
     this.getList();
+    this.getBanks();
   }
+  getBanks(){
+    this.RS.getBankFromSutra().subscribe({next:(d)=>{
+      this.banks = d;
+    },error:err=>{
 
+    }})
+  }
   getList(pageno?: number | undefined) {
     const page = pageno || 1;
     this.RS.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(

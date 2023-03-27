@@ -69,4 +69,9 @@ public class BankController {
 	public ResponseEntity<List<Map<String, Object>>> getList() {
 		return objService.getList();
 	}
+	
+	@GetMapping("banks-from-sutra")
+	public ResponseEntity<String> getBanksFromSutra() {
+		return objService.getBanksFromSutra();
+	}
 }

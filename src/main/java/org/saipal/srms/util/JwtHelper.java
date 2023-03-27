@@ -25,4 +25,15 @@ public class JwtHelper {
 		return Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(jwtSecretKey.getBytes())).build()
 				.parseClaimsJws(token).getBody().getSubject();
 	}
+	
+	public boolean isExpired(String token) {
+		Date expTime = Jwts.parserBuilder().build().parseClaimsJws(token).getBody().getExpiration();
+		Date curDate = new Date(System.currentTimeMillis()-(1000*20));
+		if(expTime.after(curDate)) {
+			return false;
+		}
+		return true;
+	}
+	
+	
 }

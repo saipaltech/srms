@@ -6,6 +6,9 @@ import { ApiService } from '../api.service';
   providedIn: 'root'
 })
 export class BankService {
+  getBankFromSutra() {
+    return this.api.get(this.url+'/banks-from-sutra');
+  }
   url="bank";
   create(data: any) {
     // console.log(data);

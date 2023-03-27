@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
+import org.saipal.srms.util.ApiManager;
 import org.saipal.srms.util.DB;
 import org.saipal.srms.util.DbResponse;
 import org.saipal.srms.util.Messenger;
@@ -23,6 +24,9 @@ public class BankService extends AutoService{
 	
 	@Autowired
 	Authenticated auth;
+	
+	@Autowired
+	ApiManager api;
 	
 private String table = "banks";
 	
@@ -118,6 +122,10 @@ private String table = "banks";
 			sql = "select id,name from "+table+" where id ='"+bankId+"'";
 		}
 		return ResponseEntity.ok(db.getResultListMap(sql));
+	}
+
+	public ResponseEntity<String> getBanksFromSutra() {
+		return ResponseEntity.ok(api.getBanks().toString());
 	}
 
 

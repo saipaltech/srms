@@ -56,7 +56,7 @@ private String table = "users";
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage"))
 				.setOrderBy(sort)
-				.select("id,name,username, bankid, branchid,approved,disabled")
+				.select("id,name,username,post, bankid, branchid,approved,disabled")
 				.sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -66,15 +66,17 @@ private String table = "users";
 	}
 
 	public ResponseEntity<Map<String, Object>> store() {
-		
 		String bankId = auth.getBankId();
 		String sql = "";
 		Users model = new Users();
 		model.loadData(document);
 		model.password = pe.encode(model.password);
-		sql = "INSERT INTO users(name, username, password, bankid, branchid ,disabled, approved) VALUES (?,?,?,?,?,?,?)";
+		if(bankId.equals("1")) {
+			bankId = db.getSingleResult("select bankid from branches where id=?",Arrays.asList(model.branchid)).get(0)+"";
+		}
+		sql = "INSERT INTO users(name, post,username, password, bankid, branchid ,disabled, approved) VALUES (?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
-				Arrays.asList(model.name,model.username, model.password, bankId, model.branchid, model.disabled , model.approved));
+				Arrays.asList(model.name,model.post,model.username, model.password, bankId, model.branchid, model.disabled , model.approved));
 	
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();

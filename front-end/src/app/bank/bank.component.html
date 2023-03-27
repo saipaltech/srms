@@ -14,7 +14,18 @@
       <form class="needs-validation" [formGroup]= "bankForm" (ngSubmit)= "bankFormSubmit()">
         <div class="row g-3">
             <input type="hidden" formControlName="id">
-          <div class="col-6">
+            <input type="hidden" formControlName="code">
+            <input type="hidden" formControlName="name">
+            <div class="col-sm-6">
+              <label class="form-label req">Bank</label>
+              <div class="input-group has-validation">
+                <select class="form-select form-select-sm">
+                    <option value="">Select Bank</option>
+                    <option *ngFor="let b of banks" value="{{b.code}}">{{b.name}}</option>
+                  </select>
+              </div>
+            </div>
+          <!--<div class="col-6">
               <label class="form-label req">Code</label>
               <div class="input-group has-validation">
                 <input formControlName="code"
@@ -34,7 +45,7 @@
                     [ngClass]="vs.getControlClass(bankForm.controls['name'])">
                     <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">{{vs.getMessage(bankForm.controls['name'])}}</div>
                 </div>
-              </div>
+              </div>-->
   
 
   

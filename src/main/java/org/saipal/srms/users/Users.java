@@ -12,6 +12,7 @@ public class Users {
 	
 	public String id;
 	public String name;
+	public String post;
 	public String username;
 	public String password;
 	public String bankid;
