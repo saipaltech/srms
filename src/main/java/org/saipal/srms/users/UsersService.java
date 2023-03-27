@@ -56,8 +56,8 @@ private String table = "users";
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage"))
 				.setOrderBy(sort)
-				.select("id,name,username,post, bankid, branchid,approved,disabled")
-				.sqlBody("from " + table + condition).paginate();
+				.select(" u.id,u.name,u.username,u.post, branches.name as bname, u.approved,u.disabled")
+				.sqlBody("from " + table + " as u join branches on u.branchid = branches.id " +condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
