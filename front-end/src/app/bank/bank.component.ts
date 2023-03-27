@@ -60,6 +60,14 @@ export class BankComponent {
 
     }})
   }
+  setName(index:any){
+    if(index){
+      this.bankForm.patchValue({"name":this.banks[index].name,"code":this.banks[index].code});
+    }else{
+      this.bankForm.patchValue({"name":'',"code":''});
+    }
+    
+  }
   getList(pageno?: number | undefined) {
     const page = pageno || 1;
     this.RS.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(

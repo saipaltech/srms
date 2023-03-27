@@ -88,7 +88,7 @@ private String table = "users";
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
 
-		String sql = "select id,name, username, bankid, post	 ,disabled, approved from "
+		String sql = "select id,name, username, post,branchid,disabled, approved from "
 				+ table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
@@ -101,9 +101,9 @@ private String table = "users";
 		DbResponse rowEffect;
 		Users model = new Users();
 		model.loadData(document);
-		String sql = "UPDATE users set name=?, branchid=? where id=?";
+		String sql = "UPDATE users set name=?, branchid=?,post=?,disabled=?, approved=? where id=?";
 		rowEffect = db.execute(sql,
-				Arrays.asList(model.name, model.branchid));
+				Arrays.asList(model.name, model.branchid,model.post,model.disabled,model.approved,model.id));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 
