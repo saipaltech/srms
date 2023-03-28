@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.util.ApiManager;
@@ -142,11 +145,47 @@ public class TaxPayerVoucherService extends AutoService {
 
 	public ResponseEntity<String> getLocalLevels() {
 		String bankCode = auth.getBankCode();
+		//check if data is cached
+		List<Tuple> d = db.getResultList("select code,name from cllg where bankid="+auth.getBankId());
+		if(d.size()>0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for(Tuple t:d) {
+					dt.put(Map.of("code",t.get("code"),"name",t.get("name")));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+		}
 		return ResponseEntity.ok(api.localLevels(bankCode).toString());
 	}
 
 	public ResponseEntity<String> getCostCentres() {
 		String llgCode = request("llgcode");
+		//check if data is cached
+		List<Tuple> d = db.getResultList("select code,name from ccostcnt where bankid=? and llgcode=?",Arrays.asList(auth.getBankId(),llgCode));
+		if(d.size()>0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for(Tuple t:d) {
+					dt.put(Map.of("code",t.get("code"),"name",t.get("name")));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+		}
 		return ResponseEntity.ok(api.costCentres(llgCode).toString());
 	}
 
@@ -154,25 +193,79 @@ public class TaxPayerVoucherService extends AutoService {
 		String bankCode = auth.getBankCode();
 		String llgCode = request("llgcode");
 		if(llgCode.isBlank()) {
-			return ResponseEntity.ok("{status:0,message:,\"Local Level Code is required\"}");
+			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Code is required\"}");
+		}
+		//check if data is cached
+		List<Tuple> d = db.getResultList("select acno,name from cbankac where bankid=? and llgcode=?",Arrays.asList(auth.getBankId(),llgCode));
+		if(d.size()>0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for(Tuple t:d) {
+					dt.put(Map.of("acno",t.get("acno"),"name",t.get("name")));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
 		}
 		return ResponseEntity.ok(api.bankAccounts(bankCode,llgCode).toString());
 	}
 
 	public ResponseEntity<String> getRevenue() {
-		String llgCode = request("llgcode");
-		if(llgCode.isBlank()) {
-			return ResponseEntity.ok("{status:0,message:,\"Local Level Code is required\"}");
+		//check if data is cached
+		List<Tuple> d = db.getResultList("select code,name from crevenue where 1=1");
+		if(d.size()>0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for(Tuple t:d) {
+					dt.put(Map.of("code",t.get("code"),"name",t.get("name")));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
 		}
-		return ResponseEntity.ok(api.revenueCodes(llgCode).toString());
+		return ResponseEntity.ok(api.revenueCodes().toString());
 	}
 	
 	public ResponseEntity<String> getVoucherDetails() {
 		String voucherno = request("voucherno");
 		if(voucherno.isBlank()) {
-			return ResponseEntity.ok("{status:0,message:,\"Local Level Code is required\"}");
+			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Code is required\"}");
 		}
 		return ResponseEntity.ok(api.getVoucherDetails(voucherno).toString());
+	}
+
+	public ResponseEntity<String> getAllDetails() {
+		String llgCode = request("llgcode");
+		if(llgCode.isBlank()) {
+			return ResponseEntity.ok("{status:0,message:\"Local Level Code is required\"}");
+		}
+		try {
+			JSONObject costcnt = new JSONObject(getCostCentres().getBody());
+			JSONObject bankacs = new JSONObject(getBankAccounts().getBody());
+			JSONObject j = new JSONObject();
+			j.put("status",1);
+			j.put("message", "success");
+			j.put("costcentres",costcnt.getJSONArray("data"));
+			j.put("bankacs",bankacs.getJSONArray("data"));
+			return ResponseEntity.ok(j.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"Unable to fetch data.\"}");
+		
 	}
 
 }

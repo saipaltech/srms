@@ -16,8 +16,11 @@ export class VoucherBankComponent implements OnInit {
   voucherBankForm!: FormGroup;
   formLayout: any;
   llgs:any;
+  ccs:any;
+  acs:any;
+  revs:any;
 
-constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private vs:VoucherService){
+constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherService){
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id:[],
@@ -36,18 +39,35 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       revenuetitle: ['',Validators.required],
       purpose: [''],
       amount:['',Validators.required]
-      
     }
     
     this.voucherBankForm =fb.group(this.formLayout)
 }
 
 ngOnInit(): void {
-    this.vs.getLocalLevels().subscribe({next:(dt)=>{
+    this.bvs.getLocalLevels().subscribe({next:(dt)=>{
       this.llgs = dt.data;
     },error:err=>{
 
     }});
+
+    this.bvs.getRevenue().subscribe({next:(dt)=>{
+      this.revs = dt.data;
+    },error:err=>{
+
+    }});
+}
+
+getPalikaDetails(){
+  const llgCode = this.voucherBankForm.value['llgcode'];
+  this.bvs.getPlaikaDetails(llgCode).subscribe({
+    next:(d)=>{
+      this.acs = d.bankacs;
+      this.ccs = d.costcentres;
+    },error:err=>{
+      console.log(err);
+    }
+  });
 }
 
 voucherBankFormSubmit(){

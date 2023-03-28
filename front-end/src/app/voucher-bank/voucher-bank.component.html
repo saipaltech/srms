@@ -16,7 +16,7 @@
       [formGroup]="voucherBankForm"
       (ngSubmit)="voucherBankFormSubmit()"
     >
-    <input type="hidden" formControlName="llgcode">
+    <input type="hidden" formControlName="llgname">
     <input type="hidden" formControlName="revenuecode">
       <div class="row g-3">
         <div class="col-12">
@@ -43,7 +43,7 @@
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">पालिका</label>
-          <ng-select [(ngModel)]="selectedCar" formControlName="llgname">
+          <ng-select formControlName="llgcode" (change)="getPalikaDetails()">
             <ng-option *ngFor="let l of llgs" [value]="l.code">{{
               l.name
             }}</ng-option>
@@ -52,9 +52,9 @@
 
         <div class="col-sm-6">
           <label for="lastName" class="form-label req">संकलन केन्द्र</label>
-          <ng-select [(ngModel)]="selectedCars" formControlName="costcentername">
-            <ng-option *ngFor="let cars of car" [value]="cars.id">{{
-              cars.name
+          <ng-select formControlName="costcentername">
+            <ng-option *ngFor="let cc of ccs" [value]="cc.name">{{
+              cc.name
             }}</ng-option>
           </ng-select>
         </div>
@@ -65,19 +65,15 @@
             class="form-select form-select-sm"
             formControlName="accountno"
           >
-            <option [selected] disabled>Select Account Number</option>
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
+            <option value="">Select Account Number</option>
+            <option *ngFor="let ac of acs" value="ac.acno">{{ac.acno}}[{{ac.name}}]</option>
           </select>
         </div>
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
-          <ng-select [(ngModel)]="selectedCar" formControlName="revenuetitle">
-            <ng-option *ngFor="let car of cars" [value]="car.id">{{
-              car.name
-            }}</ng-option>
+          <ng-select formControlName="revenuetitle">
+            <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
           </ng-select>
         </div>
 
