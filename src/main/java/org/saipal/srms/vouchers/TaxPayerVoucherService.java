@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.util.ApiManager;
@@ -56,7 +59,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("voucherno,taxpayername,llgname,amount,revenuetitle").sqlBody("from " + table + condition).paginate();
+				.select("date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount").sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -75,10 +78,10 @@ public class TaxPayerVoucherService extends AutoService {
 		String usq = "select count(voucherno) from taxvouchers where voucherno=?";
 		Tuple res = db.getSingleResult(usq, Arrays.asList(model.voucherno));
 		if ((!(res.get(0) + "").equals("0"))) {
-			return Messenger.getMessenger().setMessage("This voucher No is already used.").error();
+			return Messenger.getMessenger().setMessage("This voucher No is already use.").error();
 		}
-		sql = "INSERT INTO banks(code,name, disabled, approved) VALUES (?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.voucherno, model.llgname, model.llgcode, model.costcentername));
+		sql = "INSERT INTO banks(date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.date,model.voucherno,model.taxpayername,model.taxpayerpan,model.depositedby,model.depcontact,model.llgcode,model.llgname,model.costcentercode,model.costcentername,model.accountno,model.revenuecode,model.revenuetitle,model.purpose,model.amount));
 
 		if (rowEffect.getErrorNumber() == 0) {			
 			return Messenger.getMessenger().success();
@@ -89,7 +92,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
 
-		String sql = "select id, code, name ,disabled,approved from " + table + " where id=?";
+		String sql = "select date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount from " + table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
 	}
@@ -101,8 +104,8 @@ public class TaxPayerVoucherService extends AutoService {
 		DbResponse rowEffect;
 		TaxPayerVoucher model = new TaxPayerVoucher();
 		model.loadData(document);
-		String sql = "UPDATE " + table + " set approved=?, disabled=? where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.voucherno, model.llgcode, model.llgname, model.costcentercode));
+		String sql = "UPDATE " + table + " set date=?,voucherno=?,taxpayername=?,taxpayerpan=?,depositedby=?,depcontact=?,llgcode=?,llgname=?,costcentercode=?,costcentername=?,accountno=?,revenuecode=?,revenuetitle=?,purpose=?,amount=? where id=?";
+		rowEffect = db.execute(sql, Arrays.asList(model.date,model.voucherno,model.taxpayername,model.taxpayerpan,model.depositedby,model.depcontact,model.llgcode,model.llgname,model.costcentercode,model.costcentername,model.accountno,model.revenuecode,model.revenuetitle,model.purpose,model.amount));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 		} else {
@@ -142,11 +145,47 @@ public class TaxPayerVoucherService extends AutoService {
 
 	public ResponseEntity<String> getLocalLevels() {
 		String bankCode = auth.getBankCode();
+		//check if data is cached
+		List<Tuple> d = db.getResultList("select code,name from cllg where bankid="+auth.getBankId());
+		if(d.size()>0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for(Tuple t:d) {
+					dt.put(Map.of("code",t.get("code"),"name",t.get("name")));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+		}
 		return ResponseEntity.ok(api.localLevels(bankCode).toString());
 	}
 
 	public ResponseEntity<String> getCostCentres() {
 		String llgCode = request("llgcode");
+		//check if data is cached
+		List<Tuple> d = db.getResultList("select code,name from ccostcnt where bankid=? and llgcode=?",Arrays.asList(auth.getBankId(),llgCode));
+		if(d.size()>0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for(Tuple t:d) {
+					dt.put(Map.of("code",t.get("code"),"name",t.get("name")));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+		}
 		return ResponseEntity.ok(api.costCentres(llgCode).toString());
 	}
 
@@ -154,25 +193,79 @@ public class TaxPayerVoucherService extends AutoService {
 		String bankCode = auth.getBankCode();
 		String llgCode = request("llgcode");
 		if(llgCode.isBlank()) {
-			return ResponseEntity.ok("{status:0,message:,\"Local Level Code is required\"}");
+			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Code is required\"}");
+		}
+		//check if data is cached
+		List<Tuple> d = db.getResultList("select acno,name from cbankac where bankid=? and llgcode=?",Arrays.asList(auth.getBankId(),llgCode));
+		if(d.size()>0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for(Tuple t:d) {
+					dt.put(Map.of("acno",t.get("acno"),"name",t.get("name")));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
 		}
 		return ResponseEntity.ok(api.bankAccounts(bankCode,llgCode).toString());
 	}
 
 	public ResponseEntity<String> getRevenue() {
-		String llgCode = request("llgcode");
-		if(llgCode.isBlank()) {
-			return ResponseEntity.ok("{status:0,message:,\"Local Level Code is required\"}");
+		//check if data is cached
+		List<Tuple> d = db.getResultList("select code,name from crevenue where 1=1");
+		if(d.size()>0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for(Tuple t:d) {
+					dt.put(Map.of("code",t.get("code"),"name",t.get("name")));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
 		}
-		return ResponseEntity.ok(api.revenueCodes(llgCode).toString());
+		return ResponseEntity.ok(api.revenueCodes().toString());
 	}
 	
 	public ResponseEntity<String> getVoucherDetails() {
 		String voucherno = request("voucherno");
 		if(voucherno.isBlank()) {
-			return ResponseEntity.ok("{status:0,message:,\"Local Level Code is required\"}");
+			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Code is required\"}");
 		}
 		return ResponseEntity.ok(api.getVoucherDetails(voucherno).toString());
+	}
+
+	public ResponseEntity<String> getAllDetails() {
+		String llgCode = request("llgcode");
+		if(llgCode.isBlank()) {
+			return ResponseEntity.ok("{status:0,message:\"Local Level Code is required\"}");
+		}
+		try {
+			JSONObject costcnt = new JSONObject(getCostCentres().getBody());
+			JSONObject bankacs = new JSONObject(getBankAccounts().getBody());
+			JSONObject j = new JSONObject();
+			j.put("status",1);
+			j.put("message", "success");
+			j.put("costcentres",costcnt.getJSONArray("data"));
+			j.put("bankacs",bankacs.getJSONArray("data"));
+			return ResponseEntity.ok(j.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"Unable to fetch data.\"}");
+		
 	}
 
 }

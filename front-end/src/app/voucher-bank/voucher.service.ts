@@ -6,7 +6,13 @@ import { ApiService } from '../api.service';
   providedIn: 'root'
 })
 export class VoucherService {
-  url="taxpayer-voucher";
+  getRevenue() {
+    return this.http.get(this.url+"/get-revenue-list");
+  }
+  getPlaikaDetails(llgCode: any) {
+    return this.http.get(this.url+"/llg-details?llgcode="+llgCode);
+  }
+  url="taxpayer-voucher"; 
   create(data: any) {
     // console.log(data);
     return this.http.post(this.url, data);
