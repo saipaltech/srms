@@ -28,7 +28,8 @@
               type="text"
               class="form-control form-control-sm"
               placeholder="{{ myDate | date : 'shortDate' }}"
-            />
+              [ngClass]="v.getControlClass(voucherBankForm.controls['date'])">
+              <div [ngClass]="v.getMessageClass(voucherBankForm.controls['date'])">{{v.getMessage(voucherBankForm.controls['date'])}}</div>
           </div>
         </div>
 
@@ -38,25 +39,30 @@
             formControlName="voucherno"
             type="text"
             class="form-control form-control-sm"
-          />
+            [ngClass]="v.getControlClass(voucherBankForm.controls['voucherno'])">
+            <div [ngClass]="v.getMessageClass(voucherBankForm.controls['voucherno'])">{{v.getMessage(voucherBankForm.controls['voucherno'])}}</div>
         </div>
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">पालिका</label>
-          <ng-select [(ngModel)]="selectedCar" formControlName="llgname">
+          <ng-select [(ngModel)]="selectedCar" formControlName="llgname"
+          [ngClass]="v.getControlClass(voucherBankForm.controls['llgname'])">
             <ng-option *ngFor="let l of llgs" [value]="l.code">{{
               l.name
             }}</ng-option>
           </ng-select>
+          <div [ngClass]="v.getMessageClass(voucherBankForm.controls['llgname'])">{{v.getMessage(voucherBankForm.controls['llgname'])}}</div>
         </div>
 
         <div class="col-sm-6">
           <label for="lastName" class="form-label req">संकलन केन्द्र</label>
-          <ng-select [(ngModel)]="selectedCars" formControlName="costcentername">
+          <ng-select [(ngModel)]="selectedCars" formControlName="costcentername"
+          [ngClass]="v.getControlClass(voucherBankForm.controls['costcentername'])">
             <ng-option *ngFor="let cars of car" [value]="cars.id">{{
               cars.name
             }}</ng-option>
           </ng-select>
+          <div [ngClass]="v.getMessageClass(voucherBankForm.controls['costcentername'])">{{v.getMessage(voucherBankForm.controls['costcentername'])}}</div>
         </div>
 
         <div class="col-12">
@@ -64,21 +70,25 @@
           <select
             class="form-select form-select-sm"
             formControlName="accountno"
+            [ngClass]="v.getControlClass(voucherBankForm.controls['accountno'])"
           >
             <option [selected] disabled>Select Account Number</option>
             <option value="1">One</option>
             <option value="2">Two</option>
             <option value="3">Three</option>
           </select>
+          <div [ngClass]="v.getMessageClass(voucherBankForm.controls['accountno'])">{{v.getMessage(voucherBankForm.controls['accountno'])}}</div>
         </div>
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
-          <ng-select [(ngModel)]="selectedCar" formControlName="revenuetitle">
+          <ng-select [(ngModel)]="selectedCar" formControlName="revenuetitle"
+          [ngClass]="v.getControlClass(voucherBankForm.controls['revenuetitle'])">
             <ng-option *ngFor="let car of cars" [value]="car.id">{{
               car.name
             }}</ng-option>
           </ng-select>
+          <div [ngClass]="v.getMessageClass(voucherBankForm.controls['revenuetitle'])">{{v.getMessage(voucherBankForm.controls['revenuetitle'])}}</div>
         </div>
 
         <div class="col-6">
@@ -88,7 +98,9 @@
               formControlName="amount"
               type="text"
               class="form-control form-control-sm"
+              [ngClass]="v.getControlClass(voucherBankForm.controls['amount'])"
             />
+            <div [ngClass]="v.getMessageClass(voucherBankForm.controls['amount'])">{{v.getMessage(voucherBankForm.controls['amount'])}}</div>
           </div>
         </div>
 
@@ -99,7 +111,8 @@
               formControlName="purpose"
               type="text"
               class="form-control form-control-sm"
-            />
+              [ngClass]="v.getControlClass(voucherBankForm.controls['purpose'])">
+              <div [ngClass]="v.getMessageClass(voucherBankForm.controls['purpose'])">{{v.getMessage(voucherBankForm.controls['purpose'])}}</div>
           </div>
         </div>
 
@@ -116,7 +129,8 @@
               formControlName="taxpayerpan"
               type="text"
               class="form-control form-control-sm"
-            />
+              [ngClass]="v.getControlClass(voucherBankForm.controls['taxpayerpan'])">
+              <div [ngClass]="v.getMessageClass(voucherBankForm.controls['taxpayerpan'])">{{v.getMessage(voucherBankForm.controls['taxpayerpan'])}}</div>
           </div>
         </div>
 
@@ -127,7 +141,8 @@
               formControlName="taxpayername"
               type="text"
               class="form-control form-control-sm"
-            />
+              [ngClass]="v.getControlClass(voucherBankForm.controls['taxpayername'])">
+              <div [ngClass]="v.getMessageClass(voucherBankForm.controls['taxpayername'])">{{v.getMessage(voucherBankForm.controls['taxpayername'])}}</div>
           </div>
         </div>
 
@@ -144,7 +159,8 @@
               formControlName="depositedby"
               type="text"
               class="form-control form-control-sm"
-            />
+              [ngClass]="v.getControlClass(voucherBankForm.controls['depositedby'])">
+              <div [ngClass]="v.getMessageClass(voucherBankForm.controls['depositedby'])">{{v.getMessage(voucherBankForm.controls['depositedby'])}}</div>
           </div>
         </div>
 
@@ -155,7 +171,8 @@
               formControlName="depcontact"
               type="text"
               class="form-control form-control-sm"
-            />
+              [ngClass]="v.getControlClass(voucherBankForm.controls['depcontact'])">
+              <div [ngClass]="v.getMessageClass(voucherBankForm.controls['depcontact'])">{{v.getMessage(voucherBankForm.controls['depcontact'])}}</div>
           </div>
         </div>
       </div>

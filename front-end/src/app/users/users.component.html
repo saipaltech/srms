@@ -161,8 +161,10 @@
                 <td><a (click)="getUpdateItem(item.id)" href="javascript:void(0)"><i class="bi bi-pencil-square text-success"></i></a> &nbsp;&nbsp;&nbsp;
                   <a (click)="deleteItem(item.id)"><i class="bi bi-trash3 text-danger" style="cursor:pointer;"></i>
                   </a>
+                  <app-user-limit [userid]=item.id></app-user-limit>
+                  <app-user-change-password [userid]=item.id></app-user-change-password>
                   </td>
-  
+                  
               </tr>
   
             </tbody>

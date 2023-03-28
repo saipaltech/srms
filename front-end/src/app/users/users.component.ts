@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, TemplateRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {UsersService} from './users.service'
 import { ValidationService } from '../validation.service';
 import { BranchService } from '../branch/branch.service';
+
+
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-users',
@@ -188,4 +191,82 @@ deleteItem(id: any) {
 }
 
 
+}
+
+
+
+@Component({
+  selector: 'app-user-limit',
+  templateUrl: './user-limit.component.html'
+})
+export class UserLimitComponent {
+  @Input() userid?: string;
+  modalRef?: BsModalRef;
+
+  bankUserForm:any;
+  formLayout: any;
+  vs = ValidationService;
+
+  
+  
+  constructor(private modalService: BsModalService, private fb: FormBuilder, private RS:UsersService, private toastr: ToastrService) {
+    this.formLayout = {
+      userid:[this.userid],
+      limit: ['', Validators.required]
+      
+    }
+    this.bankUserForm =fb.group(this.formLayout)
+  }
+ 
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template);
+  }
+
+  resetForm(){
+    this.bankUserForm =this.fb.group(this.formLayout);
+  }
+
+  bankUserFormSubmit(){
+
+  }
+  
+}
+
+
+
+@Component({
+  selector: 'app-user-change-password',
+  templateUrl: './change-password.component.html'
+})
+export class ChangePasswordComponent {
+  @Input() userid?: string;
+  modalRef?: BsModalRef;
+
+  bankUserForm:any;
+  formLayout: any;
+  vs = ValidationService;
+
+  
+  
+  constructor(private modalService: BsModalService, private fb: FormBuilder, private RS:UsersService, private toastr: ToastrService) {
+    this.formLayout = {
+      userid:[this.userid],
+      password: ['', Validators.required],
+      
+    }
+    this.bankUserForm =fb.group(this.formLayout)
+  }
+ 
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template);
+  }
+
+  resetForm(){
+    this.bankUserForm =this.fb.group(this.formLayout);
+  }
+
+  bankUserFormSubmit(){
+    
+  }
+  
 }

@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VoucherService } from './voucher.service';
+import { ValidationService } from '../validation.service';
 
 @Component({
   selector: 'app-voucher-bank',
@@ -16,12 +17,13 @@ export class VoucherBankComponent implements OnInit {
   voucherBankForm!: FormGroup;
   formLayout: any;
   llgs:any;
+  v = ValidationService;
 
 constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private vs:VoucherService){
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id:[],
-      date: [this.myDate,Validators.required],
+      date: [this.myDate],
       voucherno: ['',Validators.required],
       taxpayername: ['',Validators.required],
       taxpayerpan: [''],
@@ -41,6 +43,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
     
     this.voucherBankForm =fb.group(this.formLayout)
 }
+
 
 ngOnInit(): void {
     this.vs.getLocalLevels().subscribe({next:(dt)=>{

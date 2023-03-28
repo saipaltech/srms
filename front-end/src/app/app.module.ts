@@ -16,7 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BankComponent, BankUsersComponent } from './bank/bank.component';
 import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient  } from '@angular/common/http';
 import { BranchComponent } from './branch/branch.component';
-import { UsersComponent } from './users/users.component';
+import { ChangePasswordComponent, UserLimitComponent, UsersComponent } from './users/users.component';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { AppConfig } from './app.config';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
@@ -39,7 +39,9 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     BranchComponent,
     UsersComponent,
     VerifyVoucherComponent,
-    BankUsersComponent
+    BankUsersComponent,
+    UserLimitComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,
