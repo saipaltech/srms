@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.Tuple;
+
 @Component
 public class UsersService  extends AutoService{
 	
@@ -56,7 +58,7 @@ private String table = "users";
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage"))
 				.setOrderBy(sort)
-				.select(" u.id,u.name,u.username,u.post, branches.name as bname, u.approved,u.disabled")
+				.select(" u.id,u.name,u.username,u.post, u.mobile ,branches.name as bname, u.approved,u.disabled")
 				.sqlBody("from " + table + " as u join branches on u.branchid = branches.id " +condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -70,13 +72,18 @@ private String table = "users";
 		String sql = "";
 		Users model = new Users();
 		model.loadData(document);
+		String usq= "select count(username) from users where username=?";
+		Tuple res = db.getSingleResult(usq,Arrays.asList(model.username));
+		if((!(res.get(0)+"").equals("0"))){
+			return Messenger.getMessenger().setMessage("Username already exists.").error();
+		}
 		model.password = pe.encode(model.password);
 		if(bankId.equals("1")) {
 			bankId = db.getSingleResult("select bankid from branches where id=?",Arrays.asList(model.branchid)).get(0)+"";
 		}
-		sql = "INSERT INTO users(name, post,username, password, bankid, branchid ,disabled, approved) VALUES (?,?,?,?,?,?,?,?)";
+		sql = "INSERT INTO users(name, post, username, password, mobile ,bankid, branchid , disabled, approved) VALUES (?,?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
-				Arrays.asList(model.name,model.post,model.username, model.password, bankId, model.branchid, model.disabled , model.approved));
+				Arrays.asList(model.name,model.post,model.username, model.password,model.mobile ,bankId, model.branchid, model.disabled , model.approved));
 	
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -86,9 +93,34 @@ private String table = "users";
 		}
 	}
 
+	public ResponseEntity<Map<String, Object>> storeBankUser() {
+//		String bankId = auth.getBankId();
+		String sql = "";
+		Users model = new Users();
+		model.loadData(document);
+		String usq= "select count(username) from users where username=?";
+		Tuple res = db.getSingleResult(usq,Arrays.asList(model.username));
+		if((!(res.get(0)+"").equals("0"))){
+			return Messenger.getMessenger().setMessage("Username already exists.").error();
+		}
+		model.password = pe.encode(model.password);
+		sql = "INSERT INTO users(name, post,username, password, mobile ,bankid, branchid ,disabled, approved) VALUES (?,?,?,?,?,?,(select top 1 id from branches where bankid=? and ishead=1),?,?)";
+		DbResponse rowEffect = db.execute(sql,
+				Arrays.asList(model.name,model.post,model.username, model.password,model.mobile, model.bankid, model.branchid, model.disabled , model.approved));
+		if (rowEffect.getErrorNumber() == 0) {
+			String sqls= "Insert into users_perms (userid, permid) values((select top 1 id from users where username = ?), 2),((select top 1 id from users where username = ?), 3)";
+			db.execute(sqls, Arrays.asList(model.username));
+			return Messenger.getMessenger().success();
+
+		} else {
+			return Messenger.getMessenger().error();
+		}
+	}
+
+	
 	public ResponseEntity<Map<String, Object>> edit(String id) {
 
-		String sql = "select id,name, username, post,branchid,disabled, approved from "
+		String sql = "select id,name, username, post, mobile ,branchid,disabled, approved from "
 				+ table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
@@ -101,9 +133,9 @@ private String table = "users";
 		DbResponse rowEffect;
 		Users model = new Users();
 		model.loadData(document);
-		String sql = "UPDATE users set name=?, branchid=?,post=?,disabled=?, approved=? where id=?";
+		String sql = "UPDATE users set name=?, mobile=?,branchid=?,post=?,disabled=?, approved=? where id=?";
 		rowEffect = db.execute(sql,
-				Arrays.asList(model.name, model.branchid,model.post,model.disabled,model.approved,model.id));
+				Arrays.asList(model.name, model.mobile,model.branchid,model.post,model.disabled,model.approved,model.id));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 

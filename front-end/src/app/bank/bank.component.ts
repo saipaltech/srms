@@ -1,8 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, Input, TemplateRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {BankService} from './bank.service';
 import { ValidationService } from '../validation.service';
+
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+
+import {UsersService} from '../users/users.service'
 
 
 @Component({
@@ -11,6 +15,8 @@ import { ValidationService } from '../validation.service';
   styleUrls: ['./bank.component.scss']
 })
 export class BankComponent {
+
+
 
   vs = ValidationService;
   model: any = {};
@@ -75,10 +81,10 @@ export class BankComponent {
         this.lists = result.data;
         this.pagination.total = result.total;
         this.pagination.currentPage = result.currentPage;
-        console.log(result);
+        // console.log(result);
       },
       error => {
-         this.toastr.error(error.error);
+         this.toastr.error(error.error.message);
       }
     );
   }
@@ -190,4 +196,87 @@ deleteItem(id: any) {
 }
 
 
+}
+
+
+
+@Component({
+  selector: 'app-bank-users',
+  templateUrl: './bank-users.component.html'
+})
+export class BankUsersComponent {
+
+  modalRef?: BsModalRef;
+
+  bankUserForm:any;
+  formLayout: any;
+  vs = ValidationService;
+
+  @Input() bankid!: string;
+  
+  constructor(private modalService: BsModalService, private fb: FormBuilder, private RS:UsersService, private toastr: ToastrService) {
+    this.formLayout = {
+      bankid:[this.bankid],
+      username: ['',Validators.required],
+      name: ['',Validators.required],
+      post: ['',Validators.required],
+      password: ['',Validators.required],
+      mobile : ['', Validators.required]
+      
+    }
+    this.bankUserForm =fb.group(this.formLayout)
+  }
+ 
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template);
+  }
+  
+  model: any = {};
+
+  bankUserFormSubmit(){
+
+    if (this.bankUserForm.valid) {
+      this.model = this.bankUserForm.value;
+      this.createItem(this.bankUserForm.value.id);
+    } else {
+      Object.keys(this.bankUserForm.controls).forEach(field => {
+        const singleFormControl = this.bankUserForm.get(field);
+        singleFormControl?.markAsTouched({onlySelf: true});
+      });
+      // this.toastr.error('Please fill all the required* fields', 'Error');
+    }
+
+  }
+
+  resetForm(){
+  this.bankUserForm =this.fb.group(this.formLayout);
+}
+
+createItem(id = null) {
+
+  let upd = this.model;
+  if (id != "" && id != null) {
+
+    this.RS.update(id, upd).subscribe({
+      next: (result :any) => {
+      this.toastr.success('Item Successfully Updated!', 'Success');
+      this.bankUserForm = this.fb.group(this.formLayout)
+      // this.getList();
+    }, error :err=> {
+      this.bankUserForm.error(err.error.message, 'Error');
+    }
+    });
+  } else {
+    this.RS.createUser(upd).subscribe({
+      next:(result:any) => {
+      this.toastr.success('Item Successfully Saved!', 'Success');
+      this.bankUserForm = this.fb.group(this.formLayout)
+      // this.getList();
+    }, error:err => {
+      this.toastr.error(err.error.message, 'Error');
+    }
+    });
+  }
+
+}
 }

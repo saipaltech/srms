@@ -14,6 +14,13 @@ export class UsersService {
     return this.http.post(this.url, data);
 
   }
+
+  createUser(data: any) {
+    // console.log(data);
+    return this.http.post(this.url + "/bank-user", data);
+
+  }
+
   update(id: any, data: any) {
     return this.http.put(this.url + '/' + id, data);
     // return this.api.update(this.path,id,data);

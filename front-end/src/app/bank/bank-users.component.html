@@ -1,0 +1,110 @@
+&nbsp; &nbsp; <i class="bi bi-person-circle text-primary" (click)="openModal(template)" style="cursor:pointer;"></i>
+
+<ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Create User</h4>
+      <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <form class="needs-validation" [formGroup]= "bankUserForm" (ngSubmit)= "bankUserFormSubmit()">
+            <div class="row g-3">
+                <input type="hidden" formControlName="bankid">
+              <div class="col-6">
+                <label class="form-label req">Name</label>
+                <div class="input-group has-validation">
+                  <input
+                    formControlName="name"
+                    type="text"
+                    class="form-control form-control-sm"
+                    [ngClass]="vs.getControlClass(bankUserForm.controls['name'])"
+                  />
+                  <div [ngClass]="vs.getMessageClass(bankUserForm.controls['name'])">
+                    {{ vs.getMessage(bankUserForm.controls["name"]) }}
+                  </div>
+                </div>
+              </div>
+
+              
+              <div class="col-6">
+                <label class="form-label req">Username</label>
+                <div class="input-group has-validation">
+                  <input
+                    formControlName="username"
+                    type="text"
+                    class="form-control form-control-sm"
+                    [ngClass]="vs.getControlClass(bankUserForm.controls['username'])"
+                  />
+                  <div [ngClass]="vs.getMessageClass(bankUserForm.controls['username'])">
+                    {{ vs.getMessage(bankUserForm.controls["username"]) }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <label class="form-label req">Post</label>
+                <div class="input-group has-validation">
+                  <input
+                    formControlName="post"
+                    type="text"
+                    class="form-control form-control-sm"
+                    [ngClass]="vs.getControlClass(bankUserForm.controls['post'])"
+                  />
+                  <div [ngClass]="vs.getMessageClass(bankUserForm.controls['post'])">
+                    {{ vs.getMessage(bankUserForm.controls["post"]) }}
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="col-6">
+                <label class="form-label req">Password</label>
+                <div class="input-group has-validation">
+                  <input
+                    formControlName="password"
+                    type="password"
+                    class="form-control form-control-sm"
+                    [ngClass]="vs.getControlClass(bankUserForm.controls['password'])"
+                  />
+                  <div [ngClass]="vs.getMessageClass(bankUserForm.controls['password'])">
+                    {{ vs.getMessage(bankUserForm.controls["password"]) }}
+                  </div>
+                </div>
+              </div>     
+              
+              <div class="col-6">
+                <label class="form-label req">Mobile</label>
+                <div class="input-group has-validation">
+                  <input
+                    formControlName="mobile"
+                    type="password"
+                    class="form-control form-control-sm"
+                    [ngClass]="vs.getControlClass(bankUserForm.controls['mobile'])"
+                  />
+                  <div [ngClass]="vs.getMessageClass(bankUserForm.controls['mobile'])">
+                    {{ vs.getMessage(bankUserForm.controls["mobile"]) }}
+                  </div>
+                </div>
+              </div> 
+
+            </div>
+            
+      
+            
+            <br />
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-success btn-sm" type="submit">Submit</button>
+                &nbsp;
+                &nbsp;
+                <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
+            </div>
+    
+      
+              
+            </div>
+           
+          </form>
+    </div>
+  </ng-template>
