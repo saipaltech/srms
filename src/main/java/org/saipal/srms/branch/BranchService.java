@@ -24,6 +24,9 @@ public class BranchService extends AutoService {
 	private String table = "branches";
 
 	public ResponseEntity<Map<String, Object>> index() {
+		if(!auth.hasPermission("bankhq")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
 		String condition="";
 		String bankId = auth.getBankId();
 		if (bankId.equals("1")) {
@@ -59,6 +62,9 @@ public class BranchService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> store() {
+		if(!auth.hasPermission("bankhq")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
 		String sql = "";
 		Branch model = new Branch();
 		model.loadData(document);
@@ -73,19 +79,20 @@ public class BranchService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
-
 		String sql = "select id,name,bankid, disabled, approved from " + table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
 	}
 
 	public ResponseEntity<Map<String, Object>> update(String id) {
+		if(!auth.hasPermission("bankhq")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
 		DbResponse rowEffect;
 		Branch model = new Branch();
 		model.loadData(document);
-
-		String sql = "UPDATE branches set name=?, where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.name));
+		String sql = "UPDATE branches set name=?,disabled=?,approved=? where id=?";
+		rowEffect = db.execute(sql, Arrays.asList(model.name,model.disabled,model.approved,model.id));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 
@@ -96,7 +103,9 @@ public class BranchService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> destroy(String id) {
-
+		if(!auth.hasPermission("bankhq")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
 		String sql = "delete from branches where id  = ?";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(id));
 		if (rowEffect.getErrorNumber() == 0) {

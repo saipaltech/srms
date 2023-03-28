@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { VoucherService } from './voucher.service';
 
 @Component({
   selector: 'app-voucher-bank',
@@ -9,32 +10,44 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./voucher-bank.component.scss'],
   providers: [DatePipe]
 })
-export class VoucherBankComponent {
+export class VoucherBankComponent implements OnInit {
   myDate: any = new Date();
 
   voucherBankForm!: FormGroup;
   formLayout: any;
+  llgs:any;
 
-constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder){
+constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private vs:VoucherService){
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id:[],
-      usecase: [''],
-      rajsahowsirsak: ['',Validators.required],
-      jarinumber: ['',Validators.required],
-      jariname: ['',Validators.required],
-      kardataname: ['',Validators.required],
-      panno: [''],
-      amount: ['',Validators.required],
-      accountno: ['',Validators.required],
+      date: [this.myDate,Validators.required],
       voucherno: ['',Validators.required],
-      kendra: ['',Validators.required],
-      palika: ['',Validators.required],
-      date: [this.myDate,Validators.required]
+      taxpayername: ['',Validators.required],
+      taxpayerpan: [''],
+      depositedby:['',Validators.required],
+      depcontact: ['',Validators.required],
+      llgcode: ['',Validators.required],
+      llgname: ['',Validators.required],
+      costcentercode: ['',Validators.required],
+      costcentername: ['',Validators.required],
+      accountno:['',Validators.required],
+      revenuecode: ['',Validators.required],
+      revenuetitle: ['',Validators.required],
+      purpose: [''],
+      amount:['',Validators.required]
       
     }
     
     this.voucherBankForm =fb.group(this.formLayout)
+}
+
+ngOnInit(): void {
+    this.vs.getLocalLevels().subscribe({next:(dt)=>{
+      this.llgs = dt.data;
+    },error:err=>{
+
+    }});
 }
 
 voucherBankFormSubmit(){

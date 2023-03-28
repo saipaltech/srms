@@ -12,6 +12,7 @@ public class Authrepo {
 	public String userId;
 	public String bankId;
 	public String branchId;
+	public String bankCode;
 	public String token;
 	public Map<String,Object> extraInfo = new HashMap<>();
 }

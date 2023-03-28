@@ -1,4 +1,4 @@
-package org.saipal.srms.banks;
+package org.saipal.srms.vouchers;
 
 import java.util.Arrays;
 
@@ -20,7 +20,7 @@ import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
 
 @Component
-public class BankService extends AutoService {
+public class BankVoucherService extends AutoService {
 
 	@Autowired
 	DB db;
@@ -39,7 +39,7 @@ public class BankService extends AutoService {
 		}
 		String condition = " where id!=1 ";
 		if (!request("searchTerm").isEmpty()) {
-			List<String> searchbles = Bank.searchables();
+			List<String> searchbles = BankVoucher.searchables();
 			condition += "and (";
 			for (String field : searchbles) {
 				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
@@ -70,7 +70,7 @@ public class BankService extends AutoService {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String sql = "";
-		Bank model = new Bank();
+		BankVoucher model = new BankVoucher();
 		model.loadData(document);
 		String usq = "select count(code) from banks where code=?";
 		Tuple res = db.getSingleResult(usq, Arrays.asList(model.code));
@@ -101,7 +101,7 @@ public class BankService extends AutoService {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		DbResponse rowEffect;
-		Bank model = new Bank();
+		BankVoucher model = new BankVoucher();
 		model.loadData(document);
 		String sql = "UPDATE " + table + " set approved=?, disabled=? where id=?";
 		rowEffect = db.execute(sql, Arrays.asList(model.code, model.approved, model.disabled, model.name));

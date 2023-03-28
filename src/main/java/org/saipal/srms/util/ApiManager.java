@@ -43,13 +43,92 @@ public class ApiManager {
 		return "";
 	}
 
-	public JSONArray getBanks() {
+	public JSONObject getBanks() {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
 					.get(url + "/srms/banks");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JSONObject localLevels(String bankCode) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/local-levels?bankcode="+bankCode);
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JSONArray costCentres(String llgCode) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/costcenter?llgcode="+llgCode);
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONArray("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JSONArray bankAccounts(String bankCode,String llgCode) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/bankac?bankcode="+bankCode+"&llgcode="+llgCode);
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONArray("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	public JSONArray revenueCodes(String llgCode) { 
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/revenuelist?llgcode="+llgCode);
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONArray("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JSONArray getVoucherDetails(String voucherno) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/revenuelist?voucherno="+voucherno);
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONArray("data");
 			}
