@@ -42,6 +42,7 @@ export class UsersComponent implements OnInit{
       password:['', Validators.required],
       disabled: ['0',Validators.required],
       approved: ['1',Validators.required],
+      mobile: ['', Validators.required]
       
     }
     this.bankForm =fb.group(this.formLayout)

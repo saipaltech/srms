@@ -42,6 +42,16 @@ public class UsersController {
 			return objService.store();
 		}
 	}
+	
+	@PostMapping("/bank-user")
+	public ResponseEntity<Map<String, Object>> storeBankUser(HttpServletRequest request, @PathVariable String id) {
+		Validator validator = validationService.validate(Users.rules());
+		if (validator.isFailed()) {
+			return Messenger.getMessenger().setMessage(validator.getErrorMessages()).error();
+		} else {
+			return objService.storeBankUser();
+		}
+	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> edit(HttpServletRequest request, @PathVariable String id) {

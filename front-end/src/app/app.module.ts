@@ -13,7 +13,7 @@ import { VoucherBankComponent } from './voucher-bank/voucher-bank.component';
 import { ToastrModule } from 'ngx-toastr';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BankComponent } from './bank/bank.component';
+import { BankComponent, BankUsersComponent } from './bank/bank.component';
 import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient  } from '@angular/common/http';
 import { BranchComponent } from './branch/branch.component';
 import { UsersComponent } from './users/users.component';
@@ -25,6 +25,7 @@ import { AuthService } from './auth/auth.service';
 import { ApiService } from './api.service';
 import { AuthInterceptor } from './auth-interceptor';
 import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.componen
     BankComponent,
     BranchComponent,
     UsersComponent,
-    VerifyVoucherComponent
+    VerifyVoucherComponent,
+    BankUsersComponent
   ],
   imports: [
     BrowserModule,
@@ -49,6 +51,7 @@ import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.componen
     ReactiveFormsModule,
     HttpClientModule,
     PaginationModule.forRoot(),
+    ModalModule.forRoot()
   ],
   providers: [
     AppConfig,

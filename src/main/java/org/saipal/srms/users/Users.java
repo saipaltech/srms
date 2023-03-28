@@ -19,6 +19,7 @@ public class Users {
 	public String branchid;
 	public String approved;
 	public String disabled;
+	public String mobile;
 
     
 	public void loadData(RequestParser doc) {
@@ -35,7 +36,7 @@ public class Users {
 	}
 
 	public static List<String> searchables() {
-		return Arrays.asList("name");
+		return Arrays.asList("name, username");
 	}
 
 	public static Map<String, String> rules() {
@@ -47,6 +48,7 @@ public class Users {
 		rules.put("branchid", "required");
 		rules.put("approved", "required");
 		rules.put("disabled", "required");
+		rules.put("mobile", "required");
 		return rules;
 	}
 
