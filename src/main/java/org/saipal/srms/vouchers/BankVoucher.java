@@ -10,10 +10,20 @@ import org.saipal.srms.parser.RequestParser;
 public class BankVoucher {
 	
 	public String id;
-	public String name;
-	public String code;
+	public String transactionid;
+	public String office;
+	public String voucherdate;
+	public String bankacname;
+	public String bankacno;
+	public String depositdate;
+	public String bankvoucherno;
+	public String remarks;
+	public String creatorid;
+	public String approverid;
+	public String status;
 	public String approved;
-	public String disabled;
+	public String tasklog;
+	
 
     
 	public void loadData(RequestParser doc) {

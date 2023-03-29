@@ -30,20 +30,27 @@ public class BankVoucherController {
 	@Autowired
 	ValidationService validationService;
 	
-	@GetMapping("")
-	public ResponseEntity<Map<String, Object>> index(HttpServletRequest request) {
-		return objService.index();
-	}
+	/*@GetMapping("")
+	
+	 * public ResponseEntity<Map<String, Object>> index(HttpServletRequest request)
+	 * { return objService.index(); }
+	 */
 
-	@PostMapping("")
-	public ResponseEntity<Map<String, Object>> store(HttpServletRequest request) {
-		Validator validator = validationService.validate(BankVoucher.rules());
-		if (validator.isFailed()) {
-			return Messenger.getMessenger().setMessage(validator.getErrorMessages()).error();
-		} else {
-			return objService.store();
-		}
-	}
+//	@PostMapping("")
+//	public ResponseEntity<Map<String, Object>> store(HttpServletRequest request) {
+//		Validator validator = validationService.validate(BankVoucher.rules());
+//		if (validator.isFailed()) {
+//			return Messenger.getMessenger().setMessage(validator.getErrorMessages()).error();
+//		} else {
+//			return objService.store();
+//		}
+//	}
+	
+//	@GetMapping()
+//	public ResponseEntity<Map<String, Object>> index(HttpServletRequest request)
+//	 {
+//		return objService.index(); 
+//	 }
 
 	@GetMapping("{id}")
 	public ResponseEntity<Map<String, Object>> edit(HttpServletRequest request, @PathVariable String id) {
@@ -60,18 +67,18 @@ public class BankVoucherController {
 		}
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Map<String, Object>> destroy(HttpServletRequest request, @PathVariable String id) {
-		return objService.destroy(id);
-	}
-	
-	@GetMapping("get-list")
-	public ResponseEntity<List<Map<String, Object>>> getList() {
-		return objService.getList();
-	}
-	
-	@GetMapping("banks-from-sutra")
-	public ResponseEntity<String> getBanksFromSutra() {
-		return objService.getBanksFromSutra();
-	}
+//	@DeleteMapping("/{id}")
+//	public ResponseEntity<Map<String, Object>> destroy(HttpServletRequest request, @PathVariable String id) {
+//		return objService.destroy(id);
+//	}
+//	
+//	@GetMapping("get-list")
+//	public ResponseEntity<List<Map<String, Object>>> getList() {
+//		return objService.getList();
+//	}
+//	
+//	@GetMapping("banks-from-sutra")
+//	public ResponseEntity<String> getBanksFromSutra() {
+//		return objService.getBanksFromSutra();
+//	}
 }
