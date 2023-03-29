@@ -49,7 +49,7 @@ public class SecurityConfig {
         			reqs
         			.requestMatchers(PathRequest.toStaticResources().atCommonLocations())
         			.permitAll()
-        			.requestMatchers("/auth/login")
+        			.requestMatchers("/auth/login","api/*")
         			.permitAll()
         			.anyRequest()
         			.authenticated()
