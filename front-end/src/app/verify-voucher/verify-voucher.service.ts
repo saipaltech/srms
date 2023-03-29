@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AppConfig } from '../app.config';
+import { ApiService } from '../api.service';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class VerifyVoucherService {
-  baseurl = "";
-  url="";
+  
+  url="bank-voucher";
+  getTranactionData(srch_term: any) {
+    return this.http.get(this.url+'/search-payment?transactionid='+srch_term);
+  }
   create(data: any) {
     // console.log(data);
     return this.http.post(this.url, data);
@@ -19,9 +23,7 @@ export class VerifyVoucherService {
     // return this.api.update(this.path,id,data);
   }
 
-  constructor(private http: HttpClient,appCnfig:AppConfig) { 
-    this.baseurl = appCnfig.baseUrl;
-    this.url = this.baseurl + 'bank-voucher';
+  constructor(private http: ApiService) { 
   }
 
   getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean) {

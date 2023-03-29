@@ -72,10 +72,10 @@ public class BankVoucherController {
 //		return objService.destroy(id);
 //	}
 //	
-//	@GetMapping("get-list")
-//	public ResponseEntity<List<Map<String, Object>>> getList() {
-//		return objService.getList();
-//	}
+	@GetMapping("search-payment")
+	public ResponseEntity<Map<String, Object>> getList() {
+		return objService.getTransDetails();
+	}
 //	
 //	@GetMapping("banks-from-sutra")
 //	public ResponseEntity<String> getBanksFromSutra() {

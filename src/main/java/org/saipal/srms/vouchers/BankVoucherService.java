@@ -21,9 +21,6 @@ import org.springframework.stereotype.Component;
 public class BankVoucherService extends AutoService {
 
 	@Autowired
-	DB db;
-
-	@Autowired
 	Authenticated auth;
 
 	@Autowired
@@ -76,9 +73,12 @@ public class BankVoucherService extends AutoService {
 		if (rowEffect.getErrorNumber() == 0) {
 			try {
 				JSONObject resp =  api.updateToSutra(model.transactionid,model.bankvoucherno,model.depositdate,model.remarks);
-				if(resp.getInt("status")==1) {
-					db.execute("update bank_deposits set status=2 where transactionid='"+model.transactionid+"'");
+				if(resp!=null) {
+					if(resp.getInt("status")==1) {
+						db.execute("update bank_deposits set status=2 where transactionid='"+model.transactionid+"'");
+					}
 				}
+				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -99,6 +99,31 @@ public class BankVoucherService extends AutoService {
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
 		return Messenger.getMessenger().setData(data).success();
 	}
-
+	
+	public ResponseEntity<Map<String,Object>> getTransDetails() {
+		String transactionid = request("transactionid");
+		if(transactionid.isBlank()) {
+			return Messenger.getMessenger().setMessage("Transaction id is required").error();
+		}
+		String sql = "select transactionid,office,voucherdate,bankacname,bankacno from " + table + " where transactionid=?";
+		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
+		if(data==null) {
+			JSONObject dt =  api.getTransDetails(transactionid);
+			if(dt!=null) {
+				try {
+					if(dt.getInt("status")==1) {
+						JSONObject d = dt.getJSONObject("data");
+						db.execute("insert into "+table+" (transactionid,office,voucherdate,bankacname,bankacno) values (?,?,?,?,?)",Arrays.asList(d.get("transactionid"),d.get("office"),d.get("voucherdate"),d.get("bankacname"),d.get("bankacno")));
+						return Messenger.getMessenger().setData(d.toMap()).success();
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return Messenger.getMessenger().error();
+		}
+		return Messenger.getMessenger().setData(data).success();
+	}
 
 }

@@ -74,6 +74,7 @@ export class VerifyVoucherComponent {
 bankFormSubmit(){
   if (this.bankForm.valid) {
     this.model = this.bankForm.value;
+    this.model.transactionid = this.transDetails.transactionid;
     this.createItem(this.bankForm.value.id);
   } else {
     Object.keys(this.bankForm.controls).forEach(field => {
@@ -99,12 +100,14 @@ resetForm(){
   this.bankForm =this.fb.group(this.formLayout);
 }
 
-
+transDetails:any;
 search() {
-
-  this.pagination.perPage=this.srchForm.value.entries;
-  this.searchTerm=this.srchForm.value.srch_term;
-  this.getList();
+  this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({next:(dt)=>{
+    this.transDetails = dt.data;
+  },error:error=>{
+    console.log(error);
+    this.toastr.error(error.error.message);
+  }});
 }
 
 resetFilters() {

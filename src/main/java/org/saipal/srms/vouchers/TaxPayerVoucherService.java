@@ -24,10 +24,7 @@ import jakarta.transaction.Transactional;
 
 @Component
 public class TaxPayerVoucherService extends AutoService {
-
-	@Autowired
-	DB db;
-
+	
 	@Autowired
 	Authenticated auth;
 
@@ -42,7 +39,6 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 		String condition = " where id!=1 ";
 		String approvelog=request("approvelog");
-		System.out.println("The Approve Log is:" + approvelog);
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
 			condition += "and (";
@@ -98,8 +94,10 @@ public class TaxPayerVoucherService extends AutoService {
 		if (rowEffect.getErrorNumber() == 0) {
 			try {
 				JSONObject obj = api.sendDataToSutra(model);
-				if(obj.getInt("status")==1) {
-					db.execute("update taxvouchers set status=2 where voucherno='"+model.voucherno+"'");
+				if(obj!=null) {
+					if(obj.getInt("status")==1) {
+						db.execute("update taxvouchers set status=2 where voucherno='"+model.voucherno+"'");
+					}
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block

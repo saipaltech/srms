@@ -186,6 +186,7 @@ public class ApiManager {
 		try {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
 					.setParam("date",tpv.date)
 					.setParam("voucherno",tpv.voucherno)
 					.setParam("taxpayername",tpv.taxpayername)
@@ -238,6 +239,22 @@ public class ApiManager {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
 					.get(url + "/srms/revenuelist?voucherno="+voucherno);
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JSONObject getTransDetails(String transactionid) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/get-trans-details?transactionid="+transactionid);
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
 			}
