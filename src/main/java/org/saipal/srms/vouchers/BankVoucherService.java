@@ -31,67 +31,13 @@ public class BankVoucherService extends AutoService {
 	@Autowired
 	ApiManager api;
 
-	private String table = "banks";
+	private String table = "bank_deposits";
 
-	public ResponseEntity<Map<String, Object>> index() {
-		if (!auth.hasPermission("*")) {
-			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
-		}
-		String condition = " where id!=1 ";
-		if (!request("searchTerm").isEmpty()) {
-			List<String> searchbles = BankVoucher.searchables();
-			condition += "and (";
-			for (String field : searchbles) {
-				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
-			}
-			condition = condition.substring(0, condition.length() - 3);
-			condition += ")";
-		}
-		String sort = "";
-		if (!request("sortKey").isBlank()) {
-			if (!request("sortDir").isBlank()) {
-				sort = request("sortKey") + " " + request("sortDir");
-			}
-		}
 
-		Paginator p = new Paginator();
-		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("id,code,name,approved,disabled").sqlBody("from " + table + condition).paginate();
-		if (result != null) {
-			return ResponseEntity.ok(result);
-		} else {
-			return Messenger.getMessenger().error();
-		}
-	}
-
-	@Transactional
-	public ResponseEntity<Map<String, Object>> store() {
-		if (!auth.hasPermission("*")) {
-			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
-		}
-		String sql = "";
-		BankVoucher model = new BankVoucher();
-		model.loadData(document);
-		String usq = "select count(code) from banks where code=?";
-		Tuple res = db.getSingleResult(usq, Arrays.asList(model.code));
-		if ((!(res.get(0) + "").equals("0"))) {
-			return Messenger.getMessenger().setMessage("Bank already exists.").error();
-		}
-		sql = "INSERT INTO banks(code,name, disabled, approved) VALUES (?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.code, model.name, model.approved, model.disabled));
-
-		if (rowEffect.getErrorNumber() == 0) {
-			sql = "INSERT INTO branches(name,bankid, disabled, approved,ishead) VALUES (?,(select top 1 id from banks where code =?),?,?,1)";
-			rowEffect = db.execute(sql, Arrays.asList("Head Branch", model.code, 0, 1));
-			return Messenger.getMessenger().success();
-		} else {
-			return Messenger.getMessenger().error();
-		}
-	}
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
 
-		String sql = "select id, code, name ,disabled,approved from " + table + " where id=?";
+		String sql = "select transactionid,office,voucherdate,bankacname,bankacno from " + table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
 	}
@@ -103,8 +49,8 @@ public class BankVoucherService extends AutoService {
 		DbResponse rowEffect;
 		BankVoucher model = new BankVoucher();
 		model.loadData(document);
-		String sql = "UPDATE " + table + " set approved=?, disabled=? where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.code, model.approved, model.disabled, model.name));
+		String sql = "UPDATE " + table + " set transactionid=?,office=?,voucherdate=?,bankacname=?,bankacno=?,depositdate=?,bankvoucherno=?,remarks=?,creatorid=?,approverid=?,status=?,approved=? where id=?";
+		rowEffect = db.execute(sql, Arrays.asList(model.transactionid,model.office,model.voucherdate,model.bankacname,model.bankacno,model.depositdate,model.bankvoucherno,model.remarks,model.creatorid,model.approverid,model.status,model.approved));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 		} else {
@@ -113,33 +59,5 @@ public class BankVoucherService extends AutoService {
 
 	}
 
-	public ResponseEntity<Map<String, Object>> destroy(String id) {
-		if (!auth.hasPermission("*")) {
-			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
-		}
-		String sql = "delete from " + table + " where id  = ?";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(id));
-		if (rowEffect.getErrorNumber() == 0) {
-			return Messenger.getMessenger().success();
-
-		} else {
-			return Messenger.getMessenger().error();
-		}
-	}
-
-	public ResponseEntity<List<Map<String, Object>>> getList() {
-		String bankId = auth.getBankId();
-		String sql = "";
-		if (bankId.equals("1")) {
-			sql = "select id,name from " + table + " where id !=1";
-		} else {
-			sql = "select id,name from " + table + " where id ='" + bankId + "'";
-		}
-		return ResponseEntity.ok(db.getResultListMap(sql));
-	}
-
-	public ResponseEntity<String> getBanksFromSutra() {
-		return ResponseEntity.ok(api.getBanks().toString());
-	}
 
 }
