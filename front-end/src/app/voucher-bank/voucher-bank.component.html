@@ -18,7 +18,9 @@
 
     >
     <input type="hidden" formControlName="llgname">
-    <input type="hidden" formControlName="revenuecode">
+    <input type="hidden" formControlName="revenuecode">    
+    <input type="hidden" formControlName="costcentercode">
+
       <div class="row g-3">
         <div class="col-12">
           <label for="username" class="form-label req">जम्मा गरेको मिति</label>
@@ -47,7 +49,7 @@
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">पालिका</label>
           <ng-select formControlName="llgcode" (change)="getPalikaDetails()">
-            <ng-option *ngFor="let l of llgs" [value]="l.code">{{
+            <ng-option *ngFor="let l of llgs" [value]="l.code+'_'+l.name">{{
               l.name
             }}</ng-option>
           </ng-select>
@@ -56,8 +58,8 @@
 
         <div class="col-sm-6">
           <label for="lastName" class="form-label req">संकलन केन्द्र</label>
-          <ng-select formControlName="costcentername">
-            <ng-option *ngFor="let cc of ccs" [value]="cc.name">{{
+          <ng-select formControlName="costcentername" (change)="costCenter()">
+            <ng-option *ngFor="let cc of ccs" [value]="cc.name+'_'+cc.code">{{
               cc.name
             }}</ng-option>
           </ng-select>
@@ -72,15 +74,15 @@
             [ngClass]="vs.getControlClass(voucherBankForm.controls['accountno'])"
           >
             <option value="">Select Account Number</option>
-            <option *ngFor="let ac of acs" value="ac.acno">{{ac.acno}}[{{ac.name}}]</option>
+            <option *ngFor="let ac of acs" value="{{ac.acno}}">{{ac.acno}}[{{ac.name}}]</option>
           </select>
           <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['accountno'])">{{vs.getMessage(voucherBankForm.controls['accountno'])}}</div>
         </div>
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
-          <ng-select formControlName="revenuetitle">
-            <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
+          <ng-select formControlName="revenuetitle" (change)="revNameCode()">
+            <ng-option *ngFor="let rv of revs" [value]="rv.code+'_'+rv.name">{{rv.code}}[{{rv.name}}]</ng-option>
           </ng-select>
           <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['revenuetitle'])">{{vs.getMessage(voucherBankForm.controls['revenuetitle'])}}</div>
         </div>
@@ -208,6 +210,18 @@
           </button>
         </div>
       </form>
+      <div class="btn-group" dropdown>
+        <button id="button-basic" dropdownToggle type="button" class="btn btn-primary btn-sm dropdown-toggle"
+                aria-controls="dropdown-basic">
+          Voucher Type <span class="caret"></span>
+        </button>
+        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+            role="menu" aria-labelledby="button-basic">
+          <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus('')">All Vouchers</a></li>
+          <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus(1)">Approved Vouchers</a></li>
+          <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus(0)">Unapproved Vouchers</a></li>
+        </ul>
+      </div>
       <table class="table datatable">
         <!--table-borderless-->
         <thead>
@@ -215,31 +229,21 @@
             <th scope="col">voucherno</th>
             <th scope="col">costcentername</th>
             <th scope="col">accountno</th>
-    
             <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
-          <!--<tr *ngFor="let item of lists; let i = index">
+          <tr *ngFor="let item of lists; let i = index">
             <td>{{ item.voucherno }}</td>
             <td>{{ item.costcentername }}</td>
             <td>{{ item.accountno }}</td>
-            <td>Action</td>
-            <td>
-
-            </td>
-          </tr>-->
-
-          <tr>
-            <td>1</td>
-            <td>1</td>
-            <td>1</td>
-            <td><i class="bi bi-eye-fill text-success" (click)="openModal(template)"></i>
-            </td>
+            <td><i class="bi bi-eye-fill text-success" (click)="openModal(template)"></i></td>
             <td>
 
             </td>
           </tr>
+
+        
         </tbody>
       </table>
 

@@ -41,6 +41,8 @@ export class VoucherBankComponent implements OnInit {
   srchForm!: FormGroup;
   model: any = {};
 
+  approved ="";
+
 constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherService, private modalService: BsModalService){
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
@@ -84,7 +86,6 @@ changeFields() {
   // this.toastr.success('Hello world!', 'Toastr fun!');
 }
 
-
 ngOnInit(): void {
   this.getList();
   
@@ -103,7 +104,9 @@ ngOnInit(): void {
 
 getPalikaDetails(){
   const llgCode = this.voucherBankForm.value['llgcode'];
-  this.bvs.getPlaikaDetails(llgCode).subscribe({
+  const cname = llgCode.split("_");
+  this.voucherBankForm.patchValue({"llgname":cname[1]});
+  this.bvs.getPlaikaDetails(cname[0]).subscribe({
     next:(d)=>{
       this.acs = d.bankacs;
       this.ccs = d.costcentres;
@@ -118,23 +121,6 @@ getPalikaDetails(){
     // this.toastr.success('Hello world!', 'Toastr fun!');
   }
   
-  selectedCar!: number;
-
-  cars = [
-      { id: 1, name: 'Volvo' },
-      { id: 2, name: 'Saab' },
-      { id: 3, name: 'Opel' },
-      { id: 4, name: 'Audi' },
-  ];
-
-  selectedCars!: number;
-
-  car = [
-      { id: 1, name: 'Volvo' },
-      { id: 2, name: 'Saab' },
-      { id: 3, name: 'Opel' },
-      { id: 4, name: 'Audi' },
-  ];
 
   resetForm(){
     this.voucherBankForm =this.fb.group(this.formLayout);
@@ -142,7 +128,9 @@ getPalikaDetails(){
 
   getList(pageno?: number | undefined) {
     const page = pageno || 1;
-    this.bvs.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(
+    const approve = this.approved; 
+    //2 is just a random number to specify to show all data
+    this.bvs.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc, approve).subscribe(
       (result: any) => {
         this.lists = result.data;
         this.pagination.total = result.total;
@@ -155,13 +143,40 @@ getPalikaDetails(){
     );
   }
 
+  setStatus(val: any){
+    this.approved = val;
+    this.getList();
+  
+  }
+
+  revNameCode(){
+    const revTitle = this.voucherBankForm.value['revenuetitle'];
+    const title = revTitle.split("_");
+    this.voucherBankForm.patchValue({"revenuetitle":title[1]});
+    this.voucherBankForm.patchValue({"revenuecode":title[0]});
+    }
+
+    costCenter(){
+      const revTitle = this.voucherBankForm.value['costcentername'];
+      const costCenter = revTitle.split("_");
+      this.voucherBankForm.patchValue({"costcentername":costCenter[0]});
+      this.voucherBankForm.patchValue({"costcentercode":costCenter[1]});
+    }
+  
+
 voucherBankFormSubmit(){
   if (this.voucherBankForm.valid) {
     this.model = this.voucherBankForm.value;
+    this.model.llgcode = this.model.llgcode.split("_")[0];
+    this.model.revenuecode = this.model.revenuecode.split("_")[0];
+    this.model.costcentername = this.model.costcentername.split("_")[0];
     this.createItem(this.voucherBankForm.value.id);
-    alert('submit but not create')
+    // alert('submit but not create')
+    console.log(this.voucherBankForm.value)
+
   } else {
-    alert('Invalid form')
+    // alert('Invalid form')
+    // console.log(this.voucherBankForm.value)
     Object.keys(this.voucherBankForm.controls).forEach(field => {
       const singleFormControl = this.voucherBankForm.get(field);
       singleFormControl?.markAsTouched({onlySelf: true});
@@ -206,7 +221,7 @@ createItem(id = null) {
       this.voucherBankForm = this.fb.group(this.formLayout)
       this.getList();
     }, error :err=> {
-      this.toastr.error(err.error.message, 'Error');
+      this.toastr.error(err.error, 'Error');
     }
     });
   } else {
@@ -217,7 +232,7 @@ createItem(id = null) {
       this.voucherBankForm = this.fb.group(this.formLayout)
       this.getList();
     }, error:err => {
-      this.toastr.error(err.error.message, 'Error');
+      this.toastr.error(err.error, 'Error');
     }
     });
   }

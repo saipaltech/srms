@@ -41,6 +41,8 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String condition = " where id!=1 ";
+		String approvelog=request("approvelog");
+		System.out.println("The Approve Log is:" + approvelog);
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
 			condition += "and (";
@@ -48,7 +50,18 @@ public class TaxPayerVoucherService extends AutoService {
 				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
 			}
 			condition = condition.substring(0, condition.length() - 3);
-			condition += ")";
+			switch(Integer.parseInt(approvelog)) {
+			  case 0:
+				  condition += " where approved=0)";
+			    break;
+			  case 1:
+				  condition += "where approved=1)";
+			    break;
+			  default:
+				  condition += ")";
+			}
+
+			
 		}
 		String sort = "";
 		if (!request("sortKey").isBlank()) {
@@ -80,8 +93,8 @@ public class TaxPayerVoucherService extends AutoService {
 		if ((!(res.get(0) + "").equals("0"))) {
 			return Messenger.getMessenger().setMessage("This voucher No is already use.").error();
 		}
-		sql = "INSERT INTO banks(date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.date,model.voucherno,model.taxpayername,model.taxpayerpan,model.depositedby,model.depcontact,model.llgcode,model.llgname,model.costcentercode,model.costcentername,model.accountno,model.revenuecode,model.revenuetitle,model.purpose,model.amount));
+		sql = "INSERT INTO taxvouchers (date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount,creatorid, bankid, branchid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.date,model.voucherno,model.taxpayername,model.taxpayerpan,model.depositedby,model.depcontact,model.llgcode,model.llgname,model.costcentercode,model.costcentername,model.accountno,model.revenuecode,model.revenuetitle,model.purpose,model.amount, auth.getUserId(), auth.getBankId(), auth.getBranchId()));
 
 		if (rowEffect.getErrorNumber() == 0) {			
 			return Messenger.getMessenger().success();

@@ -30,7 +30,7 @@ export class VoucherService {
   constructor(private http: ApiService) { 
   }
 
-  getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean) {
+  getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean, approve?: string) {
 
     let urlPart = '?perPage=' + perPage + '&page=' + page;
     if (typeof searchTerm !== 'undefined' || searchTerm !== '') {
@@ -45,7 +45,8 @@ export class VoucherService {
         } else {
             urlPart += '&sortDir=asc';
         }
-    }
+     }
+     urlPart += '&approve='+ approve;
     return this.http.get(this.url + urlPart);
 
 }
