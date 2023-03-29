@@ -38,18 +38,10 @@ export class VerifyVoucherComponent {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id:[],
-      transactionid: ['', Validators.required],
-      office: ['', Validators.required],
-      voucherdate: ['', Validators.required],
-      bankacname: ['', Validators.required],
-      bankacno: ['', Validators.required],
-      depositdate: ['', Validators.required],
-      bankvoucherno: ['', Validators.required],
-      remarks: ['', Validators.required],
-      creatorid: ['', Validators.required],
-      approverid: ['', Validators.required],
-      status: ['', Validators.required],
-      approved: ['', Validators.required]
+      code: ['',Validators.required],
+      name: ['',Validators.required],
+      disabled: ['0',Validators.required],
+      approved: ['1',Validators.required],
       
     }
     this.bankForm =fb.group(this.formLayout)
@@ -61,23 +53,23 @@ export class VerifyVoucherComponent {
 
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
-    // // this.getList();
+    this.getList();
   }
 
-  // getList(pageno?: number | undefined) {
-  //   const page = pageno || 1;
-  //   this.RS.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(
-  //     (result: any) => {
-  //       this.lists = result.data;
-  //       this.pagination.total = result.total;
-  //       this.pagination.currentPage = result.currentPage;
-  //       console.log(result);
-  //     },
-  //     error => {
-  //        this.toastr.error(error.error);
-  //     }
-  //   );
-  // }
+  getList(pageno?: number | undefined) {
+    const page = pageno || 1;
+    this.RS.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(
+      (result: any) => {
+        this.lists = result.data;
+        this.pagination.total = result.total;
+        this.pagination.currentPage = result.currentPage;
+        console.log(result);
+      },
+      error => {
+         this.toastr.error(error.error);
+      }
+    );
+  }
 
 bankFormSubmit(){
   if (this.bankForm.valid) {
@@ -110,13 +102,9 @@ resetForm(){
 
 search() {
 
-  //pass a string, if the string matches then, populate a list with details
-  //set details to formcontrol
-  //if not show list not found
-
   this.pagination.perPage=this.srchForm.value.entries;
   this.searchTerm=this.srchForm.value.srch_term;
-  // this.getList();
+  this.getList();
 }
 
 resetFilters() {
@@ -124,17 +112,17 @@ resetFilters() {
   this.column = '';
   this.searchTerm = '';
   this.pagination.currentPage = 1;
-  // this.getList();
+  this.getList();
 }
 
 paginatedData($event: { page: number | undefined; }) {
-  //this.getList($event.page);
+  this.getList($event.page);
 }
 
 changePerPage(perPage: number) {
   this.pagination.perPage = perPage;
   this.pagination.currentPage = 1;
-  // this.getList();
+  this.getList();
 }
 
 
@@ -147,7 +135,7 @@ createItem(id = null) {
       next: (result :any) => {
       this.toastr.success('Item Successfully Updated!', 'Success');
       this.bankForm = this.fb.group(this.formLayout)
-      // this.getList();
+      this.getList();
     }, error :err=> {
       this.toastr.error(err.error.message, 'Error');
     }
@@ -157,7 +145,7 @@ createItem(id = null) {
       next:(result:any) => {
       this.toastr.success('Item Successfully Saved!', 'Success');
       this.bankForm = this.fb.group(this.formLayout)
-      // this.getList();
+      this.getList();
     }, error:err => {
       this.toastr.error(err.error.message, 'Error');
     }
@@ -183,7 +171,7 @@ deleteItem(id: any) {
   if (window.confirm('Are sure you want to delete this item?')) {
     this.RS.remove(id).subscribe((result: any) => {
       this.toastr.success('Item Successfully Deleted!', 'Success');
-      // this.getList();
+      this.getList();
     }, (error: { error: any; }) => {
       this.toastr.error(error.error, 'Error');
     });

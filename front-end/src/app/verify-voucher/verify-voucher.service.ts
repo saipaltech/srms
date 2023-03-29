@@ -21,7 +21,7 @@ export class VerifyVoucherService {
 
   constructor(private http: HttpClient,appCnfig:AppConfig) { 
     this.baseurl = appCnfig.baseUrl;
-    this.url = this.baseurl + 'organization';
+    this.url = this.baseurl + 'bank-voucher';
   }
 
   getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean) {

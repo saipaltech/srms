@@ -30,12 +30,12 @@ public class BankVoucherController {
 	@Autowired
 	ValidationService validationService;
 	
-	/*@GetMapping("")
+	@GetMapping("")
 	
-	 * public ResponseEntity<Map<String, Object>> index(HttpServletRequest request)
-	 * { return objService.index(); }
-	 */
-
+	  public ResponseEntity<Map<String, Object>> index(HttpServletRequest request)
+	 { return objService.index();
+	 }
+	 
 //	@PostMapping("")
 //	public ResponseEntity<Map<String, Object>> store(HttpServletRequest request) {
 //		Validator validator = validationService.validate(BankVoucher.rules());
@@ -52,10 +52,10 @@ public class BankVoucherController {
 //		return objService.index(); 
 //	 }
 
-	@GetMapping("{id}")
-	public ResponseEntity<Map<String, Object>> edit(HttpServletRequest request, @PathVariable String id) {
-		return objService.edit(id);
-	}
+//	@GetMapping("")
+//	public ResponseEntity<Map<String, Object>> edit(HttpServletRequest request) {
+//		return objService.edit();
+//	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> update(HttpServletRequest request, @PathVariable String id) {

@@ -40,7 +40,7 @@ public class BankVoucher {
 	}
 
 	public static List<String> searchables() {
-		return Arrays.asList("name", "code", "id");
+		return Arrays.asList("transactionid");
 	}
 
 	public static Map<String, String> rules() {
