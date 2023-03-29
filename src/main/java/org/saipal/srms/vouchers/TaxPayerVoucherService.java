@@ -91,12 +91,20 @@ public class TaxPayerVoucherService extends AutoService {
 		String usq = "select count(voucherno) from taxvouchers where voucherno=?";
 		Tuple res = db.getSingleResult(usq, Arrays.asList(model.voucherno));
 		if ((!(res.get(0) + "").equals("0"))) {
-			return Messenger.getMessenger().setMessage("This voucher No is already use.").error();
+			return Messenger.getMessenger().setMessage("This voucherno is already in use.").error();
 		}
 		sql = "INSERT INTO taxvouchers (date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount,creatorid, bankid, branchid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.date,model.voucherno,model.taxpayername,model.taxpayerpan,model.depositedby,model.depcontact,model.llgcode,model.llgname,model.costcentercode,model.costcentername,model.accountno,model.revenuecode,model.revenuetitle,model.purpose,model.amount, auth.getUserId(), auth.getBankId(), auth.getBranchId()));
-
-		if (rowEffect.getErrorNumber() == 0) {			
+		if (rowEffect.getErrorNumber() == 0) {
+			try {
+				JSONObject obj = api.sendDataToSutra(model);
+				if(obj.getInt("status")==1) {
+					db.execute("update taxvouchers set status=2 where voucherno='"+model.voucherno+"'");
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return Messenger.getMessenger().success();
 		} else {
 			return Messenger.getMessenger().error();
@@ -278,6 +286,44 @@ public class TaxPayerVoucherService extends AutoService {
 			//e.printStackTrace();
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"Unable to fetch data.\"}");
+		
+	}
+
+	public ResponseEntity<String> getVoucherDetailsByVoucherNo() {
+		String voucherno = request("voucherno");
+		if(voucherno.isBlank()) {
+			return ResponseEntity.ok("{status:0,message:\"Bank Voucher No. required\"}");
+		}
+		Tuple t = db.getSingleResult("select top 1 * from "+table+" where voucherno=?",Arrays.asList(voucherno));
+		if(t!=null) {
+			try {
+				JSONObject data = new JSONObject();
+				data.put("date",t.get("date"));
+				data.put("voucherno",t.get("voucherno"));
+				data.put("taxpayername",t.get("taxpayername"));
+				data.put("taxpayerpan",t.get("taxpayerpan"));
+				data.put("depositedby",t.get("depositedby"));
+				data.put("depcontact",t.get("depcontact"));
+				data.put("llgcode",t.get("llgcode"));
+				data.put("llgname",t.get("llgname"));
+				data.put("costcentercode",t.get("costcentercode"));
+				data.put("costcentername",t.get("costcentername"));
+				data.put("accountno",t.get("accountno"));
+				data.put("revenuecode",t.get("revenuecode"));
+				data.put("revenuetitle",t.get("revenuetitle"));
+				data.put("purpose",t.get("purpose"));
+				data.put("amount",t.get("amount"));
+				JSONObject j = new JSONObject();
+				j.put("status",1);
+				j.put("message", "success");
+				j.put("data",data);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Such voucher exists.\"}");
 		
 	}
 
