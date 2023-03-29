@@ -91,12 +91,20 @@ public class TaxPayerVoucherService extends AutoService {
 		String usq = "select count(voucherno) from taxvouchers where voucherno=?";
 		Tuple res = db.getSingleResult(usq, Arrays.asList(model.voucherno));
 		if ((!(res.get(0) + "").equals("0"))) {
-			return Messenger.getMessenger().setMessage("This voucher No is already use.").error();
+			return Messenger.getMessenger().setMessage("This voucherno is already in use.").error();
 		}
 		sql = "INSERT INTO taxvouchers (date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount,creatorid, bankid, branchid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.date,model.voucherno,model.taxpayername,model.taxpayerpan,model.depositedby,model.depcontact,model.llgcode,model.llgname,model.costcentercode,model.costcentername,model.accountno,model.revenuecode,model.revenuetitle,model.purpose,model.amount, auth.getUserId(), auth.getBankId(), auth.getBranchId()));
-
-		if (rowEffect.getErrorNumber() == 0) {			
+		if (rowEffect.getErrorNumber() == 0) {
+			try {
+				JSONObject obj = api.sendDataToSutra(model);
+				if(obj.getInt("status")==1) {
+					db.execute("update taxvouchers set status=2 where voucherno='"+model.voucherno+"'");
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return Messenger.getMessenger().success();
 		} else {
 			return Messenger.getMessenger().error();

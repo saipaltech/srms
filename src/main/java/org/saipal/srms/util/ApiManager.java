@@ -6,6 +6,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
+import org.saipal.srms.vouchers.TaxPayerVoucher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -172,6 +173,57 @@ public class ApiManager {
 					}
 				}
 				return data;
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JSONObject sendDataToSutra(TaxPayerVoucher tpv) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.setParam("date",tpv.date)
+					.setParam("voucherno",tpv.voucherno)
+					.setParam("taxpayername",tpv.taxpayername)
+					.setParam("taxpayerpan",tpv.taxpayerpan)
+					.setParam("depositedby",tpv.depositedby)
+					.setParam("depcontact",tpv.depcontact)
+					.setParam("llgcode",tpv.llgcode)
+					.setParam("llgname",tpv.llgname)
+					.setParam("costcentercode",tpv.costcentercode)
+					.setParam("costcentername",tpv.costcentername)
+					.setParam("accountno",tpv.accountno)
+					.setParam("revenuecode",tpv.revenuecode)
+					.setParam("revenuetitle",tpv.revenuetitle)
+					.setParam("purpose",tpv.purpose)
+					.setParam("amount",tpv.amount)
+					.post(url + "/srms/taxpayer-voucher");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JSONObject updateToSutra(String transid,String bankVoucherid,String depositdate,String remarks) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.setParam("transactionid",transid)
+					.setParam("depositdate",depositdate)
+					.setParam("bankvoucherno",bankVoucherid)
+					.setParam("remarks",remarks)
+					.post(url + "/srms/bankdeposit-voucher");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
 			}
 		} catch (JSONException e) {
 			// e.printStackTrace();
