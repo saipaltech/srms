@@ -268,4 +268,42 @@ public class TaxPayerVoucherService extends AutoService {
 		
 	}
 
+	public ResponseEntity<String> getVoucherDetailsByVoucherNo() {
+		String voucherno = request("voucherno");
+		if(voucherno.isBlank()) {
+			return ResponseEntity.ok("{status:0,message:\"Bank Voucher No. required\"}");
+		}
+		Tuple t = db.getSingleResult("select top 1 * from "+table+" where voucherno=?",Arrays.asList(voucherno));
+		if(t!=null) {
+			try {
+				JSONObject data = new JSONObject();
+				data.put("date",t.get("date"));
+				data.put("voucherno",t.get("voucherno"));
+				data.put("taxpayername",t.get("taxpayername"));
+				data.put("taxpayerpan",t.get("taxpayerpan"));
+				data.put("depositedby",t.get("depositedby"));
+				data.put("depcontact",t.get("depcontact"));
+				data.put("llgcode",t.get("llgcode"));
+				data.put("llgname",t.get("llgname"));
+				data.put("costcentercode",t.get("costcentercode"));
+				data.put("costcentername",t.get("costcentername"));
+				data.put("accountno",t.get("accountno"));
+				data.put("revenuecode",t.get("revenuecode"));
+				data.put("revenuetitle",t.get("revenuetitle"));
+				data.put("purpose",t.get("purpose"));
+				data.put("amount",t.get("amount"));
+				JSONObject j = new JSONObject();
+				j.put("status",1);
+				j.put("message", "success");
+				j.put("data",data);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Such voucher exists.\"}");
+		
+	}
+
 }
