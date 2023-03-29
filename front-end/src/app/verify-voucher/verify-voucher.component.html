@@ -46,7 +46,7 @@
               <tbody>
                 <tr>
                   <th scope="row">कारोबार संकेत नंबर:</th>
-                  <td>Mark</td>
+                  <td>{{ lists.transactionid }}</td>
                 </tr>
                 <tr>
                   <th scope="row">कार्यालय: वडा नंबर, पालिका</th>
@@ -62,21 +62,17 @@
                   <th scope="row">खाता नाम:</th>
                   <td>Mark</td>
                 </tr>
-   
-                <tr>
-                  <th scope="row">क्ल्स्दफ्ज्ल</th>
-                  <td>Mark</td>
-                </tr>
-
-                <tr>
-                  <th scope="row">क्ल्स्दफ्ज्ल</th>
-                  <td>Mark</td>
-                </tr>
 
                 <tr>
                   <th scope="row">खाता नंबर</th>
                   <td>Mark</td>
                 </tr>
+
+                 <tr>
+                  <th scope="row">रकम</th>
+                  <td>Mark</td>
+                </tr>
+
    
 
    
@@ -89,21 +85,21 @@
                   <label class="form-label req">जम्मा गरेको मिति</label>
                   <div class="input-group has-validation">
                     <input
-                      formControlName="kardataSanketNumber"
+                      formControlName="depositdate"
                       type="text"
                       readonly
                       placeholder="{{ myDate | date : 'shortDate' }}"
                       class="form-control form-control-sm"
                       [ngClass]="
-                        vs.getControlClass(bankForm.controls['kardataSanketNumber'])
+                        vs.getControlClass(bankForm.controls['depositdate'])
                       "
                     />
                     <div
                       [ngClass]="
-                        vs.getMessageClass(bankForm.controls['kardataSanketNumber'])
+                        vs.getMessageClass(bankForm.controls['depositdate'])
                       "
                     >
-                      {{ vs.getMessage(bankForm.controls["kardataSanketNumber"]) }}
+                      {{ vs.getMessage(bankForm.controls["depositdate"]) }}
                     </div>
                   </div>
                 </div>
@@ -112,13 +108,13 @@
                   <label class="form-label req">बैंक भौचर नंबर</label>
                   <div class="input-group has-validation">
                     <input
-                      formControlName="name"
+                      formControlName="bankvoucherno"
                       type="text"
                       class="form-control form-control-sm"
-                      [ngClass]="vs.getControlClass(bankForm.controls['name'])"
+                      [ngClass]="vs.getControlClass(bankForm.controls['bankvoucherno'])"
                     />
-                    <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">
-                      {{ vs.getMessage(bankForm.controls["name"]) }}
+                    <div [ngClass]="vs.getMessageClass(bankForm.controls['bankvoucherno'])">
+                      {{ vs.getMessage(bankForm.controls["bankvoucherno"]) }}
                     </div>
                   </div>
                 </div>
@@ -127,13 +123,13 @@
                     <label class="form-label req">बिबरण</label>
                     <div class="input-group has-validation">
                       <input
-                        formControlName="name"
+                        formControlName="remarks"
                         type="text"
                         class="form-control form-control-sm"
-                        [ngClass]="vs.getControlClass(bankForm.controls['name'])"
+                        [ngClass]="vs.getControlClass(bankForm.controls['remarks'])"
                       />
-                      <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">
-                        {{ vs.getMessage(bankForm.controls["name"]) }}
+                      <div [ngClass]="vs.getMessageClass(bankForm.controls['remarks'])">
+                        {{ vs.getMessage(bankForm.controls["remarks"]) }}
                       </div>
                     </div>
                   </div>

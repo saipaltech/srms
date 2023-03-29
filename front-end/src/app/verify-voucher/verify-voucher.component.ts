@@ -102,10 +102,6 @@ resetForm(){
 
 search() {
 
-  //pass a string, if the string matches then, populate a list with details
-  //set details to formcontrol
-  //if not show list not found
-
   this.pagination.perPage=this.srchForm.value.entries;
   this.searchTerm=this.srchForm.value.srch_term;
   this.getList();

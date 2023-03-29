@@ -1,7 +1,7 @@
 package org.saipal.srms.vouchers;
 
 import java.util.Arrays;
-
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jettison.json.JSONException;
@@ -12,6 +12,7 @@ import org.saipal.srms.util.ApiManager;
 import org.saipal.srms.util.DB;
 import org.saipal.srms.util.DbResponse;
 import org.saipal.srms.util.Messenger;
+import org.saipal.srms.util.Paginator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -30,13 +31,37 @@ public class BankVoucherService extends AutoService {
 
 	private String table = "bank_deposits";
 
+	
+	public ResponseEntity<Map<String, Object>> index() {
+		if (!auth.hasPermission("bankuser")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		String condition = " where id!=1 ";
+		if (!request("searchTerm").isEmpty()) {
+			List<String> searchbles = TaxPayerVoucher.searchables();
+			condition += "and (";
+			for (String field : searchbles) {
+				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
+			}
+			condition = condition.substring(0, condition.length() - 3);
+		  condition += ")";
+			
+		}
+		String sort = "";
+		if (!request("sortKey").isBlank()) {
+			if (!request("sortDir").isBlank()) {
+				sort = request("sortKey") + " " + request("sortDir");
+			}
+		}
 
-
-	public ResponseEntity<Map<String, Object>> edit(String id) {
-
-		String sql = "select transactionid,office,voucherdate,bankacname,bankacno from " + table + " where id=?";
-		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
-		return ResponseEntity.ok(data);
+		Paginator p = new Paginator();
+		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
+				.select("transactionid,office,voucherdate,bankacname,bankacno").sqlBody("from " + table + condition).paginate();
+		if (result != null) {
+			return ResponseEntity.ok(result);
+		} else {
+			return Messenger.getMessenger().error();
+		}
 	}
 
 	public ResponseEntity<Map<String, Object>> update(String id) {
