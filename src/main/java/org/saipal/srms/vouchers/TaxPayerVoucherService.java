@@ -41,6 +41,8 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String condition = " where id!=1 ";
+		String approvelog=request("approvelog");
+		System.out.println("The Approve Log is:" + approvelog);
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
 			condition += "and (";
@@ -48,7 +50,18 @@ public class TaxPayerVoucherService extends AutoService {
 				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
 			}
 			condition = condition.substring(0, condition.length() - 3);
-			condition += ")";
+			switch(Integer.parseInt(approvelog)) {
+			  case 0:
+				  condition += " where approved=0)";
+			    break;
+			  case 1:
+				  condition += "where approved=1)";
+			    break;
+			  default:
+				  condition += ")";
+			}
+
+			
 		}
 		String sort = "";
 		if (!request("sortKey").isBlank()) {
@@ -59,7 +72,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("voucherno,taxpayername,llgname,amount,revenuetitle").sqlBody("from " + table + condition).paginate();
+				.select("date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount").sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -78,10 +91,10 @@ public class TaxPayerVoucherService extends AutoService {
 		String usq = "select count(voucherno) from taxvouchers where voucherno=?";
 		Tuple res = db.getSingleResult(usq, Arrays.asList(model.voucherno));
 		if ((!(res.get(0) + "").equals("0"))) {
-			return Messenger.getMessenger().setMessage("This voucher No is already used.").error();
+			return Messenger.getMessenger().setMessage("This voucher No is already use.").error();
 		}
-		sql = "INSERT INTO banks(code,name, disabled, approved) VALUES (?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.voucherno, model.llgname, model.llgcode, model.costcentername));
+		sql = "INSERT INTO taxvouchers (date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount,creatorid, bankid, branchid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.date,model.voucherno,model.taxpayername,model.taxpayerpan,model.depositedby,model.depcontact,model.llgcode,model.llgname,model.costcentercode,model.costcentername,model.accountno,model.revenuecode,model.revenuetitle,model.purpose,model.amount, auth.getUserId(), auth.getBankId(), auth.getBranchId()));
 
 		if (rowEffect.getErrorNumber() == 0) {			
 			return Messenger.getMessenger().success();
@@ -92,7 +105,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
 
-		String sql = "select id, code, name ,disabled,approved from " + table + " where id=?";
+		String sql = "select date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount from " + table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
 	}
@@ -104,8 +117,8 @@ public class TaxPayerVoucherService extends AutoService {
 		DbResponse rowEffect;
 		TaxPayerVoucher model = new TaxPayerVoucher();
 		model.loadData(document);
-		String sql = "UPDATE " + table + " set approved=?, disabled=? where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.voucherno, model.llgcode, model.llgname, model.costcentercode));
+		String sql = "UPDATE " + table + " set date=?,voucherno=?,taxpayername=?,taxpayerpan=?,depositedby=?,depcontact=?,llgcode=?,llgname=?,costcentercode=?,costcentername=?,accountno=?,revenuecode=?,revenuetitle=?,purpose=?,amount=? where id=?";
+		rowEffect = db.execute(sql, Arrays.asList(model.date,model.voucherno,model.taxpayername,model.taxpayerpan,model.depositedby,model.depcontact,model.llgcode,model.llgname,model.costcentercode,model.costcentername,model.accountno,model.revenuecode,model.revenuetitle,model.purpose,model.amount));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 		} else {

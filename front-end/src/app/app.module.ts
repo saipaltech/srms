@@ -16,7 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BankComponent, BankUsersComponent } from './bank/bank.component';
 import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient  } from '@angular/common/http';
 import { BranchComponent } from './branch/branch.component';
-import { UsersComponent } from './users/users.component';
+import { ChangePasswordComponent, UserLimitComponent, UsersComponent } from './users/users.component';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { AppConfig } from './app.config';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
@@ -26,6 +26,7 @@ import { ApiService } from './api.service';
 import { AuthInterceptor } from './auth-interceptor';
 import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,9 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     BranchComponent,
     UsersComponent,
     VerifyVoucherComponent,
-    BankUsersComponent
+    BankUsersComponent,
+    UserLimitComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -51,7 +54,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     ReactiveFormsModule,
     HttpClientModule,
     PaginationModule.forRoot(),
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    BsDropdownModule.forRoot()
   ],
   providers: [
     AppConfig,

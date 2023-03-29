@@ -16,8 +16,6 @@ import {UsersService} from '../users/users.service'
 })
 export class BankComponent {
 
-
-
   vs = ValidationService;
   model: any = {};
   disabled = false;

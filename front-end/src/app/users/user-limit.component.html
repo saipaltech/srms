@@ -1,0 +1,46 @@
+&nbsp; &nbsp; <i class="bi bi-person-circle text-primary" (click)="openModal(template)" style="cursor:pointer;"></i>
+
+<ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Change Limit</h4>
+      <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <form class="needs-validation" [formGroup]= "bankUserForm" (ngSubmit)= "bankUserFormSubmit()">
+            <div class="row g-3">
+                <input type="hidden" formControlName="userid">
+              <div class="col-6">
+                <label class="form-label req">Limit</label>
+                <div class="input-group has-validation">
+                  <input
+                    formControlName="limit"
+                    type="text"
+                    class="form-control form-control-sm"
+                    [ngClass]="vs.getControlClass(bankUserForm.controls['limit'])"
+                  />
+                  <div [ngClass]="vs.getMessageClass(bankUserForm.controls['limit'])">
+                    {{ vs.getMessage(bankUserForm.controls["limit"]) }}
+                  </div>
+                </div>
+              </div>          
+              
+         </div>
+                        
+            <br />
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-success btn-sm" type="submit">Submit</button>
+                &nbsp;
+                &nbsp;
+                <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
+            </div>
+    
+      
+              
+            </div>
+           
+          </form>
+    </div>
+  </ng-template>
