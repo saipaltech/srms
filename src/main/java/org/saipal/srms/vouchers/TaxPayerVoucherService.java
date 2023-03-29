@@ -112,7 +112,6 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
-
 		String sql = "select date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,accountno,revenuecode,revenuetitle,purpose,amount from " + table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
@@ -324,7 +323,6 @@ public class TaxPayerVoucherService extends AutoService {
 			}
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Such voucher exists.\"}");
-		
 	}
 
 }
