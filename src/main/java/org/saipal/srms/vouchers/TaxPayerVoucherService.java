@@ -165,7 +165,7 @@ public class TaxPayerVoucherService extends AutoService {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for(Tuple t:d) {
-					dt.put(Map.of("code",t.get("id"),"name",t.get("namenp")));
+					dt.put(Map.of("code",t.get("id")+"","name",t.get("namenp")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
@@ -182,13 +182,13 @@ public class TaxPayerVoucherService extends AutoService {
 	public ResponseEntity<String> getCostCentres() {
 		String llgCode = request("llgcode");
 		//check if data is cached
-		List<Tuple> d = db.getResultList("select id,code,namenp,nameen from ccostcnt where lgid=?",Arrays.asList(llgCode));
+		List<Tuple> d = db.getResultList("select id,code,namenp,nameen from collectioncenter where lgid=?",Arrays.asList(llgCode));
 		if(d.size()>0) {
 			try {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for(Tuple t:d) {
-					dt.put(Map.of("code",t.get("id"),"name",t.get("namenp")));
+					dt.put(Map.of("code",t.get("id")+"","name",t.get("namenp")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
@@ -209,13 +209,13 @@ public class TaxPayerVoucherService extends AutoService {
 			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level is required\"}");
 		}
 		//check if data is cached
-		List<Tuple> d = db.getResultList("select ba.accountname,ba.accountnumber from bankaccount ba where bankid=? where ba.lgid=?",Arrays.asList(auth.getBankId(),llgCode));
+		List<Tuple> d = db.getResultList("select ba.accountname,ba.accountnumber from bankaccount ba where ba.bankid=? and ba.lgid=?",Arrays.asList(auth.getBankId(),llgCode));
 		if(d.size()>0) {
 			try {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for(Tuple t:d) {
-					dt.put(Map.of("acno",t.get("accountnumber"),"name",t.get("accountname")));
+					dt.put(Map.of("acno",t.get("accountnumber")+"","name",t.get("accountname")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
