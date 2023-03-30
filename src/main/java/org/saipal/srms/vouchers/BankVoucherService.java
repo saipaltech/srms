@@ -68,8 +68,7 @@ public class BankVoucherService extends AutoService {
 		}
 		DbResponse rowEffect;
 		BankVoucher model = new BankVoucher();
-		model.loadData(document);
-		
+		model.loadData(document);		
 		String sql = "UPDATE " + table + " set transactionid=?,depositdate=?,bankvoucherno=?,remarks=? where id=?";
 		rowEffect = db.execute(sql, Arrays.asList(model.transactionid,model.depositdate,model.bankvoucherno,model.remarks, id));
 		//System.out.println(rowEffect.getErrorNumber());

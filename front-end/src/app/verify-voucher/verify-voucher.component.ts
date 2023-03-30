@@ -110,10 +110,12 @@ resetForm(){
 transDetails:any;
 search() {
   this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({next:(dt)=>{
+    
     this.transDetails = dt.data;
   },error:error=>{
-    console.log(error);
-    this.toastr.error(error.error.message);
+    // console.log(error);
+    // alert(5)
+    this.toastr.error("error.error.message");
   }});
 }
 
