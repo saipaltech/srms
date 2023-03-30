@@ -11,7 +11,6 @@ import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.util.ApiManager;
-import org.saipal.srms.util.DB;
 import org.saipal.srms.util.DbResponse;
 import org.saipal.srms.util.Messenger;
 import org.saipal.srms.util.Paginator;
@@ -20,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import jakarta.persistence.Tuple;
-import jakarta.transaction.Transactional;
 
 @Component
 public class TaxPayerVoucherService extends AutoService {
@@ -76,7 +74,6 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 	}
 
-	@Transactional
 	public ResponseEntity<Map<String, Object>> store() {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
@@ -162,15 +159,13 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<String> getLocalLevels() {
-		String bankCode = auth.getBankId();
-		//check if data is cached
-		List<Tuple> d = db.getResultList("select code,name from cllg where bankid="+auth.getBankId());
+		List<Tuple> d = db.getResultList("select als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid="+auth.getBankId());
 		if(d.size()>0) {
 			try {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for(Tuple t:d) {
-					dt.put(Map.of("code",t.get("code"),"name",t.get("name")));
+					dt.put(Map.of("code",t.get("id")+"","name",t.get("namenp")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
@@ -181,19 +176,19 @@ public class TaxPayerVoucherService extends AutoService {
 				//e.printStackTrace();
 			}
 		}
-		return ResponseEntity.ok(api.localLevels(bankCode).toString());
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Not found\"}");
 	}
 
 	public ResponseEntity<String> getCostCentres() {
 		String llgCode = request("llgcode");
 		//check if data is cached
-		List<Tuple> d = db.getResultList("select code,name from ccostcnt where bankid=? and llgcode=?",Arrays.asList(auth.getBankId(),llgCode));
+		List<Tuple> d = db.getResultList("select id,code,namenp,nameen from collectioncenter where lgid=?",Arrays.asList(llgCode));
 		if(d.size()>0) {
 			try {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for(Tuple t:d) {
-					dt.put(Map.of("code",t.get("code"),"name",t.get("name")));
+					dt.put(Map.of("code",t.get("id")+"","name",t.get("namenp")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
@@ -204,23 +199,23 @@ public class TaxPayerVoucherService extends AutoService {
 				//e.printStackTrace();
 			}
 		}
-		return ResponseEntity.ok(api.costCentres(llgCode).toString());
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"Cost Centres Not found\"}");
 	}
 
 	public ResponseEntity<String> getBankAccounts() {
 		String bankCode = auth.getBankId();
 		String llgCode = request("llgcode");
 		if(llgCode.isBlank()) {
-			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Code is required\"}");
+			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level is required\"}");
 		}
 		//check if data is cached
-		List<Tuple> d = db.getResultList("select acno,name from cbankac where bankid=? and llgcode=?",Arrays.asList(auth.getBankId(),llgCode));
+		List<Tuple> d = db.getResultList("select ba.accountname,ba.accountnumber from bankaccount ba where ba.bankid=? and ba.lgid=?",Arrays.asList(auth.getBankId(),llgCode));
 		if(d.size()>0) {
 			try {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for(Tuple t:d) {
-					dt.put(Map.of("acno",t.get("acno"),"name",t.get("name")));
+					dt.put(Map.of("acno",t.get("accountnumber")+"","name",t.get("accountname")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
@@ -231,18 +226,18 @@ public class TaxPayerVoucherService extends AutoService {
 				//e.printStackTrace();
 			}
 		}
-		return ResponseEntity.ok(api.bankAccounts(bankCode,llgCode).toString());
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Bank A/C Found \"}");
 	}
 
 	public ResponseEntity<String> getRevenue() {
 		//check if data is cached
-		List<Tuple> d = db.getResultList("select code,name from crevenue where 1=1");
+		List<Tuple> d = db.getResultList("select code,namenp from crevenue where 1=1");
 		if(d.size()>0) {
 			try {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for(Tuple t:d) {
-					dt.put(Map.of("code",t.get("code"),"name",t.get("name")));
+					dt.put(Map.of("code",t.get("code"),"name",t.get("namenp")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
@@ -256,13 +251,13 @@ public class TaxPayerVoucherService extends AutoService {
 		return ResponseEntity.ok(api.revenueCodes().toString());
 	}
 	
-	public ResponseEntity<String> getVoucherDetails() {
-		String voucherno = request("voucherno");
-		if(voucherno.isBlank()) {
-			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Code is required\"}");
-		}
-		return ResponseEntity.ok(api.getVoucherDetails(voucherno).toString());
-	}
+//	public ResponseEntity<String> getVoucherDetails() {
+//		String voucherno = request("voucherno");
+//		if(voucherno.isBlank()) {
+//			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Code is required\"}");
+//		}
+//		return ResponseEntity.ok(api.getVoucherDetails(voucherno).toString());
+//	}
 
 	public ResponseEntity<String> getAllDetails() {
 		String llgCode = request("llgcode");
@@ -286,6 +281,10 @@ public class TaxPayerVoucherService extends AutoService {
 		
 	}
 
+	/*
+	 * To Be Called by SuTRA application, to get the voucher details 
+	 * if they are already not pushed to the Sutra
+	 * */
 	public ResponseEntity<String> getVoucherDetailsByVoucherNo() {
 		String voucherno = request("voucherno");
 		if(voucherno.isBlank()) {

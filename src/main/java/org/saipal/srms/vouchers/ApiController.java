@@ -23,6 +23,10 @@ public class ApiController {
 	
 	public String commKey="3543546841354sdfadfadf145a4df1dfas";
 	
+	/*
+	 * To Be Called by SuTRA application, to get the voucher details 
+	 * if they are already not pushed to the Sutra
+	 * */
 	@GetMapping("get-voucherbyno")
 	public ResponseEntity<String> getVoucher(HttpRequest request) {
 		String hv = request.headers().firstValue("X-SECRET-KEY")!=null?request.headers().firstValue("X-SECRET-KEY").get():"";
@@ -32,6 +36,10 @@ public class ApiController {
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"Invalid Request\"}");
 	}
 	
+	/*
+	 * To Be Called by SuTRA application, to get the deposit voucher details 
+	 * using the payment reference number
+	 * */
 	@GetMapping("get-deposit-status")
 	public ResponseEntity<Map<String, Object>> getVoucherStatus(HttpRequest request) {
 		String hv = request.headers().firstValue("X-SECRET-KEY")!=null?request.headers().firstValue("X-SECRET-KEY").get():"";

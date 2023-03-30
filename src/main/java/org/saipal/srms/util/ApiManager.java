@@ -1,7 +1,6 @@
 package org.saipal.srms.util;
 
 import java.util.Arrays;
-
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -180,6 +179,9 @@ public class ApiManager {
 		return null;
 	}
 	
+	/*
+	 * Calls SuTra server to post taxpayer voucher details
+	 * */
 	public JSONObject sendDataToSutra(TaxPayerVoucher tpv) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
@@ -212,6 +214,11 @@ public class ApiManager {
 		return null;
 	}
 	
+	
+	/*
+	 * Calls sutra API to send the status of bank voucher deposited, 
+	 * Voucher Number is used to communicate the information
+	 * */
 	public JSONObject updateToSutra(String transid,String bankVoucherid,String depositdate,String remarks) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
@@ -232,22 +239,9 @@ public class ApiManager {
 		return null;
 	}
 	
-	public JSONObject getVoucherDetails(String voucherno) {
-		HttpRequest req = new HttpRequest();
-		String tok = this.getToken();
-		try {
-			JSONObject response = req
-					.setHeader("Authorization", "Bearer "+tok)
-					.get(url + "/srms/revenuelist?voucherno="+voucherno);
-			if (response.getInt("status_code") == 200) {
-				return response.getJSONObject("data");
-			}
-		} catch (JSONException e) {
-			// e.printStackTrace();
-		}
-		return null;
-	}
-	
+	/*
+	 * Calls Sutra API to get the voucher details by the payment reference number
+	 * */
 	public JSONObject getTransDetails(String transactionid) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
