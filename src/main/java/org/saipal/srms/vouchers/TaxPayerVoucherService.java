@@ -162,7 +162,7 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<String> getLocalLevels() {
-		String bankCode = auth.getBankCode();
+		String bankCode = auth.getBankId();
 		//check if data is cached
 		List<Tuple> d = db.getResultList("select code,name from cllg where bankid="+auth.getBankId());
 		if(d.size()>0) {
@@ -208,7 +208,7 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<String> getBankAccounts() {
-		String bankCode = auth.getBankCode();
+		String bankCode = auth.getBankId();
 		String llgCode = request("llgcode");
 		if(llgCode.isBlank()) {
 			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Code is required\"}");

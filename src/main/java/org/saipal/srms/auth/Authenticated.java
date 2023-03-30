@@ -47,14 +47,6 @@ public class Authenticated {
 		getAuthRequest().bankId = bankId;
 	}
 
-	public String getBankCode() {
-		return getAuthRequest().bankCode;
-	}
-	
-	public void setBankCode(String bankCode) {
-		getAuthRequest().bankCode = bankCode;
-	}
-
 	public void setBranchId(String branchId) {
 		getAuthRequest().branchId = branchId;
 	}
@@ -80,11 +72,10 @@ public class Authenticated {
 	}
 	
 	public void initSession() {
-		String sql = "select bankid,branchid,code from users join banks on banks.id=users.bankid where users.id=?";
+		String sql = "select bankid,branchid,code from users where users.id=?";
 		Tuple t = db.getSingleResult(sql,Arrays.asList(getUserId()));
 		setBankId(t.get("bankid")+"");
 		setBranchId(t.get("branchid")+"");
-		setBankCode(t.get("code")+"");
 	}
 	
 	public boolean hasPermission(String key) {
