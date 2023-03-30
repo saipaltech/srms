@@ -107,7 +107,7 @@ public class BankVoucherService extends AutoService {
 				try {
 					if(dt.getInt("status")==1) {
 						JSONObject d = dt.getJSONObject("data");
-						db.execute("insert into "+table+" (transactionid,office,voucherdate,bankacname,bankacno) values (?,?,?,?,?)",Arrays.asList(d.get("transactionid"),d.get("office"),d.get("voucherdate"),d.get("bankacname"),d.get("bankacno")));
+						db.execute("insert into "+table+" (fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount) values (?,?,?,?,?,?,?,?,?,?)",Arrays.asList(d.get("fyid"),d.get("transactionid"),d.get("officename"),d.get("collectioncenterid"),d.get("lgid"),d.get("voucherdate"),d.get("voucherdateint"),d.get("bankid"),d.get("accountnumber"),d.get("amount")));
 						return Messenger.getMessenger().setData(d.toMap()).success();
 					}
 				} catch (JSONException e) {

@@ -56,10 +56,8 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       lgid: ['',Validators.required],
       // llgname: ['',Validators.required],
       collectioncenterid: ['',Validators.required],
-      costcentername: ['',Validators.required],
       accountno:['',Validators.required],
       revenuecode: ['',Validators.required],
-      revenuetitle: ['',Validators.required],
       purpose: [''],
       amount:['',Validators.required]
     }
@@ -103,10 +101,8 @@ ngOnInit(): void {
 }
 
 getPalikaDetails(){
-  const llgCode = this.voucherBankForm.value['llgcode'];
-  const cname = llgCode.split("_");
-  this.voucherBankForm.patchValue({"llgname":cname[1]});
-  this.bvs.getPlaikaDetails(cname[0]).subscribe({
+  const llgCode = this.voucherBankForm.value['lgid'];
+  this.bvs.getPlaikaDetails(llgCode).subscribe({
     next:(d)=>{
       this.acs = d.bankacs;
       this.ccs = d.costcentres;
@@ -149,27 +145,14 @@ getPalikaDetails(){
   
   }
 
-  revNameCode(){
-    const revTitle = this.voucherBankForm.value['revenuetitle'];
-    const title = revTitle.split("_");
-    this.voucherBankForm.patchValue({"revenuetitle":title[1]});
-    this.voucherBankForm.patchValue({"revenuecode":title[0]});
-    }
 
-    costCenter(){
-      const revTitle = this.voucherBankForm.value['costcentername'];
-      const costCenter = revTitle.split("_");
-      this.voucherBankForm.patchValue({"costcentername":costCenter[0]});
-      this.voucherBankForm.patchValue({"costcentercode":costCenter[1]});
-    }
+   
   
 
 voucherBankFormSubmit(){
+  console.log(this.voucherBankForm.errors)
   if (this.voucherBankForm.valid) {
     this.model = this.voucherBankForm.value;
-    this.model.llgcode = this.model.llgcode.split("_")[0];
-    this.model.revenuecode = this.model.revenuecode.split("_")[0];
-    this.model.costcentername = this.model.costcentername.split("_")[0];
     this.createItem(this.voucherBankForm.value.id);
     // alert('submit but not create')
     console.log(this.voucherBankForm.value)
