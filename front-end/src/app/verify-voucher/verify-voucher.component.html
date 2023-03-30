@@ -51,7 +51,7 @@
                 </tr>
                 <tr>
                   <th scope="row">कार्यालय: वडा नंबर, पालिका</th>
-                  <td>{{ transDetails.office }}</td>
+                  <td>{{ transDetails.officename }}</td>
                 </tr>
    
                 <tr>
@@ -66,7 +66,7 @@
 
                 <tr>
                   <th scope="row">खाता नंबर</th>
-                  <td>{{transDetails.bankacno}}</td>
+                  <td>{{transDetails.accountnumber}}</td>
                 </tr>
 
                  <tr>
@@ -170,7 +170,7 @@
             placeholder="Search.."
             id="srch_term"
             name="srch_term"
-            formControlName="srch_term"
+           
             (keyup.enter)="search()"
           />
           <button
