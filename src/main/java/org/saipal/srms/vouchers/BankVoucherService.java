@@ -62,15 +62,19 @@ public class BankVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> update(String id) {
+		
 		if (!auth.hasPermission("*")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		DbResponse rowEffect;
 		BankVoucher model = new BankVoucher();
 		model.loadData(document);
-		String sql = "UPDATE " + table + " set transactionid=?,office=?,voucherdate=?,bankacname=?,bankacno=?,depositdate=?,bankvoucherno=?,remarks=?,creatorid=?,approverid=?,status=?,approved=? where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.transactionid,model.office,model.voucherdate,model.bankacname,model.bankacno,model.depositdate,model.bankvoucherno,model.remarks,model.creatorid,model.approverid,model.status,model.approved));
+		
+		String sql = "UPDATE " + table + " set transactionid=?,depositdate=?,bankvoucherno=?,remarks=? where id=?";
+		rowEffect = db.execute(sql, Arrays.asList(model.transactionid,model.depositdate,model.bankvoucherno,model.remarks, id));
+		//System.out.println(rowEffect.getErrorNumber());
 		if (rowEffect.getErrorNumber() == 0) {
+			
 			try {
 				JSONObject resp =  api.updateToSutra(model.transactionid,model.bankvoucherno,model.depositdate,model.remarks);
 				if(resp!=null) {
@@ -101,11 +105,12 @@ public class BankVoucherService extends AutoService {
 	}
 	
 	public ResponseEntity<Map<String,Object>> getTransDetails() {
+		
 		String transactionid = request("transactionid");
 		if(transactionid.isBlank()) {
 			return Messenger.getMessenger().setMessage("Transaction id is required").error();
 		}
-		String sql = "select transactionid,office,voucherdate,bankacname,bankacno from " + table + " where transactionid=?";
+		String sql = "select id,transactionid,office,voucherdate,bankacname,bankacno from " + table + " where transactionid=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
 		if(data==null) {
 			JSONObject dt =  api.getTransDetails(transactionid);

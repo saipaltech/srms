@@ -5,9 +5,9 @@
         <h4 class="mb-3">Verify Voucher</h4>
       </div>
       <div class="col-md-4 text-end">
-        <button type="button" class="btn btn-warning" (click)="changeFields()">
+        <!--<button type="button" class="btn btn-warning" (click)="changeFields()">
           List of Vouchers
-        </button>
+        </button>-->
       </div>
     </div>
     <form class="form-srch" [formGroup]="srchForm">
@@ -55,22 +55,22 @@
    
                 <tr>
                   <th scope="row">भौचर मिति:</th>
-                  <td>Mark</td>
+                  <td>{{ transDetails.voucherdate }}</td>
                 </tr>
    
                 <tr>
                   <th scope="row">खाता नाम:</th>
-                  <td>Mark</td>
+                  <td>{{transDetails.bankacname}}</td>
                 </tr>
 
                 <tr>
                   <th scope="row">खाता नंबर</th>
-                  <td>Mark</td>
+                  <td>{{transDetails.bankacno}}</td>
                 </tr>
 
                  <tr>
                   <th scope="row">रकम</th>
-                  <td>Mark</td>
+                  <td>{{transDetails.amount}}</td>
                 </tr>
 
    

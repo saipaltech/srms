@@ -45,10 +45,10 @@ public class BankVoucher {
 
 	public static Map<String, String> rules() {
 		Map<String, String> rules = new HashMap<>();
-		rules.put("code", "required");
-		rules.put("name", "required");
-		rules.put("approved", "required");
-		rules.put("disabled", "required");
+		rules.put("transactionid", "required");
+		rules.put("depositdate", "required");
+		rules.put("remarks", "required");
+		rules.put("bankvoucherno", "required");
 		return rules;
 	}
 

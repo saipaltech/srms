@@ -38,10 +38,10 @@ export class VerifyVoucherComponent {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id:[],
-      code: ['',Validators.required],
-      name: ['',Validators.required],
-      disabled: ['0',Validators.required],
-      approved: ['1',Validators.required],
+      depositdate: [this.myDate],
+      bankvoucherno: ['',Validators.required],
+      remarks: ['',Validators.required],
+      transactionid: ['',Validators.required],
       
     }
     this.bankForm =fb.group(this.formLayout)
@@ -72,9 +72,16 @@ export class VerifyVoucherComponent {
   }
 
 bankFormSubmit(){
+  // this.model.transactionid = this.transDetails.transactionid;
+  // console.log (this.model.transactionid)
+
+  this.bankForm.controls['transactionid'].setValue(this.transDetails.transactionid)
+
   if (this.bankForm.valid) {
     this.model = this.bankForm.value;
-    this.model.transactionid = this.transDetails.transactionid;
+    this.bankForm.controls['transactionid'].setValue(this.transDetails.transactionid)
+    // this.bankForm.controls['id'].setValue(this.transDetails.id)
+    this.bankForm.patchValue({"id": this.transDetails.id})
     this.createItem(this.bankForm.value.id);
   } else {
     Object.keys(this.bankForm.controls).forEach(field => {
@@ -130,10 +137,8 @@ changePerPage(perPage: number) {
 
 
 createItem(id = null) {
-
   let upd = this.model;
   if (id != "" && id != null) {
-
     this.RS.update(id, upd).subscribe({
       next: (result :any) => {
       this.toastr.success('Item Successfully Updated!', 'Success');
