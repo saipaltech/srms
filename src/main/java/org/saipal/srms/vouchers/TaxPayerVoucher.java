@@ -16,9 +16,9 @@ public class TaxPayerVoucher {
 	public String taxpayerpan;
 	public String depositedby;
 	public String depcontact;
-	public String llgcode;
+	public String lgid;
 	public String llgname;
-	public String costcentercode;
+	public String collectioncenterid;
 	public String costcentername;
 	public String accountno;
 	public String revenuecode;

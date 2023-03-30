@@ -17,7 +17,7 @@
       (ngSubmit)="voucherBankFormSubmit()"
 
     >
-    <input type="hidden" formControlName="llgname">
+    <!-- <input type="hidden" formControlName="llgname"> -->
     <input type="hidden" formControlName="revenuecode">    
     <input type="hidden" formControlName="costcentercode">
 
@@ -48,22 +48,22 @@
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">पालिका</label>
-          <ng-select formControlName="llgcode" (change)="getPalikaDetails()">
+          <ng-select formControlName="lgid" (change)="getPalikaDetails()">
             <ng-option *ngFor="let l of llgs" [value]="l.code+'_'+l.name">{{
               l.name
             }}</ng-option>
           </ng-select>
-          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['llgname'])">{{vs.getMessage(voucherBankForm.controls['llgname'])}}</div>
+          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['lgid'])">{{vs.getMessage(voucherBankForm.controls['lgid'])}}</div>
         </div>
 
         <div class="col-sm-6">
           <label for="lastName" class="form-label req">संकलन केन्द्र</label>
-          <ng-select formControlName="costcentername" (change)="costCenter()">
+          <ng-select formControlName="collectioncenterid" (change)="costCenter()">
             <ng-option *ngFor="let cc of ccs" [value]="cc.name+'_'+cc.code">{{
               cc.name
             }}</ng-option>
           </ng-select>
-          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['costcentername'])">{{vs.getMessage(voucherBankForm.controls['costcentername'])}}</div>
+          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['collectioncenterid'])">{{vs.getMessage(voucherBankForm.controls['collectioncenterid'])}}</div>
         </div>
 
         <div class="col-12">
