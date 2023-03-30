@@ -93,16 +93,6 @@ public class BankVoucherService extends AutoService {
 
 	}
 
-	public ResponseEntity<Map<String,Object>> getVoucherStatus() {
-		String transactionid = request("transactionid");
-		if(transactionid.isBlank()) {
-			return Messenger.getMessenger().setMessage("Transaction id is required").error();
-		}
-		String sql = "select transactionid,bankvoucherno,depositdate,remarks,status from " + table + " where transactionid=?";
-		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
-		return Messenger.getMessenger().setData(data).success();
-	}
-	
 	public ResponseEntity<Map<String,Object>> getTransDetails() {
 		
 		String transactionid = request("transactionid");
@@ -127,6 +117,21 @@ public class BankVoucherService extends AutoService {
 			}
 			return Messenger.getMessenger().error();
 		}
+		return Messenger.getMessenger().setData(data).success();
+	}
+	
+	
+	/*
+	 * To Be Called by SuTRA application, to get the deposit voucher details 
+	 * using the payment reference number
+	 * */
+	public ResponseEntity<Map<String,Object>> getVoucherStatus() {
+		String transactionid = request("transactionid");
+		if(transactionid.isBlank()) {
+			return Messenger.getMessenger().setMessage("Transaction id is required").error();
+		}
+		String sql = "select transactionid,bankvoucherno,depositdate,remarks,status from " + table + " where transactionid=?";
+		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
 		return Messenger.getMessenger().setData(data).success();
 	}
 

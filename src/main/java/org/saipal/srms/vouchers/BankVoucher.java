@@ -24,8 +24,6 @@ public class BankVoucher {
 	public String approved;
 	public String tasklog;
 	
-
-    
 	public void loadData(RequestParser doc) {
 		for (Field f : this.getClass().getFields()) {
 			String fname = f.getName();

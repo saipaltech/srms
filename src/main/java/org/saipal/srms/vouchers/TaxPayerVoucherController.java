@@ -94,8 +94,8 @@ public class TaxPayerVoucherController {
 		return objService.getAllDetails();
 	}
 	
-	@GetMapping("get-voucher-details")
-	public ResponseEntity<String> getVoucherDetails() {
-		return objService.getVoucherDetails();
-	}
+//	@GetMapping("get-voucher-details")
+//	public ResponseEntity<String> getVoucherDetails() {
+//		return objService.getVoucherDetails();
+//	}
 }
