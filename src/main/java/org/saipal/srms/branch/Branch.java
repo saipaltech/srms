@@ -13,6 +13,7 @@ public class Branch {
 	public String id;
 	public String name;
 	public String bankid;
+	public String code;
 	public String approved;
 	public String disabled;
 

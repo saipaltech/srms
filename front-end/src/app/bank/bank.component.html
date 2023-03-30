@@ -14,16 +14,14 @@
       <form class="needs-validation" [formGroup]= "bankForm" (ngSubmit)= "bankFormSubmit()">
         <div class="row g-3">
           <input type="hidden" formControlName="id">
-            <input type="hidden" formControlName="code">
-            <input type="hidden" formControlName="name">
             <div class="col-sm-6">
               <label class="form-label req">Bank</label>
               <div class="input-group has-validation">
-                <select class="form-select form-select-sm"  (change)="setName(sl.value)" #sl [ngClass]="vs.getControlClass(bankForm.controls['code'])">
+                <select class="form-select form-select-sm" formControlName="bankid"  #sl [ngClass]="vs.getControlClass(bankForm.controls['bankid'])">
                     <option value="">Select Bank</option>
-                    <option *ngFor="let b of banks;let i=index;" value="{{i}}">{{b.name}}</option>
+                    <option *ngFor="let b of banks;let i=index;" value="{{b.id}}">{{b.namenp}}</option>
                   </select>
-                  <div [ngClass]="vs.getMessageClass(bankForm.controls['code'])">{{vs.getMessage(bankForm.controls['code'])}}</div>
+                  <div [ngClass]="vs.getMessageClass(bankForm.controls['bankid'])">{{vs.getMessage(bankForm.controls['bankid'])}}</div>
               </div>
             </div>
           <!--<div class="col-6">
@@ -110,8 +108,8 @@
             <thead>
               <tr>
 
-                <th scope="col">Name</th>
                 <th scope="col">Code</th>
+                <th scope="col">Name</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
@@ -119,8 +117,8 @@
 
 
               <tr *ngFor=" let item of lists; let i = index; ">
-                <td>{{item.name}}</td>
                 <td>{{item.code}}</td>
+                <td>{{item.namenp}}</td>
                 <td><a (click)="getUpdateItem(item.id)" href="javascript:void(0)"><i class="bi bi-pencil-square text-success"></i></a> &nbsp;&nbsp;&nbsp;
                   <a (click)="deleteItem(item.id)"><i class="bi bi-trash3 text-danger" style="cursor:pointer;"></i>
                   </a>

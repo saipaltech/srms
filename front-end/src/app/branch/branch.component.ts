@@ -37,6 +37,7 @@ export class BranchComponent {
       id:[''],
       bankid: ['',Validators.required],
       name: ['',Validators.required],
+      code: [''],
       disabled: ['0',Validators.required],
       approved: ['1',Validators.required],
       
@@ -55,7 +56,7 @@ export class BranchComponent {
   }
 
   getBanks(){
-    this.bs.getlist().subscribe({next:(d:any)=>{
+    this.bs.getBankFromSutra().subscribe({next:(d:any)=>{
       this.banks = d;
     },error:err=>{
 

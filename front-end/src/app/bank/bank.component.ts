@@ -39,8 +39,7 @@ export class BankComponent {
   constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: BankService){
     this.formLayout = {
       id:[],
-      code: ['',Validators.required],
-      name: ['',Validators.required],
+      bankid: ['',Validators.required],
       disabled: ['0',Validators.required],
       approved: ['1',Validators.required],
       
@@ -59,7 +58,8 @@ export class BankComponent {
   }
   getBanks(){
     this.RS.getBankFromSutra().subscribe({next:(d)=>{
-      this.banks = d.data;
+      this.banks = d;
+      console.log(this.banks);
     },error:err=>{
 
     }})
@@ -174,6 +174,7 @@ getUpdateItem(id: any) {
     (result: any) => {
       this.model = result;
       this.bankForm.patchValue(result);
+      this.bankForm.patchValue({"bankid":id});
       this.changeFields();
     },
     (error: any) => {
@@ -214,7 +215,7 @@ export class BankUsersComponent {
   
   constructor(private modalService: BsModalService, private fb: FormBuilder, private RS:UsersService, private toastr: ToastrService) {
     this.formLayout = {
-      bankid:[this.bankid],
+      bankid:[''],
       username: ['',Validators.required],
       name: ['',Validators.required],
       post: ['',Validators.required],
@@ -235,6 +236,7 @@ export class BankUsersComponent {
 
     if (this.bankUserForm.valid) {
       this.model = this.bankUserForm.value;
+      this.model.bankid=this.bankid;
       this.createItem(this.bankUserForm.value.id);
     } else {
       Object.keys(this.bankUserForm.controls).forEach(field => {

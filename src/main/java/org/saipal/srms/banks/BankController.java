@@ -70,8 +70,8 @@ public class BankController {
 		return objService.getList();
 	}
 	
-	@GetMapping("banks-from-sutra")
-	public ResponseEntity<String> getBanksFromSutra() {
+	@GetMapping("/banks-from-sutra")
+	public ResponseEntity<List> getBanksFromSutra() {
 		return objService.getBanksFromSutra();
 	}
 }

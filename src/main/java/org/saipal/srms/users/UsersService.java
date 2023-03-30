@@ -111,10 +111,15 @@ public class UsersService extends AutoService {
 		if ((!(res.get(0) + "").equals("0"))) {
 			return Messenger.getMessenger().setMessage("Username already exists.").error();
 		}
+		String sq="select count(id) from branches where bankid=? and ishead=1";
+		Tuple resp = db.getSingleResult(sq, Arrays.asList(model.bankid));
+		if ((!(resp.get(0) + "").equals("1"))) {
+			return Messenger.getMessenger().setMessage("Headbranch does not exists.").error();
+		}
 		model.password = pe.encode(model.password);
 		sql = "INSERT INTO users(name, post,username, password, mobile ,bankid, branchid ,disabled, approved) VALUES (?,?,?,?,?,?,(select top 1 id from branches where bankid=? and ishead=1),?,?)";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username, model.password,
-				model.mobile, model.bankid, model.branchid, model.disabled, model.approved));
+				model.mobile, model.bankid, model.bankid, model.disabled, model.approved));
 		if (rowEffect.getErrorNumber() == 0) {
 			String sqls = "Insert into users_perms (userid, permid) values((select top 1 id from users where username = ?), 2),((select top 1 id from users where username = ?), 3)";
 			db.execute(sqls, Arrays.asList(model.username));
