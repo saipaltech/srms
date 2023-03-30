@@ -56,7 +56,7 @@ public class BankService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("id,code,name,approved,disabled").sqlBody("from " + table + condition).paginate();
+				.select("id,code,namenp,nameen,approved,disabled").sqlBody("from bankinfo "  + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -72,17 +72,26 @@ public class BankService extends AutoService {
 		String sql = "";
 		Bank model = new Bank();
 		model.loadData(document);
-		String usq = "select count(code) from banks where code=?";
-		Tuple res = db.getSingleResult(usq, Arrays.asList(model.code));
+//		String usq = "select count(code) from banks where code=?";
+//		Tuple res = db.getSingleResult(usq, Arrays.asList(model.code));
+//		if ((!(res.get(0) + "").equals("0"))) {
+//			return Messenger.getMessenger().setMessage("Bank already exists.").error();
+//		}
+//		sql = "INSERT INTO banks(code,name, disabled, approved) VALUES (?,?,?,?)";
+//		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.code, model.name, model.approved, model.disabled));
+		
+		String usq = "select count(id) from branches where bankid=?";
+		Tuple res = db.getSingleResult(usq, Arrays.asList(model.bankid));
 		if ((!(res.get(0) + "").equals("0"))) {
 			return Messenger.getMessenger().setMessage("Bank already exists.").error();
 		}
-		sql = "INSERT INTO banks(code,name, disabled, approved) VALUES (?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.code, model.name, model.approved, model.disabled));
-
-		if (rowEffect.getErrorNumber() == 0) {
-			sql = "INSERT INTO branches(name,bankid, disabled, approved,ishead) VALUES (?,(select top 1 id from banks where code =?),?,?,1)";
-			rowEffect = db.execute(sql, Arrays.asList("Head Branch", model.code, 0, 1));
+		
+		String sql1 = "select id,code,namenp ,disabled,approved from bankinfo where id=?";
+		Map<String, Object> data = db.getSingleResultMap(sql1, Arrays.asList(model.bankid));
+		
+			sql = "INSERT INTO branches(name,bankid, disabled, approved,ishead) VALUES (?,?,?,?,?)";
+			DbResponse rowEffect = db.execute(sql, Arrays.asList(data.get("namenp")+" Head Branch",model.bankid,model.disabled,model.approved, 1));
+			if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 		} else {
 			return Messenger.getMessenger().error();
@@ -138,8 +147,10 @@ public class BankService extends AutoService {
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
 
-	public ResponseEntity<String> getBanksFromSutra() {
-		return ResponseEntity.ok(api.getBanks().toString());
+	public ResponseEntity<List> getBanksFromSutra() {
+		String sql = "select id,namenp from bankinfo where id !=1";
+		return ResponseEntity.ok(db.getResultListMap(sql));
+//		return ResponseEntity.ok(api.getBanks().toString());
 	}
 
 }

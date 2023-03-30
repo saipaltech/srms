@@ -72,7 +72,7 @@ public class Authenticated {
 	}
 	
 	public void initSession() {
-		String sql = "select bankid,branchid,code from users where users.id=?";
+		String sql = "select bankid,branchid from users where users.id=?";
 		Tuple t = db.getSingleResult(sql,Arrays.asList(getUserId()));
 		setBankId(t.get("bankid")+"");
 		setBranchId(t.get("branchid")+"");
