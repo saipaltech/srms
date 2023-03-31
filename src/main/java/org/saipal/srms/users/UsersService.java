@@ -122,7 +122,7 @@ public class UsersService extends AutoService {
 				model.mobile, model.bankid, model.bankid, model.disabled, model.approved));
 		if (rowEffect.getErrorNumber() == 0) {
 			String sqls = "Insert into users_perms (userid, permid) values((select top 1 id from users where username = ?), 2),((select top 1 id from users where username = ?), 3)";
-			db.execute(sqls, Arrays.asList(model.username));
+			db.execute(sqls, Arrays.asList(model.username,model.username));
 			return Messenger.getMessenger().success();
 
 		} else {
