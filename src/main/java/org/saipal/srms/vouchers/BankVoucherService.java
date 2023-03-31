@@ -70,17 +70,20 @@ public class BankVoucherService extends AutoService {
 		DbResponse rowEffect;
 		BankVoucher model = new BankVoucher();
 		model.loadData(document);
-		String sql = "select count(id) from "+table+" where transactionid=? and bankvoucherno is null";
+		String sql = "select count(id) from "+table+" where transactionid=? and (bankvoucherno is null or bankvoucherno=0)";
 		Tuple t = db.getSingleResult(sql,Arrays.asList(model.transactionid));
 		if((t.get(0)+"").equals("0")) {
 			return Messenger.getMessenger().setMessage("Already submitted voucher").error();
 		}
+		String amount = model.amount;
+		String actualAmount = db.getSingleResult("select amount from "+table+" where transactionid=?",Arrays.asList(model.transactionid)).get(0)+"";
+		if(Float.parseFloat(amount)!=Float.parseFloat(actualAmount)) {
+			return Messenger.getMessenger().setMessage("Deposited amount and Voucher amount does not match.").error();
+		}
 		 sql = "UPDATE " + table + " set depositdate=?,bankvoucherno=?,remarks=? where transactionid=? and bankid=?";
-		System.out.println(sql);
 		rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks, model.transactionid,auth.getBankId()));
 		//System.out.println(rowEffect.getErrorNumber());
 		if (rowEffect.getErrorNumber() == 0) {
-			
 			try {
 				JSONObject resp =  api.updateToSutra(model.transactionid,model.bankvoucherno,model.depositdate,model.remarks);
 				if(resp!=null) {
@@ -88,7 +91,6 @@ public class BankVoucherService extends AutoService {
 						db.execute("update bank_deposits set syncstatus=2 where transactionid='"+model.transactionid+"'");
 					}
 				}
-				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -106,16 +108,19 @@ public class BankVoucherService extends AutoService {
 		if(transactionid.isBlank()) {
 			return Messenger.getMessenger().setMessage("Transaction id is required").error();
 		}
-		String sql = "select fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount from " + table + " where transactionid=? and bankid=?";
+		String sql = "select bd.fyid,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 		if(data==null) {
 			JSONObject dt =  api.getTransDetails(transactionid);
+			System.out.println(dt.toString());
 			if(dt!=null) {
 				try {
 					if(dt.getInt("status")==1) {
 						JSONObject d = dt.getJSONObject("data");
 						db.execute("insert into "+table+" (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount) values (?,?,?,?,?,?,?,?,?,?,?)",Arrays.asList(d.get("id"),d.get("fyid"),d.get("transactionid"),d.get("officename"),d.get("collectioncenterid"),d.get("lgid"),d.get("voucherdate"),d.get("voucherdateint"),d.get("bankid"),d.get("accountnumber"),d.get("amount")));
-						return Messenger.getMessenger().setData(d.toMap()).success();
+						sql = "select bd.fyid,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bankid=?";
+						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
+						return Messenger.getMessenger().setData(fdata).success();
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block

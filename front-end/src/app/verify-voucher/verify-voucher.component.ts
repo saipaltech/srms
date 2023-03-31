@@ -38,6 +38,7 @@ export class VerifyVoucherComponent {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id:[],
+      amount:['',[Validators.required,Validators.pattern('[0-9]+')]],
       depositdate: [this.myDate],
       bankvoucherno: ['',Validators.required],
       remarks: ['',Validators.required],
@@ -91,16 +92,11 @@ bankFormSubmit(){
     // this.toastr.error('Please fill all the required* fields', 'Error');
   }
 }
-
+showList = false;
+showForm = true;
 changeFields() {
-  var frm = document.getElementsByClassName('needs-validation')[0]
-  var table = document.getElementsByClassName('tab')[0]
-
-  frm.classList.toggle('hide');
-  table.classList.toggle('hide')
-
-
-  // this.toastr.success('Hello world!', 'Toastr fun!');
+  this.showList = !this.showList;
+  this.showForm = !this.showForm;
 }
 
 resetForm(){
@@ -111,7 +107,6 @@ transDetails:any;
 
 search() {
   this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({next:(dt)=>{
-    
     this.transDetails = dt.data;
   },error:error=>{
     // console.log(error);
@@ -144,6 +139,7 @@ createItem(id = null) {
   if (id != "" && id != null) {
     this.RS.update(id, upd).subscribe({
       next: (result :any) => {
+      this.transDetails = undefined;
       this.toastr.success('Item Successfully Updated!', 'Success');
       this.bankForm = this.fb.group(this.formLayout)
       this.getList();

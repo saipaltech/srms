@@ -5,12 +5,12 @@
         <h4 class="mb-3">Verify Voucher</h4>
       </div>
       <div class="col-md-4 text-end">
-        <!--<button type="button" class="btn btn-warning" (click)="changeFields()">
+        <button type="button" class="btn btn-warning" (click)="changeFields()">
           List of Vouchers
-        </button>-->
+        </button>
       </div>
     </div>
-    <form class="form-srch" [formGroup]="srchForm">
+    <form class="form-srch" [formGroup]="srchForm" *ngIf="showForm">
       <div class="input-group mb-3">
         <input
           type="text"
@@ -34,7 +34,7 @@
       class="needs-validation"
       [formGroup]="bankForm"
       (ngSubmit)="bankFormSubmit()"
-      *ngIf = "transDetails"
+      *ngIf = "transDetails && showForm"
     >
 
     <div class="card" style="width: 100%;">
@@ -89,7 +89,7 @@
                       formControlName="depositdate"
                       type="text"
                       readonly
-                      placeholder="{{ myDate | date : 'shortDate' }}"
+                      placeholder="{{ myDate | date : 'Date' }}"
                       class="form-control form-control-sm"
                       [ngClass]="
                         vs.getControlClass(bankForm.controls['depositdate'])
@@ -119,6 +119,20 @@
                     </div>
                   </div>
                 </div>
+                <div class="col-6">
+                  <label class="form-label req">जम्मा गरेको रकम</label>
+                  <div class="input-group has-validation">
+                    <input
+                      formControlName="amount"
+                      type="text"
+                      class="form-control form-control-sm"
+                      [ngClass]="vs.getControlClass(bankForm.controls['amount'])"
+                    />
+                    <div [ngClass]="vs.getMessageClass(bankForm.controls['amount'])">
+                      {{ vs.getMessage(bankForm.controls["amount"]) }}
+                    </div>
+                  </div>
+                </div>
         
                 <div class="col-6">
                     <label class="form-label req">बिबरण</label>
@@ -137,7 +151,6 @@
         
                
         
-        
               </div>
 
           </div>
@@ -152,7 +165,7 @@
           &nbsp; &nbsp;
           <button
             class="btn btn-danger btn-sm"
-            type="reset"
+            type="button"
             (click)="resetForm()"
           >
             Clear
@@ -161,26 +174,7 @@
       </div>
     </form>
 
-    <div class="tab hide">
-      <form class="form-srch">
-        <div class="input-group mb-3">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Search.."
-            id="srch_term"
-            name="srch_term"
-            (keyup.enter)="search()"
-          />
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            (click)="search()"
-          >
-            <i class="bi bi-search"></i>
-          </button>
-        </div>
-      </form>
+    <div class="tab" *ngIf="showList">
       <table class="table datatable">
         <!--table-borderless-->
         <thead>
