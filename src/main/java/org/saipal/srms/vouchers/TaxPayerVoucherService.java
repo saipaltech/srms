@@ -92,7 +92,7 @@ public class TaxPayerVoucherService extends AutoService {
 			try {
 				JSONObject obj = api.sendDataToSutra(model);
 				if(obj!=null) {
-					if(obj.getInt("status")==1) {
+					if(obj.getInt("syncstatus")==1) {
 						db.execute("update taxvouchers set status=2 where voucherno='"+model.voucherno+"'");
 					}
 				}

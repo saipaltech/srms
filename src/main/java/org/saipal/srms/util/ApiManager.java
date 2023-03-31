@@ -223,6 +223,7 @@ public class ApiManager {
 		try {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
 					.setParam("transactionid",transid)
 					.setParam("depositdate",depositdate)
 					.setParam("bankvoucherno",bankVoucherid)

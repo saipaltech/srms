@@ -108,6 +108,7 @@ resetForm(){
 }
 
 transDetails:any;
+
 search() {
   this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({next:(dt)=>{
     

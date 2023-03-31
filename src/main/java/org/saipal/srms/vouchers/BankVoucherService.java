@@ -64,21 +64,20 @@ public class BankVoucherService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> update() {
 		
-		if (!auth.hasPermission("*")) {
+		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		
 		DbResponse rowEffect;
 		BankVoucher model = new BankVoucher();
 		model.loadData(document);
-		String sql = "select count(id) from "+table+" where transactionid=? and bankvoucherno!=null";
+		String sql = "select count(id) from "+table+" where transactionid=? and bankvoucherno is null";
 		Tuple t = db.getSingleResult(sql,Arrays.asList(model.transactionid));
 		if((t.get(0)+"").equals("0")) {
 			return Messenger.getMessenger().setMessage("Already submitted voucher").error();
 		}
-		 sql = "UPDATE " + table + " set depositdate=?,bankvoucherno=?,remarks=? where transactionid=?";
+		 sql = "UPDATE " + table + " set depositdate=?,bankvoucherno=?,remarks=? where transactionid=? and bankid=?";
 		System.out.println(sql);
-		rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks, model.transactionid));
+		rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks, model.transactionid,auth.getBankId()));
 		//System.out.println(rowEffect.getErrorNumber());
 		if (rowEffect.getErrorNumber() == 0) {
 			
@@ -107,8 +106,8 @@ public class BankVoucherService extends AutoService {
 		if(transactionid.isBlank()) {
 			return Messenger.getMessenger().setMessage("Transaction id is required").error();
 		}
-		String sql = "select fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount from " + table + " where transactionid=?";
-		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
+		String sql = "select fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount from " + table + " where transactionid=? and bankid=?";
+		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 		if(data==null) {
 			JSONObject dt =  api.getTransDetails(transactionid);
 			if(dt!=null) {
