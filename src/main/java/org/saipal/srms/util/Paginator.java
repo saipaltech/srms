@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.saipal.srms.ApplicationContextProvider;
 
-import jakarta.persistence.Tuple;
+import javax.persistence.Tuple;
 
 public class Paginator {
 	private String selections;

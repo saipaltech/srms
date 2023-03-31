@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 
-import jakarta.persistence.Tuple;
+import javax.persistence.Tuple;
 
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.parser.Element;

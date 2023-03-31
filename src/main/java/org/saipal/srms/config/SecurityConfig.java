@@ -1,6 +1,6 @@
 package org.saipal.srms.config;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -49,7 +49,7 @@ public class SecurityConfig {
         			reqs
         			.requestMatchers(PathRequest.toStaticResources().atCommonLocations())
         			.permitAll()
-        			.requestMatchers("/auth/login","api/*")
+        			.antMatchers("/auth/login","api/*")
         			.permitAll()
         			.anyRequest()
         			.authenticated()

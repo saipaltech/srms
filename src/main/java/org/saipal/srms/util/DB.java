@@ -8,12 +8,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-import jakarta.persistence.Tuple;
-import jakarta.persistence.TupleElement;
-import jakarta.transaction.Transactional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
+import javax.persistence.TupleElement;
+import javax.transaction.Transactional;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
