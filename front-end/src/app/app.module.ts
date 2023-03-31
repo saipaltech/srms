@@ -27,6 +27,7 @@ import { AuthInterceptor } from './auth-interceptor';
 import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
     VerifyVoucherComponent,
     BankUsersComponent,
     UserLimitComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    UserProfileComponent
   ],
   imports: [
     BrowserModule,

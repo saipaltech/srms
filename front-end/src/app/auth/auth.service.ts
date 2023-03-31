@@ -39,7 +39,7 @@ export class AuthService {
                     const data = resp.data;
                     if (isToken) {
                         this.token = data.token;
-                        localStorage.setItem('currentUser', JSON.stringify({ username: username, name: data.name, token: data.token, orgName: data.orgname }));
+                        localStorage.setItem('currentUser', JSON.stringify({ username: username, name: data.name, token: data.token, bank: data.bank, branch: data.branch }));
                     }
                     subscriber.next(data);
                     subscriber.complete();

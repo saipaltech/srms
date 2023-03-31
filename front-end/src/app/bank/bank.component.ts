@@ -57,7 +57,7 @@ export class BankComponent {
     this.getBanks();
   }
   getBanks(){
-    this.RS.getBankFromSutra().subscribe({next:(d)=>{
+    this.RS.getlist().subscribe({next:(d)=>{
       this.banks = d;
       console.log(this.banks);
     },error:err=>{
