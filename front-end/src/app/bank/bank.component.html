@@ -2,7 +2,7 @@
     <div class="col-md-7 col-lg-8">
       <div class="row">
         <div class="col-md-8 text-start">
-          <h4 class="mb-3">Bank Setup</h4>
+          <h4 class="mb-3">Enroll Bank</h4>
         </div>
         <div class="col-md-4 text-end">
           <button type="button" class="btn btn-warning" (click)="changeFields()">
@@ -16,37 +16,20 @@
           <input type="hidden" formControlName="id">
             <div class="col-sm-6">
               <label class="form-label req">Bank</label>
-              <div class="input-group has-validation">
-                <select class="form-select form-select-sm" formControlName="bankid"  #sl [ngClass]="vs.getControlClass(bankForm.controls['bankid'])">
+
+                <ng-select formControlName="bankid" >
+                  <ng-option *ngFor="let b of banks;let i=index;"  [value]="b.id">
+                    {{b.namenp}}
+                  </ng-option>
+                </ng-select>
+                <!--<select class="form-select form-select-sm" formControlName="bankid"  #sl [ngClass]="vs.getControlClass(bankForm.controls['bankid'])">
                     <option value="">Select Bank</option>
                     <option *ngFor="let b of banks;let i=index;" value="{{b.id}}">{{b.namenp}}</option>
-                  </select>
+                  </select>-->
                   <div [ngClass]="vs.getMessageClass(bankForm.controls['bankid'])">{{vs.getMessage(bankForm.controls['bankid'])}}</div>
-              </div>
-            </div>
-          <!--<div class="col-6">
-              <label class="form-label req">Code</label>
-              <div class="input-group has-validation">
-                <input formControlName="code"
-                  type="text"
-                  class="form-control form-control-sm"
-                  [ngClass]="vs.getControlClass(bankForm.controls['code'])">
-                  <div [ngClass]="vs.getMessageClass(bankForm.controls['code'])">{{vs.getMessage(bankForm.controls['code'])}}</div>
-              </div>
-            </div>
 
-            <div class="col-6">
-                <label class="form-label req">Name</label>
-                <div class="input-group has-validation">
-                  <input formControlName="name"
-                    type="text"
-                    class="form-control form-control-sm"
-                    [ngClass]="vs.getControlClass(bankForm.controls['name'])">
-                    <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">{{vs.getMessage(bankForm.controls['name'])}}</div>
-                </div>
-              </div>-->
-  
-
+            </div>
+       
   
             <div class="col-sm-6">
               <label class="form-label req">Disabled</label>
@@ -89,10 +72,7 @@
             &nbsp;
             &nbsp;
             <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
-        </div>
-
-  
-          
+        </div>          
         </div>
        
       </form>
@@ -119,13 +99,7 @@
               <tr *ngFor=" let item of lists; let i = index; ">
                 <td>{{item.code}}</td>
                 <td>{{item.namenp}}</td>
-                <td><a (click)="getUpdateItem(item.id)" href="javascript:void(0)"><i class="bi bi-pencil-square text-success"></i></a> &nbsp;&nbsp;&nbsp;
-                  <a (click)="deleteItem(item.id)"><i class="bi bi-trash3 text-danger" style="cursor:pointer;"></i>
-                  </a>
-
-                  <app-bank-users [bankid]=item.id></app-bank-users>
-                  
-                  </td>
+                <td><app-bank-users [bankid]=item.id></app-bank-users></td>
 
               </tr>
 
