@@ -3,6 +3,8 @@ package org.saipal.srms.vouchers;
 import java.net.http.HttpRequest;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.saipal.srms.util.Messenger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +30,8 @@ public class ApiController {
 	 * if they are already not pushed to the Sutra
 	 * */
 	@GetMapping("get-voucherbyno")
-	public ResponseEntity<String> getVoucher(HttpRequest request) {
-		String hv = request.headers().firstValue("X-SECRET-KEY")!=null?request.headers().firstValue("X-SECRET-KEY").get():"";
+	public ResponseEntity<String> getVoucher(HttpServletRequest request) {
+		String hv = request.getHeader("X-SECRET-KEY")!=null?request.getHeader("X-SECRET-KEY"):"";
 		if(hv.equals(commKey)) {
 			return  tp.getVoucherDetailsByVoucherNo();
 		}
@@ -41,8 +43,8 @@ public class ApiController {
 	 * using the payment reference number
 	 * */
 	@GetMapping("get-deposit-status")
-	public ResponseEntity<Map<String, Object>> getVoucherStatus(HttpRequest request) {
-		String hv = request.headers().firstValue("X-SECRET-KEY")!=null?request.headers().firstValue("X-SECRET-KEY").get():"";
+	public ResponseEntity<Map<String, Object>> getVoucherStatus(HttpServletRequest request) {
+		String hv = request.getHeader("X-SECRET-KEY")!=null?request.getHeader("X-SECRET-KEY"):"";
 		if(hv.equals(commKey)) {
 			return  bv.getVoucherStatus();
 		}
