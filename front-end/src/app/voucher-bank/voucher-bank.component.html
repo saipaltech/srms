@@ -46,7 +46,7 @@
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">पालिका</label>
-          <ng-select formControlName="lgid" (change)="getPalikaDetails()">
+          <ng-select formControlName="lgid" (change)="getPalikaDetails();getBankAccounts()">
             <ng-option *ngFor="let l of llgs" [value]="l.code">{{
               l.name
             }}</ng-option>
@@ -67,7 +67,7 @@
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
-          <ng-select formControlName="revenuecode" >
+          <ng-select formControlName="revenuecode" (change)="getBankAccounts()">
             <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
           </ng-select>
           <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['revenuecode'])">{{vs.getMessage(voucherBankForm.controls['revenuecode'])}}</div>

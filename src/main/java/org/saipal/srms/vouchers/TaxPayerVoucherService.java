@@ -81,19 +81,23 @@ public class TaxPayerVoucherService extends AutoService {
 		String sql = "";
 		TaxPayerVoucher model = new TaxPayerVoucher();
 		model.loadData(document);
-		String usq = "select count(voucherno) from taxvouchers where voucherno=?";
-		Tuple res = db.getSingleResult(usq, Arrays.asList(model.voucherno));
+		String usq = "select count(voucherno) from taxvouchers where voucherno=? and bankid=?";
+		Tuple res = db.getSingleResult(usq, Arrays.asList(model.voucherno,auth.getBankId()));
 		if ((!(res.get(0) + "").equals("0"))) {
 			return Messenger.getMessenger().setMessage("This voucherno is already in use.").error();
 		}
-		sql = "INSERT INTO taxvouchers (date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount,creatorid, bankid, branchid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.date,model.voucherno,model.taxpayername,model.taxpayerpan,model.depositedby,model.depcontact,model.lgid,model.collectioncenterid,model.accountno,model.revenuecode,model.purpose,model.amount, auth.getUserId(), auth.getBankId(), auth.getBranchId()));
+		if(model.taxpayerpan.isBlank()) {
+			model.taxpayerpan = "0";
+		}
+		String id= db.newIdInt();
+		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount,creatorid, bankid, branchid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(id,model.date,model.voucherno,model.taxpayername,model.taxpayerpan,model.depositedby,model.depcontact,model.lgid,model.collectioncenterid,model.accountno,model.revenuecode,model.purpose,model.amount, auth.getUserId(), auth.getBankId(), auth.getBranchId()));
 		if (rowEffect.getErrorNumber() == 0) {
 			try {
-				JSONObject obj = api.sendDataToSutra(model);
+				JSONObject obj = api.sendDataToSutra(model,id,auth.getBankId(),auth.getBranchId(),auth.getUserId());
 				if(obj!=null) {
-					if(obj.getInt("syncstatus")==1) {
-						db.execute("update taxvouchers set status=2 where voucherno='"+model.voucherno+"'");
+					if(obj.getInt("status")==1) {
+						db.execute("update taxvouchers set syncstatus=2 where voucherno='"+model.voucherno+"'");
 					}
 				}
 			} catch (JSONException e) {
@@ -159,7 +163,7 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<String> getLocalLevels() {
-		List<Tuple> d = db.getResultList("select als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid="+auth.getBankId());
+		List<Tuple> d = db.getResultList("select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid=? order by als.namenp",Arrays.asList(auth.getBankId()));
 		if(d.size()>0) {
 			try {
 				JSONObject j = new JSONObject();
@@ -203,13 +207,19 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<String> getBankAccounts() {
-		String bankCode = auth.getBankId();
 		String llgCode = request("llgcode");
-		if(llgCode.isBlank()) {
-			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level is required\"}");
+		String revenueCode = request("revenuecode");
+		if(llgCode.isBlank() && revenueCode.isBlank()) {
+			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level & Revenuecode is required\"}");
+		}
+		//internal
+		int type=9;
+		if(Integer.parseInt(revenueCode)>33300) {
+			//sharing
+			type=10;
 		}
 		//check if data is cached
-		List<Tuple> d = db.getResultList("select ba.accountname,ba.accountnumber from bankaccount ba where ba.bankid=? and ba.lgid=?",Arrays.asList(auth.getBankId(),llgCode));
+		List<Tuple> d = db.getResultList("select ba.accountname,ba.accountnumber from bankaccount ba where ba.bankid=? and ba.lgid=? and ba.accounttype=?",Arrays.asList(auth.getBankId(),llgCode,type));
 		if(d.size()>0) {
 			try {
 				JSONObject j = new JSONObject();
