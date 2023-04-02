@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ApproveVoucherComponent } from './approve-voucher/approve-voucher.component';
 import { AuthGuard, LoginGuard } from './auth/auth.guard';
 import { BankComponent } from './bank/bank.component';
 import { BranchComponent } from './branch/branch.component';
@@ -42,7 +43,11 @@ const routes: Routes = [
           {
             path: 'user-profile',
             component: UserProfileComponent
-          }
+          },
+          {
+            path: 'approve-voucher',
+            component: ApproveVoucherComponent
+          },
         ]
       },
       {
