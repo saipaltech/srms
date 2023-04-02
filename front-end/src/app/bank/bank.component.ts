@@ -100,6 +100,8 @@ bankFormSubmit(){
   }
 }
 
+isbtn = true
+
 changeFields() {
   var frm = document.getElementsByClassName('needs-validation')[0]
   var table = document.getElementsByClassName('tab')[0]
@@ -108,7 +110,7 @@ changeFields() {
   table.classList.toggle('hide')
 
 
-  // this.toastr.success('Hello world!', 'Toastr fun!');
+  this.isbtn = !this.isbtn;
 }
 
 resetForm(){
