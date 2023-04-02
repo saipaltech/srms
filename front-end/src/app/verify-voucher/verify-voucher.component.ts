@@ -97,6 +97,11 @@ showForm = true;
 changeFields() {
   this.showList = !this.showList;
   this.showForm = !this.showForm;
+  var fd = document.getElementsByClassName('formdiv')[0]
+  var td = document.getElementsByClassName('listdiv')[0]
+
+  fd.classList.toggle('hide');
+  td.classList.toggle('hide');
 }
 
 resetForm(){
@@ -109,9 +114,9 @@ search() {
   this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({next:(dt)=>{
     this.transDetails = dt.data;
   },error:error=>{
-    // console.log(error);
+    console.log(error);
     // alert(5)
-    this.toastr.error("error.error.message");
+    this.toastr.error(error.error.error);
   }});
 }
 
