@@ -6,7 +6,12 @@
         </div>
         <div class="col-md-4 text-end">
           <button type="button" class="btn btn-warning" (click)="changeFields()">
-            List of Bank
+            <div *ngIf="isbtn;else other_content">
+              List of Bank
+          </div>
+          
+          <ng-template #other_content>Bank Form</ng-template>
+            
           </button>
         </div>
       </div>

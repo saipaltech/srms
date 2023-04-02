@@ -26,7 +26,7 @@
    
     <input type="hidden" formControlName="id">
       <div class="row g-3">
-        <div class="col-12">
+        <div class="col-6">
           <label for="username" class="form-label req">जम्मा गरेको मिति</label>
           <div class="input-group has-validation">
             <input
@@ -40,7 +40,7 @@
           </div>
         </div>
 
-        <div class="col-12">
+        <div class="col-6">
           <label for="address" class="form-label req">बैंक भौचर नंबर</label>
           <input
             formControlName="voucherno"
@@ -70,7 +70,28 @@
           <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['collectioncenterid'])">{{vs.getMessage(voucherBankForm.controls['collectioncenterid'])}}</div>
         </div>
 
-        <div class="col-12">
+
+        <div class="col-sm-6">
+          <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
+          <ng-select formControlName="revenuecode" >
+            <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
+          </ng-select>
+          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['revenuecode'])">{{vs.getMessage(voucherBankForm.controls['revenuecode'])}}</div>
+        </div>
+
+        <div class="col-sm-6">
+          <label for="username" class="form-label">प्रयोजन</label>
+          <div class="input-group has-validation">
+            <input
+              formControlName="purpose"
+              type="text"
+              class="form-control form-control-sm"
+              [ngClass]="vs.getControlClass(voucherBankForm.controls['purpose'])">
+              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['purpose'])">{{vs.getMessage(voucherBankForm.controls['purpose'])}}</div>
+          </div>
+        </div>
+
+        <div class="col-6">
           <label for="username" class="form-label req">खाता नंबर</label>
           <select
             class="form-select form-select-sm"
@@ -83,14 +104,6 @@
           <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['accountno'])">{{vs.getMessage(voucherBankForm.controls['accountno'])}}</div>
         </div>
 
-        <div class="col-sm-6">
-          <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
-          <ng-select formControlName="revenuecode" >
-            <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
-          </ng-select>
-          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['revenuecode'])">{{vs.getMessage(voucherBankForm.controls['revenuecode'])}}</div>
-        </div>
-
         <div class="col-6">
           <label for="username" class="form-label req">रकम</label>
           <div class="input-group has-validation">
@@ -101,18 +114,6 @@
               [ngClass]="vs.getControlClass(voucherBankForm.controls['amount'])"
             />
             <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['amount'])">{{vs.getMessage(voucherBankForm.controls['amount'])}}</div>
-          </div>
-        </div>
-
-        <div class="col-sm-6">
-          <label for="username" class="form-label">प्रयोजन</label>
-          <div class="input-group has-validation">
-            <input
-              formControlName="purpose"
-              type="text"
-              class="form-control form-control-sm"
-              [ngClass]="vs.getControlClass(voucherBankForm.controls['purpose'])">
-              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['purpose'])">{{vs.getMessage(voucherBankForm.controls['purpose'])}}</div>
           </div>
         </div>
 
