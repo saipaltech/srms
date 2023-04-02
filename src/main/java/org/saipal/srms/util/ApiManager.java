@@ -182,13 +182,14 @@ public class ApiManager {
 	/*
 	 * Calls SuTra server to post taxpayer voucher details
 	 * */
-	public JSONObject sendDataToSutra(TaxPayerVoucher tpv) {
+	public JSONObject sendDataToSutra(TaxPayerVoucher tpv,String id,String bankid,String branchid,String userid) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
 					.setHeader("Content-Type", "application/x-www-form-urlencoded")
+					.setParam("id",id)
 					.setParam("date",tpv.date)
 					.setParam("voucherno",tpv.voucherno)
 					.setParam("taxpayername",tpv.taxpayername)
@@ -202,6 +203,9 @@ public class ApiManager {
 					.setParam("revenuetitle",tpv.revenuetitle)
 					.setParam("purpose",tpv.purpose)
 					.setParam("amount",tpv.amount)
+					.setParam("bankid",bankid)
+					.setParam("branchid",branchid)
+					.setParam("creatorid",userid)
 					.post(url + "/srms/taxpayer-voucher");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
@@ -228,6 +232,7 @@ public class ApiManager {
 					.setParam("depositdate",depositdate)
 					.setParam("bankvoucherno",bankVoucherid)
 					.setParam("remarks",remarks)
+					.setParam("status","1")
 					.post(url + "/srms/bankdeposit-voucher");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");

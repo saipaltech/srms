@@ -54,16 +54,16 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       date: [this.myDate],
       voucherno: ['',Validators.required],
       taxpayername: ['',Validators.required],
-      taxpayerpan: [''],
+      taxpayerpan: ['',Validators.pattern('[0-9]+')],
       depositedby:['',Validators.required],
-      depcontact: ['',Validators.required],
+      depcontact: ['',[Validators.required,Validators.pattern('[0-9]+')]],
       lgid: ['',Validators.required],
       // llgname: ['',Validators.required],
       collectioncenterid: ['',Validators.required],
       accountno:['',Validators.required],
       revenuecode: ['',Validators.required],
       purpose: [''],
-      amount:['',Validators.required]
+      amount:['',[Validators.required,Validators.pattern('[0-9]+')]]
     }
     
     this.voucherBankForm =fb.group(this.formLayout)
@@ -115,15 +115,37 @@ ngOnInit(): void {
 }
 
 getPalikaDetails(){
+  this.voucherBankForm.patchValue({"collectioncenterid":''});
   const llgCode = this.voucherBankForm.value['lgid'];
-  this.bvs.getPlaikaDetails(llgCode).subscribe({
+  this.bvs.getCostCentres(llgCode).subscribe({
     next:(d)=>{
-      this.acs = d.bankacs;
-      this.ccs = d.costcentres;
+      this.ccs = d.data;
+      if(d.data.length==1){
+        this.voucherBankForm.patchValue({"collectioncenterid":d.data[0].code});
+      }
     },error:err=>{
       console.log(err);
     }
   });
+}
+
+getBankAccounts(){
+  this.voucherBankForm.patchValue({"accountno":''});
+  const llgCode = this.voucherBankForm.value['lgid'];
+  const revenuecode = this.voucherBankForm.value['revenuecode'];
+  if(llgCode && revenuecode){
+    this.bvs.getBankAccounts(llgCode,revenuecode).subscribe({
+      next:(d)=>{
+        this.acs = d.data;
+        if(d.data.length==1){
+          this.voucherBankForm.patchValue({"accountno":d.data[0].acno});
+        }
+      },error:err=>{
+        console.log(err);
+      }
+    });
+  }
+  
 }
 
 

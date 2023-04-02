@@ -12,6 +12,12 @@ export class VoucherService {
   getPlaikaDetails(llgCode: any) {
     return this.http.get(this.url+"/llg-details?llgcode="+llgCode);
   }
+  getCostCentres(llgCode: any) {
+    return this.http.get(this.url+"/get-cost-centres?llgcode="+llgCode);
+  }
+  getBankAccounts(llgCode: any,revenuecode:any) {
+    return this.http.get(this.url+"/get-bank-accounts?llgcode="+llgCode+"&revenuecode="+revenuecode);
+  }
   url="taxpayer-voucher"; 
   create(data: any) {
     // console.log(data);

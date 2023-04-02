@@ -70,6 +70,11 @@ public class BankVoucherService extends AutoService {
 		DbResponse rowEffect;
 		BankVoucher model = new BankVoucher();
 		model.loadData(document);
+		String usq = "select count(bankvoucherno) from "+table+" where bankvoucherno=? and bankid=?";
+		Tuple res = db.getSingleResult(usq, Arrays.asList(model.bankvoucherno,auth.getBankId()));
+		if ((!(res.get(0) + "").equals("0"))) {
+			return Messenger.getMessenger().setMessage("This voucherno is already in use.").error();
+		}
 		String sql = "select count(id) from "+table+" where transactionid=? and (bankvoucherno is null or bankvoucherno=0)";
 		Tuple t = db.getSingleResult(sql,Arrays.asList(model.transactionid));
 		if((t.get(0)+"").equals("0")) {
@@ -80,15 +85,15 @@ public class BankVoucherService extends AutoService {
 		if(Float.parseFloat(amount)!=Float.parseFloat(actualAmount)) {
 			return Messenger.getMessenger().setMessage("Deposited amount and Voucher amount does not match.").error();
 		}
-		 sql = "UPDATE " + table + " set depositdate=?,bankvoucherno=?,remarks=? where transactionid=? and bankid=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks, model.transactionid,auth.getBankId()));
+		 sql = "UPDATE " + table + " set depositdate=?,bankvoucherno=?,remarks=?,creatorid=?,approverid=?,approved=1 where transactionid=? and bankid=?";
+		 rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks,auth.getUserId(),auth.getUserId(),model.transactionid,auth.getBankId()));
 		//System.out.println(rowEffect.getErrorNumber());
 		if (rowEffect.getErrorNumber() == 0) {
 			try {
 				JSONObject resp =  api.updateToSutra(model.transactionid,model.bankvoucherno,model.depositdate,model.remarks);
 				if(resp!=null) {
 					if(resp.getInt("status")==1) {
-						db.execute("update bank_deposits set syncstatus=2 where transactionid='"+model.transactionid+"'");
+						db.execute("update "+table+" set syncstatus=2 where transactionid=? and bankid=?",Arrays.asList(model.transactionid,auth.getBankId()));
 					}
 				}
 			} catch (JSONException e) {
@@ -99,7 +104,6 @@ public class BankVoucherService extends AutoService {
 		} else {
 			return Messenger.getMessenger().error();
 		}
-
 	}
 
 	public ResponseEntity<Map<String,Object>> getTransDetails() {
