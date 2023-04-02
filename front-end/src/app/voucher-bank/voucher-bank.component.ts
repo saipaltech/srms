@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
@@ -17,6 +17,10 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 export class VoucherBankComponent implements OnInit {
 
   modalRef?: BsModalRef;
+
+  @Input() hideForm! : boolean;
+  @Input() hideButton! : boolean;
+  @Input() hideApproveButton! : boolean;
 
 
   myDate: any = new Date();
@@ -73,18 +77,23 @@ openModal(template: TemplateRef<any>) {
   this.modalRef = this.modalService.show(template);
 }
 
+isbtn = true;
+
 changeFields() {
-  var frm = document.getElementsByClassName('needs-validation')[0]
-  var table = document.getElementsByClassName('tab')[0]
+  // var frm = document.getElementsByClassName('needs-validation')[0]
+  // var table = document.getElementsByClassName('tab')[0]
 
-  var fd = document.getElementsByClassName('formdiv')[0]
-  var td = document.getElementsByClassName('listdiv')[0]
+  // var fd = document.getElementsByClassName('formdiv')[0]
+  // var td = document.getElementsByClassName('listdiv')[0]
 
-  frm.classList.toggle('hide');
-  table.classList.toggle('hide');
-  fd.classList.toggle('hide');
-  td.classList.toggle('hide');
+  // frm.classList.toggle('hide');
+  // table.classList.toggle('hide');
+  // fd.classList.toggle('hide');
+  // td.classList.toggle('hide');
 
+  this.isbtn=!this.isbtn;
+  // this.hideButton =!this.hideButton;
+  this.hideForm = !this.hideForm;
 
   // this.toastr.success('Hello world!', 'Toastr fun!');
 }

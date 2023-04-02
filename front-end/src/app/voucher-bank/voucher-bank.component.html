@@ -4,24 +4,26 @@
       <div class="col-md-8 text-start">
         <h4 class="mb-3">बैंक भौचर प्रविष्टि</h4>
       </div>
-      <div class="col-md-4 text-end listdiv">
+
+      <div class="col-md-4 text-end"  *ngIf = !hideButton>
         <button type="button" class="btn btn-warning" (click)="changeFields()">
-          List of Vouchers
+          <div *ngIf="isbtn;else other_content">
+            List of Vouchers
+        </div>
+        
+        <ng-template #other_content>Back To Form</ng-template>
+          
         </button>
       </div>
 
-      <div class="col-md-4 text-end formdiv hide">
-        <button type="button" class="btn btn-warning" (click)="changeFields()">
-          Back to Form
-        </button>
-      </div>
+
     </div>
 
     <form
       class="needs-validation"
       [formGroup]="voucherBankForm"
       (ngSubmit)="voucherBankFormSubmit()"
-
+      *ngIf = !hideForm
     >
    
     <input type="hidden" formControlName="id">
@@ -194,7 +196,7 @@
       </div>
     </form>
 
-    <div class="tab hide">
+    <div class="tab" *ngIf = hideForm>
       <form class="form-srch" [formGroup]="srchForm">
         <div class="input-group mb-3">
           <input
@@ -215,7 +217,7 @@
           </button>
         </div>
       </form>
-      <div class="btn-group" dropdown>
+      <div class="btn-group" dropdown *ngIf = hideApproveButton>
         <button id="button-basic" dropdownToggle type="button" class="btn btn-primary btn-sm dropdown-toggle"
                 aria-controls="dropdown-basic">
           Voucher Type <span class="caret"></span>
@@ -329,7 +331,7 @@
     <br>
     जम्मा गर्नेको सम्पर्क नंबर:
     <br>
-
+    <div *ngIf = hideApproveButton>
     <hr>
 
     <div class="row">
@@ -337,6 +339,7 @@
         <button class="btn btn-success btn-sm" type="submit">Approve</button>
       </div>
     </div>
+  </div>
 
   </div>
 </ng-template>

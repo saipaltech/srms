@@ -6,6 +6,7 @@ import { BankComponent } from './bank/bank.component';
 import { BranchComponent } from './branch/branch.component';
 import { LoginComponent } from './login/login.component';
 import { MainBodyComponent } from './main-body/main-body.component';
+import { ReportComponent } from './report/report.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { UsersComponent } from './users/users.component';
 import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.component';
@@ -47,6 +48,10 @@ const routes: Routes = [
           {
             path: 'approve-voucher',
             component: ApproveVoucherComponent
+          },
+          {
+            path: 'report',
+            component: ReportComponent
           },
         ]
       },

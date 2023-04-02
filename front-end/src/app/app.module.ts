@@ -29,6 +29,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { ApproveVoucherComponent } from './approve-voucher/approve-voucher.component';
+import { ReportComponent } from './report/report.component';
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import { ApproveVoucherComponent } from './approve-voucher/approve-voucher.compo
     UserLimitComponent,
     ChangePasswordComponent,
     UserProfileComponent,
-    ApproveVoucherComponent
+    ApproveVoucherComponent,
+    ReportComponent
   ],
   imports: [
     BrowserModule,
