@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import jakarta.persistence.Tuple;
+import javax.persistence.Tuple;
 
 import org.saipal.srms.parser.RequestParser;
 import org.saipal.srms.util.DB;

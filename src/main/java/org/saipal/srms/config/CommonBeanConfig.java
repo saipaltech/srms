@@ -6,8 +6,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import io.pebbletemplates.pebble.extension.Extension;
-
 @Configuration
 public class CommonBeanConfig {
 	
@@ -21,8 +19,8 @@ public class CommonBeanConfig {
 	    return null;
 	}
 	
-	@Bean
-	Extension fmisPebbleExtension() {
-		return new PebbleExtension();
-	}
+//	@Bean
+//	Extension fmisPebbleExtension() {
+//		return new PebbleExtension();
+//	}
 }

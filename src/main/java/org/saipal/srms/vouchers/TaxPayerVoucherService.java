@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.Tuple;
+import javax.persistence.Tuple;
 
 @Component
 public class TaxPayerVoucherService extends AutoService {
@@ -92,7 +92,7 @@ public class TaxPayerVoucherService extends AutoService {
 			try {
 				JSONObject obj = api.sendDataToSutra(model);
 				if(obj!=null) {
-					if(obj.getInt("status")==1) {
+					if(obj.getInt("syncstatus")==1) {
 						db.execute("update taxvouchers set status=2 where voucherno='"+model.voucherno+"'");
 					}
 				}

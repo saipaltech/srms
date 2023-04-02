@@ -23,6 +23,7 @@ public class BankVoucher {
 	public String status;
 	public String approved;
 	public String tasklog;
+	public String amount;
 	
 	public void loadData(RequestParser doc) {
 		for (Field f : this.getClass().getFields()) {
@@ -47,6 +48,7 @@ public class BankVoucher {
 		rules.put("depositdate", "required");
 		rules.put("remarks", "required");
 		rules.put("bankvoucherno", "required");
+		rules.put("amount", "required");
 		return rules;
 	}
 

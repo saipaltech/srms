@@ -4,7 +4,7 @@ package org.saipal.srms.vouchers;
 import java.util.Map;
 
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.saipal.srms.util.Messenger;
 import org.saipal.srms.util.ValidationService;

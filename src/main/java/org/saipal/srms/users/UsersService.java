@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.Tuple;
+import javax.persistence.Tuple;
 
 @Component
 public class UsersService extends AutoService {
