@@ -292,31 +292,38 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	/*
-	 * To Be Called by SuTRA application, to get the voucher details 
+	 * To Be Called by SuTRA application, to get the Taxpayer voucher details 
 	 * if they are already not pushed to the Sutra
 	 * */
 	public ResponseEntity<String> getVoucherDetailsByVoucherNo() {
 		String voucherno = request("voucherno");
+		String bankid = request("bankid");
 		if(voucherno.isBlank()) {
 			return ResponseEntity.ok("{status:0,message:\"Bank Voucher No. required\"}");
 		}
-		Tuple t = db.getSingleResult("select top 1 * from "+table+" where voucherno=?",Arrays.asList(voucherno));
+		if(bankid.isBlank()) {
+			return ResponseEntity.ok("{status:0,message:\"Bank is required\"}");
+		}
+		Tuple t = db.getSingleResult("select top 1 * from "+table+" where voucherno=? and bankid=?",Arrays.asList(voucherno,bankid));
 		if(t!=null) {
 			try {
 				JSONObject data = new JSONObject();
-				data.put("date",t.get("date"));
-				data.put("voucherno",t.get("voucherno"));
-				data.put("taxpayername",t.get("taxpayername"));
-				data.put("taxpayerpan",t.get("taxpayerpan"));
-				data.put("depositedby",t.get("depositedby"));
-				data.put("depcontact",t.get("depcontact"));
-				data.put("lgid",t.get("lgid"));
-				data.put("collectioncenterid",t.get("collectioncenterid"));
-				data.put("accountno",t.get("accountno"));
-				data.put("revenuecode",t.get("revenuecode"));
-				data.put("revenuetitle",t.get("revenuetitle"));
-				data.put("purpose",t.get("purpose"));
-				data.put("amount",t.get("amount"));
+				data.put("id",t.get("id"));
+				data.put("date", t.get("date"));
+				data.put("voucherno", t.get("voucherno"));
+				data.put("taxpayername", t.get("taxpayername"));
+				data.put("taxpayerpan", t.get("taxpayerpan"));
+				data.put("depositedby", t.get("depositedby"));
+				data.put("depcontact", t.get("depcontact"));
+				data.put("lgid", t.get("lgid"));
+				data.put("collectioncenterid", t.get("collectioncenterid"));
+				data.put("accountno", t.get("accountno"));
+				data.put("revenuecode", t.get("revenuecode"));
+				data.put("purpose", t.get("purpose"));
+				data.put("amount", t.get("amount"));
+				data.put("bankid",t.get("bankid"));
+				data.put("branchid",t.get("branchid"));
+				data.put("creatorid",t.get("creatorid"));
 				JSONObject j = new JSONObject();
 				j.put("status",1);
 				j.put("message", "success");
