@@ -101,8 +101,13 @@ changeFields() {
   var frm = document.getElementsByClassName('needs-validation')[0]
   var table = document.getElementsByClassName('tab')[0]
 
+  var fd = document.getElementsByClassName('formdiv')[0]
+  var td = document.getElementsByClassName('listdiv')[0]
+
   frm.classList.toggle('hide');
-  table.classList.toggle('hide')
+  table.classList.toggle('hide');
+  fd.classList.toggle('hide');
+  td.classList.toggle('hide');
 
 
   // this.toastr.success('Hello world!', 'Toastr fun!');

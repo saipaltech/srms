@@ -28,6 +28,8 @@ import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.componen
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { ApproveVoucherComponent } from './approve-voucher/approve-voucher.component';
+
 
 @NgModule({
   declarations: [
@@ -44,7 +46,8 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
     BankUsersComponent,
     UserLimitComponent,
     ChangePasswordComponent,
-    UserProfileComponent
+    UserProfileComponent,
+    ApproveVoucherComponent
   ],
   imports: [
     BrowserModule,
