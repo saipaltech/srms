@@ -36,6 +36,10 @@ export class VoucherService {
   constructor(private http: ApiService) { 
   }
 
+  getDetails(id: string) {
+    return this.http.get(this.url + '/get-specific/' + id);  
+  }
+
   getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean, approve?: string) {
 
     let urlPart = '?perPage=' + perPage + '&page=' + page;
@@ -56,10 +60,10 @@ export class VoucherService {
     return this.http.get(this.url + urlPart);
 
 }
-getEdit(id: string) {
-  return this.http.get(this.url + '/' + id);
+// getEdit(id: string) {
+//   return this.http.get(this.url + '/' + id);
 
-}
+// }
 remove(id: string) {
   return this.http.delete(this.url + '/' + id);
 

@@ -73,29 +73,26 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       srch_term: new FormControl('')})
 }
 
-openModal(template: TemplateRef<any>) {
+openModal(template: TemplateRef<any>, id:any) {
   this.modalRef = this.modalService.show(template);
+  this.getDetails(id);
+}
+
+details : any;
+
+getDetails(id:any){
+  this.bvs.getDetails(id).subscribe({next:(dt)=>{
+    this.details = dt;
+  },error:err=>{
+    this.toastr.error("Unable to Fetch Data","Error")
+  }});
 }
 
 isbtn = true;
 
 changeFields() {
-  // var frm = document.getElementsByClassName('needs-validation')[0]
-  // var table = document.getElementsByClassName('tab')[0]
-
-  // var fd = document.getElementsByClassName('formdiv')[0]
-  // var td = document.getElementsByClassName('listdiv')[0]
-
-  // frm.classList.toggle('hide');
-  // table.classList.toggle('hide');
-  // fd.classList.toggle('hide');
-  // td.classList.toggle('hide');
-
   this.isbtn=!this.isbtn;
-  // this.hideButton =!this.hideButton;
   this.hideForm = !this.hideForm;
-
-  // this.toastr.success('Hello world!', 'Toastr fun!');
 }
 
 ngOnInit(): void {

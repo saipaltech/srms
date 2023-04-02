@@ -248,10 +248,11 @@
             <td>{{ item.taxpayername }}</td>
             <td>{{ item.accountno }}</td>
             <td>{{ item.amount }}</td>
+            
 
             
 
-            <td><i class="bi bi-eye-fill text-success" (click)="openModal(template)"></i></td>
+            <td><i class="bi bi-eye-fill text-success" (click)="openModal(template, item.id)"></i></td>
             <td>
 
             </td>
@@ -314,29 +315,29 @@
     </button>
   </div>
   <div class="modal-body">
-    जम्मा गरेको मिति : 
+    जम्मा गरेको मिति :  {{details[0].date}}
     <br>
-    बैंक भौचर नंबर:
+    बैंक भौचर नंबर: {{details[0].voucherno}}
     <br>
-    पालिका:
+    पालिका: {{details[0].llsname}}
     <br>
-    संकलन केन्द्र:
+    संकलन केन्द्र: {{details[0].collectioncentername}}
     <br>
-    खाता नंबर: 
+    खाता नंबर: {{details[0].accountno}}
     <br>
-    राजस्व शिर्षक:
+    राजस्व शिर्षक: {{details[0].revenuetitle}}
     <br>
-    रकम:
+    रकम: {{details[0].amount}}
     <br>
-    प्रयोजन:
+    प्रयोजन: {{details[0].purpose}}
     <br>
-    करदाताको पान नंबर:
+    करदाताको पान नंबर: {{details[0].taxpayerpan}}
     <br>
-    करदाताको नाम:
+    करदाताको नाम: {{details[0].taxpayername}}
     <br>
-    जम्मा गर्नेको नाम:
+    जम्मा गर्नेको नाम:{{details[0].depositedby}}
     <br>
-    जम्मा गर्नेको सम्पर्क नंबर:
+    जम्मा गर्नेको सम्पर्क नंबर: {{details[0].depcontact}}
     <br>
     <div *ngIf = hideApproveButton>
     <hr>

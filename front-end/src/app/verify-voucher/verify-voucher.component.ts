@@ -62,6 +62,7 @@ export class VerifyVoucherComponent {
     this.RS.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(
       (result: any) => {
         this.lists = result.data;
+        console.log(this.lists)
         this.pagination.total = result.total;
         this.pagination.currentPage = result.currentPage;
         console.log(result);
