@@ -44,7 +44,7 @@ export class UserProfileComponent implements OnInit {
 
   }
 
-  userDetails : any;
+  userDetails : any = [];
 
   getUser(username: any){
     this.RS.getDetails(username).subscribe({next:(dt)=>{
