@@ -33,7 +33,7 @@ public class AuthService {
 	public ResponseEntity<Map<String,Object>> login() {
 		String username = doc.getElementById("username").value;
 		String password = doc.getElementById("password").value;
-		String sql = "select id,username,password,name from users where username=?";
+		String sql = "select u.id,username,password,u.name, b.namenp as baname, bs.name as branchname from users u join bankinfo b on b.id=u.bankid join branches bs on bs.id=u.branchid where username=?";
 		Tuple t = db.getSingleResult(sql,Arrays.asList(username));
 		if(t!=null) {
 			if(pwdEncoder.matches(password, t.get("password")+"")) {
@@ -42,8 +42,8 @@ public class AuthService {
 				data.put("token", token);
 				data.put("name", t.get("name")+"");
 				data.put("username",t.get("username")+"");
-				data.put("bank", "SYSTEM");
-				data.put("branch", "SYSTEM");
+				data.put("bank", t.get("baname")+ "");
+				data.put("branch", t.get("branchname")+ "");
 				return Messenger.getMessenger().setData(data).success();
 			}
 		}

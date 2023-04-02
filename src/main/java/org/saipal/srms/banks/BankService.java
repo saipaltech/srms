@@ -31,13 +31,13 @@ public class BankService extends AutoService {
 	@Autowired
 	ApiManager api;
 
-	private String table = "banks";
+	private String table = "bankinfo";
 
 	public ResponseEntity<Map<String, Object>> index() {
 		if (!auth.hasPermission("*")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = " where id!=1 ";
+		String condition = " where bi.id!=1 ";
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = Bank.searchables();
 			condition += "and (";
@@ -56,7 +56,7 @@ public class BankService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("id,code,namenp,nameen,approved,disabled").sqlBody("from bankinfo "  + condition).paginate();
+				.select("bi.id,bi.code,bi.namenp,bi.nameen,bi.approved,bi.disabled").sqlBody("from bankinfo bi join branches bn on bn.bankid = bi.id and ishead=1"  + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -136,19 +136,19 @@ public class BankService extends AutoService {
 		}
 	}
 
-	public ResponseEntity<List<Map<String, Object>>> getList() {
+	public ResponseEntity<List> getList() {
 		String bankId = auth.getBankId();
 		String sql = "";
 		if (bankId.equals("1")) {
-			sql = "select id,name from " + table + " where id !=1";
+			sql = "select id,namenp from " + table + " where id !=1";
 		} else {
-			sql = "select id,name from " + table + " where id ='" + bankId + "'";
+			sql = "select id,namenp from " + table + " where id ='" + bankId + "'";
 		}
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
 
 	public ResponseEntity<List> getBanksFromSutra() {
-		String sql = "select id,namenp from bankinfo where id !=1";
+		String sql = "select id,namenp from bankinfo where id !=1 and id in(select bankid from branches where ishead=1)";
 		return ResponseEntity.ok(db.getResultListMap(sql));
 //		return ResponseEntity.ok(api.getBanks().toString());
 	}

@@ -177,5 +177,11 @@ public class UsersService extends AutoService {
 			return Messenger.getMessenger().error();
 		}
 	}
+	
+	public ResponseEntity<List<Map<String, Object>>> getUserList(){
+		String sql = "Select name, username, post, mobile from users where username="+ "'"+ request("username")+"'";
+		return ResponseEntity.ok(db.getResultListMap(sql));
+	}
+	
 
 }

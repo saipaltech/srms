@@ -66,7 +66,7 @@ public class BankController {
 	}
 	
 	@GetMapping("get-list")
-	public ResponseEntity<List<Map<String, Object>>> getList() {
+	public ResponseEntity<List> getList() {
 		return objService.getList();
 	}
 	

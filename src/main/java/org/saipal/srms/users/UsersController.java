@@ -1,5 +1,6 @@
 package org.saipal.srms.users;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -75,6 +76,12 @@ public class UsersController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> destroy(HttpServletRequest request, @PathVariable String id) {
 		return objService.destroy(id);
+	}
+	
+	
+	@GetMapping("/get-user-details")
+	public ResponseEntity<List<Map<String, Object>>> getUserDetails(HttpServletRequest request) {
+		return objService.getUserList();
 	}
 
 
