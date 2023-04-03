@@ -1,11 +1,15 @@
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DOCUMENT } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { VoucherService } from './voucher.service';
 import { ValidationService } from '../validation.service';
 
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+
+import { Router, NavigationExtras, Route } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
+
 
 
 @Component({
@@ -44,11 +48,17 @@ export class VoucherBankComponent implements OnInit {
   isDesc: boolean = false;
   srchForm!: FormGroup;
   model: any = {};
+  dlgid:any;
 
   approved ="";
 
-constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherService, private modalService: BsModalService){
-    this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
+constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherService, private modalService: BsModalService, private r: Router,private auth:AuthService){
+  const ud = this.auth.getUserDetails();
+  console.log(ud);
+  if(ud){
+    this.dlgid = ud.dlgid;
+  }
+  this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id:[],
       date: [this.myDate],
@@ -67,6 +77,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
     }
     
     this.voucherBankForm =fb.group(this.formLayout)
+    
 
     this.srchForm = new FormGroup({
       entries: new FormControl('10'),
@@ -97,9 +108,12 @@ changeFields() {
 
 ngOnInit(): void {
   this.getList();
-  
+  this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
+    this.getPalikaDetails();
+  }});
   this.bvs.getLocalLevels().subscribe({next:(dt)=>{
       this.llgs = dt.data;
+      this.voucherBankForm.patchValue({"lgid":this.dlgid});
     },error:err=>{
 
     }});
@@ -183,8 +197,13 @@ getBankAccounts(){
   
 
 voucherBankFormSubmit(){
-  console.log(this.voucherBankForm.errors)
   if (this.voucherBankForm.valid) {
+    const llgCode = this.voucherBankForm.value['lgid'];
+    if(llgCode!=this.dlgid){
+      if(!confirm("Default Local Level and Selected are not same, Are you sure to proceed")){
+        return;
+      }
+    }
     this.model = this.voucherBankForm.value;
     this.createItem(this.voucherBankForm.value.id);
     // alert('submit but not create')
@@ -234,6 +253,7 @@ createItem(id = null) {
     this.bvs.update(id, upd).subscribe({
       next: (result :any) => {
       this.toastr.success('Item Successfully Updated!', 'Success');
+      //add route to report here
       this.voucherBankForm = this.fb.group(this.formLayout)
       this.getList();
     }, error :err=> {
@@ -242,10 +262,16 @@ createItem(id = null) {
     });
   } else {
     this.bvs.create(upd).subscribe({
-      next:(result:any) => {
+      next:(result:NavigationExtras) => {
         // alert('create')
       this.toastr.success('Item Successfully Saved!', 'Success');
-      this.voucherBankForm = this.fb.group(this.formLayout)
+      // this.r.navigate(['report'], { state: { data: upd } });
+      this.voucherBankForm = this.fb.group(this.formLayout);
+      this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
+        this.getPalikaDetails();
+      }});
+      this.acs=null;
+      this.voucherBankForm.patchValue({"lgid":this.dlgid});
       this.getList();
     }, error:err => {
       this.toastr.error(err.error, 'Error');

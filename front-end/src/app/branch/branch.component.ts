@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import {BranchService} from './branch.service'
 import { ValidationService } from '../validation.service';
 import { BankService } from '../bank/bank.service';
+import { VoucherService } from '../voucher-bank/voucher.service';
 
 @Component({
   selector: 'app-branch',
@@ -32,12 +33,14 @@ export class BranchComponent {
   formLayout: any;
   banks:any;
   btnlvl=" List of Branches ";
+  llgs:any;
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: BranchService,private bs:BankService){
+  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: BranchService,private bs:BankService,private bvs:VoucherService){
     this.formLayout = {
       id:[''],
       bankid: ['',Validators.required],
       name: ['',Validators.required],
+      dlgid:['',Validators.required],
       code: [''],
       disabled: ['0',Validators.required],
       approved: ['1',Validators.required],
@@ -54,6 +57,11 @@ export class BranchComponent {
     this.pagination.perPage = this.perPages[0];
     this.getList();
     this.getBanks();
+    this.bvs.getLocalLevels().subscribe({next:(dt)=>{
+      this.llgs = dt.data;
+    },error:err=>{
+
+    }});
   }
 
   getBanks(){

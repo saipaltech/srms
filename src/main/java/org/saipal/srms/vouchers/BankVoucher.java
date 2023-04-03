@@ -47,7 +47,7 @@ public class BankVoucher {
 		rules.put("transactionid", "required");
 		rules.put("depositdate", "required");
 		rules.put("remarks", "required");
-		rules.put("bankvoucherno", "required");
+		//rules.put("bankvoucherno", "required");
 		rules.put("amount", "required");
 		return rules;
 	}

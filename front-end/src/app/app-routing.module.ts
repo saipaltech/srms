@@ -53,13 +53,14 @@ const routes: Routes = [
             path: 'report',
             component: ReportComponent
           },
+          
         ]
       },
       {
         path: 'login',        
         component: LoginComponent,
         canActivate:[LoginGuard]
-      }
+      },
     ]
   },
   {
