@@ -272,7 +272,7 @@ createItem(id = null) {
         // alert('create')
       this.toastr.success('Item Successfully Saved!', 'Success');
       // this.r.navigate(['report'], { state: { data: upd } });
-      window.open("/#/trial?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
+      window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
       this.voucherBankForm = this.fb.group(this.formLayout);
       this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
         this.getPalikaDetails();

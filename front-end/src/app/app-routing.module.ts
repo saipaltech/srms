@@ -63,7 +63,7 @@ const routes: Routes = [
         canActivate:[LoginGuard]
       },
       {
-        path: 'trial',
+        path: 'report-generate',
         component: TrialComponent
       },
 
