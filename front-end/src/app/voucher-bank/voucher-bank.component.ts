@@ -52,7 +52,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
     this.formLayout = {
       id:[],
       date: [this.myDate],
-      voucherno: ['',Validators.required],
+      voucherno: [''],
       taxpayername: ['',Validators.required],
       taxpayerpan: ['',Validators.pattern('[0-9]+')],
       depositedby:['',Validators.required],

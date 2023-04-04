@@ -30,6 +30,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { ApproveVoucherComponent } from './approve-voucher/approve-voucher.component';
 import { ReportComponent } from './report/report.component';
+import { TrialComponent } from './trial/trial.component';
 
 
 @NgModule({
@@ -49,7 +50,8 @@ import { ReportComponent } from './report/report.component';
     ChangePasswordComponent,
     UserProfileComponent,
     ApproveVoucherComponent,
-    ReportComponent
+    ReportComponent,
+    TrialComponent
   ],
   imports: [
     BrowserModule,
