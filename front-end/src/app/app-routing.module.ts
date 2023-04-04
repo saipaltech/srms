@@ -7,6 +7,7 @@ import { BranchComponent } from './branch/branch.component';
 import { LoginComponent } from './login/login.component';
 import { MainBodyComponent } from './main-body/main-body.component';
 import { ReportComponent } from './report/report.component';
+import { TrialComponent } from './trial/trial.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { UsersComponent } from './users/users.component';
 import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.component';
@@ -61,6 +62,11 @@ const routes: Routes = [
         component: LoginComponent,
         canActivate:[LoginGuard]
       },
+      {
+        path: 'report-generate',
+        component: TrialComponent
+      },
+
     ]
   },
   {

@@ -61,7 +61,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
     this.formLayout = {
       id:[],
       date: [this.myDate],
-      voucherno: ['',Validators.required],
+      voucherno: [''],
       taxpayername: ['',Validators.required],
       taxpayerpan: ['',Validators.pattern('[0-9]+')],
       depositedby:['',Validators.required],
@@ -98,8 +98,15 @@ getDetails(id:any){
 isbtn = true;
 
 changeFields() {
+  //this.r.navigate(['report'+ '/1'])
+  // window.open("/#/trial?voucherno="+"33"+'&palika='+"100612250451902230", '_blank')
+  // window.open("/#/trial?voucherno="+"33"+'&palika='+"100612250451902230")
+
+
   this.isbtn=!this.isbtn;
   this.hideForm = !this.hideForm;
+
+  
 }
 
 ngOnInit(): void {
@@ -260,7 +267,6 @@ createItem(id = null) {
     this.bvs.update(id, upd).subscribe({
       next: (result :any) => {
       this.toastr.success('Item Successfully Updated!', 'Success');
-      //add route to report here
       this.voucherBankForm = this.fb.group(this.formLayout)
       this.getList();
     }, error :err=> {
@@ -269,12 +275,13 @@ createItem(id = null) {
     });
   } else {
     this.bvs.create(upd).subscribe({
-      next:(result:NavigationExtras) => {
+      next:(result:any) => {
         // alert('create')
       this.toastr.success('Item Successfully Saved!', 'Success');
       // this.r.navigate(['report'], { state: { data: upd } });
       this.resetForm();
       this.getList();
+      window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
     }, error:err => {
       this.toastr.error(err.error, 'Error');
     }
