@@ -47,7 +47,7 @@ public class TaxPayerVoucher {
 	public static Map<String, String> rules() {
 		Map<String, String> rules = new HashMap<>();
 		rules.put("date", "required");
-		rules.put("voucherno", "required");
+//		rules.put("voucherno", "required");
 		rules.put("taxpayername", "required");
 		rules.put("depositedby", "required");
 		return rules;
