@@ -10,6 +10,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
+import org.saipal.srms.service.IrdPanSearchService;
 import org.saipal.srms.util.ApiManager;
 import org.saipal.srms.util.DbResponse;
 import org.saipal.srms.util.Messenger;
@@ -28,6 +29,9 @@ public class TaxPayerVoucherService extends AutoService {
 
 	@Autowired
 	ApiManager api;
+	
+	@Autowired
+	IrdPanSearchService pan;
 
 	private String table = "taxvouchers";
 
@@ -335,6 +339,26 @@ public class TaxPayerVoucherService extends AutoService {
 			}
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Such voucher exists.\"}");
+	}
+
+	public ResponseEntity<Map<String, Object>> getPanDetails() {
+		String panno = request("panno");
+		if(panno.isBlank()) {
+			return Messenger.getMessenger().setMessage("Pan No. is Required").error();
+		}
+		try {
+			JSONArray dt = pan.getData(panno);
+			if(dt!=null) {
+				JSONObject jb = dt.getJSONObject(0);
+				return Messenger.getMessenger().setData(Map.of("taxpayer",jb.getString("taxpayer"),"contactNo",jb.getString("contactNo")==null?"":jb.getString("contactNo"))).success();
+			}
+			return Messenger.getMessenger().setMessage("Invalid Pan No.").error();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			return Messenger.getMessenger().setMessage("Invalid Pan No.").error();
+		}
+		
 	}
 
 }

@@ -6,6 +6,9 @@ import { ApiService } from '../api.service';
   providedIn: 'root'
 })
 export class VoucherService {
+  getPanDetails(panno:any){
+    return this.http.get(this.url+"/pan-details?panno="+panno);
+  }
   getRevenue() {
     return this.http.get(this.url+"/get-revenue-list");
   }
