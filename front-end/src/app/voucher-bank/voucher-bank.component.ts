@@ -102,8 +102,15 @@ getDetails(id:any){
 isbtn = true;
 
 changeFields() {
+  //this.r.navigate(['report'+ '/1'])
+  // window.open("/#/trial?voucherno="+"33"+'&palika='+"100612250451902230", '_blank')
+  // window.open("/#/trial?voucherno="+"33"+'&palika='+"100612250451902230")
+
+
   this.isbtn=!this.isbtn;
   this.hideForm = !this.hideForm;
+
+  
 }
 
 ngOnInit(): void {
@@ -253,7 +260,6 @@ createItem(id = null) {
     this.bvs.update(id, upd).subscribe({
       next: (result :any) => {
       this.toastr.success('Item Successfully Updated!', 'Success');
-      //add route to report here
       this.voucherBankForm = this.fb.group(this.formLayout)
       this.getList();
     }, error :err=> {
@@ -262,10 +268,11 @@ createItem(id = null) {
     });
   } else {
     this.bvs.create(upd).subscribe({
-      next:(result:NavigationExtras) => {
+      next:(result:any) => {
         // alert('create')
       this.toastr.success('Item Successfully Saved!', 'Success');
       // this.r.navigate(['report'], { state: { data: upd } });
+      window.open("/#/trial?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
       this.voucherBankForm = this.fb.group(this.formLayout);
       this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
         this.getPalikaDetails();
