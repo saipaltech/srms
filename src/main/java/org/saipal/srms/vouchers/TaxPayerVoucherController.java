@@ -94,6 +94,18 @@ public class TaxPayerVoucherController {
 		return objService.getAllDetails();
 	}
 	
+	@GetMapping("get-specific/{id}")
+	public ResponseEntity<List<Map<String, Object>>> getSpecific(HttpServletRequest request, @PathVariable String id){
+		return objService.getSpecific(id);
+	}
+	
+	
+	@GetMapping("generate-report")
+	public ResponseEntity<Map<String, Object>> generateReport(HttpServletRequest request){
+		return objService.generateReport();
+	}
+	
+	
 //	@GetMapping("get-voucher-details")
 //	public ResponseEntity<String> getVoucherDetails() {
 //		return objService.getVoucherDetails();

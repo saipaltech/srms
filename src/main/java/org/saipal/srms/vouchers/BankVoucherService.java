@@ -54,7 +54,7 @@ public class BankVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("transactionid,office,voucherdate,bankacname,bankacno").sqlBody("from " + table + condition).paginate();
+				.select("transactionid,officename,voucherdate,accountnumber, amount").sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -150,5 +150,9 @@ public class BankVoucherService extends AutoService {
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
 		return Messenger.getMessenger().setData(data).success();
 	}
+	
+	
+
+	
 
 }
