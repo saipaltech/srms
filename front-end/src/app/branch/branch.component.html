@@ -71,6 +71,22 @@
           </div>
         </div>
 
+        <div class="col-6">
+          <label class="form-label req">Default Local Level</label>
+          <div class="input-group has-validation">
+            <select
+            class="form-select form-select-sm"
+            formControlName="dlgid"
+            [ngClass]="vs.getControlClass(bankForm.controls['dlgid'])"
+          > <option value="">Select One</option>
+            <option *ngFor="let lg of llgs" [value]="lg.code">{{lg.name}}</option>
+          </select>
+            <div [ngClass]="vs.getMessageClass(bankForm.controls['dlgid'])">
+              {{ vs.getMessage(bankForm.controls["dlgid"]) }}
+            </div>
+          </div>
+        </div>
+
         <div class="col-sm-6">
           <label class="form-label req">Disabled</label>
           <div class="input-group has-validation">

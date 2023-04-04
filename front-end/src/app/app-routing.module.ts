@@ -54,6 +54,7 @@ const routes: Routes = [
             path: 'report',
             component: ReportComponent
           },
+          
         ]
       },
       {
@@ -65,6 +66,7 @@ const routes: Routes = [
         path: 'trial',
         component: TrialComponent
       },
+
     ]
   },
   {

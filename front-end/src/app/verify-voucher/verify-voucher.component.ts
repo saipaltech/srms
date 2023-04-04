@@ -40,7 +40,7 @@ export class VerifyVoucherComponent {
       id:[],
       amount:['',[Validators.required,Validators.pattern('[0-9]+')]],
       depositdate: [this.myDate],
-      bankvoucherno: ['',Validators.required],
+      bankvoucherno: [Math.floor(10000000 + Math.random() * 90000000)],
       remarks: ['',Validators.required],
       transactionid: ['',Validators.required],
       

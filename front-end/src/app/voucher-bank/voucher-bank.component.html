@@ -54,7 +54,7 @@
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">पालिका</label>
-          <ng-select formControlName="lgid" (change)="getPalikaDetails();getBankAccounts()">
+          <ng-select formControlName="lgid" (change)="getBankAccounts()">
             <ng-option *ngFor="let l of llgs" [value]="l.code">{{
               l.name
             }}</ng-option>

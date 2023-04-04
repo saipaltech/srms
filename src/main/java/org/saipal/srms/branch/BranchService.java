@@ -68,8 +68,8 @@ public class BranchService extends AutoService {
 		String sql = "";
 		Branch model = new Branch();
 		model.loadData(document);
-		sql = "INSERT INTO branches(name, bankid,code, disabled, approved) VALUES (?,?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.bankid, model.code,model.disabled, model.approved));
+		sql = "INSERT INTO branches(name, bankid,code,dlgid, disabled, approved) VALUES (?,?,?,?,?,?)";
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.bankid, model.code,model.dlgid,model.disabled, model.approved));
 
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -79,7 +79,7 @@ public class BranchService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
-		String sql = "select id,name,code,bankid, disabled, approved from " + table + " where id=?";
+		String sql = "select id,name,code,bankid,cast(dlgid as varchar) as dlgid, disabled, approved from " + table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
 	}
@@ -91,8 +91,8 @@ public class BranchService extends AutoService {
 		DbResponse rowEffect;
 		Branch model = new Branch();
 		model.loadData(document);
-		String sql = "UPDATE branches set name=?,code=?,disabled=?,approved=? where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.name,model.code,model.disabled,model.approved,model.id));
+		String sql = "UPDATE branches set name=?,code=?,dlgid=?,disabled=?,approved=? where id=?";
+		rowEffect = db.execute(sql, Arrays.asList(model.name,model.code,model.dlgid,model.disabled,model.approved,model.id));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 

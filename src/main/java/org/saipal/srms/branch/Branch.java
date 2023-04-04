@@ -13,6 +13,7 @@ public class Branch {
 	public String id;
 	public String name;
 	public String bankid;
+	public String dlgid;
 	public String code;
 	public String approved;
 	public String disabled;
@@ -39,6 +40,7 @@ public class Branch {
 		Map<String, String> rules = new HashMap<>();
 		rules.put("name", "required");
 		rules.put("bankid", "required");
+		rules.put("dlgid", "required");
 		rules.put("approved", "required");
 		rules.put("disabled", "required");
 		return rules;
