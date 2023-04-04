@@ -36,4 +36,6 @@ export class TrialComponent implements OnInit{
     }});
   }
 
+  hi = 0;
+
 }
