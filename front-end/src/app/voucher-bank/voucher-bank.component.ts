@@ -114,6 +114,7 @@ changeFields() {
 }
 
 ngOnInit(): void {
+  this.pagination.perPage = this.perPages[0];
   this.getList();
   this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
     this.getPalikaDetails();
