@@ -54,7 +54,6 @@ export class VoucherBankComponent implements OnInit {
 
 constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherService, private modalService: BsModalService, private r: Router,private auth:AuthService){
   const ud = this.auth.getUserDetails();
-  console.log(ud);
   if(ud){
     this.dlgid = ud.dlgid;
   }
@@ -75,10 +74,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       purpose: [''],
       amount:['',[Validators.required,Validators.pattern('[0-9]+')]]
     }
-    
     this.voucherBankForm =fb.group(this.formLayout)
-    
-
     this.srchForm = new FormGroup({
       entries: new FormControl('10'),
       srch_term: new FormControl('')})
@@ -132,7 +128,13 @@ ngOnInit(): void {
 
     }});
 }
-
+getAndSetPanDetails(){
+  this.bvs.getPanDetails(this.voucherBankForm.get("taxpayerpan")?.value).subscribe({next:(d)=>{
+    if(d.data){
+      this.voucherBankForm.patchValue({"taxpayername":d.data.taxpayer,"depositedby":d.data.taxpayer,"depcontact":d.data.contactNo})
+    }
+  }});
+}
 getPalikaDetails(){
   this.voucherBankForm.patchValue({"collectioncenterid":''});
   const llgCode = this.voucherBankForm.value['lgid'];
@@ -149,7 +151,7 @@ getPalikaDetails(){
 }
 
 getBankAccounts(){
-  this.voucherBankForm.patchValue({"accountno":''});
+  this.acs  = undefined;
   const llgCode = this.voucherBankForm.value['lgid'];
   const revenuecode = this.voucherBankForm.value['revenuecode'];
   if(llgCode && revenuecode){
@@ -174,7 +176,12 @@ getBankAccounts(){
   
 
   resetForm(){
+    this.acs = undefined;
     this.voucherBankForm =this.fb.group(this.formLayout);
+    this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
+      this.getPalikaDetails();
+    }});
+    this.voucherBankForm.patchValue({'lgid':this.dlgid});
   }
 
   getList(pageno?: number | undefined) {
@@ -208,7 +215,7 @@ voucherBankFormSubmit(){
   if (this.voucherBankForm.valid) {
     const llgCode = this.voucherBankForm.value['lgid'];
     if(llgCode!=this.dlgid){
-      if(!confirm("Default Local Level and Selected are not same, Are you sure to proceed")){
+      if(!confirm("You have selected Local Level other then default, Are you sure to proceed")){
         return;
       }
     }
@@ -273,14 +280,9 @@ createItem(id = null) {
         // alert('create')
       this.toastr.success('Item Successfully Saved!', 'Success');
       // this.r.navigate(['report'], { state: { data: upd } });
-      window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
-      this.voucherBankForm = this.fb.group(this.formLayout);
-      this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
-        this.getPalikaDetails();
-      }});
-      this.acs=null;
-      this.voucherBankForm.patchValue({"lgid":this.dlgid});
+      this.resetForm();
       this.getList();
+      window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
     }, error:err => {
       this.toastr.error(err.error, 'Error');
     }
