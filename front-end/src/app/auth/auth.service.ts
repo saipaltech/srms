@@ -71,10 +71,22 @@ export class AuthService {
         }});
     }
 
-    public getAdminInfo(){
-        return this.http.get(this.appConfig.baseUrl+"admin-info").pipe(map((result:any)=>{
-            result.adminlogo = this.appConfig.baseUrl+result.adminlogo;
-            return result;
-        }));
+    loginWithOtp(data:any){
+        return new Observable(subscriber => {
+            this.http.post(this.appConfig.baseUrl+"auth/2fa",data)
+                .subscribe({next:(response:any) => {
+                    const resp = JSON.parse(JSON.stringify(response));
+                    const isToken = resp && resp.data && resp.data.token;
+                    const data = resp.data;
+                    if (isToken) {
+                        this.token = data.token;
+                        localStorage.setItem('currentUser', JSON.stringify({ username: data.username, name: data.name, token: data.token, bank: data.bank, branch: data.branch,dlgid:data.dlgid }));
+                    }
+                    subscriber.next(data);
+                    subscriber.complete();
+                },error: (err) => {
+                    subscriber.error(err.error);
+                }});
+        });
     }
 }
