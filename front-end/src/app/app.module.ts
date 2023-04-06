@@ -31,6 +31,8 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { ApproveVoucherComponent } from './approve-voucher/approve-voucher.component';
 import { ReportComponent } from './report/report.component';
 import { TrialComponent } from './trial/trial.component';
+import { VoucherBankOffComponent } from './voucher-bank-off/voucher-bank.component';
+import { NewNavComponent } from './new-nav/new-nav.component';
 
 
 @NgModule({
@@ -52,7 +54,9 @@ import { TrialComponent } from './trial/trial.component';
     ApproveVoucherComponent,
     ReportComponent,
     TrialComponent,
-    TwoFaModalComponent
+    TwoFaModalComponent,
+    VoucherBankOffComponent,
+    NewNavComponent
   ],
   imports: [
     BrowserModule,
