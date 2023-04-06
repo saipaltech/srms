@@ -2,7 +2,7 @@ import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { VoucherService } from './voucher.service';
+import { VoucherServiceOff } from './voucher.service';
 import { ValidationService } from '../validation.service';
 
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
@@ -13,12 +13,12 @@ import { AuthService } from '../auth/auth.service';
 
 
 @Component({
-  selector: 'app-voucher-bank',
+  selector: 'app-voucher-bank-off',
   templateUrl: './voucher-bank.component.html',
   styleUrls: ['./voucher-bank.component.scss'],
   providers: [DatePipe]
 })
-export class VoucherBankComponent implements OnInit {
+export class VoucherBankOffComponent implements OnInit {
 
   modalRef?: BsModalRef;
 
@@ -53,7 +53,7 @@ export class VoucherBankComponent implements OnInit {
   approved ="";
   items=new Array();
 
-constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherService, private modalService: BsModalService, private r: Router,private auth:AuthService){
+constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherServiceOff, private modalService: BsModalService, private r: Router,private auth:AuthService){
   const ud = this.auth.getUserDetails();
   if(ud){
     this.dlgid = ud.dlgid;

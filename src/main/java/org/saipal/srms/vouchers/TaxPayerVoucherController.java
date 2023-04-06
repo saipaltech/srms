@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jettison.json.JSONException;
 import org.saipal.srms.util.Messenger;
 import org.saipal.srms.util.ValidationService;
 import org.saipal.srms.util.Validator;
@@ -36,7 +37,7 @@ public class TaxPayerVoucherController {
 	}
 
 	@PostMapping("")
-	public ResponseEntity<Map<String, Object>> store(HttpServletRequest request) {
+	public ResponseEntity<Map<String, Object>> store(HttpServletRequest request) throws JSONException {
 		Validator validator = validationService.validate(TaxPayerVoucher.rules());
 		if (validator.isFailed()) {
 			return Messenger.getMessenger().setMessage(validator.getErrorMessages()).error();

@@ -12,6 +12,7 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { UsersComponent } from './users/users.component';
 import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.component';
 import { VoucherBankComponent } from './voucher-bank/voucher-bank.component';
+import { VoucherBankOffComponent } from './voucher-bank-off/voucher-bank.component';
 
 const routes: Routes = [
 {
@@ -25,6 +26,10 @@ const routes: Routes = [
           {
             path: 'voucher-bank',
             component: VoucherBankComponent
+          },
+          {
+            path: 'voucher-bank-off',
+            component: VoucherBankOffComponent
           },
           {
             path: 'bank',

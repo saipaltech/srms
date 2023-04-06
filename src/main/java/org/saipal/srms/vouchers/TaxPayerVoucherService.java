@@ -99,10 +99,15 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 	
 
-	public ResponseEntity<Map<String, Object>> store() {
+	public ResponseEntity<Map<String, Object>> store() throws JSONException {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
+		String voucher=request("voucherinfo");
+		if (voucher.startsWith("{")) {
+			voucher = "[" + voucher + "]";
+		}
+		JSONArray jarr = new JSONArray(voucher);
 		String sql = "";
 		TaxPayerVoucher model = new TaxPayerVoucher();
 		model.loadData(document);
@@ -121,6 +126,17 @@ public class TaxPayerVoucherService extends AutoService {
 						model.depcontact, model.lgid, model.collectioncenterid, model.accountno, model.revenuecode,
 						model.purpose, model.amount, auth.getUserId(), auth.getBankId(), auth.getBranchId()));
 		if (rowEffect.getErrorNumber() == 0) {
+			if (jarr.length() > 0) {
+				for (int i = 0; i < jarr.length(); i++) {
+					JSONObject objects = jarr.getJSONObject(i);
+				
+						String sq1 = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
+						db.execute(sq1, Arrays.asList(db.newIdInt(),id, objects.get("rc"), objects.get("amt")));
+					
+
+				}
+
+			}
 			try {
 				JSONObject obj = api.sendDataToSutra(model, id, auth.getBankId(), auth.getBranchId(), auth.getUserId());
 				if (obj != null) {
