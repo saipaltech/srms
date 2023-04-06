@@ -13,6 +13,7 @@ import { UsersComponent } from './users/users.component';
 import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.component';
 import { VoucherBankComponent } from './voucher-bank/voucher-bank.component';
 import { VoucherBankOffComponent } from './voucher-bank-off/voucher-bank.component';
+import { NewNavComponent } from './new-nav/new-nav.component';
 
 const routes: Routes = [
 {
@@ -66,6 +67,10 @@ const routes: Routes = [
         path: 'login',        
         component: LoginComponent,
         canActivate:[LoginGuard]
+      },
+      {
+        path: 'new-nav',        
+        component: NewNavComponent,
       },
       {
         path: 'report-generate',
