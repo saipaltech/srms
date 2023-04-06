@@ -32,6 +32,7 @@ public class TaxPayerVoucherController {
 	
 	@GetMapping("")
 	public ResponseEntity<Map<String, Object>> index(HttpServletRequest request) {
+		System.out.println("Reached at Index");
 		return objService.index();
 	}
 

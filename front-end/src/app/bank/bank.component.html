@@ -1,140 +1,152 @@
 <div class="row g-5 justify-content-center">
-    <div class="col-md-7 col-lg-8">
-      <div class="row">
-        <div class="col-md-8 text-start">
-          <h4 class="mb-3">Enroll Bank</h4>
-        </div>
-        <div class="col-md-4 text-end">
-          <button type="button" class="btn btn-warning" (click)="changeFields()">
+  <div class="col-md-7 col-lg-8">
+
+    <div class="row">
+      <div class="card">
+        <div class="card-header">
+
+          Enroll Bank
+
+
+          <button type="button" class="btn btn-primary btn-sm float-end" (click)="changeFields()">
             <div *ngIf="isbtn;else other_content">
-              List of Bank
-          </div>
-          
-          <ng-template #other_content>Back To Form</ng-template>
-            
+              <i class="bi bi-list"></i> List of Bank
+            </div>
+
+            <ng-template #other_content><i class="bi bi-reply"></i> Back To Form</ng-template>
+
           </button>
         </div>
       </div>
-  
-      <form class="needs-validation" [formGroup]= "bankForm" (ngSubmit)= "bankFormSubmit()">
-        <div class="row g-3">
-          <input type="hidden" formControlName="id">
-            <div class="col-sm-6">
-              <label class="form-label req">Bank</label>
 
-                <ng-select formControlName="bankid" >
-                  <ng-option *ngFor="let b of banks;let i=index;"  [value]="b.id">
-                    {{b.namenp}}
-                  </ng-option>
-                </ng-select>
-                <!--<select class="form-select form-select-sm" formControlName="bankid"  #sl [ngClass]="vs.getControlClass(bankForm.controls['bankid'])">
+
+    </div>
+
+
+    <form class="needs-validation" [formGroup]="bankForm" (ngSubmit)="bankFormSubmit()">
+      <div class="row g-3">
+        <input type="hidden" formControlName="id">
+        <div class="col-sm-6">
+          <label class="form-label req">Bank</label>
+
+          <ng-select formControlName="bankid">
+            <ng-option *ngFor="let b of banks;let i=index;" [value]="b.id">
+              {{b.namenp}}
+            </ng-option>
+          </ng-select>
+          <!--<select class="form-select form-select-sm" formControlName="bankid"  #sl [ngClass]="vs.getControlClass(bankForm.controls['bankid'])">
                     <option value="">Select Bank</option>
                     <option *ngFor="let b of banks;let i=index;" value="{{b.id}}">{{b.namenp}}</option>
                   </select>-->
-                  <div [ngClass]="vs.getMessageClass(bankForm.controls['bankid'])">{{vs.getMessage(bankForm.controls['bankid'])}}</div>
+          <div [ngClass]="vs.getMessageClass(bankForm.controls['bankid'])">
+            {{vs.getMessage(bankForm.controls['bankid'])}}</div>
 
-            </div>
-       
-  
-            <div class="col-sm-6">
-              <label class="form-label req">Disabled</label>
-              <div class="input-group has-validation">
-                <select class="form-select form-select-sm" formControlName="disabled"
-                [ngClass]="vs.getControlClass(bankForm.controls['disabled'])">
-                   
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
-                <div [ngClass]="vs.getMessageClass(bankForm.controls['disabled'])">{{vs.getMessage(bankForm.controls['disabled'])}}</div>
-
-              </div>
-            </div>
-  
-            <div class="col-sm-6">
-              <label for="username" class="form-label req">Approved</label>
-              <div class="input-group has-validation">
-                <select class="form-select form-select-sm" formControlName="approved"                
-                [ngClass]="vs.getControlClass(bankForm.controls['approved'])">
-               
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
-                  </select>
-                  <div [ngClass]="vs.getMessageClass(bankForm.controls['approved'])">{{vs.getMessage(bankForm.controls['approved'])}}</div>
-              </div>
-            </div>
-
-
-  
- 
-  
         </div>
-  
-        
-        <br />
-        <div class="row">
-          <div class="col-md-12">
-            <button class="btn btn-success btn-sm" type="submit">Submit</button>
-            &nbsp;
-            &nbsp;
-            <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
-        </div>          
+
+
+        <div class="col-sm-6">
+          <label class="form-label req">Disabled</label>
+          <div class="input-group has-validation">
+            <select class="form-select form-select-sm" formControlName="disabled"
+              [ngClass]="vs.getControlClass(bankForm.controls['disabled'])">
+
+              <option value="1">Yes</option>
+              <option value="0">No</option>
+            </select>
+            <div [ngClass]="vs.getMessageClass(bankForm.controls['disabled'])">
+              {{vs.getMessage(bankForm.controls['disabled'])}}</div>
+
+          </div>
         </div>
-       
-      </form>
+
+        <div class="col-sm-6">
+          <label for="username" class="form-label req">Approved</label>
+          <div class="input-group has-validation">
+            <select class="form-select form-select-sm" formControlName="approved"
+              [ngClass]="vs.getControlClass(bankForm.controls['approved'])">
+
+              <option value="1">Yes</option>
+              <option value="0">No</option>
+            </select>
+            <div [ngClass]="vs.getMessageClass(bankForm.controls['approved'])">
+              {{vs.getMessage(bankForm.controls['approved'])}}</div>
+          </div>
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <br />
+      <div class="row">
+        <div class="col-md-12">
+          <button class="btn btn-success btn-sm" type="submit">Submit</button>
+          &nbsp;
+          &nbsp;
+          <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
+        </div>
+      </div>
+
+    </form>
 
     <div class="tab hide">
       <form class="form-srch " [formGroup]="srchForm">
         <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Search.." id="srch_term" name="srch_term" formControlName="srch_term" (keyup.enter)="search()">
-          <button class="btn btn-outline-secondary" type="button" (click)="search()"><i class="bi bi-search"></i></button>
+          <input type="text" class="form-control" placeholder="Search.." id="srch_term" name="srch_term"
+            formControlName="srch_term" (keyup.enter)="search()">
+          <button class="btn btn-outline-secondary" type="button" (click)="search()"><i
+              class="bi bi-search"></i></button>
         </div>
-    </form>
-        <table class="table datatable"> <!--table-borderless-->
-            <thead>
-              <tr>
+      </form>
+      <table class="table datatable"> <!--table-borderless-->
+        <thead>
+          <tr>
 
-                <th scope="col">Code</th>
-                <th scope="col">Name</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
+            <th scope="col">Code</th>
+            <th scope="col">Name</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
 
 
-              <tr *ngFor=" let item of lists; let i = index; ">
-                <td>{{item.code}}</td>
-                <td>{{item.namenp}}</td>
-                <td><app-bank-users [bankid]=item.id></app-bank-users></td>
+          <tr *ngFor=" let item of lists; let i = index; ">
+            <td>{{item.code}}</td>
+            <td>{{item.namenp}}</td>
+            <td><app-bank-users [bankid]=item.id></app-bank-users></td>
 
-              </tr>
+          </tr>
 
-            </tbody>
-          </table>
+        </tbody>
+      </table>
 
-          <div class="row">
-            <div class="col-6 text-start">
+      <div class="row">
+        <div class="col-6 text-start">
 
-                <pagination [rotate]="true" [maxSize]="5" [totalItems]="pagination.total" [(ngModel)]="pagination.currentPage" [boundaryLinks]="true" [itemsPerPage]="pagination.perPage" (pageChanged)="paginatedData($event)"
-                previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"
-                ></pagination>
+          <pagination [rotate]="true" [maxSize]="5" [totalItems]="pagination.total" [(ngModel)]="pagination.currentPage"
+            [boundaryLinks]="true" [itemsPerPage]="pagination.perPage" (pageChanged)="paginatedData($event)"
+            previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
 
+        </div>
+
+        <div class="col-6 text-end">
+          <form [formGroup]="srchForm">
+            <div class="row" style="float:right">
+              <div class="col-md-12 smallbr">
+                Entries <select name="entries" id="entries" formControlName="entries" (change)="search()">
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select> &nbsp;&nbsp;&nbsp;&nbsp;
+              </div>
             </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
-            <div class="col-6 text-end">
-              <form [formGroup]="srchForm">
-                <div class="row" style="float:right">
-                    <div class="col-md-12 smallbr">
-                        Entries <select name="entries" id="entries" formControlName="entries" (change)="search()">
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select> &nbsp;&nbsp;&nbsp;&nbsp;
-                    </div>
-                </div>
-            </form>
-            </div>
-    </div>
-    </div>
-    
   </div>

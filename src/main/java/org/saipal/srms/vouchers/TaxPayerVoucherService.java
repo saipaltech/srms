@@ -40,7 +40,7 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String condition = " where id!=1 ";
-		String approvelog = request("approvelog");
+		String approve = request("approvelog");
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
 			condition += "and (";
@@ -49,21 +49,18 @@ public class TaxPayerVoucherService extends AutoService {
 			}
 			condition = condition.substring(0, condition.length() - 3);
 
-			if (approvelog == null)
-				condition += " where approved=1";
-			else {
-				switch (Integer.parseInt(approvelog)) {
+		
+				switch (Integer.parseInt(approve)) {
 				case 0:
 					condition += " where approved=0)";
 					break;
 				case 1:
-					condition += "where approved=1)";
+					condition += " where approved=1)";
 					break;
 				default:
-					condition += ")";
+					condition += "where approved=1)";
 					break;
 				}
-			}
 
 		}
 		String sort = "";
@@ -77,6 +74,7 @@ public class TaxPayerVoucherService extends AutoService {
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
 				.select("id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount")
 				.sqlBody("from " + table + condition).paginate();
+		System.out.println(result);
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -159,6 +157,7 @@ public class TaxPayerVoucherService extends AutoService {
 						model.depcontact, model.lgid, model.collectioncenterid, model.accountno, model.revenuecode,
 						model.purpose, model.amount, id));
 		if (rowEffect.getErrorNumber() == 0) {
+			System.out.println();
 			return Messenger.getMessenger().success();
 		} else {
 			return Messenger.getMessenger().error();
