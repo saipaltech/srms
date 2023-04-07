@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, TemplateRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import {UsersService} from './users.service'
+import { UsersService } from './users.service'
 import { ValidationService } from '../validation.service';
 import { BranchService } from '../branch/branch.service';
 
@@ -13,7 +13,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss']
 })
-export class UsersComponent implements OnInit{
+export class UsersComponent implements OnInit {
 
   vs = ValidationService;
   model: any = {};
@@ -30,29 +30,32 @@ export class UsersComponent implements OnInit{
   column: string = '';
   isDesc: boolean = false;
   srchForm!: FormGroup;
-  
+
   bankForm!: FormGroup;
   formLayout: any;
-  branches:any
+  branches: any
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService,private bs:BranchService){
+  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService, private bs: BranchService) {
     this.formLayout = {
-      id:[],
-      branchid: ['',Validators.required],
-      name: ['',Validators.required],
-      post:['',Validators.required],
-      username:['', Validators.required],
-      password:['', Validators.required],
-      disabled: ['0',Validators.required],
-      approved: ['1',Validators.required],
-      mobile: ['', Validators.required]
-      
+      id: [],
+      branchid: ['', Validators.required],
+      name: ['', Validators.required],
+      post: ['', Validators.required],
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      disabled: ['0', Validators.required],
+      approved: ['1', Validators.required],
+      mobile: ['', Validators.required],
+      amountlimit: [''],
+      permid: ['', Validators.required]
+
     }
-    this.bankForm =fb.group(this.formLayout)
-    
+    this.bankForm = fb.group(this.formLayout)
+
     this.srchForm = new FormGroup({
       entries: new FormControl('10'),
-      srch_term: new FormControl('')})
+      srch_term: new FormControl('')
+    })
   }
 
   ngOnInit(): void {
@@ -61,12 +64,14 @@ export class UsersComponent implements OnInit{
     this.getBranches();
   }
 
-  getBranches(){
-    this.bs.getlist().subscribe({next:(d:any)=>{
-      this.branches = d;
-    },error:err=>{
+  getBranches() {
+    this.bs.getlist().subscribe({
+      next: (d: any) => {
+        this.branches = d;
+      }, error: err => {
 
-    }});
+      }
+    });
   }
 
   getList(pageno?: number | undefined) {
@@ -79,121 +84,134 @@ export class UsersComponent implements OnInit{
         console.log(result);
       },
       error => {
-         this.toastr.error(error.error);
+        this.toastr.error(error.error);
       }
     );
   }
 
-bankFormSubmit(){
-  if (this.bankForm.valid) {
-    this.model = this.bankForm.value;
-    this.createItem(this.bankForm.value.id);
-  } else {
-    Object.keys(this.bankForm.controls).forEach(field => {
-      const singleFormControl = this.bankForm.get(field);
-      singleFormControl?.markAsTouched({onlySelf: true});
-    });
-    // this.toastr.error('Please fill all the required* fields', 'Error');
-  }
-}
+  checkLimitFromPermission(permid: any){
+    if (permid == 3){
 
-changeFields() {
-  var frm = document.getElementsByClassName('needs-validation')[0]
-  var table = document.getElementsByClassName('tab')[0]
-
-  var fd = document.getElementsByClassName('formdiv')[0]
-  var td = document.getElementsByClassName('listdiv')[0]
-
-  frm.classList.toggle('hide');
-  table.classList.toggle('hide');
-  fd.classList.toggle('hide');
-  td.classList.toggle('hide');
-
-
-  // this.toastr.success('Hello world!', 'Toastr fun!');
-}
-
-resetForm(){
-  this.bankForm =this.fb.group(this.formLayout);
-}
-
-
-search() {
-  this.pagination.perPage=this.srchForm.value.entries;
-  this.searchTerm=this.srchForm.value.srch_term;
-  this.getList();
-}
-
-resetFilters() {
-  this.isDesc = false;
-  this.column = '';
-  this.searchTerm = '';
-  this.pagination.currentPage = 1;
-  this.getList();
-}
-
-paginatedData($event: { page: number | undefined; }) {
-  this.getList($event.page);
-}
-
-changePerPage(perPage: number) {
-  this.pagination.perPage = perPage;
-  this.pagination.currentPage = 1;
-  this.getList();
-}
-
-
-createItem(id = null) {
-
-  let upd = this.model;
-  if (id != "" && id != null) {
-
-    this.RS.update(id, upd).subscribe({
-      next: (result :any) => {
-      this.toastr.success('Item Successfully Updated!', 'Success');
-      this.bankForm = this.fb.group(this.formLayout)
-      this.getList();
-    }, error :err=> {
-      this.toastr.error(err.error.message, 'Error');
     }
-    });
-  } else {
-    this.RS.create(upd).subscribe({
-      next:(result:any) => {
-      this.toastr.success('Item Successfully Saved!', 'Success');
-      this.bankForm = this.fb.group(this.formLayout)
-      this.getList();
-    }, error:err => {
-      this.toastr.error(err.error.message, 'Error');
-    }
-    });
   }
 
-}
-
-getUpdateItem(id: any) {
-  this.RS.getEdit(id).subscribe(
-    (result: any) => {
-      this.model = result;
-      this.bankForm.patchValue(result);
-      this.changeFields();
-    },
-    (error: any) => {
-      this.toastr.error(error.error, 'Error');
+  bankFormSubmit() {
+    if (this.bankForm.valid) {
+      if (this.bankForm.value.permid == 3) {
+        if (this.bankForm.value.amountlimit.trim() === ''){          
+          this.toastr.warning("Set limit for the user"+this.bankForm.value.amountlimit, "Warning");
+        }
+        else {
+        this.model = this.bankForm.value;
+        this.createItem(this.bankForm.value.id);
+        }
+      }
+    } else {
+      Object.keys(this.bankForm.controls).forEach(field => {
+        const singleFormControl = this.bankForm.get(field);
+        singleFormControl?.markAsTouched({ onlySelf: true });
+      });
+      // this.toastr.error('Please fill all the required* fields', 'Error');
     }
-  );
-}
-
-deleteItem(id: any) {
-  if (window.confirm('Are sure you want to delete this item?')) {
-    this.RS.remove(id).subscribe((result: any) => {
-      this.toastr.success('Item Successfully Deleted!', 'Success');
-      this.getList();
-    }, (error: { error: any; }) => {
-      this.toastr.error(error.error, 'Error');
-    });
   }
-}
+
+  changeFields() {
+    var frm = document.getElementsByClassName('needs-validation')[0]
+    var table = document.getElementsByClassName('tab')[0]
+
+    var fd = document.getElementsByClassName('formdiv')[0]
+    var td = document.getElementsByClassName('listdiv')[0]
+
+    frm.classList.toggle('hide');
+    table.classList.toggle('hide');
+    fd.classList.toggle('hide');
+    td.classList.toggle('hide');
+
+
+    // this.toastr.success('Hello world!', 'Toastr fun!');
+  }
+
+  resetForm() {
+    this.bankForm = this.fb.group(this.formLayout);
+  }
+
+
+  search() {
+    this.pagination.perPage = this.srchForm.value.entries;
+    this.searchTerm = this.srchForm.value.srch_term;
+    this.getList();
+  }
+
+  resetFilters() {
+    this.isDesc = false;
+    this.column = '';
+    this.searchTerm = '';
+    this.pagination.currentPage = 1;
+    this.getList();
+  }
+
+  paginatedData($event: { page: number | undefined; }) {
+    this.getList($event.page);
+  }
+
+  changePerPage(perPage: number) {
+    this.pagination.perPage = perPage;
+    this.pagination.currentPage = 1;
+    this.getList();
+  }
+
+
+  createItem(id = null) {
+
+    let upd = this.model;
+    if (id != "" && id != null) {
+
+      this.RS.update(id, upd).subscribe({
+        next: (result: any) => {
+          this.toastr.success('Item Successfully Updated!', 'Success');
+          this.bankForm = this.fb.group(this.formLayout)
+          this.getList();
+        }, error: err => {
+          this.toastr.error(err.error.message, 'Error');
+        }
+      });
+    } else {
+      this.RS.create(upd).subscribe({
+        next: (result: any) => {
+          this.toastr.success('Item Successfully Saved!', 'Success');
+          this.bankForm = this.fb.group(this.formLayout)
+          this.getList();
+        }, error: err => {
+          this.toastr.error(err.error.message, 'Error');
+        }
+      });
+    }
+
+  }
+
+  getUpdateItem(id: any) {
+    this.RS.getEdit(id).subscribe(
+      (result: any) => {
+        this.model = result;
+        this.bankForm.patchValue(result);
+        this.changeFields();
+      },
+      (error: any) => {
+        this.toastr.error(error.error, 'Error');
+      }
+    );
+  }
+
+  deleteItem(id: any) {
+    if (window.confirm('Are sure you want to delete this item?')) {
+      this.RS.remove(id).subscribe((result: any) => {
+        this.toastr.success('Item Successfully Deleted!', 'Success');
+        this.getList();
+      }, (error: { error: any; }) => {
+        this.toastr.error(error.error, 'Error');
+      });
+    }
+  }
 
 
 }
@@ -208,33 +226,33 @@ export class UserLimitComponent {
   @Input() userid?: string;
   modalRef?: BsModalRef;
 
-  bankUserForm:any;
+  bankUserForm: any;
   formLayout: any;
   vs = ValidationService;
 
-  
-  
-  constructor(private modalService: BsModalService, private fb: FormBuilder, private RS:UsersService, private toastr: ToastrService) {
+
+
+  constructor(private modalService: BsModalService, private fb: FormBuilder, private RS: UsersService, private toastr: ToastrService) {
     this.formLayout = {
-      userid:[this.userid],
+      userid: [this.userid],
       limit: ['', Validators.required]
-      
+
     }
-    this.bankUserForm =fb.group(this.formLayout)
+    this.bankUserForm = fb.group(this.formLayout)
   }
- 
+
   openModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template);
   }
 
-  resetForm(){
-    this.bankUserForm =this.fb.group(this.formLayout);
+  resetForm() {
+    this.bankUserForm = this.fb.group(this.formLayout);
   }
 
-  bankUserFormSubmit(){
+  bankUserFormSubmit() {
 
   }
-  
+
 }
 
 
@@ -247,31 +265,31 @@ export class ChangePasswordComponent {
   @Input() userid?: string;
   modalRef?: BsModalRef;
 
-  bankUserForm:any;
+  bankUserForm: any;
   formLayout: any;
   vs = ValidationService;
 
-  
-  
-  constructor(private modalService: BsModalService, private fb: FormBuilder, private RS:UsersService, private toastr: ToastrService) {
+
+
+  constructor(private modalService: BsModalService, private fb: FormBuilder, private RS: UsersService, private toastr: ToastrService) {
     this.formLayout = {
-      userid:[this.userid],
+      userid: [this.userid],
       password: ['', Validators.required],
-      
+
     }
-    this.bankUserForm =fb.group(this.formLayout)
+    this.bankUserForm = fb.group(this.formLayout)
   }
- 
+
   openModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template);
   }
 
-  resetForm(){
-    this.bankUserForm =this.fb.group(this.formLayout);
+  resetForm() {
+    this.bankUserForm = this.fb.group(this.formLayout);
   }
 
-  bankUserFormSubmit(){
-    
+  bankUserFormSubmit() {
+
   }
-  
+
 }

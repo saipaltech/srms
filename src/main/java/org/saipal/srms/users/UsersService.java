@@ -89,9 +89,12 @@ public class UsersService extends AutoService {
 					+ "";
 		}
 
-		sql = "INSERT INTO users(name, post, username, password, mobile ,bankid, branchid , disabled, approved) VALUES (?,?,?,?,?,?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username, model.password,
+		sql = "INSERT INTO users(name, post, username, password,amountlimit, mobile ,bankid, branchid , disabled, approved) VALUES (?,?,?,?,?,?,?,?,?,?)";
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username, model.password, model.amountlimit,
 				model.mobile, bankId, model.branchid, model.disabled, model.approved));
+		String permid = request("permid")+"";
+		String sqls = "Insert into users_perms (userid, permid)";
+		DbResponse rowEffects = db.execute(sqls,  Arrays.asList(auth.getUserId(), permid));
 
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -149,10 +152,10 @@ public class UsersService extends AutoService {
 		DbResponse rowEffect;
 		Users model = new Users();
 		model.loadData(document);
-		String sql = "UPDATE users set name=?, mobile=?,branchid=?,post=?,disabled=?, approved=? where id=?";
+		String sql = "UPDATE users set name=?, mobile=?,branchid=?,post=?, amountlimit=? ,disabled=?, approved=? where id=?";
 		rowEffect = db.execute(sql,
 
-				Arrays.asList(model.name, model.mobile, model.branchid, model.post, model.disabled, model.approved,
+				Arrays.asList(model.name, model.mobile, model.branchid, model.post,model.amountlimit ,model.disabled, model.approved,
 						model.id));
 
 		if (rowEffect.getErrorNumber() == 0) {

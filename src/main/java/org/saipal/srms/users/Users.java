@@ -20,6 +20,7 @@ public class Users {
 	public String approved;
 	public String disabled;
 	public String mobile;
+	public String amountlimit;
 
     
 	public void loadData(RequestParser doc) {

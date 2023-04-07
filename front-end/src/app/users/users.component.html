@@ -5,13 +5,13 @@
         <h4 class="mb-3">Users Setup</h4>
       </div>
       <div class="col-md-4 text-end listdiv">
-        <button type="button" class="btn btn-warning" (click)="changeFields()">
+        <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
           <i class="bi bi-list"></i>  List of Users
         </button>
       </div>
 
       <div class="col-md-4 text-end formdiv hide">
-        <button type="button" class="btn btn-warning" (click)="changeFields()">
+        <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
           Back to Form
         </button>
       </div>
@@ -41,6 +41,19 @@
             <div [ngClass]="vs.getMessageClass(bankForm.controls['branchid'])">
               {{ vs.getMessage(bankForm.controls["branchid"]) }}
             </div>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <label class="form-label req">Select User Type</label>
+          <div class="input-group has-validation">
+            <select class="form-select form-select-sm"
+            formControlName="permid"
+            [ngClass]="vs.getControlClass(bankForm.controls['permid'])">
+            <option value="">Select User Type..</option>
+            <option value="4">Supervisor</option>
+            <option value="3">Bank User</option>
+            </select>
           </div>
         </div>
 
@@ -114,6 +127,21 @@
             />
             <div [ngClass]="vs.getMessageClass(bankForm.controls['mobile'])">
               {{ vs.getMessage(bankForm.controls["mobile"]) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <label class="form-label">Limit</label>
+          <div class="input-group has-validation">
+            <input
+              formControlName="amountlimit"
+              type="text"
+              class="form-control form-control-sm"
+              [ngClass]="vs.getControlClass(bankForm.controls['amountlimit'])"
+            />
+            <div [ngClass]="vs.getMessageClass(bankForm.controls['amountlimit'])">
+              {{ vs.getMessage(bankForm.controls["amountlimit"]) }}
             </div>
           </div>
         </div>
