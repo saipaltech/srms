@@ -112,7 +112,7 @@
           <label for="username" class="form-label req">रकम</label>
           <div class="input-group has-validation">
             <input
-              formControlName="amount" 
+              formControlName="amount" (focusout)="addItem()"
               type="text"
               class="form-control form-control-sm"
               [ngClass]="vs.getControlClass(voucherBankForm.controls['amount'])"

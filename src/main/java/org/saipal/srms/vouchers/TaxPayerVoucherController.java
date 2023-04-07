@@ -4,7 +4,7 @@ package org.saipal.srms.vouchers;
 import java.util.List;
 import java.util.Map;
 
-
+import javax.persistence.Tuple;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jettison.json.JSONException;
@@ -108,5 +108,10 @@ public class TaxPayerVoucherController {
 	@GetMapping("generate-report")
 	public ResponseEntity<Map<String, Object>> generateReport(HttpServletRequest request){
 		return objService.generateReport();
+	}
+	
+	@GetMapping("getRevenueDetails")
+	public ResponseEntity<Map<String, Object>> getRevenueDetails(HttpServletRequest request){
+		return objService.getRevenueDetails();
 	}
 }

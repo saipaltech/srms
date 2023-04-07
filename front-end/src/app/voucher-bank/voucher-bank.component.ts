@@ -272,26 +272,29 @@ addItem(){
 
  let rc=this.voucherBankForm.value['revenuecode'];
  let amt=this.voucherBankForm.value['amount'];
+ if(amt!="" && rc!=undefined){
   let val;
- for (const item of this.revs) {
-  if (item.code === rc) {
-     val=item.code+'['+item.name+']';
-    // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
-    break;
-  }
-}
- var newItem = {
-  rc: rc,
-  amt: amt,
-  rv:val
-};
-
-// Add the new item to the items array
-this.items.push(newItem);
-
-this.voucherBankForm.patchValue({"revenuecode":''});
-this.voucherBankForm.patchValue({"amount":''});
-this.istab=2;
+  for (const item of this.revs) {
+   if (item.code === rc) {
+      val=item.code+'['+item.name+']';
+     // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
+     break;
+   }
+ }
+  var newItem = {
+   rc: rc,
+   amt: amt,
+   rv:val
+ };
+ 
+ // Add the new item to the items array
+ this.items.push(newItem);
+ 
+ this.voucherBankForm.patchValue({"revenuecode":''});
+ this.voucherBankForm.patchValue({"amount":''});
+ this.istab=2;
+ }
+ 
 
 }
 

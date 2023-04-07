@@ -81,19 +81,19 @@
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <th scope="row">१</th>
-      <td>{{reportData.revenuecode}}</td>
-      <td>{{reportData.revenuetitle}}</td>
-      <td>{{reportData.amount}}</td>
+    <tr *ngFor="let item of rdetails; let i = index">
+      <th scope="row">{{item.sn}}</th>
+      <td>{{item.revenuecode}}</td>
+      <td>{{item.revenuetitle}}</td>
+      <td>{{item.amount}}</td>
     </tr>
     <tr>
       <th scope="row"></th>
       <td colspan="2">कुल जम्मा</td>
-      <td>{{reportData.amount}}</td>
+      <td>{{rdetails[0].total_amount_no}}</td>
     </tr>
     <tr>
-      <th colspan="4">जम्मा गरेको अक्षरमा : {{reportData.amountwords}} </th>
+      <th colspan="4">जम्मा गरेको अक्षरमा : {{rdetails[0].total_amount}} </th>
     </tr>
     
   </tbody>
@@ -124,7 +124,7 @@
         </tr>
         <tr>
           <td scope="row">रकम</td>
-          <td>{{reportData.amount}}</td>
+          <td>{{rdetails[0].total_amount_no}}</td>
         </tr>
       </tbody>
     </table>

@@ -1,7 +1,8 @@
 package org.saipal.srms.vouchers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -116,6 +117,12 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 		if (model.taxpayerpan.isBlank()) {
 			model.taxpayerpan = "0";
+		}
+		if (model.revenuecode.isBlank()) {
+			model.revenuecode = "0";
+		}
+		if (model.amount.isBlank()) {
+			model.amount = "0";
 		}
 		String id = db.newIdInt();
 		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount,creatorid, bankid, branchid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -409,20 +416,73 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("Invalid Pan No.").error();
 		}
 	}
-		
+	
 	public ResponseEntity<Map<String, Object>> generateReport() {
 		String voucher = request("voucherno");
 		String palika = request("palika");
-		String sql = "select cr.namenp as revenuetitle, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amount as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,dbo.eng2nep(voucherno) as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amount) as amount,dbo.eng2nep(accountno) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date, dbo.eng2nep(revenuecode) as revenuecode from "
+		String sql = "select  dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amount as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,dbo.eng2nep(voucherno) as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amount) as amount,dbo.eng2nep(accountno) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date, dbo.eng2nep(revenuecode) as revenuecode from "
 				+ "taxvouchers tv "
 				+ "join bankaccount ba on ba.accountnumber=tv.accountno "
 				+ "join bankinfo bi on bi.id=tv.bankid "
 				+ "join admin_local_level_structure lls on lls.id=tv.lgid "
-				+ "join crevenue cr on cr.code=tv.revenuecode "
+//				+ "join crevenue cr on cr.code=tv.revenuecode "
 				+ "where voucherno=? and tv.lgid=? ";
-		System.out.println(sql);
+//		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(voucher, palika));
 		return ResponseEntity.ok(data);
+	}
+	
+	public ResponseEntity<Map<String, Object>> getRevenueDetails() {
+		String voucher = request("voucherno");
+		String palika = request("palika");
+		String sql = "SELECT cr.namenp as revenuetitle,\r\n"
+				+ "       dbo.eng2nep(ROW_NUMBER() OVER (ORDER BY tvd.revenueid)) as sn, \r\n"
+				+ "       dbo.getrs(cast(tvd.amount as float)) as amountwords, \r\n"
+				+ "       dbo.eng2nep(tvd.amount) as amount, \r\n"
+				+ "       dbo.eng2nep(tvd.revenueid) as revenuecode,\r\n"
+				+ "       total_amount.amountwords as total_amount,\r\n"
+				+ "       total_amount_no.totalamountno as total_amount_no\r\n"
+				+ "FROM taxvouchers_detail tvd \r\n"
+				+ "JOIN taxvouchers tv ON tv.id = tvd.mainid \r\n"
+				+ "JOIN crevenue cr ON cr.code = tvd.revenueid \r\n"
+				+ "CROSS APPLY (\r\n"
+				+ "    SELECT dbo.getrs(cast(sum(amount) as float)) as amountwords\r\n"
+				+ "    FROM taxvouchers_detail\r\n"
+				+ "    WHERE mainid = tv.id\r\n"
+				+ ") as total_amount\r\n"
+				+ "CROSS APPLY (\r\n"
+				+ "    SELECT dbo.eng2nep(cast(sum(amount) as float)) as totalamountno\r\n"
+				+ "    FROM taxvouchers_detail\r\n"
+				+ "    WHERE mainid = tv.id\r\n"
+				+ ") as total_amount_no\r\n"
+				+ "WHERE tv.voucherno = ? AND tv.lgid = ?;";
+		System.out.println(sql);
+		
+		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(voucher,palika));
+
+		List<Map<String, Object>> list = new ArrayList<>();
+		if (!admlvl.isEmpty()) {
+			for (Tuple t : admlvl) {
+//				System.out.println(t.toString());
+				Map<String, Object> mapadmlvl = new HashMap<>();
+				mapadmlvl.put("sn", t.get("sn"));
+				mapadmlvl.put("revenuetitle", t.get("revenuetitle"));
+				mapadmlvl.put("amountwords", t.get("amountwords"));
+				mapadmlvl.put("amount", t.get("amount"));
+				mapadmlvl.put("revenuecode", t.get("revenuecode"));
+				mapadmlvl.put("total_amount", t.get("total_amount"));
+				mapadmlvl.put("total_amount_no", t.get("total_amount_no"));
+				list.add(mapadmlvl);
+			}
+			return Messenger.getMessenger().setData(list).success();
+
+		} else {
+			return Messenger.getMessenger().setData(list).success();
+//			return Messenger.getMessenger().error();
+		}
+//		System.out.println(sql);
+//		List<Tuple> data = db.getResultList(sql, Arrays.asList(voucher, palika));
+//		return ResponseEntity.ok(data);
 	}
 
 }
