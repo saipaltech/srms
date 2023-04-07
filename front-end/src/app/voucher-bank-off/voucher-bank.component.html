@@ -6,12 +6,12 @@
       </div>
 
       <div class="col-md-4 text-end"  *ngIf = !hideButton>
-        <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
+        <button type="button" class="btn btn-warning" (click)="changeFields()">
           <div *ngIf="isbtn;else other_content">
-            <i class="bi bi-list"></i>  List of Vouchers
+            List of Vouchers
         </div>
         
-        <ng-template #other_content><i class="bi bi-reply"></i> Back To Form</ng-template>
+        <ng-template #other_content>Back To Form</ng-template>
           
         </button>
       </div>
