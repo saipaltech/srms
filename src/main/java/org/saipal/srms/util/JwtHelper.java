@@ -26,7 +26,6 @@ public class JwtHelper {
 				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * Integer.parseInt(expiry)))
 				.setId(db.newIdInt())
 				.signWith(Keys.hmacShaKeyFor(jwtSecretKey.getBytes())).compact();
-
 	}
 
 	public String getSubject(String token) {
