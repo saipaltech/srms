@@ -23,14 +23,25 @@ export class TrialComponent implements OnInit{
     });
   
     this.getData(this.voucherno, this.palika);
+    this.getRevenueDetails(this.voucherno, this.palika);
     // console.log(this.myData)
   }
   reportData: any;
+  rdetails:any;
 
   getData(voucherno: any, palika: any){
     this.RS.getReport(voucherno, palika).subscribe({next:(dt)=>{
       this.reportData = dt;
       console.log(this.reportData);
+    },error:err=>{
+      
+    }});
+  }
+
+  getRevenueDetails(voucherno: any, palika: any){
+    this.RS.getRevenueDetails(voucherno, palika).subscribe({next:(dt)=>{
+      this.rdetails = dt.data;
+      console.log(this.rdetails);
     },error:err=>{
       
     }});
