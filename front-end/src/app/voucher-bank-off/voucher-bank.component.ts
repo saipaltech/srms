@@ -49,7 +49,6 @@ export class VoucherBankOffComponent implements OnInit {
   srchForm!: FormGroup;
   model: any = {};
   dlgid:any;
-
   approved ="";
   items=new Array();
 
@@ -268,32 +267,36 @@ changePerPage(perPage: number) {
 istab=1;
 selectedRevenue:any;
 addItem(){
-//  console.log(this.rv);
-
- let rc=this.voucherBankForm.value['revenuecode'];
- let amt=this.voucherBankForm.value['amount'];
-  let val;
- for (const item of this.revs) {
-  if (item.code === rc) {
-     val=item.code+'['+item.name+']';
-    // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
-    break;
+  //  console.log(this.rv);
+  
+   let rc=this.voucherBankForm.value['revenuecode'];
+   let amt=this.voucherBankForm.value['amount'];
+   if(amt!="" && rc!=undefined){
+    let val;
+    for (const item of this.revs) {
+     if (item.code === rc) {
+        val=item.code+'['+item.name+']';
+       // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
+       break;
+     }
+   }
+    var newItem = {
+     rc: rc,
+     amt: amt,
+     rv:val
+   };
+   
+   // Add the new item to the items array
+   this.items.push(newItem);
+   
+   this.voucherBankForm.patchValue({"revenuecode":''});
+   this.voucherBankForm.patchValue({"amount":''});
+   this.istab=2;
+   }
+   
+  
   }
-}
- var newItem = {
-  rc: rc,
-  amt: amt,
-  rv:val
-};
-
-// Add the new item to the items array
-this.items.push(newItem);
-
-this.voucherBankForm.patchValue({"revenuecode":''});
-this.voucherBankForm.patchValue({"amount":''});
-this.istab=2;
-
-}
+  
 
 removeItem(index:any) {
   this.items.splice(index, 1);
@@ -322,6 +325,7 @@ createItem(id = null) {
       // this.r.navigate(['report'], { state: { data: upd } });
       this.resetForm();
       this.getList();
+      this.istab=1;
       window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
     }, error:err => {
       this.toastr.error(err.error, 'Error');

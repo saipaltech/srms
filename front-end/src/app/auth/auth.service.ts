@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AppConfig } from '../app.config';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable()
 export class AuthService {
@@ -10,6 +11,7 @@ export class AuthService {
     public currentUser;
     public user: any;
     public permissions: any;
+    public jwtHelper = new JwtHelperService();
 
     constructor(private http: HttpClient, private appConfig: AppConfig) {
         this.path = appConfig.baseUrl + "auth";
@@ -88,5 +90,31 @@ export class AuthService {
                     subscriber.error(err.error);
                 }});
         });
+    }
+
+    getFreshToken(){
+        const ud=this.getUserDetails();
+        if(ud){
+            if(!this.jwtHelper.isTokenExpired(ud.token)){
+                const expDate = this.jwtHelper.getTokenExpirationDate(ud.token);
+                if(expDate){
+                    const diff = expDate.getTime() - Date.now();
+                    console.log(diff);
+                    if(diff < 10000){
+                        this.http.get(this.appConfig.baseUrl+"auth/re-login").subscribe({next:(d:any)=>{
+                            if(d.data){
+                                if(d.data.token){
+                                    ud.token = d.data.token;
+                                    localStorage.setItem("currentUser",JSON.stringify(ud));
+                                }
+                            }
+                        },error:err=>{
+                            console.log(err);
+                        }});
+                    }
+                }
+            }
+            
+        }
     }
 }

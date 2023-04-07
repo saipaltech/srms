@@ -66,12 +66,12 @@ public class BankController {
 	}
 	
 	@GetMapping("get-list")
-	public ResponseEntity<List> getList() {
+	public ResponseEntity<List<Map<String, Object>>> getList() {
 		return objService.getList();
 	}
 	
 	@GetMapping("/banks-from-sutra")
-	public ResponseEntity<List> getBanksFromSutra() {
+	public ResponseEntity<List<Map<String, Object>>> getBanksFromSutra() {
 		return objService.getBanksFromSutra();
 	}
 }

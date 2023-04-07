@@ -13,5 +13,9 @@ export class TrialService {
         return this.http.get(this.url+ '/generate-report?voucherno='+voucherno+'&palika='+palika);
     }
 
+    getRevenueDetails(voucherno:any, palika: any){
+      return this.http.get(this.url+ '/getRevenueDetails?voucherno='+voucherno+'&palika='+palika);
+    }
+
   url="taxpayer-voucher"; 
 }

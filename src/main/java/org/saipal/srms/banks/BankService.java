@@ -136,7 +136,7 @@ public class BankService extends AutoService {
 		}
 	}
 
-	public ResponseEntity<List> getList() {
+	public ResponseEntity<List<Map<String,Object>>> getList() {
 		String bankId = auth.getBankId();
 		String sql = "";
 		if (bankId.equals("1")) {
@@ -147,9 +147,9 @@ public class BankService extends AutoService {
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
 
-	public ResponseEntity<List> getBanksFromSutra() {
-		String sql = "select id,namenp from bankinfo where id !=1 and id in(select bankid from branches where ishead=1)";
-		return ResponseEntity.ok(db.getResultListMap(sql));
+	public ResponseEntity<List<Map<String,Object>>> getBanksFromSutra() {
+		String sql = "select id,namenp from bankinfo where id !=1 and id in(select bankid from branches where ishead=1 and bankid=?)";
+		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList(auth.getBankId())));
 //		return ResponseEntity.ok(api.getBanks().toString());
 	}
 

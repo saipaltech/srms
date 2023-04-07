@@ -113,7 +113,7 @@
           <div class="input-group has-validation">
             <input
               formControlName="amount" 
-              type="text"
+              type="text" (focusout)="addItem()"
               class="form-control form-control-sm"
               [ngClass]="vs.getControlClass(voucherBankForm.controls['amount'])"
             />
