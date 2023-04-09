@@ -9,8 +9,8 @@ export class VoucherServiceOff {
   getPanDetails(panno:any){
     return this.http.get(this.url+"/pan-details?panno="+panno);
   }
-  getRevenue() {
-    return this.http.get(this.url+"/get-revenue-list");
+  getRevenue(bankorgid:any) {
+    return this.http.get(this.url+"/get-revenue-list?bankorgid="+bankorgid);
   }
   getPlaikaDetails(llgCode: any) {
     return this.http.get(this.url+"/llg-details?llgcode="+llgCode);
@@ -18,8 +18,8 @@ export class VoucherServiceOff {
   getCostCentres(llgCode: any) {
     return this.http.get(this.url+"/get-cost-centres?llgcode="+llgCode);
   }
-  getBankAccounts(llgCode: any,revenuecode:any) {
-    return this.http.get(this.url+"/get-bank-accounts?llgcode="+llgCode+"&revenuecode="+revenuecode);
+  getBankAccounts(llgCode: any) {
+    return this.http.get(this.url+"/get-bank-accounts?llgcode="+llgCode);
   }
   url="taxpayer-voucher"; 
   create(data: any) {
@@ -33,7 +33,7 @@ export class VoucherServiceOff {
   }
 
   getLocalLevels(){
-    return this.http.get(this.url+"/get-local-levels");
+    return this.http.get(this.url+"/get-local-levels-all");
   }
 
   constructor(private http: ApiService) { 

@@ -99,7 +99,6 @@ export class AuthService {
                 const expDate = this.jwtHelper.getTokenExpirationDate(ud.token);
                 if(expDate){
                     const diff = expDate.getTime() - Date.now();
-                    console.log(diff);
                     if(diff < 10000){
                         this.http.get(this.appConfig.baseUrl+"auth/re-login").subscribe({next:(d:any)=>{
                             if(d.data){

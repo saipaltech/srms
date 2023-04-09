@@ -112,7 +112,7 @@ public class BankVoucherService extends AutoService {
 		if(transactionid.isBlank()) {
 			return Messenger.getMessenger().setMessage("Transaction id is required").error();
 		}
-		String sql = "select bd.fyid,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=?";
+		String sql = "select bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 		if(data==null) {
 			JSONObject dt =  api.getTransDetails(transactionid);
@@ -122,7 +122,7 @@ public class BankVoucherService extends AutoService {
 					if(dt.getInt("status")==1) {
 						JSONObject d = dt.getJSONObject("data");
 						db.execute("insert into "+table+" (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount) values (?,?,?,?,?,?,?,?,?,?,?)",Arrays.asList(d.get("id"),d.get("fyid"),d.get("transactionid"),d.get("officename"),d.get("collectioncenterid"),d.get("lgid"),d.get("voucherdate"),d.get("voucherdateint"),d.get("bankid"),d.get("accountnumber"),d.get("amount")));
-						sql = "select bd.fyid,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bankid=?";
+						sql = "select bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bankid=?";
 						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 						return Messenger.getMessenger().setData(fdata).success();
 					}

@@ -71,10 +71,13 @@ export class LoginComponent {
     <form class="row g-3 needs-validation" [formGroup]="otpForm" (ngSubmit)="submitOtp()" novalidate>
 	<div class="mb-4">
 		<label for="otp" class="form-label">Enter the authentication code sent to your registered mobile</label>
-        <input type="text" class="form-control form-control-sm" id="otp" formControlName="otp" [ngClass]="vs.getControlClass(otpForm.controls['otp'])">
+        <input autocomplete="off" type="text" class="form-control form-control-sm" id="otp" formControlName="otp" [ngClass]="vs.getControlClass(otpForm.controls['otp'])">
         <div [ngClass]="vs.getMessageClass(otpForm.controls['otp'])">
             {{ vs.getMessage(otpForm.controls["otp"]) }}
         </div>
+    </div>
+    <div class="row">
+      <div class="col-12"><p *ngIf="display">Time Remaining: {{display}}</p></div>
     </div>
     <button class="btn btn-success btn-sm" type="submit">Submit</button>
 </form>
@@ -87,6 +90,7 @@ export class TwoFaModalComponent implements OnInit {
   userid?: string;
   otpForm:FormGroup;
   vs=ValidationService;
+  display:any;
   constructor(public bsModalRef: BsModalRef,private fb:FormBuilder,private authService:AuthService,private notify:ToastrService,private router:Router) {
       this.otpForm = this.fb.group({
                   otp:['',[Validators.required,Validators.pattern('[0-9]+')]]
@@ -118,6 +122,31 @@ export class TwoFaModalComponent implements OnInit {
   }
  
   ngOnInit() {
+    this.timer(2);
+  }
+  timer(minute:number) {
+    // let minute = 1;
+    let seconds: number = minute * 60;
+    let textSec: any = "0";
+    let statSec: number = 60;
 
+    const prefix = minute < 10 ? "0" : "";
+
+    const timer = setInterval(() => {
+      seconds--;
+      if (statSec != 0) statSec--;
+      else statSec = 59;
+
+      if (statSec < 10) {
+        textSec = "0" + statSec;
+      } else textSec = statSec;
+
+      this.display = `${prefix}${Math.floor(seconds / 60)}:${textSec}`;
+
+      if (seconds == 0) {
+        console.log("finished");
+        clearInterval(timer);
+      }
+    }, 1000);
   }
 }

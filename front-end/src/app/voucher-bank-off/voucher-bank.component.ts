@@ -115,6 +115,7 @@ ngOnInit(): void {
   this.getList();
   this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
     this.getPalikaDetails();
+    this.getBankAccounts();
   }});
   this.bvs.getLocalLevels().subscribe({next:(dt)=>{
       this.llgs = dt.data;
@@ -123,12 +124,22 @@ ngOnInit(): void {
 
     }});
 
-    this.bvs.getRevenue().subscribe({next:(dt)=>{
+    // this.bvs.getRevenue().subscribe({next:(dt)=>{
+    //   this.revs = dt.data;
+    // },error:err=>{
+
+    // }});
+}
+getRevenue(){
+  const bankorgid=this.voucherBankForm.value["accountno"];
+   this.bvs.getRevenue(bankorgid).subscribe({next:(dt)=>{
       this.revs = dt.data;
     },error:err=>{
 
     }});
+
 }
+
 getAndSetPanDetails(){
   this.bvs.getPanDetails(this.voucherBankForm.get("taxpayerpan")?.value).subscribe({next:(d)=>{
     if(d.data){
@@ -154,9 +165,8 @@ rv:any;
 getBankAccounts(){
   this.acs  = undefined;
   const llgCode = this.voucherBankForm.value['lgid'];
-  const revenuecode = this.voucherBankForm.value['revenuecode'];
-  if(llgCode && revenuecode){
-    this.bvs.getBankAccounts(llgCode,revenuecode).subscribe({
+  if(llgCode){
+    this.bvs.getBankAccounts(llgCode).subscribe({
       next:(d)=>{
         this.acs = d.data;
         if(d.data.length==1){
@@ -288,7 +298,7 @@ addItem(){
    
    // Add the new item to the items array
    this.items.push(newItem);
-   
+   this.calctotal();
    this.voucherBankForm.patchValue({"revenuecode":''});
    this.voucherBankForm.patchValue({"amount":''});
    this.istab=2;
@@ -296,9 +306,18 @@ addItem(){
    
   
   }
+  totalAmt=0;
+  calctotal(){
+    this.totalAmt=0;
+    for(const item of this.items){
+      this.totalAmt+=parseInt(item.amt);
+   
+    }
+  }
   
 
 removeItem(index:any) {
+  this.calctotal();
   this.items.splice(index, 1);
 }
 
