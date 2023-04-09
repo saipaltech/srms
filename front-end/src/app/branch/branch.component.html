@@ -1,232 +1,234 @@
 <div class="row g-5 justify-content-center">
   <div class="col-md-7 col-lg-8">
-    <div class="row">
-      <div class="col-md-8 text-start">
-        <h4 class="mb-3">Branch Setup</h4>
-      </div>
-      <div class="col-md-4 text-end listdiv">
-        <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
-          <i class="bi bi-list"></i>  List of Branches
+    <div class="card">
+      <div class="card-header">
+        Branch Setup
+
+
+        <button type="button" class="btn btn-primary btn-sm float-end" (click)="changeFields()">
+          <div *ngIf="isbtn;else other_content">
+            <i class="bi bi-list"></i> List of Branch
+          </div>
+
+          <ng-template #other_content><i class="bi bi-reply"></i> Back To Form</ng-template>
+
         </button>
       </div>
-
-      <div class="col-md-4 text-end formdiv hide">
-        <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
-          <i class="bi bi-reply"></i> Back to Form
-        </button>
-      </div>
-    </div>
-
-    <form
-      class="needs-validation"
-      [formGroup]="bankForm"
-      (ngSubmit)="bankFormSubmit()"
-    >
-      <div class="row g-3">
-        <input type="hidden" formControlName="id" />
-        <div class="col-6">
-          <label class="form-label req">Bank</label>
-          <div class="input-group has-validation">
-            <select
-              class="form-select form-select-sm"
-              formControlName="bankid"
-              [ngClass]="vs.getControlClass(bankForm.controls['bankid'])"
-            >
-              <option value="">Select Bank..</option>
-              <option *ngFor="let op of banks" value="{{op.id}}">{{op.namenp}}</option>
-            </select>
-            <div [ngClass]="vs.getMessageClass(bankForm.controls['bankid'])">
-              {{ vs.getMessage(bankForm.controls["bankid"]) }}
-            </div>
-          </div>
-        </div>
-
-        <div class="col-6">
-          <label class="form-label ">Code</label>
-          <div class="input-group has-validation">
-            <input
-              formControlName="code"
-              type="text"
-              class="form-control form-control-sm"
-              [ngClass]="vs.getControlClass(bankForm.controls['code'])"
-            />
-            <div [ngClass]="vs.getMessageClass(bankForm.controls['code'])">
-              {{ vs.getMessage(bankForm.controls["code"]) }}
-            </div>
-          </div>
-        </div>
-
-        <div class="col-6">
-          <label class="form-label req">Name</label>
-          <div class="input-group has-validation">
-            <input
-              formControlName="name"
-              type="text"
-              class="form-control form-control-sm"
-              [ngClass]="vs.getControlClass(bankForm.controls['name'])"
-            />
-            <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">
-              {{ vs.getMessage(bankForm.controls["name"]) }}
-            </div>
-          </div>
-        </div>
-
-        <div class="col-6">
-          <label class="form-label req">Default Local Level</label>
-          <div class="input-group has-validation">
-            <select
-            class="form-select form-select-sm"
-            formControlName="dlgid"
-            [ngClass]="vs.getControlClass(bankForm.controls['dlgid'])"
-          > <option value="">Select One</option>
-            <option *ngFor="let lg of llgs" [value]="lg.code">{{lg.name}}</option>
-          </select>
-            <div [ngClass]="vs.getMessageClass(bankForm.controls['dlgid'])">
-              {{ vs.getMessage(bankForm.controls["dlgid"]) }}
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6">
-          <label class="form-label req">Disabled</label>
-          <div class="input-group has-validation">
-            <select
-              class="form-select form-select-sm"
-              formControlName="disabled"
-              [ngClass]="vs.getControlClass(bankForm.controls['disabled'])"
-            >
-              <option value="1">Yes</option>
-              <option value="0">No</option>
-            </select>
-            <div [ngClass]="vs.getMessageClass(bankForm.controls['disabled'])">
-              {{ vs.getMessage(bankForm.controls["disabled"]) }}
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6">
-          <label for="username" class="form-label req">Approved</label>
-          <div class="input-group has-validation">
-            <select
-              class="form-select form-select-sm"
-              formControlName="approved"
-              [ngClass]="vs.getControlClass(bankForm.controls['approved'])"
-            >
-              <option value="1">Yes</option>
-              <option value="0">No</option>
-            </select>
-            <div [ngClass]="vs.getMessageClass(bankForm.controls['approved'])">
-              {{ vs.getMessage(bankForm.controls["approved"]) }}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <br />
-      <div class="row">
-        <div class="col-md-12">
-          <button class="btn btn-success btn-sm" type="submit">Submit</button>
-          &nbsp; &nbsp;
-          <button
-            class="btn btn-danger btn-sm"
-            type="button"
-            (click)="resetForm()"
-          >
-            Clear
-          </button>
-        </div>
-      </div>
-    </form>
-
-    <div class="tab hide">
-      <form class="form-srch" [formGroup]="srchForm">
-        <div class="input-group mb-3">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Search.."
-            id="srch_term"
-            name="srch_term"
-            formControlName="srch_term"
-            (keyup.enter)="search()"
-          />
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            (click)="search()"
-          >
-            <i class="bi bi-search"></i>
-          </button>
-        </div>
-      </form>
-      <table class="table datatable">
-        <!--table-borderless-->
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <!--<th scope="col">Code</th>-->
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of lists; let i = index">
-            <td>{{ item.name }}</td>
-            <!--<td>{{ item.code }}</td>-->
-            <td>
-              <a (click)="getUpdateItem(item.id)" href="javascript:void(0)"
-                ><i class="bi bi-pencil-square text-success"></i
-              ></a>
-              &nbsp;&nbsp;&nbsp;
-              <a (click)="deleteItem(item.id)"
-                ><i
-                  class="bi bi-trash3 text-danger"
-                  style="cursor: pointer"
-                ></i>
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="row">
-        <div class="col-6 text-start">
-          <pagination
-            [rotate]="true"
-            [maxSize]="5"
-            [totalItems]="pagination.total"
-            [(ngModel)]="pagination.currentPage"
-            [boundaryLinks]="true"
-            [itemsPerPage]="pagination.perPage"
-            (pageChanged)="paginatedData($event)"
-            previousText="&lsaquo;"
-            nextText="&rsaquo;"
-            firstText="&laquo;"
-            lastText="&raquo;"
-          ></pagination>
-        </div>
-
-        <div class="col-6 text-end">
-          <form [formGroup]="srchForm">
-            <div class="row" style="float: right">
-              <div class="col-md-12 smallbr">
-                Entries
-                <select
-                  name="entries"
-                  id="entries"
-                  formControlName="entries"
-                  (change)="search()"
-                >
-                  <option value="10">10</option>
-                  <option value="20">20</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-                &nbsp;&nbsp;&nbsp;&nbsp;
+      <div class="card-body">
+        <form
+        class="needs-validation"
+        [formGroup]="bankForm"
+        (ngSubmit)="bankFormSubmit()"
+      >
+        <div class="row g-3">
+          <input type="hidden" formControlName="id" />
+          <div class="col-6">
+            <label class="form-label req">Bank</label>
+            <div class="input-group has-validation">
+              <select
+                class="form-select form-select-sm"
+                formControlName="bankid"
+                [ngClass]="vs.getControlClass(bankForm.controls['bankid'])"
+              >
+                <option value="">Select Bank..</option>
+                <option *ngFor="let op of banks" value="{{op.id}}">{{op.namenp}}</option>
+              </select>
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['bankid'])">
+                {{ vs.getMessage(bankForm.controls["bankid"]) }}
               </div>
             </div>
-          </form>
+          </div>
+  
+          <div class="col-6">
+            <label class="form-label ">Code</label>
+            <div class="input-group has-validation">
+              <input
+                formControlName="code"
+                type="text"
+                class="form-control form-control-sm"
+                [ngClass]="vs.getControlClass(bankForm.controls['code'])"
+              />
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['code'])">
+                {{ vs.getMessage(bankForm.controls["code"]) }}
+              </div>
+            </div>
+          </div>
+  
+          <div class="col-6">
+            <label class="form-label req">Name</label>
+            <div class="input-group has-validation">
+              <input
+                formControlName="name"
+                type="text"
+                class="form-control form-control-sm"
+                [ngClass]="vs.getControlClass(bankForm.controls['name'])"
+              />
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">
+                {{ vs.getMessage(bankForm.controls["name"]) }}
+              </div>
+            </div>
+          </div>
+  
+          <div class="col-6">
+            <label class="form-label req">Default Local Level</label>
+            <div class="input-group has-validation">
+              <select
+              class="form-select form-select-sm"
+              formControlName="dlgid"
+              [ngClass]="vs.getControlClass(bankForm.controls['dlgid'])"
+            > <option value="">Select One</option>
+              <option *ngFor="let lg of llgs" [value]="lg.code">{{lg.name}}</option>
+            </select>
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['dlgid'])">
+                {{ vs.getMessage(bankForm.controls["dlgid"]) }}
+              </div>
+            </div>
+          </div>
+  
+          <div class="col-sm-6">
+            <label class="form-label req">Disabled</label>
+            <div class="input-group has-validation">
+              <select
+                class="form-select form-select-sm"
+                formControlName="disabled"
+                [ngClass]="vs.getControlClass(bankForm.controls['disabled'])"
+              >
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['disabled'])">
+                {{ vs.getMessage(bankForm.controls["disabled"]) }}
+              </div>
+            </div>
+          </div>
+  
+          <div class="col-sm-6">
+            <label for="username" class="form-label req">Approved</label>
+            <div class="input-group has-validation">
+              <select
+                class="form-select form-select-sm"
+                formControlName="approved"
+                [ngClass]="vs.getControlClass(bankForm.controls['approved'])"
+              >
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['approved'])">
+                {{ vs.getMessage(bankForm.controls["approved"]) }}
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <br />
+        <div class="row">
+          <div class="col-md-12">
+            <button class="btn btn-success btn-sm" type="submit">Submit</button>
+            &nbsp; &nbsp;
+            <button
+              class="btn btn-danger btn-sm"
+              type="button"
+              (click)="resetForm()"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      </form>
+  
+      <div class="tab hide">
+        <form class="form-srch" [formGroup]="srchForm">
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search.."
+              id="srch_term"
+              name="srch_term"
+              formControlName="srch_term"
+              (keyup.enter)="search()"
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              (click)="search()"
+            >
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
+        <table class="table datatable">
+          <!--table-borderless-->
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <!--<th scope="col">Code</th>-->
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of lists; let i = index">
+              <td>{{ item.name }}</td>
+              <!--<td>{{ item.code }}</td>-->
+              <td>
+                <a (click)="getUpdateItem(item.id)" href="javascript:void(0)"
+                  ><i class="bi bi-pencil-square text-success"></i
+                ></a>
+                &nbsp;&nbsp;&nbsp;
+                <a (click)="deleteItem(item.id)"
+                  ><i
+                    class="bi bi-trash3 text-danger"
+                    style="cursor: pointer"
+                  ></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+  
+        <div class="row">
+          <div class="col-6 text-start">
+            <pagination
+              [rotate]="true"
+              [maxSize]="5"
+              [totalItems]="pagination.total"
+              [(ngModel)]="pagination.currentPage"
+              [boundaryLinks]="true"
+              [itemsPerPage]="pagination.perPage"
+              (pageChanged)="paginatedData($event)"
+              previousText="&lsaquo;"
+              nextText="&rsaquo;"
+              firstText="&laquo;"
+              lastText="&raquo;"
+            ></pagination>
+          </div>
+  
+          <div class="col-6 text-end">
+            <form [formGroup]="srchForm">
+              <div class="row" style="float: right">
+                <div class="col-md-12 smallbr">
+                  Entries
+                  <select
+                    name="entries"
+                    id="entries"
+                    formControlName="entries"
+                    (change)="search()"
+                  >
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
+    </div>
+
+  
   </div>
 </div>
