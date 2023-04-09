@@ -87,4 +87,14 @@ public class Authenticated {
 		}
 		return false;
 	}
+	
+	public boolean hasPermissionOnly(String key) {
+		Tuple t = db.getSingleResult("select count(p.id) from users u join users_perms up on up.userid=u.id join permissions p on p.id=up.permid where u.id=? and (p.[key]=?)",Arrays.asList(getUserId(),key));
+		if(t!=null) {
+			if(Integer.parseInt((t.get(0)+""))>0) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

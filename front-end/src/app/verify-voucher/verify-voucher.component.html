@@ -50,30 +50,26 @@
       *ngIf = "transDetails && showForm"
     >
 
-    <div class="card" style="width: 100%;">
-       <div class="card-body">
-          
-          <div class="card-text">
             
-            <table class="table table-striped">
+            <table class="table table-striped table-bordered">
 
               <tbody>
                 <tr>
-                  <th scope="row">कारोबार संकेत नंबर:</th>
+                  <th scope="row">कारोबार संकेत नंबर</th>
                   <td>{{ transDetails.transactionid }}</td>
                 </tr>
                 <tr>
-                  <th scope="row">कार्यालय: वडा नंबर, पालिका</th>
+                  <th scope="row">कार्यालय</th>
                   <td>{{ transDetails.officename }}</td>
                 </tr>
    
                 <tr>
-                  <th scope="row">भौचर मिति:</th>
+                  <th scope="row">भौचर मिति</th>
                   <td>{{ transDetails.voucherdate }}</td>
                 </tr>
    
                 <tr>
-                  <th scope="row">खाता नाम:</th>
+                  <th scope="row">खाता नाम</th>
                   <td>{{transDetails.accountname}}</td>
                 </tr>
 
@@ -177,12 +173,7 @@
                
         
               </div>
-
-          </div>
-        </div>
-      </div>
      
-
       <br />
       <div class="row">
         <div class="col-md-12">

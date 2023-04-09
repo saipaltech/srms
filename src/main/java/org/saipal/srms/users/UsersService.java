@@ -1,9 +1,12 @@
 package org.saipal.srms.users;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.util.DB;
@@ -16,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Tuple;
+import javax.transaction.Transactional;
 
 @Component
 public class UsersService extends AutoService {
@@ -70,6 +74,7 @@ public class UsersService extends AutoService {
 		}
 	}
 
+	@Transactional
 	public ResponseEntity<Map<String, Object>> store() {
 		if (!auth.hasPermission("bankhq")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
@@ -90,15 +95,20 @@ public class UsersService extends AutoService {
 		}
 
 		sql = "INSERT INTO users(name, post, username, password,amountlimit, mobile ,bankid, branchid , disabled, approved) VALUES (?,?,?,?,?,?,?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username, model.password, model.amountlimit,
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username, model.password, model.amountlimit.isBlank()?0:model.amountlimit,
 				model.mobile, bankId, model.branchid, model.disabled, model.approved));
 		String permid = request("permid")+"";
-		String sqls = "Insert into users_perms (userid, permid)";
-		DbResponse rowEffects = db.execute(sqls,  Arrays.asList(auth.getUserId(), permid));
-
+		String sqls="";
+		DbResponse rowEffects;
+		if(permid.equals("4")) {
+			sqls= "insert into users_perms (userid,permid) values ((select top 1 id from users where username=?),?),((select top 1 id from users where username=?),3)";
+			rowEffects = db.execute(sqls,  Arrays.asList(model.username, permid,model.username));
+		}else {
+			sqls = "insert into users_perms (userid,permid) values ((select top 1 id from users where username=?),?)";
+			rowEffects = db.execute(sqls,  Arrays.asList(model.username, permid));
+		}
 		if (rowEffect.getErrorNumber() == 0 && rowEffects.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
-
 		} else {
 			return Messenger.getMessenger().error();
 		}
@@ -185,6 +195,26 @@ public class UsersService extends AutoService {
 		String sql = "Select name, username, post, mobile from users where id="+ auth.getUserId();
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
+
+	public ResponseEntity<List<Map<String, Object>>> frontMenu() {
+		List<String> exclude = new ArrayList<>();
+		exclude.add("bank");
+		exclude.add("branch");
+		exclude.add("users");
+		String sql = "";
+			if(auth.hasPermissionOnly("*")) {
+				sql = "select * from front_menu order by morder";
+				return ResponseEntity.ok(db.getResultListMap(sql));
+			}
+			if(auth.hasPermissionOnly("bankhq")) {
+				exclude.remove("branch");
+				exclude.remove("users");
+			}
+			
+			sql = "select * from front_menu where link not in ('"+String.join("','", exclude)+"') order by morder";
+			return ResponseEntity.ok(db.getResultListMap(sql));
+	}
+	
 	
 
 }

@@ -90,16 +90,16 @@ export class UsersComponent implements OnInit {
   }
 
   bankFormSubmit() {
+    console.log(this.bankForm.valid);
     if (this.bankForm.valid) {
       if (this.bankForm.value.permid == 3) {
         if (this.bankForm.value.amountlimit.trim() === ''){          
           this.toastr.warning("Set limit for the user"+this.bankForm.value.amountlimit, "Warning");
-        }
-        else {
-        this.model = this.bankForm.value;
-        this.createItem(this.bankForm.value.id);
+          return;
         }
       }
+      this.model = this.bankForm.value;
+      this.createItem(this.bankForm.value.id);
     } else {
       Object.keys(this.bankForm.controls).forEach(field => {
         const singleFormControl = this.bankForm.get(field);
