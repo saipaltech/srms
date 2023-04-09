@@ -76,8 +76,55 @@ public class TaxPayerVoucherService extends AutoService {
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
 				.select("id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount")
-				.sqlBody("from " + table + condition).paginate();
-		System.out.println(result);
+				.sqlBody("from " + table + condition+" and ttype=1").paginate();
+//		System.out.println(result);
+		if (result != null) {
+			return ResponseEntity.ok(result);
+		} else {
+			return Messenger.getMessenger().error();
+		}
+	}
+	
+	public ResponseEntity<Map<String, Object>> indexcheque() {
+		if (!auth.hasPermission("bankuser")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		String condition = " where id!=1 ";
+		String approve = request("approvelog");
+		if (!request("searchTerm").isEmpty()) {
+			List<String> searchbles = TaxPayerVoucher.searchables();
+			condition += "and (";
+			for (String field : searchbles) {
+				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
+			}
+			condition = condition.substring(0, condition.length() - 3);
+
+		
+				switch (Integer.parseInt(approve)) {
+				case 0:
+					condition += " where approved=0)";
+					break;
+				case 1:
+					condition += " where approved=1)";
+					break;
+				default:
+					condition += "where approved=1)";
+					break;
+				}
+
+		}
+		String sort = "";
+		if (!request("sortKey").isBlank()) {
+			if (!request("sortDir").isBlank()) {
+				sort = request("sortKey") + " " + request("sortDir");
+			}
+		}
+
+		Paginator p = new Paginator();
+		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
+				.select("id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount")
+				.sqlBody("from " + table + condition+" and ttype=2").paginate();
+//		System.out.println(result);
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -95,7 +142,7 @@ public class TaxPayerVoucherService extends AutoService {
 				+ "from taxvouchers as bd join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n"
 				+ "where bd.id="+ id;
-		System.out.println(sql);
+//		System.out.println(sql);
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
 	
@@ -126,12 +173,18 @@ public class TaxPayerVoucherService extends AutoService {
 		if (model.amount.isBlank()) {
 			model.amount = "0";
 		}
+		if (model.chequebank.isBlank()) {
+			model.chequebank = "0";
+		}
+		if (model.chequeamount.isBlank()) {
+			model.chequeamount = "0";
+		}
 		String id = db.newIdInt();
-		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount,creatorid, bankid, branchid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount,creatorid, bankid, branchid,ttype,chequebank,chequeno,chequeamount) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
 				Arrays.asList(id, model.date, model.voucherno, model.taxpayername, model.taxpayerpan, model.depositedby,
 						model.depcontact, model.lgid, model.collectioncenterid, model.accountno, model.revenuecode,
-						model.purpose, model.amount, auth.getUserId(), auth.getBankId(), auth.getBranchId()));
+						model.purpose, model.amount, auth.getUserId(), auth.getBankId(), auth.getBranchId(),model.ttype,model.chequebank,model.chequeno,model.chequeamount));
 		if (rowEffect.getErrorNumber() == 0) {
 			if (jarr.length() > 0) {
 				for (int i = 0; i < jarr.length(); i++) {
@@ -350,6 +403,30 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 		return ResponseEntity.ok(api.revenueCodes().toString());
 	}
+	
+	public ResponseEntity<String> getBank() {
+//		System.out.println("getbvabnk");
+		// check if data is cached
+		List<Tuple> d = db.getResultList("select id,code,namenp from bankinfo where 1=1");
+		if (d.size() > 0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for (Tuple t : d) {
+					dt.put(Map.of("id", t.get("id"), "name", t.get("namenp")));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok(api.revenueCodes().toString());
+	}
+
 
 //	public ResponseEntity<String> getVoucherDetails() {
 //		String voucherno = request("voucherno");
@@ -452,9 +529,9 @@ public class TaxPayerVoucherService extends AutoService {
 		String palika = request("palika");
 		String sql = "select  dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amount as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,dbo.eng2nep(voucherno) as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amount) as amount,dbo.eng2nep(accountno) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date, dbo.eng2nep(revenuecode) as revenuecode from "
 				+ "taxvouchers tv "
-				+ "join bankaccount ba on ba.accountnumber=tv.accountno "
-				+ "join bankinfo bi on bi.id=tv.bankid "
-				+ "join admin_local_level_structure lls on lls.id=tv.lgid "
+				+ "left join bankaccount ba on ba.accountnumber=tv.accountno "
+				+ "left join bankinfo bi on bi.id=tv.bankid "
+				+ "left join admin_local_level_structure lls on lls.id=tv.lgid "
 //				+ "join crevenue cr on cr.code=tv.revenuecode "
 				+ "where voucherno=? and tv.lgid=? ";
 //		System.out.println(sql);
@@ -486,7 +563,6 @@ public class TaxPayerVoucherService extends AutoService {
 				+ "    WHERE mainid = tv.id\r\n"
 				+ ") as total_amount_no\r\n"
 				+ "WHERE tv.voucherno = ? AND tv.lgid = ?;";
-		System.out.println(sql);
 		
 		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(voucher,palika));
 

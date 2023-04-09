@@ -72,7 +72,8 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       accountno:['',Validators.required],
       revenuecode: [''],
       purpose: [''],
-      amount:['']
+      amount:[''],
+      ttype:['1']
     }
     this.voucherBankForm =fb.group(this.formLayout)
     this.srchForm = new FormGroup({

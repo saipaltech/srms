@@ -2,7 +2,7 @@
   <div class="col-md-7 col-lg-8">
     <div class="row">
       <div class="col-md-8 text-start">
-        <h4 class="mb-3">बैंक भौचर प्रविष्टि</h4>
+        <h4 class="mb-3">चेक  संकलन  प्रविष्टि</h4>
       </div>
 
       <div class="col-md-4 text-end"  *ngIf = !hideButton>
@@ -98,7 +98,53 @@
           </div>
         </div>
 
-        <input type="hidden" value="1" formControlName="ttype">
+        <div class="row">
+          <div class="col-md-8 text-start">
+            <h5 class="mt-3 mb-0">चेक को बिबरण:</h5>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <label for="username" class="form-label req">बैंक</label>
+          <div class="input-group has-validation">
+            <select
+              formControlName="chequebank"
+              type="text"
+              class="form-control form-control-sm"
+              [ngClass]="vs.getControlClass(voucherBankForm.controls['chequebank'])">
+              <option value="">Select Bank</option>
+              <option *ngFor="let b of banks" value="{{b.id}}">{{b.name}}</option>
+              </select>
+              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['chequebank'])">{{vs.getMessage(voucherBankForm.controls['chequebank'])}}</div>
+          </div>
+        </div>
+        <input type="hidden" value="2" formControlName="ttype">
+        <div class="col-sm-6">
+          <label for="username" class="form-label req">चेक नंबर</label>
+          <div class="input-group has-validation">
+            <input
+              formControlName="chequeno"
+              type="text"
+              class="form-control form-control-sm"
+              [ngClass]="vs.getControlClass(voucherBankForm.controls['chequeno'])">
+              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['chequeno'])">{{vs.getMessage(voucherBankForm.controls['chequeno'])}}</div>
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <label for="username" class="form-label req">चेक रकम</label>
+          <div class="input-group has-validation">
+            <input
+              formControlName="chequeamount"
+              type="text"
+              class="form-control form-control-sm"
+              [ngClass]="vs.getControlClass(voucherBankForm.controls['chequeamount'])">
+              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['chequeamount'])">{{vs.getMessage(voucherBankForm.controls['chequeamount'])}}</div>
+          </div>
+        </div>
+        <div class="col-sm-6"></div>
+
+       
       
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">राजस्व शिर्षक</label>

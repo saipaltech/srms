@@ -33,8 +33,13 @@ public class TaxPayerVoucherController {
 	
 	@GetMapping("")
 	public ResponseEntity<Map<String, Object>> index(HttpServletRequest request) {
-		System.out.println("Reached at Index");
+//		System.out.println("Reached at Index");
 		return objService.index();
+	}
+	@GetMapping("cheque")
+	public ResponseEntity<Map<String, Object>> index1(HttpServletRequest request) {
+//		System.out.println("Reached at Index");
+		return objService.indexcheque();
 	}
 
 	@PostMapping("")
@@ -96,6 +101,12 @@ public class TaxPayerVoucherController {
 	public ResponseEntity<String> getRevenue() {
 		return objService.getRevenue();
 	}
+	
+	@GetMapping("get-banks-list")
+	public ResponseEntity<String> getBank() {
+		return objService.getBank();
+	}
+	
 	@GetMapping("llg-details")
 	public ResponseEntity<String> getAllDetails() {
 		return objService.getAllDetails();

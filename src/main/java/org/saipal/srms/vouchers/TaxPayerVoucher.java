@@ -25,6 +25,11 @@ public class TaxPayerVoucher {
 	public String revenuetitle;
 	public String purpose;
 	public String amount;
+	public String chequebank;
+	public String chequeno;
+	public String chequeamount;
+	public String ttype;
+	
 
     
 	public void loadData(RequestParser doc) {

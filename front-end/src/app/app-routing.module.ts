@@ -14,6 +14,7 @@ import { VerifyVoucherComponent } from './verify-voucher/verify-voucher.componen
 import { VoucherBankComponent } from './voucher-bank/voucher-bank.component';
 import { VoucherBankOffComponent } from './voucher-bank-off/voucher-bank.component';
 import { NewNavComponent } from './new-nav/new-nav.component';
+import { ChequeEntryComponent } from './cheque-entry/cheque-entry.component';
 
 const routes: Routes = [
 {
@@ -31,6 +32,10 @@ const routes: Routes = [
           {
             path: 'voucher-bank-off',
             component: VoucherBankOffComponent
+          },
+          {
+            path: 'cheque-entry',
+            component: ChequeEntryComponent
           },
           {
             path: 'bank',

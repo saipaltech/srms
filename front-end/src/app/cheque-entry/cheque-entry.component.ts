@@ -2,23 +2,21 @@ import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { VoucherService } from './voucher.service';
 import { ValidationService } from '../validation.service';
-
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
-
 import { Router, NavigationExtras, Route } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { ChequeEntryService } from './cheque-entry.service';
 
 
 
 @Component({
-  selector: 'app-voucher-bank',
-  templateUrl: './voucher-bank.component.html',
-  styleUrls: ['./voucher-bank.component.scss'],
+  selector: 'app-cheque-entry',
+  templateUrl: './cheque-entry.component.html',
+  styleUrls: ['./cheque-entry.component.scss'],
   providers: [DatePipe]
 })
-export class VoucherBankComponent implements OnInit {
+export class ChequeEntryComponent implements OnInit {
 
   modalRef?: BsModalRef;
 
@@ -49,11 +47,10 @@ export class VoucherBankComponent implements OnInit {
   srchForm!: FormGroup;
   model: any = {};
   dlgid:any;
-
   approved ="";
   items=new Array();
 
-constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherService, private modalService: BsModalService, private r: Router,private auth:AuthService){
+constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private modalService: BsModalService, private r: Router,private auth:AuthService){
   const ud = this.auth.getUserDetails();
   if(ud){
     this.dlgid = ud.dlgid;
@@ -74,7 +71,10 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       revenuecode: [''],
       purpose: [''],
       amount:[''],
-      ttype:['1']
+      chequeamount:['',Validators.required],
+      chequeno:['',Validators.required],
+      chequebank:['',Validators.required],
+      ttype:['2']
     }
     this.voucherBankForm =fb.group(this.formLayout)
     this.srchForm = new FormGroup({
@@ -131,9 +131,8 @@ ngOnInit(): void {
     // },error:err=>{
 
     // }});
-
+    this.getBank();
 }
-
 getRevenue(){
   const bankorgid=this.voucherBankForm.value["accountno"];
    this.bvs.getRevenue(bankorgid).subscribe({next:(dt)=>{
@@ -143,6 +142,17 @@ getRevenue(){
     }});
 
 }
+banks:any;
+getBank(){
+ 
+   this.bvs.getBank().subscribe({next:(dt)=>{
+      this.banks = dt.data;
+    },error:err=>{
+
+    }});
+
+}
+
 getAndSetPanDetails(){
   this.bvs.getPanDetails(this.voucherBankForm.get("taxpayerpan")?.value).subscribe({next:(d)=>{
     if(d.data){
@@ -196,7 +206,6 @@ getBankAccounts(){
     this.voucherBankForm =this.fb.group(this.formLayout);
     this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
       this.getPalikaDetails();
-      this.getBankAccounts();
     }});
     this.voucherBankForm.patchValue({'lgid':this.dlgid});
   }
@@ -280,51 +289,49 @@ changePerPage(perPage: number) {
 
 istab=1;
 selectedRevenue:any;
-totalAmt=0;
 addItem(){
-//  console.log(this.rv);
-
- let rc=this.voucherBankForm.value['revenuecode'];
- let amt=this.voucherBankForm.value['amount'];
- if(amt!="" && rc!=undefined){
-  let val;
-  for (const item of this.revs) {
-   if (item.code === rc) {
-      val=item.code+'['+item.name+']';
-     // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
-     break;
+  //  console.log(this.rv);
+  
+   let rc=this.voucherBankForm.value['revenuecode'];
+   let amt=this.voucherBankForm.value['amount'];
+   if(amt!="" && rc!=undefined){
+    let val;
+    for (const item of this.revs) {
+     if (item.code === rc) {
+        val=item.code+'['+item.name+']';
+       // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
+       break;
+     }
    }
- }
-
-  var newItem = {
-   rc: rc,
-   amt: amt,
-   rv:val
- };
- 
- // Add the new item to the items array
- this.items.push(newItem);
- this.calctotal();
- 
- this.voucherBankForm.patchValue({"revenuecode":''});
- this.voucherBankForm.patchValue({"amount":''});
- this.istab=2;
- }
- 
-
-}
-
-calctotal(){
-  this.totalAmt=0;
-  for(const item of this.items){
-    this.totalAmt+=parseInt(item.amt);
- 
+    var newItem = {
+     rc: rc,
+     amt: amt,
+     rv:val
+   };
+   
+   // Add the new item to the items array
+   this.items.push(newItem);
+   this.calctotal();
+   this.voucherBankForm.patchValue({"revenuecode":''});
+   this.voucherBankForm.patchValue({"amount":''});
+   this.istab=2;
+   }
+   
+  
   }
-}
+  totalAmt=0;
+  calctotal(){
+    this.totalAmt=0;
+    for(const item of this.items){
+      this.totalAmt+=parseInt(item.amt);
+   
+    }
+  }
+  
 
 removeItem(index:any) {
-  this.items.splice(index, 1);
   this.calctotal();
+  this.items.splice(index, 1);
 }
 
 
@@ -350,6 +357,7 @@ createItem(id = null) {
       // this.r.navigate(['report'], { state: { data: upd } });
       this.resetForm();
       this.getList();
+      this.istab=1;
       window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
     }, error:err => {
       this.toastr.error(err.error, 'Error');

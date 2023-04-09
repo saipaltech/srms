@@ -34,6 +34,9 @@ import { TrialComponent } from './trial/trial.component';
 import { VoucherBankOffComponent } from './voucher-bank-off/voucher-bank.component';
 import { NewNavComponent } from './new-nav/new-nav.component';
 
+import { ChequeEntryComponent } from './cheque-entry/cheque-entry.component';
+
+
 
 @NgModule({
   declarations: [
@@ -56,7 +59,8 @@ import { NewNavComponent } from './new-nav/new-nav.component';
     TrialComponent,
     TwoFaModalComponent,
     VoucherBankOffComponent,
-    NewNavComponent
+    NewNavComponent,
+    ChequeEntryComponent
   ],
   imports: [
     BrowserModule,

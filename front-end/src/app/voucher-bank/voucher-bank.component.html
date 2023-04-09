@@ -72,7 +72,7 @@
           <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['collectioncenterid'])">{{vs.getMessage(voucherBankForm.controls['collectioncenterid'])}}</div>
         </div>
 
-
+        <input type="hidden" value="1" formControlName="ttype">
         <div class="col-6">
           <label for="username" class="form-label req">खाता नंबर</label>
           <select
