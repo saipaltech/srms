@@ -96,7 +96,7 @@ public class UsersService extends AutoService {
 		String sqls = "Insert into users_perms (userid, permid)";
 		DbResponse rowEffects = db.execute(sqls,  Arrays.asList(auth.getUserId(), permid));
 
-		if (rowEffect.getErrorNumber() == 0) {
+		if (rowEffect.getErrorNumber() == 0 && rowEffects.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 
 		} else {
@@ -182,7 +182,7 @@ public class UsersService extends AutoService {
 	}
 	
 	public ResponseEntity<List<Map<String, Object>>> getUserList(){
-		String sql = "Select name, username, post, mobile from users where username="+ "'"+ request("username")+"'";
+		String sql = "Select name, username, post, mobile from users where id="+ auth.getUserId();
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
 	

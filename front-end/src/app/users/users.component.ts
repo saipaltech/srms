@@ -89,12 +89,6 @@ export class UsersComponent implements OnInit {
     );
   }
 
-  checkLimitFromPermission(permid: any){
-    if (permid == 3){
-
-    }
-  }
-
   bankFormSubmit() {
     if (this.bankForm.valid) {
       if (this.bankForm.value.permid == 3) {
@@ -115,17 +109,28 @@ export class UsersComponent implements OnInit {
     }
   }
 
+  isbtn = true
+
+
   changeFields() {
+    // var frm = document.getElementsByClassName('needs-validation')[0]
+    // var table = document.getElementsByClassName('tab')[0]
+
+    // var fd = document.getElementsByClassName('formdiv')[0]
+    // var td = document.getElementsByClassName('listdiv')[0]
+
+    // frm.classList.toggle('hide');
+    // table.classList.toggle('hide');
+    // fd.classList.toggle('hide');
+    // td.classList.toggle('hide');
+
     var frm = document.getElementsByClassName('needs-validation')[0]
-    var table = document.getElementsByClassName('tab')[0]
+  var table = document.getElementsByClassName('tab')[0]
 
-    var fd = document.getElementsByClassName('formdiv')[0]
-    var td = document.getElementsByClassName('listdiv')[0]
+  frm.classList.toggle('hide');
+  table.classList.toggle('hide')
 
-    frm.classList.toggle('hide');
-    table.classList.toggle('hide');
-    fd.classList.toggle('hide');
-    td.classList.toggle('hide');
+    this.isbtn = !this.isbtn;
 
 
     // this.toastr.success('Hello world!', 'Toastr fun!');

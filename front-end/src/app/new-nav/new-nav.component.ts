@@ -10,6 +10,54 @@ import { AuthService } from '../auth/auth.service';
 export class NewNavComponent {
 
   constructor(private router:Router ,private authService:AuthService){}
+
+  navcontent= [
+    {
+      name: 'SuperAdmin',
+      icon: 'bi bi-person-circle',
+      link:'user-profile'
+    },
+    {
+      name: 'Bank',
+      icon: 'bi bi-bank',
+      link:'bank'
+    },
+    {
+      name: 'Branch',
+      icon: 'bi bi-diagram-3',
+      link:'branch'
+    },
+    {
+      name: 'Users',
+      icon: 'bi bi-file-earmark-person-fill',
+      link:'users'
+    },
+    {
+      name: 'Voucher Entry',
+      icon: 'bi bi-stickies',
+      link:'voucher-bank'
+    },
+    {
+      name: ' Voucher Entry II',
+      icon: 'bi bi-stickies',
+      link:'voucher-bank-off'
+    },
+    {
+      name: 'Verify Voucher',
+      icon: 'bi bi-file-earmark-medical',
+      link:'verify-voucher'
+    },
+    {
+      name: 'Report',
+      icon: 'bi bi-newspaper',
+      link:'report'
+    },
+    {
+      name: 'Approve Voucher',
+      icon: 'bi bi-file-text',
+      link:'approve-voucher'
+    },
+ ]
   
   buttonactive(e: any){
     var elem: HTMLElement = e.target;

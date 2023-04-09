@@ -70,6 +70,13 @@
         <a href="javascript:void(0)" class="nav-link text-white"  routerLink="approve-voucher" (click)="buttonactive($event)">
             <i class="bi bi-file-text ico"></i>
             Approve Voucher
+
+    <ul class="nav nav-pills flex-column">
+     
+      <li *ngFor="let i of navcontent">
+        <a href="javascript:void(0)" class="nav-link text-white" routerLink="{{i.link}}"  (click)="buttonactive($event)">
+            <i class="{{i.icon}} ico"></i>
+            {{i.name}}
         </a>
       </li>
       <li>

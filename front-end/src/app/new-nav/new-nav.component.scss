@@ -3,7 +3,6 @@
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-
     background-color: #0563bb !important;
   }
 
@@ -13,13 +12,13 @@
 
 .hidebar{
   width: 0px !important;
-  transition: width .9s ease-in-out;
+  transition: width .5s ease-in-out;
   left: -150px;
 
 }
 
 .showbar{
   width: 230px !important;
-  transition: width .9s ease-in-out;
+  transition: width .5s ease-in-out;
   left: 0;
 }
