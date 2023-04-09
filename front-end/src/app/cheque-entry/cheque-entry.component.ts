@@ -206,6 +206,7 @@ getBankAccounts(){
     this.voucherBankForm =this.fb.group(this.formLayout);
     this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
       this.getPalikaDetails();
+      this.getBankAccounts();
     }});
     this.voucherBankForm.patchValue({'lgid':this.dlgid});
   }
