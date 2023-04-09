@@ -46,7 +46,7 @@ public class TaxPayerVoucher {
 	}
 
 	public static List<String> searchables() {
-		return Arrays.asList("voucherno", "taxpayername", "llgname");
+		return Arrays.asList("voucherno", "taxpayername");
 	}
 
 	public static Map<String, String> rules() {

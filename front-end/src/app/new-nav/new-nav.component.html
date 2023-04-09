@@ -1,95 +1,34 @@
 <div class="d-flex flex-column flex-shrink-0 p-3 sidebar showbar" style="width: 230px; position: fixed; height: 100%; top:0;background-color:#43596f">
-    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-        <img src="../../assets/Emblem_of_Nepal.svg" alt="Emblem of Nepal" class="d-block mx-auto" height="40">
-      <span class="fs-4 space">SRMS
+  <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <img src="../../assets/Emblem_of_Nepal.svg" alt="Emblem of Nepal" class="d-block mx-auto" height="40">
+    <span class="fs-4 space">SRMS
 
-        <br>
+      <br>
 
-        <h4 class="mb-2" style="font-size: 15px;">(Bank Module)</h4>
+      <h4 class="mb-2" style="font-size: 15px;">(Bank Module)</h4>
 
-    </span>
-    </a>
-    <hr>
-    <ul class="nav nav-pills flex-column mb-auto">
-        <li class="">
-            <a href="javascript:void(0)" class="nav-link text-white" (click)="buttonactive($event)" routerLink="user-profile">
-                <i class="bi bi-person-circle ico"></i>
-                SuperAdmin
-            </a>
-          </li>
-        <li class="nav-item">
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="bank"  (click)="buttonactive($event)">
-            <i class="bi bi-bank ico"></i>
-            Bank
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="branch"  (click)="buttonactive($event)">
-            <i class="bi bi-diagram-3 ico"></i>
-            Branch
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="users" (click)="buttonactive($event)">
-            <i class="bi bi-file-earmark-person-fill ico"></i>
-            Users
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white"  routerLink="voucher-bank" (click)="buttonactive($event)">
-            <i class="bi bi-stickies ico"></i>
-            Voucher Entry
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white"  routerLink="voucher-bank-off" (click)="buttonactive($event)">
-            <i class="bi bi-stickies ico"></i>
-            Voucher Entry II
-        </a>
-      </li>
-
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white"  routerLink="cheque-entry" (click)="buttonactive($event)">
-            <i class="bi bi-stickies ico"></i>
-            Cheque Entry
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="verify-voucher" (click)="buttonactive($event)">
-            <i class="bi bi-file-earmark-medical ico"></i>
-            Verify Voucher
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="report"  (click)="buttonactive($event)">
-            <i class="bi bi-newspaper ico"></i>
-            Report
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white"  routerLink="approve-voucher" (click)="buttonactive($event)">
-            <i class="bi bi-file-text ico"></i>
-            Approve Voucher
-
-    <ul class="nav nav-pills flex-column">
-     
-      <li *ngFor="let i of navcontent">
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="{{i.link}}"  (click)="buttonactive($event)">
-            <i class="{{i.icon}} ico"></i>
-            {{i.name}}
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white" (click)="logout()" (click)="buttonactive($event)">
-            <i class="bi bi-box-arrow-in-left ico"></i>
-            Logout
-        </a>
-      </li>
-    </ul>
-    <hr>
-  </div>
+  </span>
+  </a>
+  <hr>
+  <ul class="nav nav-pills flex-column">
+   
+    <li *ngFor="let i of navcontent">
+      <a href="javascript:void(0)" class="nav-link text-white" routerLink="{{i.link}}"  (click)="buttonactive($event)">
+          <i class="{{i.icon}} ico"></i>
+          {{i.name}}
+      </a>
+    </li>
+    <li>
+      <a href="javascript:void(0)" class="nav-link text-white" (click)="logout()" (click)="buttonactive($event)">
+          <i class="bi bi-box-arrow-in-left ico"></i>
+          Logout
+      </a>
+    </li>
+  </ul>
+  <hr>
+</div>
 
 <a href="javascript:void(0)" (click)="closeSideBar()">
-  <i class="bi bi-justify buttooon" style="position: absolute; left: 250px; font-size: x-large; cursor: pointer;"></i>
+<i class="bi bi-justify buttooon" style="position: absolute; left: 250px; font-size: x-large; cursor: pointer;"></i>
 
 </a>

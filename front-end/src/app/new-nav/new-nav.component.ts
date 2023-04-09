@@ -43,6 +43,11 @@ export class NewNavComponent {
       link:'voucher-bank-off'
     },
     {
+      name: ' Cheque Entry',
+      icon: 'bi bi-stickies',
+      link:'cheque-entry'
+    },
+    {
       name: 'Verify Voucher',
       icon: 'bi bi-file-earmark-medical',
       link:'verify-voucher'

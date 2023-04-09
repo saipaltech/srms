@@ -42,8 +42,8 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = " where id!=1 ";
-		String approve = request("approvelog");
+		String condition = " where id!=1  and ttype=1 ";
+//		String approve = request("approvelog");
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
 			condition += "and (";
@@ -51,19 +51,20 @@ public class TaxPayerVoucherService extends AutoService {
 				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
 			}
 			condition = condition.substring(0, condition.length() - 3);
+			condition += ")";
 
 		
-				switch (Integer.parseInt(approve)) {
-				case 0:
-					condition += " where approved=0)";
-					break;
-				case 1:
-					condition += " where approved=1)";
-					break;
-				default:
-					condition += "where approved=1)";
-					break;
-				}
+//				switch (Integer.parseInt(approve)) {
+//				case 0:
+//					condition += " where approved=0)";
+//					break;
+//				case 1:
+//					condition += " where approved=1)";
+//					break;
+//				default:
+//					condition += "where approved=1)";
+//					break;
+//				}
 
 		}
 		String sort = "";
@@ -75,8 +76,8 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount")
-				.sqlBody("from " + table + condition+" and ttype=1").paginate();
+				.select("cast(id as char) as id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount")
+				.sqlBody("from " + table + condition).paginate();
 //		System.out.println(result);
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -89,7 +90,7 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = " where id!=1 ";
+		String condition = " where t1.id!=1 and ttype=2  ";
 		String approve = request("approvelog");
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
@@ -98,20 +99,9 @@ public class TaxPayerVoucherService extends AutoService {
 				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
 			}
 			condition = condition.substring(0, condition.length() - 3);
+			condition += ")";
 
 		
-				switch (Integer.parseInt(approve)) {
-				case 0:
-					condition += " where approved=0)";
-					break;
-				case 1:
-					condition += " where approved=1)";
-					break;
-				default:
-					condition += "where approved=1)";
-					break;
-				}
-
 		}
 		String sort = "";
 		if (!request("sortKey").isBlank()) {
@@ -122,8 +112,8 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount")
-				.sqlBody("from " + table + condition+" and ttype=2").paginate();
+				.select("t1.id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,SUM(t2.amount) as amount")
+				.sqlBody("from " + table +" t1 JOIN taxvouchers_detail t2 ON t1.id = t2.mainid"+ condition+" group by t1.id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose").paginate();
 //		System.out.println(result);
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -138,10 +128,10 @@ public class TaxPayerVoucherService extends AutoService {
 		String sql = "select bd.id,cast (bd.date as date) as date, bd.voucherno,\r\n"
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n"
 				+ "bd.accountno, bd.revenuetitle,\r\n"
-				+ "bd.amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
-				+ "from taxvouchers as bd join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
+				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
+				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n"
-				+ "where bd.id="+ id;
+				+ "where bd.id="+ id +" group by bd.id,bd.date,bd.voucherno,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
 //		System.out.println(sql);
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
