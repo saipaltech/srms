@@ -77,6 +77,11 @@ public class TaxPayerVoucherController {
 		return objService.getLocalLevels();
 	}
 	
+	@GetMapping("get-local-levels-all")
+	public ResponseEntity<String> getLocalLevelsAll() {
+		return objService.getLocalLevelsAll();
+	}
+	
 	@GetMapping("get-cost-centres")
 	public ResponseEntity<String> getCostCentres() {
 		return objService.getCostCentres();

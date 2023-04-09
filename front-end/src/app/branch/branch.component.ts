@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import {BranchService} from './branch.service'
 import { ValidationService } from '../validation.service';
 import { BankService } from '../bank/bank.service';
-import { VoucherService } from '../voucher-bank/voucher.service';
+import { VoucherServiceOff } from '../voucher-bank-off/voucher.service';
 
 @Component({
   selector: 'app-branch',
@@ -35,7 +35,7 @@ export class BranchComponent {
   btnlvl=" List of Branches ";
   llgs:any;
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: BranchService,private bs:BankService,private bvs:VoucherService){
+  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: BranchService,private bs:BankService,private bvs:VoucherServiceOff){
     this.formLayout = {
       id:[''],
       bankid: ['',Validators.required],

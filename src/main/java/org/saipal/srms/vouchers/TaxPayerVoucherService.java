@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import net.bytebuddy.implementation.bytecode.constant.IntegerConstant;
+
 import javax.persistence.Tuple;
 
 @Component
@@ -218,9 +220,11 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<String> getLocalLevels() {
+		System.out.println(auth.getBankId());
 		List<Tuple> d = db.getResultList(
-				"select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid=? order by als.namenp",
-				Arrays.asList(auth.getBankId()));
+				"select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join branches ba on als.id=ba.dlgid and ba.bankid=? and ba.id=? order by als.namenp",
+				Arrays.asList(auth.getBankId(),auth.getBranchId()));
+	
 		if (d.size() > 0) {
 			try {
 				JSONObject j = new JSONObject();
@@ -239,6 +243,33 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Not found\"}");
 	}
+	
+	public ResponseEntity<String> getLocalLevelsAll() {
+		System.out.println(auth.getBankId());
+		List<Tuple> d = db.getResultList(
+				"select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid=? order by als.namenp",
+				Arrays.asList(auth.getBankId()));
+	
+		if (d.size() > 0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for (Tuple t : d) {
+					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"),"id",t.get("id")+""));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Not found\"}");
+	}
+	
+	
 
 	public ResponseEntity<String> getCostCentres() {
 		String llgCode = request("llgcode");
@@ -266,26 +297,19 @@ public class TaxPayerVoucherService extends AutoService {
 
 	public ResponseEntity<String> getBankAccounts() {
 		String llgCode = request("llgcode");
-		String revenueCode = request("revenuecode");
-		if (llgCode.isBlank() && revenueCode.isBlank()) {
+		if (llgCode.isBlank()) {
 			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level & Revenuecode is required\"}");
 		}
-		// internal
-		int type = 9;
-		if (Integer.parseInt(revenueCode) > 33300) {
-			// sharing
-			type = 10;
-		}
-		// check if data is cached
+		
 		List<Tuple> d = db.getResultList(
-				"select ba.accountname,ba.accountnumber from bankaccount ba where ba.bankid=? and ba.lgid=? and ba.accounttype=?",
-				Arrays.asList(auth.getBankId(), llgCode, type));
+				"select ba.accountname,ba.accountnumber,ba.id from bankaccount ba where ba.bankid=? and ba.lgid=? order by accounttype ",
+				Arrays.asList(auth.getBankId(), llgCode));
 		if (d.size() > 0) {
 			try {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for (Tuple t : d) {
-					dt.put(Map.of("acno", t.get("accountnumber") + "", "name", t.get("accountname")));
+					dt.put(Map.of("acno", t.get("accountnumber") + "", "name", t.get("accountname"),"id",t.get("id")+""));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
@@ -300,8 +324,14 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<String> getRevenue() {
+		String bankorgid=request("bankorgid");
+		String b = db.getSingleResult("select accounttype from bankaccount where id=?",Arrays.asList(bankorgid)).get(0)+"";
+		String condi = " and code<=33300 ";
+		if(Integer.parseInt(b)==10) {
+			condi = " and code > 33300 ";
+		}
 		// check if data is cached
-		List<Tuple> d = db.getResultList("select code,namenp from crevenue where 1=1");
+		List<Tuple> d = db.getResultList("select code,namenp from crevenue where 1=1"+condi);
 		if (d.size() > 0) {
 			try {
 				JSONObject j = new JSONObject();

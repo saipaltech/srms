@@ -54,11 +54,11 @@
 
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">पालिका</label>
-          <ng-select formControlName="lgid" (change)="getBankAccounts()">
-            <ng-option *ngFor="let l of llgs" [value]="l.code">{{
+          <select class="form-control form-select form-control-sm" formControlName="lgid" >
+            <option *ngFor="let l of llgs" [value]="l.code">{{
               l.name
-            }}</ng-option>
-          </ng-select>
+            }}</option>
+          </select>
           <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['lgid'])">{{vs.getMessage(voucherBankForm.controls['lgid'])}}</div>
         </div>
 
@@ -77,11 +77,11 @@
           <label for="username" class="form-label req">खाता नंबर</label>
           <select
             class="form-select form-select-sm"
-            formControlName="accountno"
+            formControlName="accountno" (change)="getRevenue()"
             [ngClass]="vs.getControlClass(voucherBankForm.controls['accountno'])"
           >
             <option value="">Select Account Number</option>
-            <option *ngFor="let ac of acs" value="{{ac.acno}}">{{ac.acno}}[{{ac.name}}]</option>
+            <option *ngFor="let ac of acs" value="{{ac.id}}">{{ac.acno}}[{{ac.name}}]</option>
           </select>
           <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['accountno'])">{{vs.getMessage(voucherBankForm.controls['accountno'])}}</div>
         </div>
@@ -101,24 +101,24 @@
        
       
         <div class="col-sm-6">
-          <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
+          <label for="firstName" class="form-label ">राजस्व शिर्षक</label>
           <ng-select formControlName="revenuecode" [(ngModel)]="selectedRevenue"  (change)="getBankAccounts()" >
             <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
           </ng-select>
-          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['revenuecode'])">{{vs.getMessage(voucherBankForm.controls['revenuecode'])}}</div>
+         
         </div>
 
         <div class="col-5">
-          <label for="username" class="form-label req">रकम</label>
+          <label for="username" class="form-label">रकम</label>
           <div class="input-group has-validation">
             <input
               formControlName="amount" (focusout)="addItem()"
               type="text"
               class="form-control form-control-sm"
-              [ngClass]="vs.getControlClass(voucherBankForm.controls['amount'])"
+              
             />
-            <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['amount'])">{{vs.getMessage(voucherBankForm.controls['amount'])}}</div>
-          </div>
+            
+        </div>
         </div>
         <div class="col-1">
           <label>&nbsp;</label>
@@ -126,8 +126,8 @@
           <button type="button" class="btn btn-success btn-sm" (click)="addItem()">Add </button>
           </div>
         </div>
-        <div  *ngIf="istab==2" class="col-12">
-          <table class="table datatable">
+        <div  *ngIf="istab==2" class="col-12 page">
+          <table class="layout display responsive-table">
             <thead>
               <tr>
                 <th>राजस्व शिर्षक</th>
@@ -137,9 +137,12 @@
             </thead>
             <tbody>
               <tr *ngFor="let l of items;let i = index" >
-                <td> {{l.rv}} </td>
-                <td>{{l.amt}}</td>
-                <td><button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)">Delete</button></td>
+                <td class="organisationname"> {{l.rv}} </td>
+                <td class="organisationnumber">{{l.amt}}</td>
+                <td class="organisationname"><button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)">Delete</button></td>
+              </tr>
+              <tr>
+                <td >Total</td><td colspan="2">{{totalAmt}}</td>
               </tr>
             </tbody>
           </table>

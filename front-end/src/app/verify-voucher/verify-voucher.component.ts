@@ -110,10 +110,15 @@ resetForm(){
 }
 
 transDetails:any;
-
+istab=1;
 search() {
   this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({next:(dt)=>{
     this.transDetails = dt.data;
+    if(this.transDetails.trantype==1){
+      this.istab=1;
+    }else{
+      this.istab=2;
+    }
   },error:error=>{
     console.log(error);
     // alert(5)

@@ -79,6 +79,18 @@
                   <th scope="row">रकम</th>
                   <td>{{transDetails.amount}}</td>
                 </tr>
+                <tr *ngIf="istab==2">
+                  <th scope="row">करदाताको नाम</th>
+                  <td>{{transDetails.taxpayername}}</td>
+                </tr>
+                <tr *ngIf="istab==2">
+                  <th scope="row">करदाताको पान नंबर</th>
+                  <td>{{transDetails.vatpno}}</td>
+                </tr>
+                <tr *ngIf="istab==2">
+                  <th scope="row">करदाताको ठेगाना </th>
+                  <td>{{transDetails.address}}</td>
+                </tr>
 
    
 
