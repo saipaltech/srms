@@ -1,341 +1,344 @@
 <div class="row g-5 justify-content-center">
   <div class="col-md-7 col-lg-8">
-    <div class="row">
-      <div class="col-md-8 text-start">
-        <h4 class="mb-3">बैंक भौचर प्रविष्टि</h4>
-      </div>
 
-      <div class="col-md-4 text-end"  *ngIf = !hideButton>
-        <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
-          <div *ngIf="isbtn;else other_content">
-            <i class="bi bi-list"></i>  List of Vouchers
+      <div class="card">
+        <div class="card-header">
+
+          बैंक भौचर प्रविष्टि
+
+
+          <button type="button" class="btn btn-primary btn-sm float-end" (click)="changeFields()">
+            <div *ngIf="isbtn;else other_content">
+              <i class="bi bi-list"></i> List of Vouchers
+            </div>
+  
+            <ng-template #other_content><i class="bi bi-reply"></i> Back To Form</ng-template>
+  
+          </button>
+
         </div>
-        
-        <ng-template #other_content><i class="bi bi-reply"></i> Back To Form</ng-template>
-          
-        </button>
-      </div>
-
-
-    </div>
-
-    <form
-      class="needs-validation"
-      [formGroup]="voucherBankForm"
-      (ngSubmit)="voucherBankFormSubmit()"
-      *ngIf = !hideForm
-    >
-   
-    <input type="hidden" formControlName="id">
-      <div class="row g-3">
-        <div class="col-6">
-          <label for="username" class="form-label req">जम्मा गरेको मिति</label>
-          <div class="input-group has-validation">
-            <input
-              readonly
-              formControlName="date"
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="{{ myDate | date : 'shortDate' }}"
-              [ngClass]="vs.getControlClass(voucherBankForm.controls['date'])">
-              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['date'])">{{vs.getMessage(voucherBankForm.controls['date'])}}</div>
-          </div>
-        </div>
-
-        <div class="col-6">
-          <label for="address" class="form-label">बैंक भौचर नंबर</label>
-          <input
-            formControlName="voucherno"
-            type="text"
-            class="form-control form-control-sm"
-            [ngClass]="vs.getControlClass(voucherBankForm.controls['voucherno'])">
-            <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['voucherno'])">{{vs.getMessage(voucherBankForm.controls['voucherno'])}}</div>
-        </div>
-
-        <div class="col-sm-6">
-          <label for="firstName" class="form-label req">पालिका</label>
-          <select class="form-control form-select form-control-sm" formControlName="lgid" >
-            <option *ngFor="let l of llgs" [value]="l.code">{{
-              l.name
-            }}</option>
-          </select>
-          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['lgid'])">{{vs.getMessage(voucherBankForm.controls['lgid'])}}</div>
-        </div>
-
-        <div class="col-sm-6">
-          <label for="lastName" class="form-label req">संकलन केन्द्र</label>
-          <ng-select formControlName="collectioncenterid" >
-            <ng-option *ngFor="let cc of ccs" [value]="cc.code">{{
-              cc.name
-            }}</ng-option>
-          </ng-select>
-          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['collectioncenterid'])">{{vs.getMessage(voucherBankForm.controls['collectioncenterid'])}}</div>
-        </div>
-
-
-        <div class="col-6">
-          <label for="username" class="form-label req">खाता नंबर</label>
-          <select
-            class="form-select form-select-sm"
-            formControlName="accountno" (change)="getRevenue()"
-            [ngClass]="vs.getControlClass(voucherBankForm.controls['accountno'])"
-          >
-            <option value="">Select Account Number</option>
-            <option *ngFor="let ac of acs" value="{{ac.id}}">{{ac.acno}}[{{ac.name}}]</option>
-          </select>
-          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['accountno'])">{{vs.getMessage(voucherBankForm.controls['accountno'])}}</div>
-        </div>
-
-        <div class="col-sm-6">
-          <label for="username" class="form-label">प्रयोजन</label>
-          <div class="input-group has-validation">
-            <input
-              formControlName="purpose"
-              type="text"
-              class="form-control form-control-sm"
-              [ngClass]="vs.getControlClass(voucherBankForm.controls['purpose'])">
-              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['purpose'])">{{vs.getMessage(voucherBankForm.controls['purpose'])}}</div>
-          </div>
-        </div>
-
+        <div class="card-body">
+          <form
+          class="needs-validation"
+          [formGroup]="voucherBankForm"
+          (ngSubmit)="voucherBankFormSubmit()"
+          *ngIf = !hideForm
+        >
        
-      
-        <div class="col-sm-6">
-          <label for="firstName" class="form-label ">राजस्व शिर्षक</label>
-          <ng-select formControlName="revenuecode" [(ngModel)]="selectedRevenue"  (change)="getBankAccounts()" >
-            <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
-          </ng-select>
-         
-        </div>
-
-        <div class="col-5">
-          <label for="username" class="form-label">रकम</label>
-          <div class="input-group has-validation">
-            <input
-              formControlName="amount" (focusout)="addItem()"
-              type="text"
-              class="form-control form-control-sm"
-              
-            />
-            
-        </div>
-        </div>
-        <div class="col-1">
-          <label>&nbsp;</label>
-          <div class="input-group has-validation">
-          <button type="button" class="btn btn-success btn-sm" (click)="addItem()">Add </button>
+        <input type="hidden" formControlName="id">
+          <div class="row g-3">
+            <div class="col-6">
+              <label for="username" class="form-label req">जम्मा गरेको मिति</label>
+              <div class="input-group has-validation">
+                <input
+                  readonly
+                  formControlName="date"
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="{{ myDate | date : 'shortDate' }}"
+                  [ngClass]="vs.getControlClass(voucherBankForm.controls['date'])">
+                  <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['date'])">{{vs.getMessage(voucherBankForm.controls['date'])}}</div>
+              </div>
+            </div>
+    
+            <div class="col-6">
+              <label for="address" class="form-label">बैंक भौचर नंबर</label>
+              <input
+                formControlName="voucherno"
+                type="text"
+                class="form-control form-control-sm"
+                [ngClass]="vs.getControlClass(voucherBankForm.controls['voucherno'])">
+                <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['voucherno'])">{{vs.getMessage(voucherBankForm.controls['voucherno'])}}</div>
+            </div>
+    
+            <div class="col-sm-6">
+              <label for="firstName" class="form-label req">पालिका</label>
+              <select class="form-control form-select form-control-sm" formControlName="lgid" >
+                <option *ngFor="let l of llgs" [value]="l.code">{{
+                  l.name
+                }}</option>
+              </select>
+              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['lgid'])">{{vs.getMessage(voucherBankForm.controls['lgid'])}}</div>
+            </div>
+    
+            <div class="col-sm-6">
+              <label for="lastName" class="form-label req">संकलन केन्द्र</label>
+              <ng-select formControlName="collectioncenterid" >
+                <ng-option *ngFor="let cc of ccs" [value]="cc.code">{{
+                  cc.name
+                }}</ng-option>
+              </ng-select>
+              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['collectioncenterid'])">{{vs.getMessage(voucherBankForm.controls['collectioncenterid'])}}</div>
+            </div>
+    
+    
+            <div class="col-6">
+              <label for="username" class="form-label req">खाता नंबर</label>
+              <select
+                class="form-select form-select-sm"
+                formControlName="accountno" (change)="getRevenue()"
+                [ngClass]="vs.getControlClass(voucherBankForm.controls['accountno'])"
+              >
+                <option value="">Select Account Number</option>
+                <option *ngFor="let ac of acs" value="{{ac.id}}">{{ac.acno}}[{{ac.name}}]</option>
+              </select>
+              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['accountno'])">{{vs.getMessage(voucherBankForm.controls['accountno'])}}</div>
+            </div>
+    
+            <div class="col-sm-6">
+              <label for="username" class="form-label">प्रयोजन</label>
+              <div class="input-group has-validation">
+                <input
+                  formControlName="purpose"
+                  type="text"
+                  class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(voucherBankForm.controls['purpose'])">
+                  <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['purpose'])">{{vs.getMessage(voucherBankForm.controls['purpose'])}}</div>
+              </div>
+            </div>
+    
+           
+          
+            <div class="col-sm-6">
+              <label for="firstName" class="form-label ">राजस्व शिर्षक</label>
+              <ng-select formControlName="revenuecode" [(ngModel)]="selectedRevenue"  (change)="getBankAccounts()" >
+                <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
+              </ng-select>
+             
+            </div>
+    
+            <div class="col-5">
+              <label for="username" class="form-label">रकम</label>
+              <div class="input-group has-validation">
+                <input
+                  formControlName="amount" (focusout)="addItem()"
+                  type="text"
+                  class="form-control form-control-sm"
+                  
+                />
+                
+            </div>
+            </div>
+            <div class="col-1">
+              <label>&nbsp;</label>
+              <div class="input-group has-validation">
+              <button type="button" class="btn btn-success btn-sm" (click)="addItem()">Add </button>
+              </div>
+            </div>
+            <div  *ngIf="istab==2" class="col-12 page">
+              <table class="layout display responsive-table">
+                <thead>
+                  <tr>
+                    <th>राजस्व शिर्षक</th>
+                    <th>रकम</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let l of items;let i = index" >
+                    <td class="organisationname"> {{l.rv}} </td>
+                    <td class="organisationnumber">{{l.amt}}</td>
+                    <td class="organisationname"><button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)">Delete</button></td>
+                  </tr>
+                  <tr>
+                    <td >Total</td><td colspan="2">{{totalAmt}}</td>
+                  </tr>
+                </tbody>
+              </table>
+    
+            </div>
+    
+        
+           
+    
+            <div class="row">
+              <div class="col-md-8 text-start">
+                <h5 class="mt-3 mb-0">करदाता:</h5>
+              </div>
+            </div>
+    
+            <div class="col-sm-6">
+              <label for="username" class="form-label">पान नंबर</label>
+              <div class="input-group has-validation">
+                <input
+                (blur)="getAndSetPanDetails()"
+                  formControlName="taxpayerpan"
+                  type="text"
+                  class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(voucherBankForm.controls['taxpayerpan'])">
+                  <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['taxpayerpan'])">{{vs.getMessage(voucherBankForm.controls['taxpayerpan'])}}</div>
+              </div>
+            </div>
+    
+            <div class="col-sm-6">
+              <label for="username" class="form-label req">नाम</label>
+              <div class="input-group has-validation">
+                <input
+                  formControlName="taxpayername"
+                  type="text"
+                  class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(voucherBankForm.controls['taxpayername'])">
+                  <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['taxpayername'])">{{vs.getMessage(voucherBankForm.controls['taxpayername'])}}</div>
+              </div>
+            </div>
+    
+            <div class="row">
+              <div class="col-md-8 text-start">
+                <h5 class="mt-4 mb-0">जम्मा गर्नेको विवरण:</h5>
+              </div>
+            </div>
+    
+            <div class="col-sm-6">
+              <label for="username" class="form-label req">नाम</label>
+              <div class="input-group has-validation">
+                <input
+                  formControlName="depositedby"
+                  type="text"
+                  class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(voucherBankForm.controls['depositedby'])">
+                  <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['depositedby'])">{{vs.getMessage(voucherBankForm.controls['depositedby'])}}</div>
+              </div>
+            </div>
+    
+            <div class="col-sm-6">
+              <label for="username" class="form-label req">सम्पर्क नंबर</label>
+              <div class="input-group has-validation">
+                <input
+                  formControlName="depcontact"
+                  type="text"
+                  class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(voucherBankForm.controls['depcontact'])">
+                  <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['depcontact'])">{{vs.getMessage(voucherBankForm.controls['depcontact'])}}</div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div  *ngIf="istab==2" class="col-12 page">
-          <table class="layout display responsive-table">
+    
+          <br />
+          <div class="row">
+            <div class="col-md-12">
+              <button class="btn btn-success btn-sm" type="submit">Submit</button>
+              &nbsp; &nbsp;
+              <button
+                class="btn btn-danger btn-sm"
+                type="button"
+                (click)="resetForm()"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        </form>
+    
+        <div class="tab" *ngIf = hideForm>
+          <form class="form-srch" [formGroup]="srchForm">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Search.."
+                id="srch_term"
+                name="srch_term"
+                formControlName="srch_term"
+                (keyup.enter)="search()"
+              />
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                (click)="search()"
+              >
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </form>
+          <div class="btn-group" dropdown *ngIf = hideApproveButton>
+            <button id="button-basic" dropdownToggle type="button" class="btn btn-primary btn-sm dropdown-toggle"
+                    aria-controls="dropdown-basic">
+              Voucher Type <span class="caret"></span>
+            </button>
+            <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+                role="menu" aria-labelledby="button-basic">
+              <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus('')">All Vouchers</a></li>
+              <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus(1)">Approved Vouchers</a></li>
+              <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus(0)">Unapproved Vouchers</a></li>
+            </ul>
+          </div>
+          <table class="table datatable">
+            <!--table-borderless-->
             <thead>
               <tr>
-                <th>राजस्व शिर्षक</th>
-                <th>रकम</th>
-                <th>Action</th>
+                <th scope="col">Voucher No.</th>
+                <th scope="col">Date</th>
+                <th scope="col">Tax Payer Name</th>
+                <th scope="col">Account No</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let l of items;let i = index" >
-                <td class="organisationname"> {{l.rv}} </td>
-                <td class="organisationnumber">{{l.amt}}</td>
-                <td class="organisationname"><button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)">Delete</button></td>
+              <tr *ngFor="let item of lists; let i = index">
+                <td>{{ item.voucherno }}</td>
+                <td>{{ item.date }}</td>
+                <td>{{ item.taxpayername }}</td>
+                <td>{{ item.accountno }}</td>
+                <td>{{ item.amount }}</td>
+                
+    
+                
+    
+                <td><i class="bi bi-eye-fill text-success" (click)="openModal(template, item.id)"></i></td>
+                <td>
+    
+                </td>
               </tr>
-              <tr>
-                <td >Total</td><td colspan="2">{{totalAmt}}</td>
-              </tr>
+    
+            
             </tbody>
           </table>
-
-        </div>
-
     
-       
-
-        <div class="row">
-          <div class="col-md-8 text-start">
-            <h5 class="mt-3 mb-0">करदाता:</h5>
-          </div>
-        </div>
-
-        <div class="col-sm-6">
-          <label for="username" class="form-label">पान नंबर</label>
-          <div class="input-group has-validation">
-            <input
-            (blur)="getAndSetPanDetails()"
-              formControlName="taxpayerpan"
-              type="text"
-              class="form-control form-control-sm"
-              [ngClass]="vs.getControlClass(voucherBankForm.controls['taxpayerpan'])">
-              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['taxpayerpan'])">{{vs.getMessage(voucherBankForm.controls['taxpayerpan'])}}</div>
-          </div>
-        </div>
-
-        <div class="col-sm-6">
-          <label for="username" class="form-label req">नाम</label>
-          <div class="input-group has-validation">
-            <input
-              formControlName="taxpayername"
-              type="text"
-              class="form-control form-control-sm"
-              [ngClass]="vs.getControlClass(voucherBankForm.controls['taxpayername'])">
-              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['taxpayername'])">{{vs.getMessage(voucherBankForm.controls['taxpayername'])}}</div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-8 text-start">
-            <h5 class="mt-4 mb-0">जम्मा गर्नेको विवरण:</h5>
-          </div>
-        </div>
-
-        <div class="col-sm-6">
-          <label for="username" class="form-label req">नाम</label>
-          <div class="input-group has-validation">
-            <input
-              formControlName="depositedby"
-              type="text"
-              class="form-control form-control-sm"
-              [ngClass]="vs.getControlClass(voucherBankForm.controls['depositedby'])">
-              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['depositedby'])">{{vs.getMessage(voucherBankForm.controls['depositedby'])}}</div>
-          </div>
-        </div>
-
-        <div class="col-sm-6">
-          <label for="username" class="form-label req">सम्पर्क नंबर</label>
-          <div class="input-group has-validation">
-            <input
-              formControlName="depcontact"
-              type="text"
-              class="form-control form-control-sm"
-              [ngClass]="vs.getControlClass(voucherBankForm.controls['depcontact'])">
-              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['depcontact'])">{{vs.getMessage(voucherBankForm.controls['depcontact'])}}</div>
-          </div>
-        </div>
-      </div>
-
-      <br />
-      <div class="row">
-        <div class="col-md-12">
-          <button class="btn btn-success btn-sm" type="submit">Submit</button>
-          &nbsp; &nbsp;
-          <button
-            class="btn btn-danger btn-sm"
-            type="button"
-            (click)="resetForm()"
-          >
-            Clear
-          </button>
-        </div>
-      </div>
-    </form>
-
-    <div class="tab" *ngIf = hideForm>
-      <form class="form-srch" [formGroup]="srchForm">
-        <div class="input-group mb-3">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Search.."
-            id="srch_term"
-            name="srch_term"
-            formControlName="srch_term"
-            (keyup.enter)="search()"
-          />
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            (click)="search()"
-          >
-            <i class="bi bi-search"></i>
-          </button>
-        </div>
-      </form>
-      <div class="btn-group" dropdown *ngIf = hideApproveButton>
-        <button id="button-basic" dropdownToggle type="button" class="btn btn-primary btn-sm dropdown-toggle"
-                aria-controls="dropdown-basic">
-          Voucher Type <span class="caret"></span>
-        </button>
-        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
-            role="menu" aria-labelledby="button-basic">
-          <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus('')">All Vouchers</a></li>
-          <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus(1)">Approved Vouchers</a></li>
-          <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus(0)">Unapproved Vouchers</a></li>
-        </ul>
-      </div>
-      <table class="table datatable">
-        <!--table-borderless-->
-        <thead>
-          <tr>
-            <th scope="col">Voucher No.</th>
-            <th scope="col">Date</th>
-            <th scope="col">Tax Payer Name</th>
-            <th scope="col">Account No</th>
-            <th scope="col">Amount</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of lists; let i = index">
-            <td>{{ item.voucherno }}</td>
-            <td>{{ item.date }}</td>
-            <td>{{ item.taxpayername }}</td>
-            <td>{{ item.accountno }}</td>
-            <td>{{ item.amount }}</td>
-            
-
-            
-
-            <td><i class="bi bi-eye-fill text-success" (click)="openModal(template, item.id)"></i></td>
-            <td>
-
-            </td>
-          </tr>
-
-        
-        </tbody>
-      </table>
-
-      <div class="row">
-        <div class="col-6 text-start">
-          <pagination
-            [rotate]="true"
-            [maxSize]="5"
-            [totalItems]="pagination.total"
-            [(ngModel)]="pagination.currentPage"
-            [boundaryLinks]="true"
-            [itemsPerPage]="pagination.perPage"
-            (pageChanged)="paginatedData($event)"
-            previousText="&lsaquo;"
-            nextText="&rsaquo;"
-            firstText="&laquo;"
-            lastText="&raquo;"
-          ></pagination>
-        </div>
-
-        <div class="col-6 text-end">
-          <form [formGroup]="srchForm">
-            <div class="row" style="float: right">
-              <div class="col-md-12 smallbr">
-                Entries
-                <select
-                  name="entries"
-                  id="entries"
-                  formControlName="entries"
-                  (change)="search()"
-                >
-                  <option value="10">10</option>
-                  <option value="20">20</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-                &nbsp;&nbsp;&nbsp;&nbsp;
-              </div>
+          <div class="row">
+            <div class="col-6 text-start">
+              <pagination
+                [rotate]="true"
+                [maxSize]="5"
+                [totalItems]="pagination.total"
+                [(ngModel)]="pagination.currentPage"
+                [boundaryLinks]="true"
+                [itemsPerPage]="pagination.perPage"
+                (pageChanged)="paginatedData($event)"
+                previousText="&lsaquo;"
+                nextText="&rsaquo;"
+                firstText="&laquo;"
+                lastText="&raquo;"
+              ></pagination>
             </div>
-          </form>
+    
+            <div class="col-6 text-end">
+              <form [formGroup]="srchForm">
+                <div class="row" style="float: right">
+                  <div class="col-md-12 smallbr">
+                    Entries
+                    <select
+                      name="entries"
+                      id="entries"
+                      formControlName="entries"
+                      (change)="search()"
+                    >
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>          
         </div>
       </div>
-    </div>
+
+
   </div>
 </div>
 

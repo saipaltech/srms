@@ -10,59 +10,13 @@
     </span>
     </a>
     <hr>
-    <ul class="nav nav-pills flex-column mb-auto">
-        <li class="">
-            <a href="javascript:void(0)" class="nav-link text-white" (click)="buttonactive($event)" routerLink="user-profile">
-                <i class="bi bi-person-circle ico"></i>
-                SuperAdmin
-            </a>
-          </li>
-        <li class="nav-item">
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="bank"  (click)="buttonactive($event)">
-            <i class="bi bi-bank ico"></i>
-            Bank
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="branch"  (click)="buttonactive($event)">
-            <i class="bi bi-diagram-3 ico"></i>
-            Branch
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="users" (click)="buttonactive($event)">
-            <i class="bi bi-file-earmark-person-fill ico"></i>
-            Users
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white"  routerLink="voucher-bank" (click)="buttonactive($event)">
-            <i class="bi bi-stickies ico"></i>
-            Voucher Entry
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white"  routerLink="voucher-bank-off" (click)="buttonactive($event)">
-            <i class="bi bi-stickies ico"></i>
-            Voucher Entry II
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="verify-voucher" (click)="buttonactive($event)">
-            <i class="bi bi-file-earmark-medical ico"></i>
-            Verify Voucher
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white" routerLink="report"  (click)="buttonactive($event)">
-            <i class="bi bi-newspaper ico"></i>
-            Report
-        </a>
-      </li>
-      <li>
-        <a href="javascript:void(0)" class="nav-link text-white"  routerLink="approve-voucher" (click)="buttonactive($event)">
-            <i class="bi bi-file-text ico"></i>
-            Approve Voucher
+
+    <ul class="nav nav-pills flex-column">
+     
+      <li *ngFor="let i of navcontent">
+        <a href="javascript:void(0)" class="nav-link text-white" routerLink="{{i.link}}"  (click)="buttonactive($event)">
+            <i class="{{i.icon}} ico"></i>
+            {{i.name}}
         </a>
       </li>
       <li>
