@@ -4,7 +4,6 @@ package org.saipal.srms.vouchers;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Tuple;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jettison.json.JSONException;
@@ -72,7 +71,7 @@ public class TaxPayerVoucherController {
 		return objService.destroy(id);
 	}
 	
-	@PostMapping("/{id}")
+	@PostMapping("approve/{id}")
 	public ResponseEntity<Map<String, Object>> approveVoucher(@PathVariable String id) {
 		return objService.approveVoucher(id);
 	}
