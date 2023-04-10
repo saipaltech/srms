@@ -128,8 +128,8 @@ public class UsersService extends AutoService {
 			return Messenger.getMessenger().setMessage("Headbranch does not exists.").error();
 		}
 		model.password = pe.encode(model.password);
-		sql = "INSERT INTO users(name, post,username, password, mobile ,bankid, branchid ,disabled, approved) VALUES (?,?,?,?,?,?,(select top 1 id from branches where bankid=? and ishead=1),?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username, model.password,
+		sql = "INSERT INTO users(name, post,username,permid, password, mobile ,bankid, branchid ,disabled, approved) VALUES (?,?,?,?,?,?,?,(select top 1 id from branches where bankid=? and ishead=1),?,?)";
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username, model.password, model.permid,
 				model.mobile, model.bankid, model.bankid, model.disabled, model.approved));
 		if (rowEffect.getErrorNumber() == 0) {
 			String sqls = "Insert into users_perms (userid, permid) values((select top 1 id from users where username = ?), 2),((select top 1 id from users where username = ?), 3)";
@@ -143,7 +143,7 @@ public class UsersService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
 
-		String sql = "select id,name, username, post, mobile ,branchid,disabled, approved from " + table
+		String sql = "select id,name, username, post, mobile, permid ,branchid,disabled, approved from " + table
 				+ " where id=?";
 
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
@@ -161,10 +161,8 @@ public class UsersService extends AutoService {
 		DbResponse rowEffect;
 		Users model = new Users();
 		model.loadData(document);
-		String sql = "UPDATE users set name=?, mobile=?,branchid=?,post=?, amountlimit=? ,disabled=?, approved=? where id=?";
-		rowEffect = db.execute(sql,
-				
-				Arrays.asList(model.name, model.mobile, model.branchid, model.post,(model.amountlimit.isBlank()?0:model.amountlimit),model.disabled, model.approved,
+		String sql = "UPDATE users set name=?, mobile=?,branchid=?,post=?,permid=?, amountlimit=? ,disabled=?, approved=? where id=?";
+		rowEffect = db.execute(sql,Arrays.asList(model.name, model.mobile, model.branchid, model.post,model.permid,model.amountlimit.isBlank()?0:model.amountlimit ,model.disabled, model.approved,
 						model.id));
 		String permid = request("permid")+"";
 		String sqls="";

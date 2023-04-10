@@ -21,7 +21,7 @@ public class Users {
 	public String disabled;
 	public String mobile;
 	public String amountlimit;
-
+	public String permid;
     
 	public void loadData(RequestParser doc) {
 		for (Field f : this.getClass().getFields()) {

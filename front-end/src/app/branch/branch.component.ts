@@ -79,7 +79,7 @@ export class BranchComponent {
         this.lists = result.data;
         this.pagination.total = result.total;
         this.pagination.currentPage = result.currentPage;
-        console.log(result);
+        // console.log(result);
       },
       error => {
          this.toastr.error(error.error);

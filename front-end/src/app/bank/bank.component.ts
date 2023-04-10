@@ -59,7 +59,7 @@ export class BankComponent {
   getBanks(){
     this.RS.getlist().subscribe({next:(d)=>{
       this.banks = d;
-      console.log(this.banks);
+      // console.log(this.banks);
     },error:err=>{
 
     }})

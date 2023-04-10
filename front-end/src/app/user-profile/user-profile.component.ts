@@ -49,7 +49,7 @@ export class UserProfileComponent implements OnInit {
   getUser(username: any){
     this.RS.getDetails(username).subscribe({next:(dt)=>{
       this.userDetails = dt;
-      console.log(this.userDetails)
+      // console.log(this.userDetails)
     },error:error=>{
       this.toastr.error("error.error.message");
     }});

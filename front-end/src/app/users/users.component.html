@@ -1,185 +1,253 @@
 <div class="row g-5 justify-content-center">
   <div class="col-md-7 col-lg-8">
     <div class="card">
-
       <div class="card-header">
-
         Users Setup
-
-
         <button type="button" class="btn btn-primary btn-sm float-end" (click)="changeFields()">
           <div *ngIf="isbtn;else other_content">
             <i class="bi bi-list"></i> List of Users
           </div>
-
           <ng-template #other_content><i class="bi bi-reply"></i> Back To Form</ng-template>
-
         </button>
-
       </div>
-
       <div class="card-body">
+        <form class="needs-validation" [formGroup]="bankForm" (ngSubmit)="bankFormSubmit()">
+          <div class="row g-3">
+            <input type="hidden" formControlName="id" />
+            <!--<input type="hidden" formControlName="bankid">-->
+            <div class="col-6">
+              <label class="form-label req">Branch</label>
+              <div class="input-group has-validation">
+                <select class="form-select form-select-sm" formControlName="branchid"
+                  [ngClass]="vs.getControlClass(bankForm.controls['branchid'])">
+                  <option value="">Select Branch..</option>
+                  <option *ngFor="let op of branches" value="{{ op.id }}">
+                    {{ op.name }}
+                  </option>
+                </select>
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['branchid'])">
+                  {{ vs.getMessage(bankForm.controls["branchid"]) }}
+                </div>
+              </div>
+            </div>
 
-        
-    <form
-    class="needs-validation"
-    [formGroup]="bankForm"
-    (ngSubmit)="bankFormSubmit()"
-  >
+            <div class="col-6">
+              <label class="form-label req">Select User Type</label>
+              <div class="input-group has-validation">
+                <select class="form-select form-select-sm" formControlName="permid"
+                  [ngClass]="vs.getControlClass(bankForm.controls['permid'])">
+                  <option value="">Select User Type..</option>
+                  <option value="4">Supervisor</option>
+                  <option value="3">Bank User</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <label class="form-label req">Name</label>
+              <div class="input-group has-validation">
+                <input formControlName="name" type="text" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['name'])" />
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">
+                  {{ vs.getMessage(bankForm.controls["name"]) }}
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <label class="form-label req">Post</label>
+              <div class="input-group has-validation">
+                <input formControlName="post" type="text" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['post'])" />
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['post'])">
+                  {{ vs.getMessage(bankForm.controls["post"]) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <label class="form-label" [ngClass]="{'req' : fieldreq }">Username</label>
+              <div class="input-group has-validation">
+                <input formControlName="username" type="text" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['username'])" />
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['username'])">
+                  {{ vs.getMessage(bankForm.controls["username"]) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6" [ngClass]="{'vis' : !pwdShowHide}">
+              <label class="form-label" [ngClass]="{'req' : fieldreq }">Password</label>
+              <div class="input-group has-validation">
+                <input #password formControlName="password" type="password" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['password'])" />
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['password'])">
+                  {{ vs.getMessage(bankForm.controls["password"]) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <label class="form-label req">Mobile</label>
+              <div class="input-group has-validation">
+                <input type="text" formControlName="mobile" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['mobile'])" />
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['mobile'])">
+                  {{ vs.getMessage(bankForm.controls["mobile"]) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <label class="form-label">Limit</label>
+              <div class="input-group has-validation">
+                <input formControlName="amountlimit" type="text" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['amountlimit'])" />
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['amountlimit'])">
+                  {{ vs.getMessage(bankForm.controls["amountlimit"]) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <label class="form-label req">Disabled</label>
+              <div class="input-group has-validation">
+                <select class="form-select form-select-sm" formControlName="disabled"
+                  [ngClass]="vs.getControlClass(bankForm.controls['disabled'])">
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['disabled'])">
+                  {{ vs.getMessage(bankForm.controls["disabled"]) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="username" class="form-label req">Approved</label>
+              <div class="input-group has-validation">
+                <select class="form-select form-select-sm" formControlName="approved"
+                  [ngClass]="vs.getControlClass(bankForm.controls['approved'])">
+                  <option value="1">Yes</option>
+                  <option value="0">No</option>
+                </select>
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['approved'])">
+                  {{ vs.getMessage(bankForm.controls["approved"]) }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <br />
+          <div class="row">
+            <div class="col-md-12">
+              <button class="btn btn-success btn-sm" type="submit">Submit</button>
+              &nbsp; &nbsp;
+              <button class="btn btn-danger btn-sm" type="button" (click)="resetForm()">
+                Clear
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div class="tab hide">
+          <form class="form-srch" [formGroup]="srchForm">
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" placeholder="Search.." id="srch_term" name="srch_term"
+                formControlName="srch_term" (keyup.enter)="search()" />
+              <button class="btn btn-outline-secondary" type="button" (click)="search()">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </form>
+          <table class="table datatable">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Post</th>
+                <th scope="col">Username</th>
+                <th scope="col">Branch</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of lists; let i = index">
+                <td>{{ item.name }}</td>
+                <td>{{ item.post }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.bname }}</td>
+                <td>
+                  <a (click)="getUpdateItem(item.id)" href="javascript:void(0)"><i
+                      class="bi bi-pencil-square text-success"></i></a>
+                  &nbsp;&nbsp;&nbsp;
+                  <a (click)="deleteItem(item.id)"><i class="bi bi-trash3 text-danger" style="cursor: pointer"></i>
+                  </a>
+                  <a href="javascript:void(0)" (click)="openModal(template)"> <i class="bi bi-key text-info"
+                      style="cursor:pointer;"></i></a>
+                  <!-- <app-user-limit [userid]="item.id"></app-user-limit> -->
+                  <!-- <app-user-change-password [userid]=item.id></app-user-change-password> -->
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="row">
+            <div class="col-6 text-start">
+              <pagination [rotate]="true" [maxSize]="5" [totalItems]="pagination.total"
+                [(ngModel)]="pagination.currentPage" [boundaryLinks]="true" [itemsPerPage]="pagination.perPage"
+                (pageChanged)="paginatedData($event)" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                lastText="&raquo;"></pagination>
+            </div>
+
+            <div class="col-6 text-end">
+              <form [formGroup]="srchForm">
+                <div class="row" style="float: right">
+                  <div class="col-md-12 smallbr">
+                    Entries
+                    <select name="entries" id="entries" formControlName="entries" (change)="search()">
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Change Password</h4>
+    <button type="button" class="btn-close close pull-right" (click)="modalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+
+
     <div class="row g-3">
-      <input type="hidden" formControlName="id" />
-      <!--<input type="hidden" formControlName="bankid">-->
-      <div class="col-6">
-        <label class="form-label req">Branch</label>
-        <div class="input-group has-validation">
-          <select
-            class="form-select form-select-sm"
-            formControlName="branchid"
-            [ngClass]="vs.getControlClass(bankForm.controls['branchid'])"
-          >
-            <option value="">Select Branch..</option>
-            <option *ngFor="let op of branches" value="{{ op.id }}">
-              {{ op.name }}
-            </option>
-          </select>
-          <div [ngClass]="vs.getMessageClass(bankForm.controls['branchid'])">
-            {{ vs.getMessage(bankForm.controls["branchid"]) }}
-          </div>
-        </div>
-      </div>
-
-      <div class="col-6">
-        <label class="form-label req">Select User Type</label>
-        <div class="input-group has-validation">
-          <select class="form-select form-select-sm"
-          formControlName="permid"
-          [ngClass]="vs.getControlClass(bankForm.controls['permid'])">
-          <option value="">Select User Type..</option>
-          <option value="4">Supervisor</option>
-          <option value="3">Bank User</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="col-6">
-        <label class="form-label req">Name</label>
-        <div class="input-group has-validation">
-          <input
-            formControlName="name"
-            type="text"
-            class="form-control form-control-sm"
-            [ngClass]="vs.getControlClass(bankForm.controls['name'])"
-          />
-          <div [ngClass]="vs.getMessageClass(bankForm.controls['name'])">
-            {{ vs.getMessage(bankForm.controls["name"]) }}
-          </div>
-        </div>
-      </div>
-      <div class="col-6">
-        <label class="form-label req">Post</label>
-        <div class="input-group has-validation">
-          <input
-            formControlName="post"
-            type="text"
-            class="form-control form-control-sm"
-            [ngClass]="vs.getControlClass(bankForm.controls['post'])"
-          />
-          <div [ngClass]="vs.getMessageClass(bankForm.controls['post'])">
-            {{ vs.getMessage(bankForm.controls["post"]) }}
-          </div>
-        </div>
-      </div>
-
-      <div class="col-6">
-        <label class="form-label req">Username</label>
-        <div class="input-group has-validation">
-          <input
-            formControlName="username"
-            type="text"
-            class="form-control form-control-sm"
-            [ngClass]="vs.getControlClass(bankForm.controls['username'])"
-          />
-          <div [ngClass]="vs.getMessageClass(bankForm.controls['username'])">
-            {{ vs.getMessage(bankForm.controls["username"]) }}
-          </div>
-        </div>
-      </div>
-
+      <input type="hidden" formControlName="userid">
       <div class="col-6">
         <label class="form-label req">Password</label>
         <div class="input-group has-validation">
-          <input
-            formControlName="password"
-            type="password"
-            class="form-control form-control-sm"
-            [ngClass]="vs.getControlClass(bankForm.controls['password'])"
-          />
-          <div [ngClass]="vs.getMessageClass(bankForm.controls['password'])">
-            {{ vs.getMessage(bankForm.controls["password"]) }}
+          <input formControlName="password" type="password" class="form-control form-control-sm" />
+          <div>
           </div>
         </div>
       </div>
 
       <div class="col-6">
-        <label class="form-label req">Mobile</label>
+        <label class="form-label req">Confirm Password</label>
         <div class="input-group has-validation">
-          <input
-           
-            type="text"  formControlName="mobile"
-            class="form-control form-control-sm"
-            [ngClass]="vs.getControlClass(bankForm.controls['mobile'])"
-          />
-          <div [ngClass]="vs.getMessageClass(bankForm.controls['mobile'])">
-            {{ vs.getMessage(bankForm.controls["mobile"]) }}
-          </div>
-        </div>
-      </div>
-
-      <div class="col-6">
-        <label class="form-label">Limit</label>
-        <div class="input-group has-validation">
-          <input
-            formControlName="amountlimit"
-            type="text"
-            class="form-control form-control-sm"
-            [ngClass]="vs.getControlClass(bankForm.controls['amountlimit'])"
-          />
-          <div [ngClass]="vs.getMessageClass(bankForm.controls['amountlimit'])">
-            {{ vs.getMessage(bankForm.controls["amountlimit"]) }}
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6">
-        <label class="form-label req">Disabled</label>
-        <div class="input-group has-validation">
-          <select
-            class="form-select form-select-sm"
-            formControlName="disabled"
-            [ngClass]="vs.getControlClass(bankForm.controls['disabled'])"
-          >
-            <option value="1">Yes</option>
-            <option value="0">No</option>
-          </select>
-          <div [ngClass]="vs.getMessageClass(bankForm.controls['disabled'])">
-            {{ vs.getMessage(bankForm.controls["disabled"]) }}
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6">
-        <label for="username" class="form-label req">Approved</label>
-        <div class="input-group has-validation">
-          <select
-            class="form-select form-select-sm"
-            formControlName="approved"
-            [ngClass]="vs.getControlClass(bankForm.controls['approved'])"
-          >
-            <option value="1">Yes</option>
-            <option value="0">No</option>
-          </select>
-          <div [ngClass]="vs.getMessageClass(bankForm.controls['approved'])">
-            {{ vs.getMessage(bankForm.controls["approved"]) }}
+          <input formControlName="password" type="password" class="form-control form-control-sm" />
+          <div>
           </div>
         </div>
       </div>
@@ -189,123 +257,10 @@
     <div class="row">
       <div class="col-md-12">
         <button class="btn btn-success btn-sm" type="submit">Submit</button>
-        &nbsp; &nbsp;
-        <button
-          class="btn btn-danger btn-sm"
-          type="button"
-          (click)="resetForm()"
-        >
-          Clear
-        </button>
-      </div>
-    </div>
-  </form>
-
-  <div class="tab hide">
-    <form class="form-srch" [formGroup]="srchForm">
-      <div class="input-group mb-3">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Search.."
-          id="srch_term"
-          name="srch_term"
-          formControlName="srch_term"
-          (keyup.enter)="search()"
-        />
-        <button
-          class="btn btn-outline-secondary"
-          type="button"
-          (click)="search()"
-        >
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
-    </form>
-    <table class="table datatable">
-      <!--table-borderless-->
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Post</th>
-          <th scope="col">Username</th>
-          <th scope="col">Branch</th>
-          <th scope="col">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of lists; let i = index">
-          <td>{{ item.name }}</td>
-          <td>{{ item.post }}</td>
-          <td>{{ item.username }}</td>
-          <td>{{ item.bname }}</td>
-          <td>
-            <a (click)="getUpdateItem(item.id)" href="javascript:void(0)"
-              ><i class="bi bi-pencil-square text-success"></i
-            ></a>
-            &nbsp;&nbsp;&nbsp;
-            <a (click)="deleteItem(item.id)"
-              ><i
-                class="bi bi-trash3 text-danger"
-                style="cursor: pointer"
-              ></i>
-            </a>
-            <app-user-limit [userid]="item.id"></app-user-limit>
-            <!--<app-user-change-password [userid]=item.id></app-user-change-password>-->
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="row">
-      <div class="col-6 text-start">
-        <pagination
-          [rotate]="true"
-          [maxSize]="5"
-          [totalItems]="pagination.total"
-          [(ngModel)]="pagination.currentPage"
-          [boundaryLinks]="true"
-          [itemsPerPage]="pagination.perPage"
-          (pageChanged)="paginatedData($event)"
-          previousText="&lsaquo;"
-          nextText="&rsaquo;"
-          firstText="&laquo;"
-          lastText="&raquo;"
-        ></pagination>
-      </div>
-
-      <div class="col-6 text-end">
-        <form [formGroup]="srchForm">
-          <div class="row" style="float: right">
-            <div class="col-md-12 smallbr">
-              Entries
-              <select
-                name="entries"
-                id="entries"
-                formControlName="entries"
-                (change)="search()"
-              >
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-            </div>
-          </div>
-        </form>
+        &nbsp;
+        &nbsp;
+        <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
       </div>
     </div>
   </div>
-</div>
-
-      </div>
-
-    </div>
-      
-      
-
-     
-
-
-</div>
+</ng-template>
