@@ -1,11 +1,13 @@
 package org.saipal.srms.util;
 
 import java.util.Arrays;
+
+import javax.persistence.Tuple;
+
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
-import org.saipal.srms.vouchers.TaxPayerVoucher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -182,30 +184,33 @@ public class ApiManager {
 	/*
 	 * Calls SuTra server to post taxpayer voucher details
 	 * */
-	public JSONObject sendDataToSutra(TaxPayerVoucher tpv,String id,String bankid,String branchid,String userid) {
+	public JSONObject sendDataToSutra(Tuple tpv, String revs) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
 					.setHeader("Content-Type", "application/x-www-form-urlencoded")
-					.setParam("id",id)
-					.setParam("date",tpv.date)
-					.setParam("voucherno",tpv.voucherno)
-					.setParam("taxpayername",tpv.taxpayername)
-					.setParam("taxpayerpan",tpv.taxpayerpan)
-					.setParam("depositedby",tpv.depositedby)
-					.setParam("depcontact",tpv.depcontact)
-					.setParam("lgid",tpv.lgid)
-					.setParam("collectioncenterid",tpv.collectioncenterid)
-					.setParam("accountno",tpv.accountno)
-					.setParam("revenuecode",tpv.revenuecode)
-					.setParam("revenuetitle",tpv.revenuetitle)
-					.setParam("purpose",tpv.purpose)
-					.setParam("amount",tpv.amount)
-					.setParam("bankid",bankid)
-					.setParam("branchid",branchid)
-					.setParam("creatorid",userid)
+					.setParam("id",tpv.get("id")+"")
+					.setParam("date",tpv.get("date")+"")
+					.setParam("voucherno",tpv.get("voucherno")+"")
+					.setParam("taxpayername",tpv.get("taxpayername")+"")
+					.setParam("taxpayerpan",tpv.get("taxpayerpan")+"")
+					.setParam("depositedby",tpv.get("depositedby")+"")
+					.setParam("depcontact",tpv.get("depcontact")+"")
+					.setParam("lgid",tpv.get("lgid")+"")
+					.setParam("collectioncenterid",tpv.get("collectioncenterid")+"")
+					.setParam("accountno",tpv.get("accountno")+"")
+					.setParam("revenuecode",tpv.get("revenuecode")+"")
+					.setParam("purpose",tpv.get("purpose")+"")
+					.setParam("amount",tpv.get("amount")+"")
+					.setParam("bankid",tpv.get("bankid")+"")
+					.setParam("branchid",tpv.get("branchid")+"")
+					.setParam("creatorid",tpv.get("userid")+"")
+					.setParam("approved",tpv.get("approved")+"")
+					.setParam("approverid",tpv.get("approverid")+"")
+					.setParam("updatedon",tpv.get("updatedon")+"")
+					.setParam("revenue",revs)
 					.post(url + "/srms/taxpayer-voucher");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");

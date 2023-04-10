@@ -20,9 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import net.bytebuddy.implementation.bytecode.constant.IntegerConstant;
-
 import javax.persistence.Tuple;
+import javax.transaction.Transactional;
 
 @Component
 public class TaxPayerVoucherService extends AutoService {
@@ -134,7 +133,7 @@ public class TaxPayerVoucherService extends AutoService {
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
 	
-
+	@Transactional
 	public ResponseEntity<Map<String, Object>> store() throws JSONException {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
@@ -177,24 +176,9 @@ public class TaxPayerVoucherService extends AutoService {
 			if (jarr.length() > 0) {
 				for (int i = 0; i < jarr.length(); i++) {
 					JSONObject objects = jarr.getJSONObject(i);
-				
 						String sq1 = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
 						db.execute(sq1, Arrays.asList(db.newIdInt(),id, objects.get("rc"), objects.get("amt")));
-					
-
 				}
-
-			}
-			try {
-				JSONObject obj = api.sendDataToSutra(model, id, auth.getBankId(), auth.getBranchId(), auth.getUserId());
-				if (obj != null) {
-					if (obj.getInt("status") == 1) {
-						db.execute("update taxvouchers set syncstatus=2 where voucherno='" + model.voucherno + "'");
-					}
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 			return Messenger.getMessenger().success();
 		} else {
@@ -243,6 +227,33 @@ public class TaxPayerVoucherService extends AutoService {
 		} else {
 			return Messenger.getMessenger().error();
 		}
+	}
+	
+	public ResponseEntity<Map<String, Object>> approveVoucher(String id) {
+		db.execute("update "+table+" set approved=1,updatedon=getdate(),approverid=? where id=?",Arrays.asList(auth.getUserId(),id));
+		Tuple t = db.getSingleResult("select * from "+table+" where id=? and approved=1",Arrays.asList(id));
+		if(t!=null) {
+			String revs = "";
+			List<Tuple> list = db.getResultList("select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",Arrays.asList(id));
+			if(list.size()>0) {
+				for(Tuple tp : list) {
+					revs +=tp.get(0)+",";
+				}
+				revs.substring(0,revs.length()-1);
+			}
+			try {
+				JSONObject obj = api.sendDataToSutra(t,revs);
+				if (obj != null) {
+					if (obj.getInt("status") == 1) {
+						db.execute("update taxvouchers set syncstatus=2 where id=?",Arrays.asList(id));
+					}
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return Messenger.getMessenger().setMessage("Invalid Request").error();
 	}
 
 	public ResponseEntity<List<Map<String, Object>>> getList() {
