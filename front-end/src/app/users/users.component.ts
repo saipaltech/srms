@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, TemplateRef } from '@angular/core';
+import { Component, OnInit, Input, TemplateRef, ViewChild, ElementRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from './users.service'
@@ -33,9 +33,11 @@ export class UsersComponent implements OnInit {
 
   bankForm!: FormGroup;
   formLayout: any;
-  branches: any
+  branches: any;
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService, private bs: BranchService) {
+  modalRef?: BsModalRef;
+
+  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService, private bs: BranchService, private modalService: BsModalService) {
     this.formLayout = {
       id: [],
       branchid: ['', Validators.required],
@@ -50,12 +52,17 @@ export class UsersComponent implements OnInit {
       permid: ['', Validators.required]
 
     }
+
     this.bankForm = fb.group(this.formLayout)
 
     this.srchForm = new FormGroup({
       entries: new FormControl('10'),
       srch_term: new FormControl('')
     })
+  }
+
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template);
   }
 
   ngOnInit(): void {
@@ -81,7 +88,6 @@ export class UsersComponent implements OnInit {
         this.lists = result.data;
         this.pagination.total = result.total;
         this.pagination.currentPage = result.currentPage;
-        // console.log(result);
       },
       error => {
         this.toastr.error(error.error);
@@ -90,11 +96,10 @@ export class UsersComponent implements OnInit {
   }
 
   bankFormSubmit() {
-    // console.log(this.bankForm.valid);
     if (this.bankForm.valid) {
       if (this.bankForm.value.permid == 3) {
-        if (this.bankForm.value.amountlimit.trim() === ''){          
-          this.toastr.warning("Set limit for the user"+this.bankForm.value.amountlimit, "Warning");
+        if (this.bankForm.value.amountlimit.trim() === '') {
+          this.toastr.warning("Set limit for the user" + this.bankForm.value.amountlimit, "Warning");
           return;
         }
       }
@@ -105,7 +110,6 @@ export class UsersComponent implements OnInit {
         const singleFormControl = this.bankForm.get(field);
         singleFormControl?.markAsTouched({ onlySelf: true });
       });
-      // this.toastr.error('Please fill all the required* fields', 'Error');
     }
   }
 
@@ -113,31 +117,16 @@ export class UsersComponent implements OnInit {
 
 
   changeFields() {
-    // var frm = document.getElementsByClassName('needs-validation')[0]
-    // var table = document.getElementsByClassName('tab')[0]
-
-    // var fd = document.getElementsByClassName('formdiv')[0]
-    // var td = document.getElementsByClassName('listdiv')[0]
-
-    // frm.classList.toggle('hide');
-    // table.classList.toggle('hide');
-    // fd.classList.toggle('hide');
-    // td.classList.toggle('hide');
-
-    var frm = document.getElementsByClassName('needs-validation')[0]
-  var table = document.getElementsByClassName('tab')[0]
-
-  frm.classList.toggle('hide');
-  table.classList.toggle('hide')
-
+    var frm = document.getElementsByClassName('needs-validation')[0];
+    var table = document.getElementsByClassName('tab')[0];
+    frm.classList.toggle('hide');
+    table.classList.toggle('hide');
     this.isbtn = !this.isbtn;
-
-
-    // this.toastr.success('Hello world!', 'Toastr fun!');
   }
 
   resetForm() {
     this.bankForm = this.fb.group(this.formLayout);
+    this.enableAllForms();
   }
 
 
@@ -167,14 +156,13 @@ export class UsersComponent implements OnInit {
 
 
   createItem(id = null) {
-
     let upd = this.model;
     if (id != "" && id != null) {
-
       this.RS.update(id, upd).subscribe({
         next: (result: any) => {
           this.toastr.success('Item Successfully Updated!', 'Success');
-          this.bankForm = this.fb.group(this.formLayout)
+          this.bankForm = this.fb.group(this.formLayout);
+          this.enableAllForms();
           this.getList();
         }, error: err => {
           this.toastr.error(err.error.message, 'Error');
@@ -194,12 +182,41 @@ export class UsersComponent implements OnInit {
 
   }
 
+
+  @ViewChild('password') password!:any;
+  fieldreq = true;
+  pwdShowHide=true
+
+  changeFieldsForEdit(){   
+    // this.isReadOnly = true;
+    // this.disabledField = true;
+
+    this.bankForm.get('username')?.disable();
+    const pwd = this.bankForm.get('password');
+    pwd?.disable();
+    pwd?.clearValidators();
+    pwd?.patchValue("");
+
+    this.pwdShowHide=false;
+    this.fieldreq = false;
+
+  }
+
+  enableAllForms(){
+    this.bankForm.get('username')?.enable();
+    this.bankForm.get('password')?.enable();
+    this.fieldreq = true;
+    this.pwdShowHide=true;
+
+  }
+
   getUpdateItem(id: any) {
     this.RS.getEdit(id).subscribe(
       (result: any) => {
         this.model = result;
         this.bankForm.patchValue(result);
         this.changeFields();
+        this.changeFieldsForEdit();
       },
       (error: any) => {
         this.toastr.error(error.error, 'Error');
@@ -217,8 +234,6 @@ export class UsersComponent implements OnInit {
       });
     }
   }
-
-
 }
 
 

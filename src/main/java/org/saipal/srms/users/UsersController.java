@@ -65,7 +65,10 @@ public class UsersController {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> update(HttpServletRequest request, @PathVariable String id) {
-		Validator validator = validationService.validate(Users.rules());
+		Map<String, String> rules = Users.rules(); 
+		rules.remove("username");
+		rules.remove("password");
+		Validator validator = validationService.validate(rules);
 		if (validator.isFailed()) {
 			return Messenger.getMessenger().setMessage(validator.getErrorMessages()).error();
 		} else {
