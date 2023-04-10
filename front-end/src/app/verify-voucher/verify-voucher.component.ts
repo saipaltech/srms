@@ -62,10 +62,10 @@ export class VerifyVoucherComponent {
     this.RS.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(
       (result: any) => {
         this.lists = result.data;
-        console.log(this.lists)
+        //console.log(this.lists)
         this.pagination.total = result.total;
         this.pagination.currentPage = result.currentPage;
-        console.log(result);
+        //console.log(result);
       },
       error => {
          this.toastr.error(error.error);
@@ -120,7 +120,7 @@ search() {
       this.istab=2;
     }
   },error:error=>{
-    console.log(error);
+    // console.log(error);
     // alert(5)
     this.toastr.error(error.error.error);
   }});

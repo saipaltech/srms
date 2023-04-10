@@ -111,7 +111,7 @@ changeFields() {
 }
 
 ngOnInit(): void {
-  console.log(this.items);
+  // console.log(this.items);
   this.pagination.perPage = this.perPages[0];
   this.getList();
   this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
@@ -158,7 +158,7 @@ getPalikaDetails(){
         this.voucherBankForm.patchValue({"collectioncenterid":d.data[0].code});
       }
     },error:err=>{
-      console.log(err);
+      // console.log(err);
     }
   });
 }
@@ -174,7 +174,7 @@ getBankAccounts(){
           this.voucherBankForm.patchValue({"accountno":d.data[0].acno});
         }
       },error:err=>{
-        console.log(err);
+        // console.log(err);
       }
     });
   }
@@ -239,7 +239,7 @@ voucherBankFormSubmit(){
     this.model.voucherinfo=this.items;
     this.createItem(this.voucherBankForm.value.id);
     // alert('submit but not create')
-    console.log(this.voucherBankForm.value)
+    // console.log(this.voucherBankForm.value)
 
   } else {
     // alert('Invalid form')
