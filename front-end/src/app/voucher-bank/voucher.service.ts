@@ -39,6 +39,10 @@ export class VoucherService {
   constructor(private http: ApiService) { 
   }
 
+  approveVoucher(id: any){
+    return this.http.post(this.url + '/approve/'+ id, {id:id})
+  }
+
   getDetails(id: string) {
     return this.http.get(this.url + '/get-specific/' + id);  
   }

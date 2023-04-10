@@ -250,6 +250,8 @@ public class TaxPayerVoucherService extends AutoService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			return Messenger.getMessenger().setMessage("Voucher approved.").success();
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
 	}

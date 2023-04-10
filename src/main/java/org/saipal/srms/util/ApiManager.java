@@ -206,7 +206,7 @@ public class ApiManager {
 					.setParam("amount",tpv.get("amount")+"")
 					.setParam("bankid",tpv.get("bankid")+"")
 					.setParam("branchid",tpv.get("branchid")+"")
-					.setParam("creatorid",tpv.get("userid")+"")
+					.setParam("creatorid",tpv.get("creatorid")+"")
 					.setParam("approved",tpv.get("approved")+"")
 					.setParam("approverid",tpv.get("approverid")+"")
 					.setParam("updatedon",tpv.get("updatedon")+"")

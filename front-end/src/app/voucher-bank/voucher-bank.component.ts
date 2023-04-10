@@ -25,6 +25,7 @@ export class VoucherBankComponent implements OnInit {
   @Input() hideForm! : boolean;
   @Input() hideButton! : boolean;
   @Input() hideApproveButton! : boolean;
+  @Input() status ="";
 
 
   myDate: any = new Date();
@@ -50,7 +51,7 @@ export class VoucherBankComponent implements OnInit {
   model: any = {};
   dlgid:any;
 
-  approved ="";
+  approved ="0";
   items=new Array();
 
 constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherService, private modalService: BsModalService, private r: Router,private auth:AuthService){
@@ -100,15 +101,18 @@ getDetails(id:any){
 isbtn = true;
 
 changeFields() {
-  //this.r.navigate(['report'+ '/1'])
-  // window.open("/#/trial?voucherno="+"33"+'&palika='+"100612250451902230", '_blank')
-  // window.open("/#/trial?voucherno="+"33"+'&palika='+"100612250451902230")
-
-
   this.isbtn=!this.isbtn;
-  this.hideForm = !this.hideForm;
+  this.hideForm = !this.hideForm;  
+}
 
-  
+approveVoucher(id:string){
+  this.bvs.approveVoucher(id).subscribe({next:(d)=>{
+    this.toastr.success(d.message,"Success")
+
+  },error:err=>{
+    this.toastr.error("Unable to Approve","Error")
+  }
+  });
 }
 
 ngOnInit(): void {
@@ -203,7 +207,7 @@ getBankAccounts(){
 
   getList(pageno?: number | undefined) {
     const page = pageno || 1;
-    const approve = this.approved; 
+    const approve =  this.approved; 
     //2 is just a random number to specify to show all data
     this.bvs.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc, approve).subscribe(
       (result: any) => {
