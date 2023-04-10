@@ -107,8 +107,9 @@ changeFields() {
 
 approveVoucher(id:string){
   this.bvs.approveVoucher(id).subscribe({next:(d)=>{
-    this.toastr.success(d.message,"Success")
-
+    this.toastr.success(d.message,"Success");
+    this.getList();
+    this.modalRef?.hide();
   },error:err=>{
     this.toastr.error("Unable to Approve","Error")
   }

@@ -257,17 +257,12 @@
         </button>
       </div>
     </form>
-    <div class="btn-group" dropdown *ngIf = !hideApproveButton>
-      <button id="button-basic" dropdownToggle type="button" class="btn btn-primary btn-sm dropdown-toggle"
-              aria-controls="dropdown-basic">
-        Voucher Type <span class="caret"></span>
-      </button>
-      <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
-          role="menu" aria-labelledby="button-basic">
-        <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus('')">All Vouchers</a></li>
-        <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus(1)">Approved Vouchers</a></li>
-        <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus(0)">Unapproved Vouchers</a></li>
-      </ul>
+    <div class="btn-group" dropdown *ngIf = "!hideApproveButton">
+      <select class="form-select form-select-sm">
+        <option value="" (click)="setStatus('')">All Vouchers</option>
+        <option selected value="0"  (click)="setStatus(0)">Unapproved Vouchers</option>
+        <option value="1" (click)="setStatus(1)">Approved Vouchers</option>
+      </select>
     </div>
     <table class="table datatable">
       <!--table-borderless-->
@@ -357,7 +352,7 @@
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
-  <div class="modal-body">
+  <div class="modal-body" *ngIf="details">
     जम्मा गरेको मिति :  {{details[0].date}}
     <br>
     बैंक भौचर नंबर: {{details[0].voucherno}}
