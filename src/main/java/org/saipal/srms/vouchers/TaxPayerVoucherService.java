@@ -43,7 +43,7 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String condition = " where id!=1  and ttype=1 ";
-//		String approve = request("approvelog");
+		String approve = request("approve");
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
 			condition += "and (";
@@ -52,19 +52,15 @@ public class TaxPayerVoucherService extends AutoService {
 			}
 			condition = condition.substring(0, condition.length() - 3);
 			condition += ")";
-
-		
-//				switch (Integer.parseInt(approve)) {
-//				case 0:
-//					condition += " where approved=0)";
-//					break;
-//				case 1:
-//					condition += " where approved=1)";
-//					break;
-//				default:
-//					condition += "where approved=1)";
-//					break;
-//				}
+					
+				switch (Integer.parseInt(approve)) {
+				case 0:
+					condition += " and approved=0)";
+					break;
+				default:
+					condition += " and approved=1)";
+					break;
+				}
 
 		}
 		String sort = "";
