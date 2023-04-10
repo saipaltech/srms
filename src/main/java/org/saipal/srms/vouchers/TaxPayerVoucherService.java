@@ -117,7 +117,7 @@ public class TaxPayerVoucherService extends AutoService {
 	public ResponseEntity<List<Map<String, Object>>> getSpecific(String id) {
 		// String transactionid = request("id");
 //		String sql = "select bd.id, bd.depositdate, bd.bankvoucherno, lls.namenp as llsname,cc.namenp as collectioncentername, bd.accountnumber, bd.amount, bd.remarks, bd.transactionid from bank_deposits as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid where bd.id =" + id;
-		String sql = "select bd.id,cast (bd.date as date) as date, bd.voucherno,\r\n"
+		String sql = "select cast(bd.id as varchar) as id,cast (bd.date as date) as date, bd.voucherno,\r\n"
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
@@ -225,6 +225,18 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> approveVoucher(String id) {
+		Tuple c = db.getSingleResult("select id,amount,approved from "+table+" where id=?",Arrays.asList(id));
+		if((c.get("approved")+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("Voucher is already Approved.").error();
+		}
+		Tuple u = db.getSingleResult("select id,amountlimit,permid from users where id=?",Arrays.asList(auth.getUserId()));
+		if((u.get("permid")+"").equals("3")) {
+			if(!(u.get("amountlimit")+"").equals("-1")) {
+				if(Float.parseFloat(c.get("amount")+"")>Float.parseFloat(u.get("amountlimit")+"")) {
+					return Messenger.getMessenger().setMessage("Amount Limit exceeds, Only upto Rs."+u.get("amountlimit")+" is allowed.").error();
+				}
+			}
+		}
 		db.execute("update " + table + " set approved=1,updatedon=getdate(),approverid=? where id=?",
 				Arrays.asList(auth.getUserId(), id));
 		Tuple t = db.getSingleResult("select * from " + table + " where id=? and approved=1", Arrays.asList(id));
@@ -469,27 +481,41 @@ public class TaxPayerVoucherService extends AutoService {
 		if (bankid.isBlank()) {
 			return ResponseEntity.ok("{status:0,message:\"Bank is required\"}");
 		}
-		Tuple t = db.getSingleResult("select top 1 * from " + table + " where voucherno=? and bankid=?",
+		Tuple t = db.getSingleResult("select top 1 * from " + table + " where voucherno=? and bankid=? and approved=1",
 				Arrays.asList(voucherno, bankid));
 		if (t != null) {
+			String revs = "";
+			List<Tuple> list = db.getResultList(
+					"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
+					Arrays.asList(t.get("id")));
+			if (list.size() > 0) {
+				for (Tuple tp : list) {
+					revs += tp.get(0) + ",";
+				}
+				revs.substring(0, revs.length() - 1);
+			}
 			try {
 				JSONObject data = new JSONObject();
-				data.put("id", t.get("id"));
-				data.put("date", t.get("date"));
-				data.put("voucherno", t.get("voucherno"));
-				data.put("taxpayername", t.get("taxpayername"));
-				data.put("taxpayerpan", t.get("taxpayerpan"));
-				data.put("depositedby", t.get("depositedby"));
-				data.put("depcontact", t.get("depcontact"));
-				data.put("lgid", t.get("lgid"));
-				data.put("collectioncenterid", t.get("collectioncenterid"));
-				data.put("accountno", t.get("accountno"));
-				data.put("revenuecode", t.get("revenuecode"));
-				data.put("purpose", t.get("purpose"));
-				data.put("amount", t.get("amount"));
-				data.put("bankid", t.get("bankid"));
-				data.put("branchid", t.get("branchid"));
-				data.put("creatorid", t.get("creatorid"));
+				data.put("id",t.get("id")+"");
+				data.put("date",t.get("date")+"");
+				data.put("voucherno",t.get("voucherno")+"");
+				data.put("taxpayername",t.get("taxpayername")+"");
+				data.put("taxpayerpan",t.get("taxpayerpan")+"");
+				data.put("depositedby",t.get("depositedby")+"");
+				data.put("depcontact",t.get("depcontact")+"");
+				data.put("lgid",t.get("lgid")+"");
+				data.put("collectioncenterid",t.get("collectioncenterid")+"");
+				data.put("accountno",t.get("accountno")+"");
+				data.put("revenuecode",t.get("revenuecode")+"");
+				data.put("purpose",t.get("purpose")+"");
+				data.put("amount",t.get("amount")+"");
+				data.put("bankid",t.get("bankid")+"");
+				data.put("branchid",t.get("branchid")+"");
+				data.put("creatorid",t.get("creatorid")+"");
+				data.put("approved",t.get("approved")+"");
+				data.put("approverid",t.get("approverid")+"");
+				data.put("updatedon",t.get("updatedon")+"");
+				data.put("revenue",revs);
 				JSONObject j = new JSONObject();
 				j.put("status", 1);
 				j.put("message", "success");
