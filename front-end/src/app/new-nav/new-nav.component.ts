@@ -14,7 +14,7 @@ export class NewNavComponent implements OnInit{
   navcontent:any= [];
   constructor(private router:Router ,private authService:AuthService,private http:ApiService){}
   ngOnInit(): void {
-    this.name = this.authService.currentUser.name;
+    this.name = this.authService.getUserDetails()?.name;
     this.http.get("users/get-front-menu").subscribe({next:(dt)=>{
       this.navcontent = dt;
     },error:err=>{

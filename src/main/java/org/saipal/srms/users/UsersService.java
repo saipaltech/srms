@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.util.DB;
@@ -152,6 +150,7 @@ public class UsersService extends AutoService {
 		return ResponseEntity.ok(data);
 	}
 
+	@Transactional
 	public ResponseEntity<Map<String, Object>> update(String id) {
 		if (!auth.hasPermission("bankhq")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
@@ -164,13 +163,22 @@ public class UsersService extends AutoService {
 		model.loadData(document);
 		String sql = "UPDATE users set name=?, mobile=?,branchid=?,post=?, amountlimit=? ,disabled=?, approved=? where id=?";
 		rowEffect = db.execute(sql,
-
-				Arrays.asList(model.name, model.mobile, model.branchid, model.post,model.amountlimit ,model.disabled, model.approved,
+				
+				Arrays.asList(model.name, model.mobile, model.branchid, model.post,(model.amountlimit.isBlank()?0:model.amountlimit),model.disabled, model.approved,
 						model.id));
-
-		if (rowEffect.getErrorNumber() == 0) {
+		String permid = request("permid")+"";
+		String sqls="";
+		DbResponse rowEffects;
+		db.execute("delete from users_perms where userid=?",Arrays.asList(id));
+		if(permid.equals("4")) {
+			sqls= "insert into users_perms (userid,permid) values ((select top 1 id from users where username=?),?),((select top 1 id from users where username=?),3)";
+			rowEffects = db.execute(sqls,  Arrays.asList(model.username, permid,model.username));
+		}else {
+			sqls = "insert into users_perms (userid,permid) values ((select top 1 id from users where username=?),?)";
+			rowEffects = db.execute(sqls,  Arrays.asList(model.username, permid));
+		}
+		if (rowEffect.getErrorNumber() == 0 && rowEffects.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
-
 		} else {
 			return Messenger.getMessenger().error();
 		}

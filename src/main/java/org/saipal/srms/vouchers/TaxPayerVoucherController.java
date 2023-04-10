@@ -72,6 +72,11 @@ public class TaxPayerVoucherController {
 		return objService.destroy(id);
 	}
 	
+	@PostMapping("/{id}")
+	public ResponseEntity<Map<String, Object>> approveVoucher(@PathVariable String id) {
+		return objService.approveVoucher(id);
+	}
+	
 	@GetMapping("get-list")
 	public ResponseEntity<List<Map<String, Object>>> getList() {
 		return objService.getList();
