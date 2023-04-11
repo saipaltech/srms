@@ -102,7 +102,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(id as char) as id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,chequeamount as amount")
+				.select("cast(id as char) as id,cast(date as date) as date,cstatus,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,chequeamount as amount")
 				.sqlBody("from " + table + condition).paginate();
 //				.select("t1.id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,SUM(t2.amount) as amount")
 //				.sqlBody("from " + table +" t1 JOIN taxvouchers_detail t2 ON t1.id = t2.mainid"+ condition+" group by t1.id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose").paginate();
@@ -114,17 +114,20 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 	}
 
-	public ResponseEntity<List<Map<String, Object>>> getSpecific(String id) {
+	public ResponseEntity<Map<String, Object>> getSpecific(String id) {
 		// String transactionid = request("id");
 //		String sql = "select bd.id, bd.depositdate, bd.bankvoucherno, lls.namenp as llsname,cc.namenp as collectioncentername, bd.accountnumber, bd.amount, bd.remarks, bd.transactionid from bank_deposits as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid where bd.id =" + id;
-		String sql = "select bd.id,cast (bd.date as date) as date, bd.voucherno,\r\n"
+		String sql = "select cast(bd.id as varchar) as id,cast (bd.date as date) as date, bd.voucherno,\r\n"
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.id=" + id
 				+ " group by bd.id,bd.date,bd.voucherno,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
 //		System.out.println(sql);
-		return ResponseEntity.ok(db.getResultListMap(sql));
+		Map<String, Object> data = db.getSingleResultMap(sql);
+		List<Map<String,Object>> revs = db.getResultListMap("select td.revenueid,cr.namenp,td.amount form taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",Arrays.asList(id));
+		data.put("revs", revs);
+		return ResponseEntity.ok(data);
 	}
 
 	@Transactional
@@ -209,6 +212,27 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 
 	}
+	
+
+	public ResponseEntity<Map<String, Object>> chequeclear() {
+		if (!auth.hasPermission("bankuser")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		String id=request("id");
+		DbResponse rowEffect;
+		
+		String sql = "UPDATE " + table
+				+ " set cstatus=? where id=?";
+		rowEffect = db.execute(sql,
+				Arrays.asList(1, id));
+		if (rowEffect.getErrorNumber() == 0) {
+//			System.out.println();
+			return Messenger.getMessenger().success();
+		} else {
+			return Messenger.getMessenger().error();
+		}
+
+	}
 
 	public ResponseEntity<Map<String, Object>> destroy(String id) {
 		if (!auth.hasPermission("bankuser")) {
@@ -225,6 +249,18 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> approveVoucher(String id) {
+		Tuple c = db.getSingleResult("select id,amount,approved from "+table+" where id=?",Arrays.asList(id));
+		if((c.get("approved")+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("Voucher is already Approved.").error();
+		}
+		Tuple u = db.getSingleResult("select id,amountlimit,permid from users where id=?",Arrays.asList(auth.getUserId()));
+		if((u.get("permid")+"").equals("3")) {
+			if(!(u.get("amountlimit")+"").equals("-1")) {
+				if(Float.parseFloat(c.get("amount")+"")>Float.parseFloat(u.get("amountlimit")+"")) {
+					return Messenger.getMessenger().setMessage("Amount Limit exceeds, Only upto Rs."+u.get("amountlimit")+" is allowed.").error();
+				}
+			}
+		}
 		db.execute("update " + table + " set approved=1,updatedon=getdate(),approverid=? where id=?",
 				Arrays.asList(auth.getUserId(), id));
 		Tuple t = db.getSingleResult("select * from " + table + " where id=? and approved=1", Arrays.asList(id));
@@ -469,27 +505,41 @@ public class TaxPayerVoucherService extends AutoService {
 		if (bankid.isBlank()) {
 			return ResponseEntity.ok("{status:0,message:\"Bank is required\"}");
 		}
-		Tuple t = db.getSingleResult("select top 1 * from " + table + " where voucherno=? and bankid=?",
+		Tuple t = db.getSingleResult("select top 1 * from " + table + " where voucherno=? and bankid=? and approved=1",
 				Arrays.asList(voucherno, bankid));
 		if (t != null) {
+			String revs = "";
+			List<Tuple> list = db.getResultList(
+					"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
+					Arrays.asList(t.get("id")));
+			if (list.size() > 0) {
+				for (Tuple tp : list) {
+					revs += tp.get(0) + ",";
+				}
+				revs.substring(0, revs.length() - 1);
+			}
 			try {
 				JSONObject data = new JSONObject();
-				data.put("id", t.get("id"));
-				data.put("date", t.get("date"));
-				data.put("voucherno", t.get("voucherno"));
-				data.put("taxpayername", t.get("taxpayername"));
-				data.put("taxpayerpan", t.get("taxpayerpan"));
-				data.put("depositedby", t.get("depositedby"));
-				data.put("depcontact", t.get("depcontact"));
-				data.put("lgid", t.get("lgid"));
-				data.put("collectioncenterid", t.get("collectioncenterid"));
-				data.put("accountno", t.get("accountno"));
-				data.put("revenuecode", t.get("revenuecode"));
-				data.put("purpose", t.get("purpose"));
-				data.put("amount", t.get("amount"));
-				data.put("bankid", t.get("bankid"));
-				data.put("branchid", t.get("branchid"));
-				data.put("creatorid", t.get("creatorid"));
+				data.put("id",t.get("id")+"");
+				data.put("date",t.get("date")+"");
+				data.put("voucherno",t.get("voucherno")+"");
+				data.put("taxpayername",t.get("taxpayername")+"");
+				data.put("taxpayerpan",t.get("taxpayerpan")+"");
+				data.put("depositedby",t.get("depositedby")+"");
+				data.put("depcontact",t.get("depcontact")+"");
+				data.put("lgid",t.get("lgid")+"");
+				data.put("collectioncenterid",t.get("collectioncenterid")+"");
+				data.put("accountno",t.get("accountno")+"");
+				data.put("revenuecode",t.get("revenuecode")+"");
+				data.put("purpose",t.get("purpose")+"");
+				data.put("amount",t.get("amount")+"");
+				data.put("bankid",t.get("bankid")+"");
+				data.put("branchid",t.get("branchid")+"");
+				data.put("creatorid",t.get("creatorid")+"");
+				data.put("approved",t.get("approved")+"");
+				data.put("approverid",t.get("approverid")+"");
+				data.put("updatedon",t.get("updatedon")+"");
+				data.put("revenue",revs);
 				JSONObject j = new JSONObject();
 				j.put("status", 1);
 				j.put("message", "success");
@@ -526,7 +576,7 @@ public class TaxPayerVoucherService extends AutoService {
 	public ResponseEntity<Map<String, Object>> generateReport() {
 		String voucher = request("voucherno");
 		String palika = request("palika");
-		String sql = "select  dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amount as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,dbo.eng2nep(voucherno) as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amount) as amount,dbo.eng2nep(accountno) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date, dbo.eng2nep(revenuecode) as revenuecode from "
+		String sql = "select  dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amount as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amount) as amount,dbo.eng2nep(accountno) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date, dbo.eng2nep(revenuecode) as revenuecode from "
 				+ "taxvouchers tv " + "left join bankaccount ba on ba.accountnumber=tv.accountno "
 				+ "left join bankinfo bi on bi.id=tv.bankid "
 				+ "left join admin_local_level_structure lls on lls.id=tv.lgid "

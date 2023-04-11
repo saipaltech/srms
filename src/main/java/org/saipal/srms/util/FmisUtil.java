@@ -14,10 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -30,15 +27,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.saipal.srms.auth.AuthService;
 import org.saipal.srms.parser.RequestParser;
-import org.saipal.srms.util.ContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
@@ -52,9 +46,6 @@ public final class FmisUtil {
 	
 	@Value("${public_dir:#{null}}")
 	String publicDir;
-
-	@Autowired
-	private AuthService aService;
 	
 	@Autowired
 	private DateUtil dutil;

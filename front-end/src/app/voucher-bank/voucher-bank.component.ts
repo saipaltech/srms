@@ -112,7 +112,7 @@ approveVoucher(id:string){
     this.getList();
     this.modalRef?.hide();
   },error:err=>{
-    this.toastr.error("Unable to Approve","Error")
+    this.toastr.error(err.error.message,"Error")
   }
   });
 }
@@ -235,7 +235,7 @@ getBankAccounts(){
   
 
 voucherBankFormSubmit(){
- 
+ this.voucherBankForm.patchValue({amount:this.totalAmt});
   if (this.voucherBankForm.valid) {
     const llgCode = this.voucherBankForm.value['lgid'];
     if(llgCode!=this.dlgid){
