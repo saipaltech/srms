@@ -86,6 +86,11 @@ public class UsersService extends AutoService {
 		if ((!(res.get(0) + "").equals("0"))) {
 			return Messenger.getMessenger().setMessage("Username already exists.").error();
 		}
+		String mbl = "select count(mobile) from users where username=?";
+		Tuple resu = db.getSingleResult(mbl, Arrays.asList(model.mobile));
+		if ((!(resu.get(0) + "").equals("0"))) {
+			return Messenger.getMessenger().setMessage("Mobile already exists.").error();
+		}
 		model.password = pe.encode(model.password);
 		if (bankId.equals("1")) {
 			bankId = db.getSingleResult("select bankid from branches where id=?", Arrays.asList(model.branchid)).get(0)
