@@ -197,6 +197,8 @@ getBankAccounts(){
       this.getBankAccounts();
     }});
     this.voucherBankForm.patchValue({'lgid':this.dlgid});
+    this.items=new Array();
+    this.istab=1;
   }
 
   getList(pageno?: number | undefined) {

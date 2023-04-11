@@ -204,6 +204,8 @@ getBankAccounts(){
       this.getBankAccounts();
     }});
     this.voucherBankForm.patchValue({'lgid':this.dlgid});
+    this.items=new Array();
+    this.istab=1;
   }
 
   getList(pageno?: number | undefined) {
@@ -332,6 +334,12 @@ removeItem(index:any) {
   this.calctotal();
 }
 
+removeItems(index:any) {
+  this.totalAmt=0;
+  this.items.splice(index, 1);
+  
+}
+
 
 createItem(id = null) {
 
@@ -352,6 +360,12 @@ createItem(id = null) {
       next:(result:any) => {
         // alert('create')
       this.toastr.success('Item Successfully Saved!', 'Success');
+      // for(var i=0;i<=this.items.length;i++){
+      //   console.log(i);
+      //   this.removeItems(i);
+      // }
+
+      // this.istab=1;
       // this.r.navigate(['report'], { state: { data: upd } });
       this.resetForm();
       this.getList();
