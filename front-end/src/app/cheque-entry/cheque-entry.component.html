@@ -11,10 +11,10 @@
           <div class="col-md-4 text-end"  *ngIf = !hideButton>
             <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
               <div *ngIf="isbtn;else other_content">
-                List of Vouchers
+                <i class="bi bi-list"></i>  List of Vouchers
             </div>
             
-            <ng-template #other_content>Back To Form</ng-template>
+            <ng-template #other_content><i class="bi bi-reply"></i>  Back To Form</ng-template>
               
             </button>
           </div>
@@ -406,7 +406,7 @@
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
-  <div class="modal-body">
+  <div class="modal-body" *ngIf="details">
     जम्मा गरेको मिति :  {{details[0].date}}
     <br>
     बैंक भौचर नंबर: {{details[0].voucherno}}
