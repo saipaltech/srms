@@ -146,6 +146,7 @@ public class AuthService {
 				Map<String,String> data = new HashMap<>();
 				data.put("token", token);
 				data.put("name", t.get("name")+"");
+				System.out.println(token+" granted");
 				return Messenger.getMessenger().setData(data).success();
 			}
 		}
