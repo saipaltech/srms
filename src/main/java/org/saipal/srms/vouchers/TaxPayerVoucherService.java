@@ -102,7 +102,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(id as char) as id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,chequeamount as amount")
+				.select("cast(id as char) as id,cast(date as date) as date,cstatus,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,chequeamount as amount")
 				.sqlBody("from " + table + condition).paginate();
 //				.select("t1.id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,SUM(t2.amount) as amount")
 //				.sqlBody("from " + table +" t1 JOIN taxvouchers_detail t2 ON t1.id = t2.mainid"+ condition+" group by t1.id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose").paginate();
@@ -206,6 +206,27 @@ public class TaxPayerVoucherService extends AutoService {
 						model.purpose, model.amount, id));
 		if (rowEffect.getErrorNumber() == 0) {
 			System.out.println();
+			return Messenger.getMessenger().success();
+		} else {
+			return Messenger.getMessenger().error();
+		}
+
+	}
+	
+
+	public ResponseEntity<Map<String, Object>> chequeclear() {
+		if (!auth.hasPermission("bankuser")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		String id=request("id");
+		DbResponse rowEffect;
+		
+		String sql = "UPDATE " + table
+				+ " set cstatus=? where id=?";
+		rowEffect = db.execute(sql,
+				Arrays.asList(1, id));
+		if (rowEffect.getErrorNumber() == 0) {
+//			System.out.println();
 			return Messenger.getMessenger().success();
 		} else {
 			return Messenger.getMessenger().error();

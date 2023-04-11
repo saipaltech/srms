@@ -82,9 +82,25 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       srch_term: new FormControl('')})
 }
 
-openModal(template: TemplateRef<any>, id:any) {
+openModal(template: TemplateRef<any>, id:any,cstatus:any) {
   this.modalRef = this.modalService.show(template);
   this.getDetails(id);
+  if(cstatus==0){
+    this.hideApproveButton= true;
+  }else{
+    this.hideApproveButton= false;
+  }
+
+}
+
+clearCheque(id:any){
+  this.bvs.clearCheque(id).subscribe({next:(dt)=>{
+    this.getList();
+    this.toastr.success("Cheque Cleared Successfully","Success")
+    this.modalRef?.hide();
+  },error:err=>{
+    this.toastr.error("Unable to Fetch Data","Error")
+  }});
 }
 
 details : any;
