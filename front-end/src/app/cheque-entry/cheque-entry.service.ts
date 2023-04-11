@@ -76,4 +76,8 @@ remove(id: string) {
   return this.http.delete(this.url + '/' + id);
 
 }
+
+clearCheque(id:any){
+  return this.http.get(this.url+'/chequeclear?id=' + id);
+}
 }

@@ -101,6 +101,11 @@ public class TaxPayerVoucherController {
 		return objService.getBankAccounts();
 	}
 	
+	@GetMapping("chequeclear")
+	public ResponseEntity<Map<String, Object>> chequeclear() {
+		return objService.chequeclear();
+	}
+	
 	@GetMapping("get-revenue-list")
 	public ResponseEntity<String> getRevenue() {
 		return objService.getRevenue();
