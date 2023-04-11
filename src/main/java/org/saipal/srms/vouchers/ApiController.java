@@ -2,8 +2,6 @@ package org.saipal.srms.vouchers;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.util.Messenger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,7 @@ public class ApiController {
 	 * if they are already not pushed to the Sutra
 	 * */
 	@GetMapping("get-voucherbyno")
-	public ResponseEntity<String> getVoucher(HttpServletRequest request) {
+	public ResponseEntity<String> getVoucher() {
 		if(auth.canSystemApi()) {
 			return  tp.getVoucherDetailsByVoucherNo();
 		}
@@ -43,7 +41,7 @@ public class ApiController {
 	 * using the payment reference number
 	 * */
 	@GetMapping("get-deposit-status")
-	public ResponseEntity<Map<String, Object>> getVoucherStatus(HttpServletRequest request) {
+	public ResponseEntity<Map<String, Object>> getVoucherStatus() {
 		if(auth.canSystemApi()) {
 			return  bv.getVoucherStatus();
 		}

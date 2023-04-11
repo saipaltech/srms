@@ -252,7 +252,7 @@ public class TaxPayerVoucherService extends AutoService {
 				for (Tuple tp : list) {
 					revs += tp.get(0) + ",";
 				}
-				revs.substring(0, revs.length() - 1);
+				revs=revs.substring(0,(revs.length()-1));
 			}
 			try {
 				JSONObject obj = api.sendDataToSutra(t, revs);
@@ -495,7 +495,7 @@ public class TaxPayerVoucherService extends AutoService {
 				for (Tuple tp : list) {
 					revs += tp.get(0) + ",";
 				}
-				revs.substring(0, revs.length() - 1);
+				revs = revs.substring(0, (revs.length()-1));
 			}
 			try {
 				JSONObject data = new JSONObject();
