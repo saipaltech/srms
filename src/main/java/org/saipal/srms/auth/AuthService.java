@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.Tuple;
 
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.parser.RequestParser;
 import org.saipal.srms.sms.F1SoftSmsGateway;
 import org.saipal.srms.util.DB;
@@ -135,5 +133,22 @@ public class AuthService {
 			}
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
+	}
+
+	public ResponseEntity<Map<String, Object>> apiLogin() {
+		String username = doc.getElementById("username").value;
+		String password = doc.getElementById("password").value;
+		String sql = "select u.id,username,password,u.name from users u where username=?";
+		Tuple t = db.getSingleResult(sql,Arrays.asList(username));
+		if(t!=null) {
+			if(pwdEncoder.matches(password, t.get("password")+"")) {
+				String token = jwtHelper.createTokenApi(t.get("id")+"");
+				Map<String,String> data = new HashMap<>();
+				data.put("token", token);
+				data.put("name", t.get("name")+"");
+				return Messenger.getMessenger().setData(data).success();
+			}
+		}
+		return Messenger.getMessenger().setMessage("Invalid username or password, Please try again.").error();
 	}
 }

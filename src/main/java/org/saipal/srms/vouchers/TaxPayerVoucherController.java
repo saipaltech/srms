@@ -121,7 +121,7 @@ public class TaxPayerVoucherController {
 		return objService.getPanDetails();
 	}
 	@GetMapping("get-specific/{id}")
-	public ResponseEntity<List<Map<String, Object>>> getSpecific(HttpServletRequest request, @PathVariable String id){
+	public ResponseEntity<Map<String, Object>> getSpecific(HttpServletRequest request, @PathVariable String id){
 		return objService.getSpecific(id);
 	}
 	

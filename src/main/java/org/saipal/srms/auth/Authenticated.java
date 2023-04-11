@@ -97,4 +97,16 @@ public class Authenticated {
 		}
 		return false;
 	}
+	
+	public boolean canSystemApi() {
+		String sql = "select permid from users where id=?";
+		Tuple t = db.getSingleResult(sql,Arrays.asList(getUserId()));
+		if(t!=null) {
+			if((t.get(0)+"").equals("5")) {
+				return true;
+			}
+		}
+		return false;
+		
+	}
 }

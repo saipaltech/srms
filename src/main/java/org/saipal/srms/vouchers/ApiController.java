@@ -1,10 +1,10 @@
 package org.saipal.srms.vouchers;
 
-import java.net.http.HttpRequest;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.util.Messenger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,8 @@ public class ApiController {
 	@Autowired
 	BankVoucherService bv;
 	
-	public String commKey="3543546841354sdfadfadf145a4df1dfas";
+	@Autowired
+	Authenticated auth;
 	
 	/*
 	 * To Be Called by SuTRA application, to get the voucher details 
@@ -31,8 +32,7 @@ public class ApiController {
 	 * */
 	@GetMapping("get-voucherbyno")
 	public ResponseEntity<String> getVoucher(HttpServletRequest request) {
-		String hv = request.getHeader("X-SECRET-KEY")!=null?request.getHeader("X-SECRET-KEY"):"";
-		if(hv.equals(commKey)) {
+		if(auth.canSystemApi()) {
 			return  tp.getVoucherDetailsByVoucherNo();
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"Invalid Request\"}");
@@ -44,8 +44,7 @@ public class ApiController {
 	 * */
 	@GetMapping("get-deposit-status")
 	public ResponseEntity<Map<String, Object>> getVoucherStatus(HttpServletRequest request) {
-		String hv = request.getHeader("X-SECRET-KEY")!=null?request.getHeader("X-SECRET-KEY"):"";
-		if(hv.equals(commKey)) {
+		if(auth.canSystemApi()) {
 			return  bv.getVoucherStatus();
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
