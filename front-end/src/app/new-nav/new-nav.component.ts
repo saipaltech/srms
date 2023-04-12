@@ -41,6 +41,7 @@ export class NewNavComponent implements OnInit{
     elem.classList.add('active');
     
   }
+  
 
   logout(){
     if (confirm("Are you sure you want to logout?")){

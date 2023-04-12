@@ -229,7 +229,7 @@ getBankAccounts(){
   
 
 voucherBankFormSubmit(){
- 
+  this.voucherBankForm.patchValue({amount:this.totalAmt});
   if (this.voucherBankForm.valid) {
     const llgCode = this.voucherBankForm.value['lgid'];
     if(llgCode!=this.dlgid){

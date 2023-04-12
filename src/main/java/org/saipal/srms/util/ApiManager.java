@@ -210,6 +210,11 @@ public class ApiManager {
 					.setParam("approved",tpv.get("approved")+"")
 					.setParam("approverid",tpv.get("approverid")+"")
 					.setParam("updatedon",tpv.get("updatedon")+"")
+					.setParam("chequebank",tpv.get("chequebank")+"")
+					.setParam("chequeamount",tpv.get("chequeamount")+"")
+					.setParam("chequeno",tpv.get("chequeno")+"")
+					.setParam("cstatus",tpv.get("cstatus")+"")
+					.setParam("ttype",tpv.get("ttype")+"")
 					.setParam("revenue",revs)
 					.post(url + "/srms/taxpayer-voucher");
 			if (response.getInt("status_code") == 200) {

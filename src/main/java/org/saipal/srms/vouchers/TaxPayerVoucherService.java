@@ -64,11 +64,14 @@ public class TaxPayerVoucherService extends AutoService {
 				sort = request("sortKey") + " " + request("sortDir");
 			}
 		}
+		if(sort.isBlank()) {
+			sort="date desc";
+		}
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
 				.select("cast(id as char) as id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount")
-				.sqlBody("from " + table + condition).paginate();
+				.sqlBody("from " + table + condition ).paginate();
 //		System.out.println(result);
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -98,6 +101,9 @@ public class TaxPayerVoucherService extends AutoService {
 			if (!request("sortDir").isBlank()) {
 				sort = request("sortKey") + " " + request("sortDir");
 			}
+		}
+		if(sort.isBlank()) {
+			sort="date desc";
 		}
 
 		Paginator p = new Paginator();
@@ -215,22 +221,52 @@ public class TaxPayerVoucherService extends AutoService {
 	
 
 	public ResponseEntity<Map<String, Object>> chequeclear() {
-		if (!auth.hasPermission("bankuser")) {
-			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
-		}
 		String id=request("id");
-		DbResponse rowEffect;
-		
-		String sql = "UPDATE " + table
-				+ " set cstatus=? where id=?";
-		rowEffect = db.execute(sql,
-				Arrays.asList(1, id));
-		if (rowEffect.getErrorNumber() == 0) {
-//			System.out.println();
-			return Messenger.getMessenger().success();
-		} else {
-			return Messenger.getMessenger().error();
+		Tuple c = db.getSingleResult("select id,amount,cstatus from "+table+" where id=?",Arrays.asList(id));
+		if((c.get("cstatus")+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
 		}
+//		Tuple u = db.getSingleResult("select id,amountlimit,permid from users where id=?",Arrays.asList(auth.getUserId()));
+//		if((u.get("permid")+"").equals("3")) {
+//			if(!(u.get("amountlimit")+"").equals("-1")) {
+//				if(Float.parseFloat(c.get("amount")+"")>Float.parseFloat(u.get("amountlimit")+"")) {
+//					return Messenger.getMessenger().setMessage("Amount Limit exceeds, Only upto Rs."+u.get("amountlimit")+" is allowed.").error();
+//				}
+//			}
+//		}
+		db.execute("update " + table + " set cstatus=1,updatedon=getdate(),approverid=? where id=?",
+				Arrays.asList(auth.getUserId(), id));
+		Tuple t = db.getSingleResult("select * from " + table + " where id=? and cstatus=1", Arrays.asList(id));
+		if (t != null) {
+			String revs = "";
+			List<Tuple> list = db.getResultList(
+					"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
+					Arrays.asList(id));
+			if (list.size() > 0) {
+				for (Tuple tp : list) {
+					revs += tp.get(0) + ",";
+				}
+				revs=revs.substring(0,(revs.length()-1));
+			}
+			try {
+				JSONObject obj = api.sendDataToSutra(t, revs);
+				if (obj != null) {
+					if (obj.getInt("status") == 1) {
+						db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
+					}
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return Messenger.getMessenger().setMessage("Cheque cleared.").success();
+		}
+		return Messenger.getMessenger().setMessage("Invalid Request").error();
+		
+		
+		
+		
 
 	}
 
