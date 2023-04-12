@@ -172,7 +172,7 @@ public class UsersService extends AutoService {
 		String permid = request("permid")+"";
 		String sqls="";
 		DbResponse rowEffects;
-		db.execute("delete from users_perms where userid=?",Arrays.asList(id));
+		db.execute("delete from users_perms where userid=? and permid<>2",Arrays.asList(id));
 		if(permid.equals("4")) {
 			sqls= "insert into users_perms (userid,permid) values (?,?),(?,3)";
 			rowEffects = db.execute(sqls,  Arrays.asList(model.id, permid,model.id));
