@@ -29,7 +29,7 @@ export class VerifyVoucherComponent {
   column: string = '';
   isDesc: boolean = false;
   srchForm!: FormGroup;
-  
+  srchFormList!:FormGroup;
   bankForm!: FormGroup;
   formLayout: any;
   myDate: any = new Date();
@@ -50,10 +50,25 @@ export class VerifyVoucherComponent {
     this.srchForm = this.fb.group({
       entries: ['10'],
       srch_term: ['',[Validators.required,Validators.pattern('[0-9]+')]]})
+
+      this.srchFormList = this.fb.group({
+        entries: ['10'],
+        srch_term: ['']})
   }
+
+  
+
+  
+
 
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
+    this.getList();
+  }
+
+  searchList() {
+    this.pagination.perPage=this.srchFormList.value.entries;
+    this.searchTerm=this.srchFormList.value.srch_term;
     this.getList();
   }
 

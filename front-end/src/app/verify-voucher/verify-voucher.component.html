@@ -192,6 +192,26 @@
     </form>
 
     <div class="tab" *ngIf="showList">
+      <form class="form-srch" [formGroup]="srchFormList">
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search.."
+            id="srch_term"
+            name="srch_term"
+            formControlName="srch_term"
+            (keyup.enter)="searchList()"
+          />
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            (click)="searchList()"
+          >
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
       <table class="table datatable" style="word-wrap: anywhere;">
         <!--table-borderless-->
         <thead>

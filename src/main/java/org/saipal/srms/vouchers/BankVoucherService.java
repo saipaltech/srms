@@ -36,7 +36,7 @@ public class BankVoucherService extends AutoService {
 		}
 		String condition = " where id!=1 ";
 		if (!request("searchTerm").isEmpty()) {
-			List<String> searchbles = TaxPayerVoucher.searchables();
+			List<String> searchbles = BankVoucher.searchables();
 			condition += "and (";
 			for (String field : searchbles) {
 				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";

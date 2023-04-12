@@ -39,7 +39,7 @@ public class BankVoucher {
 	}
 
 	public static List<String> searchables() {
-		return Arrays.asList("transactionid");
+		return Arrays.asList("transactionid","officename","accountnumber","taxpayername");
 	}
 
 	public static Map<String, String> rules() {
