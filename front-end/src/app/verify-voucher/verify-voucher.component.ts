@@ -47,9 +47,9 @@ export class VerifyVoucherComponent {
     }
     this.bankForm =fb.group(this.formLayout)
     
-    this.srchForm = new FormGroup({
-      entries: new FormControl('10'),
-      srch_term: new FormControl('')})
+    this.srchForm = this.fb.group({
+      entries: ['10'],
+      srch_term: ['',[Validators.required,Validators.pattern('[0-9]+')]]})
   }
 
   ngOnInit(): void {
@@ -112,6 +112,7 @@ resetForm(){
 transDetails:any;
 istab=1;
 search() {
+  if(this.srchForm.valid){
   this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({next:(dt)=>{
     this.transDetails = dt.data;
     if(this.transDetails.trantype==1){
@@ -122,8 +123,9 @@ search() {
   },error:error=>{
     // console.log(error);
     // alert(5)
-    this.toastr.error(error.error.error);
+    this.toastr.error(error.error.message,"Error");
   }});
+}
 }
 
 resetFilters() {

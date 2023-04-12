@@ -98,7 +98,7 @@
             </div>
 
             <div class="col-6">
-              <label class="form-label">Limit</label>
+              <label class="form-label">Amount Limit</label>
               <div class="input-group has-validation">
                 <input formControlName="amountlimit" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['amountlimit'])" />
@@ -158,7 +158,7 @@
               </button>
             </div>
           </form>
-          <table class="table datatable">
+          <table class="table datatable" style="word-wrap: anywhere;">
             <thead>
               <tr>
                 <th scope="col">Name</th>
@@ -180,7 +180,7 @@
                   &nbsp;&nbsp;&nbsp;
                   <a (click)="deleteItem(item.id)"><i class="bi bi-trash3 text-danger" style="cursor: pointer"></i>
                   </a>
-                  <a href="javascript:void(0)" (click)="openModal(template)"> <i class="bi bi-key text-info"
+                  <a href="javascript:void(0)" (click)="openModal(template, item.id)"> <i class="bi bi-key text-info"
                       style="cursor:pointer;"></i></a>
                   <!-- <app-user-limit [userid]="item.id"></app-user-limit> -->
                   <!-- <app-user-change-password [userid]=item.id></app-user-change-password> -->
@@ -224,43 +224,44 @@
 
 <ng-template #template>
   <div class="modal-header">
-    <h4 class="modal-title pull-left">Change Password</h4>
+    <h4 class="modal-title pull-left">Reset Password</h4>
     <button type="button" class="btn-close close pull-right" (click)="modalRef?.hide()">
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-
-
-    <div class="row g-3">
-      <input type="hidden" formControlName="userid">
-      <div class="col-6">
-        <label class="form-label req">Password</label>
-        <div class="input-group has-validation">
-          <input formControlName="password" type="password" class="form-control form-control-sm" />
-          <div>
+    <form [formGroup]="resetPawsswordForm" (ngSubmit)="resetPawsswordFormSubmit()">
+      <div class="row g-3">
+        <input type="hidden" formControlName="password">
+        <div class="col-6">
+          <label class="form-label req">Password</label>
+          <div class="input-group has-validation">
+            <input formControlName="password" type="password" class="form-control form-control-sm" />
+            <div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="col-6">
+          <label class="form-label req">Confirm Password</label>
+          <div class="input-group has-validation">
+            <input formControlName="cpassword" type="password" class="form-control form-control-sm" />
+            <div>
+            </div>
           </div>
         </div>
       </div>
-
-      <div class="col-6">
-        <label class="form-label req">Confirm Password</label>
-        <div class="input-group has-validation">
-          <input formControlName="password" type="password" class="form-control form-control-sm" />
-          <div>
-          </div>
+  
+      <br />
+      <div class="row">
+        <div class="col-md-12">
+          <button class="btn btn-success btn-sm" type="submit">Submit</button>
+          &nbsp;
+          &nbsp;
+          <button class="btn btn-danger btn-sm" type="reset" (click)="resetpwdForm()">Clear</button>
         </div>
       </div>
-    </div>
-
-    <br />
-    <div class="row">
-      <div class="col-md-12">
-        <button class="btn btn-success btn-sm" type="submit">Submit</button>
-        &nbsp;
-        &nbsp;
-        <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
-      </div>
-    </div>
+    </form>    
+ 
   </div>
 </ng-template>

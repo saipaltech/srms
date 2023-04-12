@@ -107,14 +107,23 @@ changeFields() {
 }
 
 approveVoucher(id:string){
-  this.bvs.approveVoucher(id).subscribe({next:(d)=>{
-    this.toastr.success(d.message,"Success");
-    this.getList();
-    this.modalRef?.hide();
-  },error:err=>{
-    this.toastr.error(err.error.message,"Error")
-  }
-  });
+
+  if (confirm("Are you sure you want to Approve this item?")) {
+    // user clicked Yes
+    this.bvs.approveVoucher(id).subscribe({next:(d)=>{
+      this.toastr.success(d.message,"Success");
+      this.getList();
+      this.modalRef?.hide();
+    },error:err=>{
+      this.toastr.error(err.error.message,"Error")
+    }
+    });
+} else {
+
+}
+
+
+
 }
 
 ngOnInit(): void {

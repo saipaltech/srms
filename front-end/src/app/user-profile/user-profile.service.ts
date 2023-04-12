@@ -17,7 +17,7 @@ export class UserProfileService {
   }
 
 getDetails(username: string) {
-  return this.http.get(this.url + '/get-user-details' + "?username="+username);
+  return this.http.get(this.url + '/get-user-details');
 
 }
 

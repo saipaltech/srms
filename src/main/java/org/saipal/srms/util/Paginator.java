@@ -95,7 +95,7 @@ public class Paginator {
 		int offset = ((pageNo - 1) * perPage);
 		paginateSql = "select " + selections + " " + body;
 		if (!orderField.isBlank()) {
-			paginateSql += " order by " + orderField + " " + (orderDir.isBlank()?"asc":orderDir);
+			paginateSql += " order by " + orderField ;
 		}else {
 			paginateSql += " order by (select null) ";
 		}

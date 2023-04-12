@@ -24,10 +24,11 @@
         
 
     <form class="form-srch" [formGroup]="srchForm" *ngIf="showForm">
-      <div class="input-group mb-3">
+      <div class="input-group mb-3 has-validation">
         <input
           type="text"
           class="form-control"
+          [ngClass]="vs.getControlClass(srchForm.controls['srch_term'])"
           placeholder="कारोबार संकेत नंबर"
           id="srch_term"
           name="srch_term"
@@ -51,7 +52,7 @@
     >
 
             
-            <table class="table table-striped table-bordered">
+            <table class="table table-striped table-bordered" style="word-wrap: anywhere;">
 
               <tbody>
                 <tr>
@@ -191,7 +192,7 @@
     </form>
 
     <div class="tab" *ngIf="showList">
-      <table class="table datatable">
+      <table class="table datatable" style="word-wrap: anywhere;">
         <!--table-borderless-->
         <thead>
           <tr>
