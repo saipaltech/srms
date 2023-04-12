@@ -63,7 +63,7 @@ export class UsersComponent implements OnInit {
       cpassword: []
     }
 
-    this.resetPawsswordFormLayout = fb.group(this.resetPawsswordFormLayout);
+    this.resetPawsswordForm = fb.group(this.resetPawsswordFormLayout);
     this.bankForm = fb.group(this.formLayout);
 
     this.srchForm = new FormGroup({
@@ -73,10 +73,11 @@ export class UsersComponent implements OnInit {
   }
 
   resetPawsswordFormSubmit() {
-    alert('here')
+    // alert('here')
     if (this.resetPawsswordForm.valid) {
       this.model = this.resetPawsswordForm.value;
-      this.createItem(this.currentUserId);
+      // this.resetPawsswordForm.patchValue({id, resetItem: this.createResetItem});
+      this.createResetItem(this.currentUserId);
     } else {
       Object.keys(this.resetPawsswordForm.controls).forEach(field => {
         const singleFormControl = this.resetPawsswordForm.get(field);
@@ -89,12 +90,13 @@ export class UsersComponent implements OnInit {
   createResetItem(id:any) {
     let upd = this.model;
     if (id != "" && id != null) {
+      // this.resetPawsswordForm.setValue({id: this.createResetItem,});
+      alert('here')
       this.RS.resetPassword(id, upd).subscribe({
         next: (result: any) => {
-          this.toastr.success('Item Successfully Updated!', 'Success');
-          this.bankForm = this.fb.group(this.formLayout);
-          this.enableAllForms();
-          this.getList();
+          this.toastr.success(result.message, 'Success');
+          this.resetPawsswordForm = this.fb.group(this.resetPawsswordFormLayout);  
+          this.modalRef?.hide();   
         }, error: err => {
           this.toastr.error(err.error.message, 'Error');
         }
@@ -106,7 +108,7 @@ export class UsersComponent implements OnInit {
   }
 
   resetpwdForm() {
-    this.resetPawsswordFormLayout = this.fb.group(this.resetPawsswordFormLayout);
+    this.resetPawsswordForm = this.fb.group(this.resetPawsswordFormLayout);
   }
 
   currentUserId: any;

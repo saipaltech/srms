@@ -21,4 +21,8 @@ getDetails(username: string) {
 
 }
 
+changePassword(data:any){
+  return this.http.post(this.url+'/change-password', data);
+}
+
 }

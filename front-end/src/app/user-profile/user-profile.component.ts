@@ -24,8 +24,8 @@ export class UserProfileComponent implements OnInit {
       {
         oldpassword: ['', Validators.required],
         password: ['', Validators.required],
-        confirmpassword: ['', Validators.required]
-      }
+        cpassword: ['', Validators.required]
+      }   
 
       this.passwordForm =fb.group(this.formlayout);
 
@@ -58,12 +58,22 @@ export class UserProfileComponent implements OnInit {
   passwordFormSubmit(){
     if (this.passwordForm.valid){
       this.model = this.passwordForm.value;
-      this.createItem(6); //add id here
+      this.RS.changePassword(this.model).subscribe({next:(d)=>{
+        this.toastr.success(d.message,"Success");
+        this.passwordForm = this.fb.group(this.formlayout);
+      }, error: error=>{
+        this.toastr.error(error.error.message,"Error");
+      }
+    })
+    }
+    else {
+      Object.keys(this.passwordForm.controls).forEach(field => {
+        const singleFormControl = this.passwordForm.get(field);
+        singleFormControl?.markAsTouched({ onlySelf: true });
+      });
     }
   }
 
-  createItem(id: any){
 
-  }
 
 }

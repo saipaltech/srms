@@ -230,7 +230,7 @@
     </button>
   </div>
   <div class="modal-body">
-    <form [formGroup]="resetPawsswordForm" (ngSubmit)="resetPawsswordFormSubmit()">
+    <form class="needs-validation" [formGroup]="resetPawsswordForm" (ngSubmit)="resetPawsswordFormSubmit()">
       <div class="row g-3">
         <input type="hidden" formControlName="password">
         <div class="col-6">

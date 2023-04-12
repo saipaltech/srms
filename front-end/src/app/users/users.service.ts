@@ -15,7 +15,7 @@ export class UsersService {
   }
 
   resetPassword(id:any, data:any){
-    return this.http.put(this.url + '/reset-password', data)
+    return this.http.post(this.url + '/reset-password/'+id, data);
   }
 
   createUser(data: any) {

@@ -91,6 +91,17 @@ public class UsersController {
 	public ResponseEntity<List<Map<String, Object>>> frontMenu() {
 		return objService.frontMenu();
 	}
+	
+	@PostMapping("reset-password/{id}")
+	public ResponseEntity<Map<String, Object>> resetPassword(HttpServletRequest request, @PathVariable String id) {
+		return objService.resetPassword(id);
 
+	}
+	
+	@PostMapping("change-password")
+	public ResponseEntity<Map<String, Object>> changePassword(HttpServletRequest request) {
+		
+			return objService.changePassword();
+	}
 
 }
