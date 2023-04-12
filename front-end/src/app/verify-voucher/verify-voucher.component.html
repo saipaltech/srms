@@ -24,10 +24,11 @@
         
 
     <form class="form-srch" [formGroup]="srchForm" *ngIf="showForm">
-      <div class="input-group mb-3">
+      <div class="input-group mb-3 has-validation">
         <input
           type="text"
           class="form-control"
+          [ngClass]="vs.getControlClass(srchForm.controls['srch_term'])"
           placeholder="कारोबार संकेत नंबर"
           id="srch_term"
           name="srch_term"
@@ -191,6 +192,26 @@
     </form>
 
     <div class="tab" *ngIf="showList">
+      <form class="form-srch" [formGroup]="srchFormList">
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search.."
+            id="srch_term"
+            name="srch_term"
+            formControlName="srch_term"
+            (keyup.enter)="searchList()"
+          />
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            (click)="searchList()"
+          >
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
       <table class="table datatable" style="word-wrap: anywhere;">
         <!--table-borderless-->
         <thead>

@@ -575,6 +575,11 @@ public class TaxPayerVoucherService extends AutoService {
 				data.put("approved",t.get("approved")+"");
 				data.put("approverid",t.get("approverid")+"");
 				data.put("updatedon",t.get("updatedon")+"");
+				data.put("chequebank",t.get("chequebank")+"");
+				data.put("chequeamount",t.get("chequeamount")+"");
+				data.put("chequeno",t.get("chequeno")+"");
+				data.put("cstatus",t.get("cstatus")+"");
+				data.put("ttype",t.get("ttype")+"");
 				data.put("revenue",revs);
 				JSONObject j = new JSONObject();
 				j.put("status", 1);

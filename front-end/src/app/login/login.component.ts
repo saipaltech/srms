@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -71,7 +71,7 @@ export class LoginComponent {
     <form class="row g-3 needs-validation" [formGroup]="otpForm" (ngSubmit)="submitOtp()" novalidate>
 	<div class="mb-4">
 		<label for="otp" class="form-label">Enter the authentication code sent to your registered mobile</label>
-        <input autocomplete="off" type="text" class="form-control form-control-sm" id="otp" formControlName="otp" [ngClass]="vs.getControlClass(otpForm.controls['otp'])">
+        <input #otpInput autocomplete="off" type="text" class="form-control form-control-sm" id="otp" formControlName="otp" [ngClass]="vs.getControlClass(otpForm.controls['otp'])">
         <div [ngClass]="vs.getMessageClass(otpForm.controls['otp'])">
             {{ vs.getMessage(otpForm.controls["otp"]) }}
         </div>
@@ -86,6 +86,7 @@ export class LoginComponent {
 })
  
 export class TwoFaModalComponent implements OnInit {
+  @ViewChild("otpInput") otpField?: ElementRef;
   reqid?: string;
   userid?: string;
   otpForm:FormGroup;
@@ -123,6 +124,9 @@ export class TwoFaModalComponent implements OnInit {
  
   ngOnInit() {
     this.timer(2);
+    setTimeout(()=>{
+      this.otpField?.nativeElement.focus();
+    });
   }
   timer(minute:number) {
     // let minute = 1;

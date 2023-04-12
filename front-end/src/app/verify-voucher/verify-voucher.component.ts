@@ -29,7 +29,7 @@ export class VerifyVoucherComponent {
   column: string = '';
   isDesc: boolean = false;
   srchForm!: FormGroup;
-  
+  srchFormList!:FormGroup;
   bankForm!: FormGroup;
   formLayout: any;
   myDate: any = new Date();
@@ -47,13 +47,28 @@ export class VerifyVoucherComponent {
     }
     this.bankForm =fb.group(this.formLayout)
     
-    this.srchForm = new FormGroup({
-      entries: new FormControl('10'),
-      srch_term: new FormControl('')})
+    this.srchForm = this.fb.group({
+      entries: ['10'],
+      srch_term: ['',[Validators.required,Validators.pattern('[0-9]+')]]})
+
+      this.srchFormList = this.fb.group({
+        entries: ['10'],
+        srch_term: ['']})
   }
+
+  
+
+  
+
 
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
+    this.getList();
+  }
+
+  searchList() {
+    this.pagination.perPage=this.srchFormList.value.entries;
+    this.searchTerm=this.srchFormList.value.srch_term;
     this.getList();
   }
 
@@ -112,6 +127,7 @@ resetForm(){
 transDetails:any;
 istab=1;
 search() {
+  if(this.srchForm.valid){
   this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({next:(dt)=>{
     this.transDetails = dt.data;
     if(this.transDetails.trantype==1){
@@ -122,8 +138,9 @@ search() {
   },error:error=>{
     // console.log(error);
     // alert(5)
-    this.toastr.error(error.error.error);
+    this.toastr.error(error.error.message,"Error");
   }});
+}
 }
 
 resetFilters() {
