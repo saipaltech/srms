@@ -69,7 +69,7 @@ public class BranchService extends AutoService {
 		Branch model = new Branch();
 		model.loadData(document);
 		sql = "INSERT INTO branches(name, bankid,code,dlgid, disabled, approved) VALUES (?,?,?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.bankid, model.code,model.dlgid,model.disabled, model.approved));
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.bankid, model.code,model.dlgid.isBlank()? 0 : model.dlgid,model.disabled, model.approved));
 
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();

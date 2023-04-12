@@ -12,7 +12,10 @@ export class UsersService {
   create(data: any) {
     // console.log(data);
     return this.http.post(this.url, data);
+  }
 
+  resetPassword(id:any, data:any){
+    return this.http.put(this.url + '/reset-password', data)
   }
 
   createUser(data: any) {

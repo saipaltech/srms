@@ -34,6 +34,10 @@
                     <th scope="row">Post</th>
                     <td colspan="2">{{userDetails[0].post}}</td>
                   </tr>
+                  <tr>
+                    <th scope="row">Amount Limit</th>
+                    <td>{{userDetails[0].amountlimit === -1 ? 'Unlimited' : userDetails[0].amountlimit === 0? 'Limit Not Set' : userDetails[0].amountlimit}}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>

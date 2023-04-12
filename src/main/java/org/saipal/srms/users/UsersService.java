@@ -203,7 +203,7 @@ public class UsersService extends AutoService {
 	}
 	
 	public ResponseEntity<List<Map<String, Object>>> getUserList(){
-		String sql = "Select name, username, post, mobile from users where id="+ auth.getUserId();
+		String sql = "Select name, username, post, mobile, amountlimit from users where id="+ auth.getUserId();
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
 
