@@ -43,8 +43,10 @@ export class NewNavComponent implements OnInit{
   }
 
   logout(){
+    if (confirm("Are you sure you want to logout?")){
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
   }
 
   closeSideBar(){

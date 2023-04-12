@@ -40,7 +40,7 @@ public class Branch {
 		Map<String, String> rules = new HashMap<>();
 		rules.put("name", "required");
 		rules.put("bankid", "required");
-		rules.put("dlgid", "required");
+//		rules.put("dlgid", "required");
 		rules.put("approved", "required");
 		rules.put("disabled", "required");
 		return rules;

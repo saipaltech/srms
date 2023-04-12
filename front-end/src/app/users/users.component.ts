@@ -32,10 +32,14 @@ export class UsersComponent implements OnInit {
   srchForm!: FormGroup;
 
   bankForm!: FormGroup;
+
   formLayout: any;
   branches: any;
 
   modalRef?: BsModalRef;
+
+  resetPawsswordForm!: FormGroup;
+  resetPawsswordFormLayout: any;
 
   constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService, private bs: BranchService, private modalService: BsModalService) {
     this.formLayout = {
@@ -53,7 +57,14 @@ export class UsersComponent implements OnInit {
 
     }
 
-    this.bankForm = fb.group(this.formLayout)
+    this.resetPawsswordFormLayout = {
+      id: [],
+      password: [],
+      cpassword: []
+    }
+
+    this.resetPawsswordFormLayout = fb.group(this.resetPawsswordFormLayout);
+    this.bankForm = fb.group(this.formLayout);
 
     this.srchForm = new FormGroup({
       entries: new FormControl('10'),
@@ -61,8 +72,47 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  openModal(template: TemplateRef<any>) {
-    this.modalRef = this.modalService.show(template);
+  resetPawsswordFormSubmit() {
+    alert('here')
+    if (this.resetPawsswordForm.valid) {
+      this.model = this.resetPawsswordForm.value;
+      this.createItem(this.currentUserId);
+    } else {
+      Object.keys(this.resetPawsswordForm.controls).forEach(field => {
+        const singleFormControl = this.resetPawsswordForm.get(field);
+        singleFormControl?.markAsTouched({ onlySelf: true });
+      });
+    }
+
+  }
+
+  createResetItem(id:any) {
+    let upd = this.model;
+    if (id != "" && id != null) {
+      this.RS.resetPassword(id, upd).subscribe({
+        next: (result: any) => {
+          this.toastr.success('Item Successfully Updated!', 'Success');
+          this.bankForm = this.fb.group(this.formLayout);
+          this.enableAllForms();
+          this.getList();
+        }, error: err => {
+          this.toastr.error(err.error.message, 'Error');
+        }
+      });
+    } else {
+      this.toastr.error("ID Not Available", "Error")
+    }
+
+  }
+
+  resetpwdForm() {
+    this.resetPawsswordFormLayout = this.fb.group(this.resetPawsswordFormLayout);
+  }
+
+  currentUserId: any;
+
+  openModal(template: TemplateRef<any>, id: any) {
+    this.modalRef = this.modalService.show(template); this.currentUserId = id;
   }
 
   ngOnInit(): void {
@@ -183,11 +233,11 @@ export class UsersComponent implements OnInit {
   }
 
 
-  @ViewChild('password') password!:any;
+  @ViewChild('password') password!: any;
   fieldreq = true;
-  pwdShowHide=true
+  pwdShowHide = true
 
-  changeFieldsForEdit(){   
+  changeFieldsForEdit() {
     // this.isReadOnly = true;
     // this.disabledField = true;
 
@@ -197,16 +247,16 @@ export class UsersComponent implements OnInit {
     pwd?.clearValidators();
     pwd?.patchValue("");
 
-    this.pwdShowHide=false;
+    this.pwdShowHide = false;
     this.fieldreq = false;
 
   }
 
-  enableAllForms(){
+  enableAllForms() {
     this.bankForm.get('username')?.enable();
     this.bankForm.get('password')?.enable();
     this.fieldreq = true;
-    this.pwdShowHide=true;
+    this.pwdShowHide = true;
 
   }
 

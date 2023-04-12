@@ -40,7 +40,7 @@ export class BranchComponent {
       id:[''],
       bankid: ['',Validators.required],
       name: ['',Validators.required],
-      dlgid:['',Validators.required],
+      dlgid:[''],
       code: [''],
       disabled: ['0',Validators.required],
       approved: ['1',Validators.required],
