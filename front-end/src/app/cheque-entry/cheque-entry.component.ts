@@ -70,8 +70,8 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       accountno:['',Validators.required],
       revenuecode: [''],
       purpose: [''],
-      amount:[''],
-      chequeamount:['',Validators.required],
+      amount:['',Validators.pattern('[0-9]+')],
+      chequeamount:['',[Validators.required,,Validators.pattern('[0-9]+')]],
       chequeno:['',Validators.required],
       chequebank:['',Validators.required],
       ttype:['2']
@@ -94,6 +94,7 @@ openModal(template: TemplateRef<any>, id:any,cstatus:any) {
 }
 
 clearCheque(id:any){
+  if (window.confirm('Are sure you want to clear the cheque?')) {
   this.bvs.clearCheque(id).subscribe({next:(dt)=>{
     this.getList();
     this.toastr.success("Cheque Cleared Successfully","Success")
@@ -101,6 +102,7 @@ clearCheque(id:any){
   },error:err=>{
     this.toastr.error("Unable to Fetch Data","Error")
   }});
+}
 }
 
 details : any;
@@ -258,7 +260,12 @@ getBankAccounts(){
   
 
 voucherBankFormSubmit(){
- 
+  this.voucherBankForm.patchValue({amount:this.totalAmt});
+  const camt=this.voucherBankForm.value['chequeamount'];
+  if(camt!=this.totalAmt){
+    this.toastr.error('Cheque Amount and total amount should be equal.', 'Error');
+    return;
+  }
   if (this.voucherBankForm.valid) {
     const llgCode = this.voucherBankForm.value['lgid'];
     if(llgCode!=this.dlgid){

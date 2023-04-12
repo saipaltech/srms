@@ -41,6 +41,7 @@ export class NewNavComponent implements OnInit{
     elem.classList.add('active');
     
   }
+  
 
   logout(){
     this.authService.logout();
