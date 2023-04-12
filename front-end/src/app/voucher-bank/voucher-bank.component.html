@@ -352,7 +352,9 @@
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
-  <div class="modal-body" >
+  <div class="modal-body" *ngIf="details">
+
+  
     जम्मा गरेको मिति :  {{details.date}}
     <br>
     बैंक भौचर नंबर: {{details.voucherno}}
@@ -362,10 +364,10 @@
     संकलन केन्द्र: {{details.collectioncentername}}
     <br>
     खाता नंबर: {{details.accountno}}
-    <!-- <br>
-    राजस्व शिर्षक: {{d.revenuetitle}}
     <br>
-    रकम: {{d.amount}} -->
+    राजस्व शिर्षक: {{details.revenuetitle}}
+    <br>
+    रकम: {{details.amount}}
     <br>
     प्रयोजन: {{details.purpose}}
     <br>

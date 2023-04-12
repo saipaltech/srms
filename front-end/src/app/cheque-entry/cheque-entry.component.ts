@@ -108,6 +108,7 @@ details : any;
 getDetails(id:any){
   this.bvs.getDetails(id).subscribe({next:(dt)=>{
     this.details = dt;
+    console.log(this.details);
   },error:err=>{
     this.toastr.error("Unable to Fetch Data","Error")
   }});
@@ -225,6 +226,8 @@ getBankAccounts(){
       this.getBankAccounts();
     }});
     this.voucherBankForm.patchValue({'lgid':this.dlgid});
+    this.items=new Array();
+    this.istab=1;
   }
 
   getList(pageno?: number | undefined) {
@@ -339,7 +342,9 @@ addItem(){
   totalAmt=0;
   calctotal(){
     this.totalAmt=0;
+    // console.log(this.items.length);
     for(const item of this.items){
+      // console.log(item);
       this.totalAmt+=parseInt(item.amt);
    
     }
@@ -348,6 +353,11 @@ addItem(){
 
 removeItem(index:any) {
   this.calctotal();
+  this.items.splice(index, 1);
+}
+
+removeItems(index:any) {
+  // this.calctotal();
   this.items.splice(index, 1);
 }
 
@@ -372,9 +382,17 @@ createItem(id = null) {
         // alert('create')
       this.toastr.success('Item Successfully Saved!', 'Success');
       // this.r.navigate(['report'], { state: { data: upd } });
+      // for(var i=0;i<this.items.length;i++){
+      //   console.log(i);
+      //   this.removeItems(i);
+      // }
       this.resetForm();
       this.getList();
-      this.istab=1;
+    
+      
+
+      // this.istab=1;
+
       window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
     }, error:err => {
       this.toastr.error(err.error, 'Error');
