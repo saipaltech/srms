@@ -24,10 +24,11 @@
         
 
     <form class="form-srch" [formGroup]="srchForm" *ngIf="showForm">
-      <div class="input-group mb-3">
+      <div class="input-group mb-3 has-validation">
         <input
           type="text"
           class="form-control"
+          [ngClass]="vs.getControlClass(srchForm.controls['srch_term'])"
           placeholder="कारोबार संकेत नंबर"
           id="srch_term"
           name="srch_term"
