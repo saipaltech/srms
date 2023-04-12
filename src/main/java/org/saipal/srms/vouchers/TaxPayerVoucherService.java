@@ -125,7 +125,7 @@ public class TaxPayerVoucherService extends AutoService {
 				+ " group by bd.id,bd.date,bd.voucherno,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
 //		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql);
-		List<Map<String,Object>> revs = db.getResultListMap("select td.revenueid,cr.namenp,td.amount form taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",Arrays.asList(id));
+		List<Map<String,Object>> revs = db.getResultListMap("select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",Arrays.asList(id));
 		data.put("revs", revs);
 		return ResponseEntity.ok(data);
 	}

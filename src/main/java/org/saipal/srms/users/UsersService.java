@@ -174,11 +174,11 @@ public class UsersService extends AutoService {
 		DbResponse rowEffects;
 		db.execute("delete from users_perms where userid=?",Arrays.asList(id));
 		if(permid.equals("4")) {
-			sqls= "insert into users_perms (userid,permid) values ((select top 1 id from users where username=?),?),((select top 1 id from users where username=?),3)";
-			rowEffects = db.execute(sqls,  Arrays.asList(model.username, permid,model.username));
+			sqls= "insert into users_perms (userid,permid) values (?,?),(?,3)";
+			rowEffects = db.execute(sqls,  Arrays.asList(model.id, permid,model.id));
 		}else {
-			sqls = "insert into users_perms (userid,permid) values ((select top 1 id from users where username=?),?)";
-			rowEffects = db.execute(sqls,  Arrays.asList(model.username, permid));
+			sqls = "insert into users_perms (userid,permid) values (?,?)";
+			rowEffects = db.execute(sqls,  Arrays.asList(model.id, permid));
 		}
 		if (rowEffect.getErrorNumber() == 0 && rowEffects.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
