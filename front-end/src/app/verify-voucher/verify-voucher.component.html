@@ -9,10 +9,10 @@
           </div>
           <div class="col-md-4 text-end listdiv">
             <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
-              <i class="bi bi-list"></i>  List of Vouchers
+              <i class="bi bi-list"></i> List of Vouchers
             </button>
           </div>
-    
+
           <div class="col-md-4 text-end formdiv hide">
             <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
               <i class="bi bi-reply"></i> Back to Form
@@ -21,265 +21,201 @@
         </div>
       </div>
       <div class="card-body">
-        
 
-    <form class="form-srch" [formGroup]="srchForm" *ngIf="showForm">
-      <div class="input-group mb-3 has-validation">
-        <input
-          type="text"
-          class="form-control"
-          [ngClass]="vs.getControlClass(srchForm.controls['srch_term'])"
-          placeholder="कारोबार संकेत नंबर"
-          id="srch_term"
-          name="srch_term"
-          formControlName="srch_term"
-          (keyup.enter)="search()"
-        />
-        <button
-          class="btn btn-outline-secondary"
-          type="button"
-          (click)="search()"
-        >
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
-    </form>
-    <form
-      class="needs-validation"
-      [formGroup]="bankForm"
-      (ngSubmit)="bankFormSubmit()"
-      *ngIf = "transDetails && showForm"
-    >
 
-            
-            <table class="table table-striped table-bordered" style="word-wrap: anywhere;">
+        <form class="form-srch" [formGroup]="srchForm" *ngIf="showForm">
+          <div class="input-group mb-3 has-validation">
+            <input type="text" class="form-control" [ngClass]="vs.getControlClass(srchForm.controls['srch_term'])"
+              placeholder="कारोबार संकेत नंबर" id="srch_term" name="srch_term" formControlName="srch_term"
+              (keyup.enter)="search()" />
+            <button class="btn btn-outline-secondary" type="button" (click)="search()">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
+        <form class="needs-validation" [formGroup]="bankForm" (ngSubmit)="bankFormSubmit()"
+          *ngIf="transDetails && showForm">
 
-              <tbody>
-                <tr>
-                  <th scope="row">कारोबार संकेत नंबर</th>
-                  <td>{{ transDetails.transactionid }}</td>
-                </tr>
-                <tr>
-                  <th scope="row">कार्यालय</th>
-                  <td>{{ transDetails.officename }}</td>
-                </tr>
-   
-                <tr>
-                  <th scope="row">भौचर मिति</th>
-                  <td>{{ transDetails.voucherdate }}</td>
-                </tr>
-   
-                <tr>
-                  <th scope="row">खाता नाम</th>
-                  <td>{{transDetails.accountname}}</td>
-                </tr>
 
-                <tr>
-                  <th scope="row">खाता नंबर</th>
-                  <td>{{transDetails.accountnumber}}</td>
-                </tr>
+          <table class="table table-striped table-bordered" style="word-wrap: anywhere;">
 
-                 <tr>
-                  <th scope="row">रकम</th>
-                  <td>{{transDetails.amount}}</td>
-                </tr>
-                <tr *ngIf="istab==2">
-                  <th scope="row">करदाताको नाम</th>
-                  <td>{{transDetails.taxpayername}}</td>
-                </tr>
-                <tr *ngIf="istab==2">
-                  <th scope="row">करदाताको पान नंबर</th>
-                  <td>{{transDetails.vatpno}}</td>
-                </tr>
-                <tr *ngIf="istab==2">
-                  <th scope="row">करदाताको ठेगाना </th>
-                  <td>{{transDetails.address}}</td>
-                </tr>
+            <tbody>
+              <tr>
+                <th scope="row">कारोबार संकेत नंबर</th>
+                <td>{{ transDetails.transactionid }}</td>
+              </tr>
+              <tr>
+                <th scope="row">कार्यालय</th>
+                <td>{{ transDetails.officename }}</td>
+              </tr>
 
-   
+              <tr>
+                <th scope="row">भौचर मिति</th>
+                <td>{{ transDetails.voucherdate }}</td>
+              </tr>
 
-   
-              </tbody>
-            </table>
+              <tr>
+                <th scope="row">खाता नाम</th>
+                <td>{{transDetails.accountname}}</td>
+              </tr>
 
-            <div class="row g-3">
-                <input type="hidden" formControlName="id" />
-                <div class="col-6">
-                  <label class="form-label req">जम्मा गरेको मिति</label>
-                  <div class="input-group has-validation">
-                    <input
-                      formControlName="depositdate"
-                      type="text"
-                      readonly
-                      placeholder="{{ myDate | date : 'Date' }}"
-                      class="form-control form-control-sm"
-                      [ngClass]="
+              <tr>
+                <th scope="row">खाता नंबर</th>
+                <td>{{transDetails.accountnumber}}</td>
+              </tr>
+
+              <tr>
+                <th scope="row">रकम</th>
+                <td>{{transDetails.amount}}</td>
+              </tr>
+              <tr *ngIf="istab==2">
+                <th scope="row">करदाताको नाम</th>
+                <td>{{transDetails.taxpayername}}</td>
+              </tr>
+              <tr *ngIf="istab==2">
+                <th scope="row">करदाताको पान नंबर</th>
+                <td>{{transDetails.vatpno}}</td>
+              </tr>
+              <tr *ngIf="istab==2">
+                <th scope="row">करदाताको ठेगाना </th>
+                <td>{{transDetails.address}}</td>
+              </tr>
+
+
+
+
+            </tbody>
+          </table>
+
+          <div class="row g-3">
+            <input type="hidden" formControlName="id" />
+            <div class="col-6">
+              <label class="form-label req">जम्मा गरेको मिति</label>
+              <div class="input-group has-validation">
+                <input formControlName="depositdate" type="text" readonly placeholder="{{ myDate | date : 'Date' }}"
+                  class="form-control form-control-sm" [ngClass]="
                         vs.getControlClass(bankForm.controls['depositdate'])
-                      "
-                    />
-                    <div
-                      [ngClass]="
+                      " />
+                <div [ngClass]="
                         vs.getMessageClass(bankForm.controls['depositdate'])
-                      "
-                    >
-                      {{ vs.getMessage(bankForm.controls["depositdate"]) }}
-                    </div>
-                  </div>
+                      ">
+                  {{ vs.getMessage(bankForm.controls["depositdate"]) }}
                 </div>
-        
-                <div class="col-6">
-                  <label class="form-label">बैंक भौचर नंबर</label>
-                  <div class="input-group has-validation">
-                    <input
-                      formControlName="bankvoucherno"
-                      type="text"
-                      class="form-control form-control-sm"
-                      [ngClass]="vs.getControlClass(bankForm.controls['bankvoucherno'])"
-                    />
-                    <div [ngClass]="vs.getMessageClass(bankForm.controls['bankvoucherno'])">
-                      {{ vs.getMessage(bankForm.controls["bankvoucherno"]) }}
-                    </div>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <label class="form-label req">जम्मा गरेको रकम</label>
-                  <div class="input-group has-validation">
-                    <input
-                      formControlName="amount"
-                      type="text"
-                      class="form-control form-control-sm"
-                      [ngClass]="vs.getControlClass(bankForm.controls['amount'])"
-                    />
-                    <div [ngClass]="vs.getMessageClass(bankForm.controls['amount'])">
-                      {{ vs.getMessage(bankForm.controls["amount"]) }}
-                    </div>
-                  </div>
-                </div>
-        
-                <div class="col-6">
-                    <label class="form-label req">बिबरण</label>
-                    <div class="input-group has-validation">
-                      <input
-                        formControlName="remarks"
-                        type="text"
-                        class="form-control form-control-sm"
-                        [ngClass]="vs.getControlClass(bankForm.controls['remarks'])"
-                      />
-                      <div [ngClass]="vs.getMessageClass(bankForm.controls['remarks'])">
-                        {{ vs.getMessage(bankForm.controls["remarks"]) }}
-                      </div>
-                    </div>
-                  </div>
-        
-               
-        
-              </div>
-     
-      <br />
-      <div class="row">
-        <div class="col-md-12">
-          <button class="btn btn-success btn-sm" type="submit">Submit</button>
-          &nbsp; &nbsp;
-          <button
-            class="btn btn-danger btn-sm"
-            type="button"
-            (click)="resetForm()"
-          >
-            Clear
-          </button>
-        </div>
-      </div>
-    </form>
-
-    <div class="tab" *ngIf="showList">
-      <form class="form-srch" [formGroup]="srchFormList">
-        <div class="input-group mb-3">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Search.."
-            id="srch_term"
-            name="srch_term"
-            formControlName="srch_term"
-            (keyup.enter)="searchList()"
-          />
-          <button
-            class="btn btn-outline-secondary"
-            type="button"
-            (click)="searchList()"
-          >
-            <i class="bi bi-search"></i>
-          </button>
-        </div>
-      </form>
-      <table class="table datatable" style="word-wrap: anywhere;">
-        <!--table-borderless-->
-        <thead>
-          <tr>
-            <th scope="col">Transaction Id</th>
-            <th scope="col">Office Name</th>
-            <th scope="col">Voucher Date</th>
-            <th scope="col">Account No.</th>
-            <th scope="col">Amount</th>
-
-
-
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of lists; let i = index">
-            <td>{{ item.transactionid }}</td>
-            <td>{{ item.officename }}</td>
-            <td>{{ item.voucherdate }}</td>
-            <td>{{ item.accountnumber }}</td>
-            <td>{{ item.amount }}</td>
-
-
-           
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="row">
-        <div class="col-6 text-start">
-          <pagination
-            [rotate]="true"
-            [maxSize]="5"
-            [totalItems]="pagination.total"
-            [(ngModel)]="pagination.currentPage"
-            [boundaryLinks]="true"
-            [itemsPerPage]="pagination.perPage"
-            (pageChanged)="paginatedData($event)"
-            previousText="&lsaquo;"
-            nextText="&rsaquo;"
-            firstText="&laquo;"
-            lastText="&raquo;"
-          ></pagination>
-        </div>
-
-        <div class="col-6 text-end">
-          <form [formGroup]="srchForm">
-            <div class="row" style="float: right">
-              <div class="col-md-12 smallbr">
-                Entries
-                <select
-                  name="entries"
-                  id="entries"
-                  formControlName="entries"
-                  (change)="search()"
-                >
-                  <option value="10">10</option>
-                  <option value="20">20</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-                &nbsp;&nbsp;&nbsp;&nbsp;
               </div>
             </div>
+
+            <div class="col-6">
+              <label class="form-label">बैंक भौचर नंबर</label>
+              <div class="input-group has-validation">
+                <input formControlName="bankvoucherno" type="text" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['bankvoucherno'])" />
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['bankvoucherno'])">
+                  {{ vs.getMessage(bankForm.controls["bankvoucherno"]) }}
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <label class="form-label req">जम्मा गरेको रकम</label>
+              <div class="input-group has-validation">
+                <input formControlName="amount" type="text" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['amount'])" />
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['amount'])">
+                  {{ vs.getMessage(bankForm.controls["amount"]) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <label class="form-label req">बिबरण</label>
+              <div class="input-group has-validation">
+                <input formControlName="remarks" type="text" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['remarks'])" />
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['remarks'])">
+                  {{ vs.getMessage(bankForm.controls["remarks"]) }}
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+
+          <br />
+          <div class="row">
+            <div class="col-md-12">
+              <button class="btn btn-success btn-sm" type="submit">Submit</button>
+              &nbsp; &nbsp;
+              <button class="btn btn-danger btn-sm" type="button" (click)="resetForm()">
+                Clear
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div class="tab" *ngIf="showList">
+          <form class="form-srch" [formGroup]="srchFormList">
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" placeholder="Search.." id="srch_term" name="srch_term"
+                formControlName="srch_term" (keyup.enter)="searchList()" />
+              <button class="btn btn-outline-secondary" type="button" (click)="searchList()">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
           </form>
+          <table class="display responsive-table w-100 table table-striped datatable" style="word-wrap: anywhere;">
+            <!--table-borderless-->
+            <thead>
+              <tr>
+                <th scope="col">Transaction Id</th>
+                <th scope="col">Office Name</th>
+                <th scope="col">Voucher Date</th>
+                <th scope="col">Account No.</th>
+                <th scope="col">Amount</th>
+
+
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of lists; let i = index">
+                <td>{{ item.transactionid }}</td>
+                <td>{{ item.officename }}</td>
+                <td>{{ item.voucherdate }}</td>
+                <td>{{ item.accountnumber }}</td>
+                <td>{{ item.amount }}</td>
+
+
+
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="row">
+            <div class="col-6 text-start">
+              <pagination [rotate]="true" [maxSize]="5" [totalItems]="pagination.total"
+                [(ngModel)]="pagination.currentPage" [boundaryLinks]="true" [itemsPerPage]="pagination.perPage"
+                (pageChanged)="paginatedData($event)" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                lastText="&raquo;"></pagination>
+            </div>
+
+            <div class="col-6 text-end">
+              <form [formGroup]="srchForm">
+                <div class="row" style="float: right">
+                  <div class="col-md-12 smallbr">
+                    Entries
+                    <select name="entries" id="entries" formControlName="entries" (change)="search()">
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
       </div>
     </div>
 

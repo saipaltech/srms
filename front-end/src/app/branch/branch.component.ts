@@ -67,6 +67,7 @@ export class BranchComponent {
   getBanks(){
     this.bs.getBankFromSutra().subscribe({next:(d:any)=>{
       this.banks = d;
+      this.bankForm.patchValue({'bankid':d[0].id});
     },error:err=>{
 
     }});
@@ -114,6 +115,7 @@ changeFields() {
 
 resetForm(){
   this.bankForm =this.fb.group(this.formLayout);
+  this.bankForm.patchValue({'bankid':this.banks[0].id});
 }
 
 
