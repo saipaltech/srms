@@ -112,12 +112,10 @@ public class BankVoucherService extends AutoService {
 		if(transactionid.isBlank()) {
 			return Messenger.getMessenger().setMessage("Transaction id is required").error();
 		}
-		String sql = "select bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=? and (bd.bankvoucherno=0 OR bd.bankvoucherno is null)";
+		String sql = "select bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname,(case when (bd.bankvoucherno=0 OR bd.bankvoucherno is null) then '0' else '1' end) as isUsed from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
-//		if(data.ge)
 		if(data==null) {
 			JSONObject dt =  api.getTransDetails(transactionid);
-//			System.out.println(dt.toString());
 			if(dt!=null) {
 				try {
 					if(dt.getInt("status")==1) {
@@ -126,13 +124,18 @@ public class BankVoucherService extends AutoService {
 						sql = "select bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bankid=?";
 						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 						return Messenger.getMessenger().setData(fdata).success();
+					}else {
+						return Messenger.getMessenger().setMessage(dt.getString("message")).error();
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 			return Messenger.getMessenger().setMessage("No such transaction found.").error();
+		}
+		if((data.get("isUsed")+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
 		}
 		return Messenger.getMessenger().setData(data).success();
 	}
