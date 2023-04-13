@@ -116,11 +116,11 @@
           <div class="input-group has-validation">
             <input
               formControlName="amount" 
-              type="text" (focusout)="addItem()"
+              type="text" 
               class="form-control form-control-sm"
               [ngClass]="vs.getControlClass(voucherBankForm.controls['amount'])"
             />
-            <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['amount'])">{{vs.getMessage(voucherBankForm.controls['amount'])}}</div>
+            <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['amount'])">{{altmsg(vs.getMessage(voucherBankForm.controls['amount']))}}</div>
           </div>
         </div>
         <div class="col-1">
@@ -129,7 +129,7 @@
           <button type="button" class="btn btn-success btn-sm" (click)="addItem()">Add </button>
           </div>
         </div>
-        <div  *ngIf="istab==2" class="col-12">
+        <div  *ngIf="items.length" class="col-12">
           <table class="layout display responsive-table" style="word-wrap: anywhere;">
             <thead>
               <tr>
@@ -186,10 +186,20 @@
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-md-8 text-start">
-            <h5 class="mt-4 mb-0">जम्मा गर्नेको विवरण:</h5>
+        <div class="row mt-3">
+          <div class=" col-md-4 text-start">
+           <h6><b> जम्मा गर्नेको विवरण:</b></h6>
+            
           </div>
+          <div class=" col-md-8 text-start">
+            <div class="form-check"> 
+              <input class="form-check-input" type="checkbox" #check value=""  (click)="checkvalue(check.checked)" id="flexCheckDefault">
+              <label class="form-check-label" for="flexCheckDefault">
+                करदाता आफै
+              </label>
+            </div>
+          </div>
+          
         </div>
 
         <div class="col-sm-6">
@@ -212,7 +222,7 @@
               type="text"
               class="form-control form-control-sm"
               [ngClass]="vs.getControlClass(voucherBankForm.controls['depcontact'])">
-              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['depcontact'])">{{vs.getMessage(voucherBankForm.controls['depcontact'])}}</div>
+              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['depcontact'])">{{mobile(vs.getMessage(voucherBankForm.controls['depcontact']))}}</div>
           </div>
           
            

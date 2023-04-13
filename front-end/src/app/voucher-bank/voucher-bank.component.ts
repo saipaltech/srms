@@ -53,6 +53,7 @@ export class VoucherBankComponent implements OnInit {
 
   approved ="0";
   items=new Array();
+  isChecked: boolean = false;
 
 constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherService, private modalService: BsModalService, private r: Router,private auth:AuthService){
   const ud = this.auth.getUserDetails();
@@ -67,14 +68,14 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       taxpayername: ['',Validators.required],
       taxpayerpan: ['',Validators.pattern('[0-9]+')],
       depositedby:['',Validators.required],
-      depcontact: ['',[Validators.required,Validators.pattern('[0-9]+')]],
+      depcontact: ['',[Validators.required,Validators.pattern('[0-9]{10}')]],
       lgid: ['',Validators.required],
       // llgname: ['',Validators.required],
       collectioncenterid: ['',Validators.required],
       accountno:['',Validators.required],
       revenuecode: [''],
       purpose: [''],
-      amount:[''],
+      amount:['',Validators.pattern('[0-9]+')],
       ttype:['1']
     }
     this.voucherBankForm =fb.group(this.formLayout)
@@ -215,7 +216,7 @@ getBankAccounts(){
     }});
     this.voucherBankForm.patchValue({'lgid':this.dlgid});
     this.items=new Array();
-    this.istab=1;
+   
   }
 
   getList(pageno?: number | undefined) {
@@ -242,10 +243,34 @@ getBankAccounts(){
   }
 
 
+  altmsg(msg:any){
+    if(msg=="Invalid Pattern."){
+      return "Number only";
+    }
+    return msg;
+  }
+
+  mobile(msg:any){
+    if(msg=="Invalid Pattern."){
+      return "Need 10 digit mobile number";
+    }
+    return msg;
+  }
+
+  checkvalue(isChecked: boolean){
+  
+    if (isChecked==true) {
+      this.voucherBankForm.patchValue({'depositedby': this.voucherBankForm.value['taxpayername']});
    
+    } else {
+      this.voucherBankForm.patchValue({'depositedby': ""});
+     
+    }
+  }
   
 
 voucherBankFormSubmit(){
+  this.addItem();
  this.voucherBankForm.patchValue({amount:this.totalAmt});
   if (this.voucherBankForm.valid) {
     const llgCode = this.voucherBankForm.value['lgid'];
@@ -256,6 +281,7 @@ voucherBankFormSubmit(){
     }
     this.model = this.voucherBankForm.value;
     this.model.voucherinfo=this.items;
+  
     this.createItem(this.voucherBankForm.value.id);
     // alert('submit but not create')
     // console.log(this.voucherBankForm.value)
@@ -295,15 +321,18 @@ changePerPage(perPage: number) {
   this.getList();
 }
 
-istab=1;
+
 selectedRevenue:any;
 totalAmt=0;
 addItem(){
 //  console.log(this.rv);
 
  let rc=this.voucherBankForm.value['revenuecode'];
+//  console.log(rc)
  let amt=this.voucherBankForm.value['amount'];
- if(amt!="" && rc!=undefined){
+
+//  if(amt)
+ if(amt && rc && this.voucherBankForm.get('amount')?.valid){
   let val;
   for (const item of this.revs) {
    if (item.code === rc) {
@@ -325,7 +354,8 @@ addItem(){
  
  this.voucherBankForm.patchValue({"revenuecode":''});
  this.voucherBankForm.patchValue({"amount":''});
- this.istab=2;
+
+ 
  }
  
 

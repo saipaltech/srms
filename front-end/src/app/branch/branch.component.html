@@ -30,8 +30,8 @@
                 formControlName="bankid"
                 [ngClass]="vs.getControlClass(bankForm.controls['bankid'])"
               >
-                <option value="">Select Bank..</option>
-                <option *ngFor="let op of banks" value="{{op.id}}">{{op.namenp}}</option>
+                <!-- <option value="">Select Bank..</option> -->
+                <option  *ngFor="let op of banks" value="{{op.id}}">{{op.namenp}}</option>
               </select>
               <div [ngClass]="vs.getMessageClass(bankForm.controls['bankid'])">
                 {{ vs.getMessage(bankForm.controls["bankid"]) }}

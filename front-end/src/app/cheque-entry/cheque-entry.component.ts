@@ -63,7 +63,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       taxpayername: ['',Validators.required],
       taxpayerpan: ['',Validators.pattern('[0-9]+')],
       depositedby:['',Validators.required],
-      depcontact: ['',[Validators.required,Validators.pattern('[0-9]+')]],
+      depcontact: ['',[Validators.required,Validators.pattern('[0-9]{10}')]],
       lgid: ['',Validators.required],
       // llgname: ['',Validators.required],
       collectioncenterid: ['',Validators.required],
@@ -71,7 +71,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       revenuecode: [''],
       purpose: [''],
       amount:['',Validators.pattern('[0-9]+')],
-      chequeamount:['',[Validators.required,,Validators.pattern('[0-9]+')]],
+      chequeamount:['',[Validators.required,Validators.pattern('[0-9]+')]],
       chequeno:['',Validators.required],
       chequebank:['',Validators.required],
       ttype:['2']
@@ -260,6 +260,7 @@ getBankAccounts(){
   
 
 voucherBankFormSubmit(){
+  this.addItem();
   this.voucherBankForm.patchValue({amount:this.totalAmt});
   const camt=this.voucherBankForm.value['chequeamount'];
   if(camt!=this.totalAmt){
@@ -321,7 +322,7 @@ addItem(){
   
    let rc=this.voucherBankForm.value['revenuecode'];
    let amt=this.voucherBankForm.value['amount'];
-   if(amt!="" && rc!=undefined){
+   if(amt && rc && this.voucherBankForm.get('amount')?.valid){
     let val;
     for (const item of this.revs) {
      if (item.code === rc) {
@@ -354,6 +355,31 @@ addItem(){
       // console.log(item);
       this.totalAmt+=parseInt(item.amt);
    
+    }
+  }
+
+  altmsg(msg:any){
+    if(msg=="Invalid Pattern."){
+      return "Number only";
+    }
+    return msg;
+  }
+
+  mobile(msg:any){
+    if(msg=="Invalid Pattern."){
+      return "Need 10 digit mobile number";
+    }
+    return msg;
+  }
+
+  checkvalue(isChecked: boolean){
+  
+    if (isChecked==true) {
+      this.voucherBankForm.patchValue({'depositedby': this.voucherBankForm.value['taxpayername']});
+   
+    } else {
+      this.voucherBankForm.patchValue({'depositedby': ""});
+     
     }
   }
   
