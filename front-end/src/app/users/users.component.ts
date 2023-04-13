@@ -48,7 +48,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       post: ['', Validators.required],
       username: ['', Validators.required],
-      password: ['', [Validators.required, Validators.pattern('^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$')]],
+      password: ['', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z]).{8}$')]],
       disabled: ['0', Validators.required],
       approved: ['1', Validators.required],
       mobile: ['', Validators.required],

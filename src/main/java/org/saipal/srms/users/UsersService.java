@@ -37,7 +37,7 @@ public class UsersService extends AutoService {
 	private String table = "users";
 
 	public ResponseEntity<Map<String, Object>> index() {
-		if (!auth.hasPermission("bankhq")) {
+		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String condition = "";
@@ -46,6 +46,9 @@ public class UsersService extends AutoService {
 			condition = " where 1=1 ";
 		} else {
 			condition = " where u.bankid='" + bankId + "' ";
+		}
+		if(auth.hasPermissionOnly("banksupervisor")) {
+			condition +=" and u.branchid='"+auth.getBranchId()+"' ";
 		}
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = Users.searchables();
@@ -77,7 +80,7 @@ public class UsersService extends AutoService {
 
 	@Transactional
 	public ResponseEntity<Map<String, Object>> store() {
-		if (!auth.hasPermission("bankhq")) {
+		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String bankId = auth.getBankId();
@@ -162,10 +165,10 @@ public class UsersService extends AutoService {
 
 	@Transactional
 	public ResponseEntity<Map<String, Object>> update(String id) {
-		if (!auth.hasPermission("bankhq")) {
+		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		if (id.equals("1")) {
+		if (id.equals("1") || id.equals("2")) {
 			return Messenger.getMessenger().setMessage("Cannot Edit System user").error();
 		}
 		DbResponse rowEffect;
@@ -196,7 +199,7 @@ public class UsersService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> destroy(String id) {
-		if (!auth.hasPermission("bankhq")) {
+		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String sql = "delete from users where id  = ?";
@@ -226,6 +229,9 @@ public class UsersService extends AutoService {
 		}
 		if (auth.hasPermissionOnly("bankhq")) {
 			exclude.remove("branch");
+			exclude.remove("users");
+		}
+		if (auth.hasPermissionOnly("banksupervisor")) {
 			exclude.remove("users");
 		}
 
