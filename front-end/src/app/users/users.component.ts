@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, TemplateRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, TemplateRef, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from './users.service'
@@ -13,7 +13,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss']
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, OnDestroy {
 
   vs = ValidationService;
   model: any = {};
@@ -48,7 +48,7 @@ export class UsersComponent implements OnInit {
       name: ['', Validators.required],
       post: ['', Validators.required],
       username: ['', Validators.required],
-      password: ['', Validators.required],
+      password: ['', [Validators.required, Validators.pattern('^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$')]],
       disabled: ['0', Validators.required],
       approved: ['1', Validators.required],
       mobile: ['', Validators.required],
@@ -70,6 +70,10 @@ export class UsersComponent implements OnInit {
       entries: new FormControl('10'),
       srch_term: new FormControl('')
     })
+  }
+  ngOnDestroy(): void {
+  //  console.log(this.toastr.currentlyActive);
+  //   this.toastr.clear(this.toastr.currentlyActive);
   }
 
   resetPawsswordFormSubmit() {
@@ -117,10 +121,13 @@ export class UsersComponent implements OnInit {
     this.modalRef = this.modalService.show(template); this.currentUserId = id;
   }
 
+
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
     this.getList();
     this.getBranches();
+    // this.toastr.info("Password must be at least eight characters long and must contain at least one uppercase,number and special character. Eg. Srms@123#","Password Information",{timeOut: 0})
+
   }
 
   getBranches() {

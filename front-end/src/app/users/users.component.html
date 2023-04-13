@@ -80,6 +80,7 @@
               <div class="input-group has-validation">
                 <input #password formControlName="password" type="password" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['password'])" />
+                  <div id="emailHelp" class="form-text">Must be eight char long and contain at least one uppercase,number and special char</div>
                 <div [ngClass]="vs.getMessageClass(bankForm.controls['password'])">
                   {{ vs.getMessage(bankForm.controls["password"]) }}
                 </div>

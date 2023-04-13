@@ -70,7 +70,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(id as char) as id,cast(date as date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount")
+				.select("cast(id as char) as id,cast(date as date) as date,cstatus, voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount")
 				.sqlBody("from " + table + condition ).paginate();
 //		System.out.println(result);
 		if (result != null) {

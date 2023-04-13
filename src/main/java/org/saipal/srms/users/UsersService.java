@@ -19,6 +19,9 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Tuple;
 import javax.transaction.Transactional;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Component
 public class UsersService extends AutoService {
 
@@ -233,9 +236,12 @@ public class UsersService extends AutoService {
 	public ResponseEntity<Map<String, Object>> resetPassword(String id) {
 		String password = request("password");
 		String cpassword = request("cpassword");
-		System.out.println("the password is:" + password);
-		System.out.println("the cpassword is:" + cpassword);
 		if (cpassword.equals(password)) {
+			Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$");
+	        Matcher matcher = pattern.matcher(password);
+	        if (!matcher.matches()) {
+	        	return Messenger.getMessenger().setMessage("Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.").error();
+	        } 
 			String sql = "update users set password = ? where id=" + id;
 			DbResponse rowEffect = db.execute(sql, Arrays.asList(pe.encode(password)));
 			if (rowEffect.getErrorNumber() == 0) {
@@ -250,11 +256,20 @@ public class UsersService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> changePassword() {
+		//^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$
 		String password = request("password");
 		String cpassword = request("cpassword");
 		String oldpassword = request("oldpassword");
 		if (!cpassword.equals(password))
 			return Messenger.getMessenger().setMessage("Password and Confirm Passowrds do not match").error();
+		
+		Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$");
+        Matcher matcher = pattern.matcher(password);
+        
+        if (!matcher.matches()) {
+        	return Messenger.getMessenger().setMessage("Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.").error();
+        } 
+		
 		Tuple t = db.getSingleResult("select password from users where id=" + auth.getUserId());
 		if (t != null) {
 			if (pe.matches(oldpassword, t.get(0) + "")) {

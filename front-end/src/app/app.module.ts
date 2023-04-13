@@ -35,6 +35,7 @@ import { VoucherBankOffComponent } from './voucher-bank-off/voucher-bank.compone
 import { NewNavComponent } from './new-nav/new-nav.component';
 
 import { ChequeEntryComponent } from './cheque-entry/cheque-entry.component';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 
 
@@ -73,7 +74,8 @@ import { ChequeEntryComponent } from './cheque-entry/cheque-entry.component';
     HttpClientModule,
     PaginationModule.forRoot(),
     ModalModule.forRoot(),
-    BsDropdownModule.forRoot()
+    BsDropdownModule.forRoot(),
+    TooltipModule.forRoot()
   ],
   providers: [
     AppConfig,

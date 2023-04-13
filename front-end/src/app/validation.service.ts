@@ -10,7 +10,8 @@ export class ValidationService {
             'email':'Invalid Email',
             'invalidPassword': 'Invalid password. Password must be at least 6 characters long, and contain a number.',
             'donotMatch':'Password & Confirm Password do not match.',
-            'minlength': `Minimum length ${validatorValue.requiredLength}`
+            'minlength': `Minimum length ${validatorValue.requiredLength}`,
+            'pattern': 'Invalid Pattern.'
         };
 
         return messages[validatorName];

@@ -275,6 +275,7 @@
           <th scope="col">Tax Payer Name</th>
           <th scope="col">Account No</th>
           <th scope="col">Amount</th>
+          <th scope="col">Status</th>
           <th scope="col">Action</th>
         </tr>
       </thead>
@@ -284,11 +285,9 @@
           <td>{{ item.date }}</td>
           <td>{{ item.taxpayername }}</td>
           <td>{{ item.accountno }}</td>
-          <td>{{ item.amount }}</td>
-          
-
-          
-
+          <td>{{ item.amount }}</td>    
+          <td *ngIf="item.cstatus == 0"><span class="badge text-bg-secondary">Not Cleared</span></td>
+          <td *ngIf="item.cstatus == 1"><span class="badge text-bg-primary"> Cleared</span></td>    
           <td><button class="btn btn-success btn-sm"><i class="bi bi-eye-fill" (click)="openModal(template, item.id)"></i></button></td>
           <td>
 
@@ -354,7 +353,7 @@
       <span aria-hidden="true" class="visually-hidden">&times;</span>
     </button>
   </div>
-  <div class="modal-body">
+  <div class="modal-body" *ngIf="details">
     जम्मा गरेको मिति :  {{details.date}}
     <br>
     बैंक भौचर नंबर: {{details.voucherno}}
