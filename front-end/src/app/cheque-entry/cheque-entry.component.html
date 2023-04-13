@@ -315,7 +315,7 @@
         <li role="menuitem"><a class="dropdown-item" href="javascript:void(0)" (click)="setStatus(0)">Unapproved Vouchers</a></li>
       </ul>
     </div>
-    <table class="table datatable" style="word-wrap: anywhere;">
+    <table class="display responsive-table w-100 table table-striped datatable" style="word-wrap: anywhere;">
       <!--table-borderless-->
       <thead>
         <tr>
@@ -338,9 +338,6 @@
           <td *ngIf="item.cstatus == 0"><span class="badge text-bg-danger">Not Cleared</span></td>
           <td *ngIf="item.cstatus == 1"><span class="badge text-bg-primary"> Cleared</span></td>       
           <td><button class="btn btn-success btn-sm" (click)="openModal(template, item.id,item.cstatus)"><i class="bi bi-eye-fill"></i></button></td>
-          <td>
-
-          </td>
         </tr>
 
       
