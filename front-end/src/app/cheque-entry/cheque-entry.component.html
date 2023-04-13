@@ -335,7 +335,7 @@
           <td>{{ item.taxpayername }}</td>
           <td>{{ item.accountno }}</td>
           <td>{{ item.amount }}</td>
-          <td *ngIf="item.cstatus == 0"><span class="badge text-bg-secondary">Not Cleared</span></td>
+          <td *ngIf="item.cstatus == 0"><span class="badge text-bg-danger">Not Cleared</span></td>
           <td *ngIf="item.cstatus == 1"><span class="badge text-bg-primary"> Cleared</span></td>       
           <td><button class="btn btn-success btn-sm" (click)="openModal(template, item.id,item.cstatus)"><i class="bi bi-eye-fill"></i></button></td>
           <td>
