@@ -321,8 +321,9 @@ addItem(){
   
 
 removeItem(index:any) {
-  this.calctotal();
+ 
   this.items.splice(index, 1);
+  this.calctotal();
 }
 
 
