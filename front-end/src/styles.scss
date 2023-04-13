@@ -47,6 +47,10 @@ table.display td{
 table.display th{ background: #D5E0CC; }
 table.display td{ background: #fff; }
 
-table.responsive-table{
-  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+// table.responsive-table{
+//   box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+// }
+
+table.responsive-table {
+  box-shadow: none !important;
 }
