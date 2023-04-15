@@ -170,12 +170,12 @@ public class TaxPayerVoucherService extends AutoService {
 			model.chequeamount = "0";
 		}
 		String id = db.newIdInt();
-		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount,creatorid, bankid, branchid,ttype,chequebank,chequeno,chequeamount) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount,creatorid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
 				Arrays.asList(id, model.date, model.voucherno, model.taxpayername, model.taxpayerpan, model.depositedby,
 						model.depcontact, model.lgid, model.collectioncenterid, model.accountno, model.revenuecode,
 						model.purpose, model.amount, auth.getUserId(), auth.getBankId(), auth.getBranchId(),
-						model.ttype, model.chequebank, model.chequeno, model.chequeamount));
+						model.ttype, model.chequebank, model.chequeno, model.chequeamount,model.chequetype));
 		if (rowEffect.getErrorNumber() == 0) {
 			if (jarr.length() > 0) {
 				for (int i = 0; i < jarr.length(); i++) {
@@ -274,7 +274,7 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String sql = "delete from " + table + " where id  = ?";
+		String sql = "delete from " + table + " where id  = ? and cstatus=0";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(id));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -344,7 +344,6 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<String> getLocalLevels() {
-		System.out.println(auth.getBankId());
 		List<Tuple> d = db.getResultList(
 				"select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join branches ba on als.id=ba.dlgid and ba.bankid=? and ba.id=? order by als.namenp",
 				Arrays.asList(auth.getBankId(), auth.getBranchId()));
@@ -369,9 +368,14 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<String> getLocalLevelsAll() {
-		System.out.println(auth.getBankId());
+		String cond="";
+		String sql="select top 1 dlgid from branches where bankid=? and id=?";
+		Tuple tt=db.getSingleResult(sql,Arrays.asList(auth.getBankId(),auth.getBranchId()));
+		if(tt.get(0)!=null) {
+			cond= " where als.id <> "+tt.get(0);
+		}
 		List<Tuple> d = db.getResultList(
-				"select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid=? order by als.namenp",
+				"select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid=? "+cond+" order by als.namenp",
 				Arrays.asList(auth.getBankId()));
 
 		if (d.size() > 0) {

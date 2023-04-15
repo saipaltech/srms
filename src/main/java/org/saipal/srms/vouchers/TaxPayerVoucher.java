@@ -29,6 +29,7 @@ public class TaxPayerVoucher {
 	public String chequeno;
 	public String chequeamount;
 	public String ttype;
+	public String chequetype;
 	
 
     

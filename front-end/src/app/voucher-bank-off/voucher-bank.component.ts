@@ -48,15 +48,11 @@ export class VoucherBankOffComponent implements OnInit {
   isDesc: boolean = false;
   srchForm!: FormGroup;
   model: any = {};
-  dlgid:any;
   approved ="";
   items=new Array();
 
 constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherServiceOff, private modalService: BsModalService, private r: Router,private auth:AuthService){
-  const ud = this.auth.getUserDetails();
-  if(ud){
-    this.dlgid = ud.dlgid;
-  }
+  
   this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id:[],
@@ -256,13 +252,7 @@ checkvalue(isChecked: boolean){
 voucherBankFormSubmit(){
   this.addItem();
   this.voucherBankForm.patchValue({amount:this.totalAmt});
-  if (this.voucherBankForm.valid) {
-    const llgCode = this.voucherBankForm.value['lgid'];
-    if(llgCode!=this.dlgid){
-      if(!confirm("You have selected Local Level other then default, Are you sure to proceed")){
-        return;
-      }
-    }
+  if (this.voucherBankForm.valid) {   
     this.model = this.voucherBankForm.value;
     this.model.voucherinfo=this.items;
     this.createItem(this.voucherBankForm.value.id);

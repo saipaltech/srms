@@ -74,7 +74,8 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       chequeamount:['',[Validators.required,Validators.pattern('[0-9]+')]],
       chequeno:['',Validators.required],
       chequebank:['',Validators.required],
-      ttype:['2']
+      ttype:['2'],
+      chequetype:['',Validators.required]
     }
     this.voucherBankForm =fb.group(this.formLayout)
     this.srchForm = new FormGroup({
@@ -94,10 +95,10 @@ openModal(template: TemplateRef<any>, id:any,cstatus:any) {
 }
 
 clearCheque(id:any){
-  if (window.confirm('Are sure you want to clear the cheque?')) {
+  if (window.confirm('Are you sure this cheque is already cleared?')) {
   this.bvs.clearCheque(id).subscribe({next:(dt)=>{
     this.getList();
-    this.toastr.success("Cheque Cleared Successfully","Success")
+    this.toastr.success("Cheque status changed to cleared.","Success")
     this.modalRef?.hide();
   },error:err=>{
     this.toastr.error("Unable to Fetch Data","Error")
@@ -393,6 +394,16 @@ removeItem(index:any) {
 removeItems(index:any) {
   // this.calctotal();
   this.items.splice(index, 1);
+}
+delete(id:any){
+  if (window.confirm('Are sure you want to delete this item?')) {
+    this.bvs.remove(id).subscribe((result: any) => {
+      this.toastr.success('Item Successfully Deleted!', 'Success');
+      this.getList();
+    }, (error: { error: any; }) => {
+      this.toastr.error(error.error, 'Error');
+    });
+  }
 }
 
 
