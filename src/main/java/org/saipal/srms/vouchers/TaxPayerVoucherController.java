@@ -101,6 +101,17 @@ public class TaxPayerVoucherController {
 		return objService.getBankAccounts();
 	}
 	
+	
+	
+	@GetMapping("search-voucher")
+	public ResponseEntity<Map<String, Object>> searchVoucher() {
+		System.out.println("here");
+		return objService.searchVoucher();
+	}
+	
+	
+	
+	
 	@GetMapping("chequeclear")
 	public ResponseEntity<Map<String, Object>> chequeclear() {
 		return objService.chequeclear();

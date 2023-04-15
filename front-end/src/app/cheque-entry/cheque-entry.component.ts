@@ -261,6 +261,7 @@ getBankAccounts(){
   
 
 voucherBankFormSubmit(){
+  if (window.confirm('Are  you sure you want to save this voucher?')) {
   this.addItem();
   this.voucherBankForm.patchValue({amount:this.totalAmt});
   const camt=this.voucherBankForm.value['chequeamount'];
@@ -290,6 +291,7 @@ voucherBankFormSubmit(){
     });
     // this.toastr.error('Please fill all the required* fields', 'Error');
   }
+}
 }
 
 search() {

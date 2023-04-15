@@ -311,7 +311,12 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String sql = "delete from " + table + " where id  = ? and cstatus=0";
+		String sq="select (case when ttype=1 then approved else cstatus end) as status  from "+table+" where id=?";
+		Tuple tt=db.getSingleResult(sq,Arrays.asList(id));
+		if((tt.get(0)+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("This voucher can not be deleted.").error();
+		}
+		String sql = "delete from " + table + " where id  = ?";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(id));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -367,6 +372,35 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
 	}
+	
+public ResponseEntity<Map<String,Object>> searchVoucher() {
+		
+		String voucherno = request("voucherno");
+		System.out.println(voucherno);
+		if(voucherno.isBlank()) {
+			return Messenger.getMessenger().setMessage("Voucherno is required").error();
+		}
+		String sql = "select cast(bd.id as varchar) as id,cast (bd.date as date) as date, bd.voucherno,\r\n"
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
+				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
+				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.voucherno=" + voucherno
+				+ " group by bd.id,bd.date,bd.voucherno,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
+//		System.out.println(sql);
+		Map<String, Object> data = db.getSingleResultMap(sql);
+		if(data==null) {
+			
+			return Messenger.getMessenger().setMessage("No such transaction found.").error();
+		}
+		List<Map<String, Object>> revs = db.getResultListMap(
+				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
+				Arrays.asList(data.get("id")));
+		data.put("revs", revs);
+		
+		
+		return Messenger.getMessenger().setData(data).success();
+	}
+	
 
 	public ResponseEntity<List<Map<String, Object>>> getList() {
 		String bankId = auth.getBankId();

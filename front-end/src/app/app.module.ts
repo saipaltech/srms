@@ -36,6 +36,8 @@ import { NewNavComponent } from './new-nav/new-nav.component';
 
 import { ChequeEntryComponent } from './cheque-entry/cheque-entry.component';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { EditVoucherComponent } from './edit-voucher/edit-voucher.component';
+import { VoucherTransferComponent } from './voucher-transfer/voucher-transfer.component';
 
 
 
@@ -61,7 +63,9 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
     TwoFaModalComponent,
     VoucherBankOffComponent,
     NewNavComponent,
-    ChequeEntryComponent
+    ChequeEntryComponent,
+    EditVoucherComponent,
+    VoucherTransferComponent
   ],
   imports: [
     BrowserModule,

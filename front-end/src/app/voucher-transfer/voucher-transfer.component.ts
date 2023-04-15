@@ -1,18 +1,19 @@
 import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { VerifyVoucherService } from './verify-voucher.service';
 import { ValidationService } from '../validation.service';
 import { DatePipe } from '@angular/common';
+import { VoucherTransferService } from './voucher-transfer.service';
+import { VoucherServiceOff } from '../voucher-bank-off/voucher.service';
 
 
 @Component({
-  selector: 'app-verify-voucher',
-  templateUrl: './verify-voucher.component.html',
-  styleUrls: ['./verify-voucher.component.scss'],
+  selector: 'app-voucher-transfer',
+  templateUrl: './voucher-transfer.component.html',
+  styleUrls: ['./voucher-transfer.component.scss'],
   providers: [DatePipe]
 })
-export class VerifyVoucherComponent {
+export class VoucherTransferComponent {
 
   vs = ValidationService;
   model: any = {};
@@ -33,16 +34,23 @@ export class VerifyVoucherComponent {
   bankForm!: FormGroup;
   formLayout: any;
   myDate: any = new Date();
+  items=new Array();
+  revs:any;
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: VerifyVoucherService, private datePipe: DatePipe) {
+  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: VoucherTransferService,private bvs:VoucherServiceOff, private datePipe: DatePipe) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id: [],
-      amount: ['', [Validators.required, Validators.pattern('[0-9]+')]],
-      depositdate: [this.myDate],
-      bankvoucherno: [Math.floor(10000000 + Math.random() * 90000000)],
+      taxpayername: ['', [Validators.required]],
+      taxpayerpan: ['',Validators.required],
       remarks: ['', Validators.required],
-      transactionid: ['', Validators.required],
+      amount:['',Validators.pattern('[0-9]+')],
+      revenuecode: [''],
+      lgid:[''],
+      collectioncenterid:[''],
+      accountno:['']
+
+
 
     }
     this.bankForm = fb.group(this.formLayout)
@@ -65,7 +73,32 @@ export class VerifyVoucherComponent {
 
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
-    this.getList();
+    this.bankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
+      this.getPalikaDetails();
+      this.getBankAccounts();
+    }});
+    this.bvs.getLocalLevels().subscribe({next:(dt)=>{
+      this.llgs = dt.data;
+      // this.voucherBankForm.patchValue({"lgid":this.dlgid});
+    },error:err=>{
+
+    }});
+    // this.getList();
+  }
+
+  getPalikaDetails(){
+    this.bankForm.patchValue({"collectioncenterid":''});
+    const llgCode = this.bankForm.value['lgid'];
+    this.bvs.getCostCentres(llgCode).subscribe({
+      next:(d)=>{
+        this.ccs = d.data;
+        if(d.data.length==1){
+          this.bankForm.patchValue({"collectioncenterid":d.data[0].code});
+        }
+      },error:err=>{
+        // console.log(err);
+      }
+    });
   }
 
   searchList() {
@@ -89,6 +122,98 @@ export class VerifyVoucherComponent {
       }
     );
   }
+acs:any;
+llgs:any;
+ccs:any;
+getRevenue(){
+  const bankorgid=this.bankForm.value["accountno"];
+   this.RS.getRevenue(bankorgid).subscribe({next:(dt)=>{
+      this.revs = dt.data;
+    },error:err=>{
+
+    }});
+
+}
+  getBankAccounts(){
+    // this.acs  = undefined;
+    const llgCode = this.bankForm.value['lgid'];
+    if(llgCode){
+      this.RS.getBankAccounts(llgCode).subscribe({
+        next:(d)=>{
+          this.acs = d.data;
+          if(d.data.length==1){
+            this.bankForm.patchValue({"accountno":d.data[0].acno});
+          }
+        },error:err=>{
+          // console.log(err);
+        }
+      });
+    }
+    
+  }
+
+  selectedRevenue:any;
+  altmsg(msg:any){
+    if(msg=="Invalid Pattern."){
+      return "Number only";
+    }
+    return msg;
+  }
+  
+  mobile(msg:any){
+    if(msg=="Invalid Pattern."){
+      return "Need 10 digit mobile number";
+    }
+    return msg;
+  }
+
+  addItem(){
+    //  console.log(this.rv);
+    
+     let rc=this.bankForm.value['revenuecode'];
+     let amt=this.bankForm.value['amount'];
+     if(amt && rc && this.bankForm.get('amount')?.valid){
+      let val;
+      for (const item of this.revs) {
+       if (item.code === rc) {
+          val=item.code+'['+item.name+']';
+         // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
+         break;
+       }
+     }
+      var newItem = {
+       rc: rc,
+       amt: amt,
+       rv:val
+     };
+     
+     // Add the new item to the items array
+     this.items.push(newItem);
+     this.calctotal();
+     this.bankForm.patchValue({"revenuecode":''});
+     this.bankForm.patchValue({"amount":''});
+    
+     }
+     
+    
+    }
+    totalAmt=0;
+    calctotal(){
+      this.totalAmt=0;
+      for(const item of this.items){
+        this.totalAmt+=parseInt(item.amt);
+     
+      }
+    }
+    
+  
+  removeItem(index:any) {
+   
+    this.items.splice(index, 1);
+    this.calctotal();
+  }
+  
+  
 
   bankFormSubmit() {
     // this.model.transactionid = this.transDetails.transactionid;

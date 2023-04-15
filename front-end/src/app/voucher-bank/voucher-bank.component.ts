@@ -270,6 +270,7 @@ getBankAccounts(){
   
 
 voucherBankFormSubmit(){
+  if (window.confirm('Are  you sure you want to save this voucher?')) {
   this.addItem();
  this.voucherBankForm.patchValue({amount:this.totalAmt});
   if (this.voucherBankForm.valid) {
@@ -295,6 +296,7 @@ voucherBankFormSubmit(){
     });
     // this.toastr.error('Please fill all the required* fields', 'Error');
   }
+}
 }
 
 search() {
@@ -359,6 +361,17 @@ addItem(){
  }
  
 
+}
+
+delete(id:any){
+  if (window.confirm('Are sure you want to delete this item?')) {
+    this.bvs.remove(id).subscribe({next:(result: any) => {
+      this.toastr.success('Item Successfully Deleted!', 'Success');
+      this.getList();
+    },error:error => {
+      this.toastr.error(error.error, 'Error');
+    }});
+  }
 }
 
 calctotal(){

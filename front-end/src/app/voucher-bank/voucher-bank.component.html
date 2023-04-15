@@ -105,7 +105,7 @@
       
         <div class="col-sm-6">
           <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
-          <ng-select formControlName="revenuecode" [(ngModel)]="selectedRevenue"  (change)="getBankAccounts()" >
+          <ng-select formControlName="revenuecode" [(ngModel)]="selectedRevenue"  >
             <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
           </ng-select>
           <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['revenuecode'])">{{vs.getMessage(voucherBankForm.controls['revenuecode'])}}</div>
@@ -296,7 +296,9 @@
           <td>{{ item.amount }}</td>
           <td *ngIf="item.approved == 0"><span class="badge text-bg-danger">Not Approved</span></td>
           <td *ngIf="item.approved == 1"><span class="badge text-bg-primary"> Approved</span></td>  
-          <td><button class="btn btn-success btn-sm" (click)="openModal(template, item.id)"><i class="bi bi-eye-fill"></i></button></td>
+          <td *ngIf="item.approved == 1"><button class="btn btn-success btn-sm" (click)="openModal(template, item.id)"><i class="bi bi-eye-fill"></i></button></td>
+          <td *ngIf="item.approved == 0"><button class="btn btn-success btn-sm" (click)="openModal(template, item.id)"><i class="bi bi-eye-fill"></i></button>
+            <button class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i></button></td>
         </tr>
 
       
