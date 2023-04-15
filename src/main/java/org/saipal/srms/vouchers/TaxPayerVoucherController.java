@@ -139,4 +139,22 @@ public class TaxPayerVoucherController {
 	public ResponseEntity<Map<String, Object>> getRevenueDetails(HttpServletRequest request){
 		return objService.getRevenueDetails();
 	}
+	
+	@GetMapping("get-edit-detail")
+	public ResponseEntity<Map<String, Object>> getEditDetail(){
+		return objService.getEditDetails();
+	}
+	@PostMapping("update-details")
+	public ResponseEntity<Map<String, Object>> saveEditDetails(){
+		return objService.saveEditDetails();
+	}
+	
+	@GetMapping("get-edit-detail-off")
+	public ResponseEntity<Map<String, Object>> getEditDetailOff(){
+		return objService.getEditDetailsOff();
+	}
+	@PostMapping("update-details-off")
+	public ResponseEntity<Map<String, Object>> saveEditDetailsOff(){
+		return objService.saveEditDetailsOff();
+	}
 }
