@@ -122,7 +122,11 @@ public class BranchService extends AutoService {
 		if (bankId.equals("1")) {
 			sql = "select id,name from " + table + " where id !=1";
 		} else {
-			sql = "select id,name from " + table + " where bankid ='" + bankId + "'";
+			String condition="";
+			if(auth.hasPermissionOnly("banksupervisor")) {
+				condition =" and id='"+auth.getBranchId()+"' ";
+			}
+			sql = "select id,name from " + table + " where bankid ='" + bankId + "' "+condition;
 		}
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}

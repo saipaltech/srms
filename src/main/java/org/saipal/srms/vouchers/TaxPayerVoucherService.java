@@ -53,9 +53,9 @@ public class TaxPayerVoucherService extends AutoService {
 			condition = condition.substring(0, condition.length() - 3);
 			condition += ")";
 		}
-		
+
 		if (!approve.isBlank()) {
-			condition += " and approved='"+approve+"'";
+			condition += " and approved='" + approve + "'";
 		}
 
 		String sort = "";
@@ -64,14 +64,14 @@ public class TaxPayerVoucherService extends AutoService {
 				sort = request("sortKey") + " " + request("sortDir");
 			}
 		}
-		if(sort.isBlank()) {
-			sort="date desc";
+		if (sort.isBlank()) {
+			sort = "date desc";
 		}
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
 				.select("cast(id as char) as id,cast(date as date) as date,approved, voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount")
-				.sqlBody("from " + table + condition ).paginate();
+				.sqlBody("from " + table + condition).paginate();
 //		System.out.println(result);
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -102,8 +102,8 @@ public class TaxPayerVoucherService extends AutoService {
 				sort = request("sortKey") + " " + request("sortDir");
 			}
 		}
-		if(sort.isBlank()) {
-			sort="date desc";
+		if (sort.isBlank()) {
+			sort = "date desc";
 		}
 
 		Paginator p = new Paginator();
@@ -131,7 +131,9 @@ public class TaxPayerVoucherService extends AutoService {
 				+ " group by bd.id,bd.date,bd.voucherno,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
 //		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql);
-		List<Map<String,Object>> revs = db.getResultListMap("select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",Arrays.asList(id));
+		List<Map<String, Object>> revs = db.getResultListMap(
+				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
+				Arrays.asList(id));
 		data.put("revs", revs);
 		return ResponseEntity.ok(data);
 	}
@@ -184,6 +186,47 @@ public class TaxPayerVoucherService extends AutoService {
 					db.execute(sq1, Arrays.asList(db.newIdInt(), id, objects.get("rc"), objects.get("amt")));
 				}
 			}
+			boolean autoVerify = false;
+			Tuple u = db.getSingleResult("select id,amountlimit,permid from users where id=?",
+					Arrays.asList(auth.getUserId()));
+			if ((u.get("permid") + "").equals("3")) {
+				if ((u.get("amountlimit") + "").equals("-1")
+						|| (Float.parseFloat(model.amount) <= Float.parseFloat(u.get("amountlimit") + ""))) {
+					autoVerify = true;
+				}
+			}
+			if ((u.get("permid") + "").equals("4")) {
+				autoVerify = true;
+			}
+			if (autoVerify && (model.ttype.equals("1"))) {
+				db.execute("update " + table + " set approved=1,updatedon=getdate(),approverid=? where id=?",
+						Arrays.asList(auth.getUserId(), id));
+				Tuple t = db.getSingleResult("select * from " + table + " where id=? and approved=1",
+						Arrays.asList(id));
+				if (t != null) {
+					String revs = "";
+					List<Tuple> list = db.getResultList(
+							"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
+							Arrays.asList(id));
+					if (list.size() > 0) {
+						for (Tuple tp : list) {
+							revs += tp.get(0) + ",";
+						}
+						revs = revs.substring(0, (revs.length() - 1));
+					}
+					try {
+						JSONObject obj = api.sendDataToSutra(t, revs);
+						if (obj != null) {
+							if (obj.getInt("status") == 1) {
+								db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
+							}
+						}
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
 			return Messenger.getMessenger().success();
 		} else {
 			return Messenger.getMessenger().error();
@@ -211,19 +254,17 @@ public class TaxPayerVoucherService extends AutoService {
 						model.depcontact, model.lgid, model.collectioncenterid, model.accountno, model.revenuecode,
 						model.purpose, model.amount, id));
 		if (rowEffect.getErrorNumber() == 0) {
-			System.out.println();
 			return Messenger.getMessenger().success();
 		} else {
 			return Messenger.getMessenger().error();
 		}
 
 	}
-	
 
 	public ResponseEntity<Map<String, Object>> chequeclear() {
-		String id=request("id");
-		Tuple c = db.getSingleResult("select id,amount,cstatus from "+table+" where id=?",Arrays.asList(id));
-		if((c.get("cstatus")+"").equals("1")) {
+		String id = request("id");
+		Tuple c = db.getSingleResult("select id,amount,cstatus from " + table + " where id=?", Arrays.asList(id));
+		if ((c.get("cstatus") + "").equals("1")) {
 			return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
 		}
 //		Tuple u = db.getSingleResult("select id,amountlimit,permid from users where id=?",Arrays.asList(auth.getUserId()));
@@ -246,7 +287,7 @@ public class TaxPayerVoucherService extends AutoService {
 				for (Tuple tp : list) {
 					revs += tp.get(0) + ",";
 				}
-				revs=revs.substring(0,(revs.length()-1));
+				revs = revs.substring(0, (revs.length() - 1));
 			}
 			try {
 				JSONObject obj = api.sendDataToSutra(t, revs);
@@ -259,14 +300,10 @@ public class TaxPayerVoucherService extends AutoService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			return Messenger.getMessenger().setMessage("Cheque cleared.").success();
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
-		
-		
-		
-		
 
 	}
 
@@ -285,15 +322,18 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> approveVoucher(String id) {
-		Tuple c = db.getSingleResult("select id,amount,approved from "+table+" where id=?",Arrays.asList(id));
-		if((c.get("approved")+"").equals("1")) {
+		Tuple c = db.getSingleResult("select id,amount,approved from " + table + " where id=?", Arrays.asList(id));
+		if ((c.get("approved") + "").equals("1")) {
 			return Messenger.getMessenger().setMessage("Voucher is already Approved.").error();
 		}
-		Tuple u = db.getSingleResult("select id,amountlimit,permid from users where id=?",Arrays.asList(auth.getUserId()));
-		if((u.get("permid")+"").equals("3")) {
-			if(!(u.get("amountlimit")+"").equals("-1")) {
-				if(Float.parseFloat(c.get("amount")+"")>Float.parseFloat(u.get("amountlimit")+"")) {
-					return Messenger.getMessenger().setMessage("Amount Limit exceeds, Only upto Rs."+u.get("amountlimit")+" is allowed.").error();
+		Tuple u = db.getSingleResult("select id,amountlimit,permid from users where id=?",
+				Arrays.asList(auth.getUserId()));
+		if ((u.get("permid") + "").equals("3")) {
+			if (!(u.get("amountlimit") + "").equals("-1")) {
+				if (Float.parseFloat(c.get("amount") + "") > Float.parseFloat(u.get("amountlimit") + "")) {
+					return Messenger.getMessenger()
+							.setMessage("Amount Limit exceeds, Only upto Rs." + u.get("amountlimit") + " is allowed.")
+							.error();
 				}
 			}
 		}
@@ -309,7 +349,7 @@ public class TaxPayerVoucherService extends AutoService {
 				for (Tuple tp : list) {
 					revs += tp.get(0) + ",";
 				}
-				revs=revs.substring(0,(revs.length()-1));
+				revs = revs.substring(0, (revs.length() - 1));
 			}
 			try {
 				JSONObject obj = api.sendDataToSutra(t, revs);
@@ -322,7 +362,7 @@ public class TaxPayerVoucherService extends AutoService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			return Messenger.getMessenger().setMessage("Voucher approved.").success();
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
@@ -556,35 +596,35 @@ public class TaxPayerVoucherService extends AutoService {
 				for (Tuple tp : list) {
 					revs += tp.get(0) + ",";
 				}
-				revs = revs.substring(0, (revs.length()-1));
+				revs = revs.substring(0, (revs.length() - 1));
 			}
 			try {
 				JSONObject data = new JSONObject();
-				data.put("id",t.get("id")+"");
-				data.put("date",t.get("date")+"");
-				data.put("voucherno",t.get("voucherno")+"");
-				data.put("taxpayername",t.get("taxpayername")+"");
-				data.put("taxpayerpan",t.get("taxpayerpan")+"");
-				data.put("depositedby",t.get("depositedby")+"");
-				data.put("depcontact",t.get("depcontact")+"");
-				data.put("lgid",t.get("lgid")+"");
-				data.put("collectioncenterid",t.get("collectioncenterid")+"");
-				data.put("accountno",t.get("accountno")+"");
-				data.put("revenuecode",t.get("revenuecode")+"");
-				data.put("purpose",t.get("purpose")+"");
-				data.put("amount",t.get("amount")+"");
-				data.put("bankid",t.get("bankid")+"");
-				data.put("branchid",t.get("branchid")+"");
-				data.put("creatorid",t.get("creatorid")+"");
-				data.put("approved",t.get("approved")+"");
-				data.put("approverid",t.get("approverid")+"");
-				data.put("updatedon",t.get("updatedon")+"");
-				data.put("chequebank",t.get("chequebank")+"");
-				data.put("chequeamount",t.get("chequeamount")+"");
-				data.put("chequeno",t.get("chequeno")+"");
-				data.put("cstatus",t.get("cstatus")+"");
-				data.put("ttype",t.get("ttype")+"");
-				data.put("revenue",revs);
+				data.put("id", t.get("id") + "");
+				data.put("date", t.get("date") + "");
+				data.put("voucherno", t.get("voucherno") + "");
+				data.put("taxpayername", t.get("taxpayername") + "");
+				data.put("taxpayerpan", t.get("taxpayerpan") + "");
+				data.put("depositedby", t.get("depositedby") + "");
+				data.put("depcontact", t.get("depcontact") + "");
+				data.put("lgid", t.get("lgid") + "");
+				data.put("collectioncenterid", t.get("collectioncenterid") + "");
+				data.put("accountno", t.get("accountno") + "");
+				data.put("revenuecode", t.get("revenuecode") + "");
+				data.put("purpose", t.get("purpose") + "");
+				data.put("amount", t.get("amount") + "");
+				data.put("bankid", t.get("bankid") + "");
+				data.put("branchid", t.get("branchid") + "");
+				data.put("creatorid", t.get("creatorid") + "");
+				data.put("approved", t.get("approved") + "");
+				data.put("approverid", t.get("approverid") + "");
+				data.put("updatedon", t.get("updatedon") + "");
+				data.put("chequebank", t.get("chequebank") + "");
+				data.put("chequeamount", t.get("chequeamount") + "");
+				data.put("chequeno", t.get("chequeno") + "");
+				data.put("cstatus", t.get("cstatus") + "");
+				data.put("ttype", t.get("ttype") + "");
+				data.put("revenue", revs);
 				JSONObject j = new JSONObject();
 				j.put("status", 1);
 				j.put("message", "success");
