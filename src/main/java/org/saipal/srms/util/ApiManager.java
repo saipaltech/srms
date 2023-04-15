@@ -226,6 +226,30 @@ public class ApiManager {
 		return null;
 	}
 	
+	public JSONObject sendDataToSutraPalikachange(String id,String lgid,String collectioncenterid,String accountno,String remarks,String userid) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
+					.setParam("id",id)
+					.setParam("lgid",lgid)
+					.setParam("collectioncenterid",collectioncenterid)
+					.setParam("accountno",accountno)					
+					.setParam("remarks",remarks)
+					.setParam("creatorid",userid)
+					.post(url + "/srms/taxpayer-voucher-update-palikachange");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 	
 	/*
 	 * Calls sutra API to send the status of bank voucher deposited, 

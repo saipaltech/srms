@@ -10,11 +10,11 @@ import { ApiService } from '../api.service';
 export class VoucherTransferService {
   url="taxpayer-voucher";
   getTranactionData(srch_term: any) {
-    return this.http.get(this.url+'/search-voucher?voucherno='+srch_term);
+    return this.http.get(this.url+'/get-edit-detail-off?voucherno='+srch_term);
   }
   create(data: any) {
     // console.log(data);
-    return this.http.post(this.url, data);
+    return this.http.post(this.url+'/update-details-off', data);
 
   }
   update(id: any, data: any) {

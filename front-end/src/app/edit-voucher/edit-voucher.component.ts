@@ -41,8 +41,8 @@ export class EditVoucherComponent {
     this.formLayout = {
       id: [],
       taxpayername: ['', [Validators.required]],
-      taxpayerpan: ['',Validators.required],
-      remarks: ['', Validators.required],
+      taxpayerpan: [''],
+      // remarks: ['', Validators.required],
       amount:['',Validators.pattern('[0-9]+')],
       revenuecode: ['']
 
@@ -68,6 +68,7 @@ export class EditVoucherComponent {
 
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
+    // this.getRevenue();
     // this.getList();
   }
 
@@ -159,14 +160,26 @@ export class EditVoucherComponent {
     // this.model.transactionid = this.transDetails.transactionid;
     // console.log (this.model.transactionid)
 
-    this.bankForm.controls['transactionid'].setValue(this.transDetails.transactionid)
+    // this.bankForm.controls['transactionid'].setValue(this.transDetails.id)
 
     if (this.bankForm.valid) {
-      this.model = this.bankForm.value;
-      this.bankForm.controls['transactionid'].setValue(this.transDetails.transactionid)
+      
+      // this.bankForm.controls['transactionid'].setValue(this.transDetails.transactionid)
       // this.bankForm.controls['id'].setValue(this.transDetails.id)
-      this.bankForm.patchValue({ "id": this.transDetails.id })
-      this.createItem(this.bankForm.value.id);
+      this.bankForm.patchValue({ "id": this.transDetails.id });
+      this.model = this.bankForm.value;
+      // this.createItem(this.bankForm.value.id);
+      this.RS.create(this.model).subscribe({
+        next: (result: any) => {
+          this.transDetails = undefined;
+          this.toastr.success('Item Successfully Saved!', 'Success');
+          this.bankForm = this.fb.group(this.formLayout);
+          this.srchForm.patchValue({'srch_term':""});
+          this.getList();
+        }, error: err => {
+          this.toastr.error(err.error.message, 'Error');
+        }
+      });
     } else {
       Object.keys(this.bankForm.controls).forEach(field => {
         const singleFormControl = this.bankForm.get(field);
@@ -200,6 +213,8 @@ export class EditVoucherComponent {
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {
           this.transDetails = dt.data;
+          this.bankForm.patchValue({'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount});
+        
           if (this.transDetails.trantype == 1) {
             this.istab = 1;
           } else {
@@ -233,34 +248,7 @@ export class EditVoucherComponent {
   }
 
 
-  createItem(id = null) {
-    let upd = this.model;
-    if (id != "" && id != null) {
-      this.RS.update(id, upd).subscribe({
-        next: (result: any) => {
-          this.transDetails = undefined;
-          this.toastr.success('Item Successfully Updated!', 'Success');
-          this.bankForm = this.fb.group(this.formLayout)
-          this.getList();
-        }, error: err => {
-          this.toastr.error(err.error.message, 'Error');
-        }
-      });
-    } else {
-      this.RS.create(upd).subscribe({
-        next: (result: any) => {
-          this.transDetails = undefined;
-          this.toastr.success('Item Successfully Saved!', 'Success');
-          this.bankForm = this.fb.group(this.formLayout);
-          this.srchForm.patchValue({'srch_term':""});
-          this.getList();
-        }, error: err => {
-          this.toastr.error(err.error.message, 'Error');
-        }
-      });
-    }
-
-  }
+  
 
   getUpdateItem(id: any) {
     this.RS.getEdit(id).subscribe(

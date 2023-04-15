@@ -41,10 +41,8 @@ export class VoucherTransferComponent {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id: [],
-      taxpayername: ['', [Validators.required]],
-      taxpayerpan: ['',Validators.required],
+     
       remarks: ['', Validators.required],
-      amount:['',Validators.pattern('[0-9]+')],
       revenuecode: [''],
       lgid:[''],
       collectioncenterid:[''],
@@ -219,14 +217,22 @@ getRevenue(){
     // this.model.transactionid = this.transDetails.transactionid;
     // console.log (this.model.transactionid)
 
-    this.bankForm.controls['transactionid'].setValue(this.transDetails.transactionid)
-
     if (this.bankForm.valid) {
       this.model = this.bankForm.value;
-      this.bankForm.controls['transactionid'].setValue(this.transDetails.transactionid)
+     
       // this.bankForm.controls['id'].setValue(this.transDetails.id)
       this.bankForm.patchValue({ "id": this.transDetails.id })
-      this.createItem(this.bankForm.value.id);
+      this.RS.create(this.model).subscribe({
+        next: (result: any) => {
+          this.transDetails = undefined;
+          this.toastr.success('Item Successfully Saved!', 'Success');
+          this.bankForm = this.fb.group(this.formLayout);
+          this.srchForm.patchValue({'srch_term':""});
+          this.getList();
+        }, error: err => {
+          this.toastr.error(err.error.message, 'Error');
+        }
+      });
     } else {
       Object.keys(this.bankForm.controls).forEach(field => {
         const singleFormControl = this.bankForm.get(field);
@@ -260,6 +266,7 @@ getRevenue(){
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {
           this.transDetails = dt.data;
+          this.bankForm.patchValue({'lgid':this.transDetails.lgid})
           if (this.transDetails.trantype == 1) {
             this.istab = 1;
           } else {
