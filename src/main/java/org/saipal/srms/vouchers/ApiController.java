@@ -46,6 +46,5 @@ public class ApiController {
 			return  bv.getVoucherStatus();
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
-		
 	}
 }

@@ -750,4 +750,140 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 //		return ResponseEntity.ok(data);
 	}
 
+	public ResponseEntity<Map<String, Object>> getEditDetails() {
+		String voucherno = request("voucherno");
+		String sql = "select select top 1 *,cast((format(getdate(),'yyyyMMdd') as numeric) as today from "+table+" where voucherno=? and bankid=? and branchid=?";
+		Map<String,Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno,auth.getBankId(),auth.getBranchId()));
+		if(t==null) {
+			return Messenger.getMessenger().setMessage("No such voucher found.").error();
+		}
+		if((t.get("isused")+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("Already used voucher").error();
+		}
+		JSONObject sdata = api.getVoucherDetails(t.get("id")+"");
+		if(sdata!=null) {
+			try {
+				if(sdata.getInt("status")==1) {
+					JSONObject d = sdata.getJSONObject("data");
+					if(d.getInt("isused")==1) {
+						db.execute("update "+table+" set isused=1 where id=?",Arrays.asList(t.get("id")));
+						return Messenger.getMessenger().setMessage("Already used voucher").error();
+					}else {
+						return Messenger.getMessenger().setData(t).success();
+					}
+				}
+			}catch (JSONException e) {
+				// TODO: handle exception
+			}
+			return Messenger.getMessenger().setMessage("Internal Error").error();
+		}
+		return Messenger.getMessenger().setData(t).success();
+	}
+	
+	public ResponseEntity<Map<String, Object>> saveEditDetails() {
+		String id = request("id");
+		String sql = "select select top 1 *,cast((format(getdate(),'yyyyMMdd') as numeric) as today from "+table+" where id=? and bankid=? and branchid=?";
+		Map<String,Object> t = db.getSingleResultMap(sql,Arrays.asList(id,auth.getBankId(),auth.getBranchId()));
+		if(t==null) {
+			return Messenger.getMessenger().setMessage("No such voucher found.").error();
+		}
+		if((t.get("isused")+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("Already used voucher").error();
+		}
+		JSONObject sdata = api.getVoucherDetails(t.get("id")+"");
+		if(sdata!=null) {
+			try {
+				if(sdata.getInt("status")==1) {
+					JSONObject d = sdata.getJSONObject("data");
+					if(d.getInt("isused")==1) {
+						db.execute("update "+table+" set isused=1 where id=?",Arrays.asList(t.get("id")));
+						return Messenger.getMessenger().setMessage("Already used voucher").error();
+					}else {
+						if((t.get("today")+"").equals(t.get("dateint")+"")) {
+							db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amount=? where id=?",Arrays.asList(request("taxpayername"),request("taxpayerpan"),request("amount"),id));
+						}else {
+							db.execute("update "+table+" set taxpayername=? ,taxpayerpan=? where id=?",Arrays.asList(request("taxpayername"),request("taxpayerpan"),id));
+						}
+						return Messenger.getMessenger().setMessage("Voucher Updated").success();
+					}
+				}
+			}catch (JSONException e) {
+				// TODO: handle exception
+			}
+			return Messenger.getMessenger().setMessage("Internal Error").error();
+		}
+		if((t.get("today")+"").equals(t.get("dateint")+"")) {
+			db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amount=? where id=?",Arrays.asList(request("taxpayername"),request("taxpayerpan"),request("amount"),id));
+		}else {
+			db.execute("update "+table+" set taxpayername=? ,taxpayerpan=? where id=?",Arrays.asList(request("taxpayername"),request("taxpayerpan"),id));
+		}
+		return Messenger.getMessenger().setMessage("Voucher Updated").success();
+	}
+	
+	public ResponseEntity<Map<String, Object>> getEditDetailsOff() {
+		String voucherno = request("voucherno");
+		String sql = "select select top 1 *,cast((format(getdate(),'yyyyMMdd') as numeric) as today from "+table+" where voucherno=? and bankid=? and branchid=?";
+		Map<String,Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno,auth.getBankId(),auth.getBranchId()));
+		if(t==null) {
+			return Messenger.getMessenger().setMessage("No such voucher found.").error();
+		}
+		if((t.get("isused")+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("Already used voucher").error();
+		}
+		JSONObject sdata = api.getVoucherDetails(t.get("id")+"");
+		if(sdata!=null) {
+			try {
+				if(sdata.getInt("status")==1) {
+					JSONObject d = sdata.getJSONObject("data");
+					if(d.getInt("isused")==1) {
+						db.execute("update "+table+" set isused=1 where id=?",Arrays.asList(t.get("id")));
+						return Messenger.getMessenger().setMessage("Already used voucher").error();
+					}else {
+						return Messenger.getMessenger().setData(t).success();
+					}
+				}
+			}catch (JSONException e) {
+				// TODO: handle exception
+			}
+			return Messenger.getMessenger().setMessage("Internal Error").error();
+		}
+		return Messenger.getMessenger().setData(t).success();
+	}
+	
+	public ResponseEntity<Map<String, Object>> saveEditDetailsOff() {
+		String id = request("id");
+		String sql = "select select top 1 *,cast((format(getdate(),'yyyyMMdd') as numeric) as today from "+table+" where id=? and bankid=? and branchid=?";
+		Map<String,Object> t = db.getSingleResultMap(sql,Arrays.asList(id,auth.getBankId(),auth.getBranchId()));
+		if(t==null) {
+			return Messenger.getMessenger().setMessage("No such voucher found.").error();
+		}
+		if((t.get("isused")+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("Already used voucher").error();
+		}
+		JSONObject sdata = api.getVoucherDetails(t.get("id")+"");
+		if(sdata!=null) {
+			try {
+				if(sdata.getInt("status")==1) {
+					JSONObject d = sdata.getJSONObject("data");
+					if(d.getInt("isused")==1) {
+						db.execute("update "+table+" set isused=1 where id=?",Arrays.asList(t.get("id")));
+						return Messenger.getMessenger().setMessage("Already used voucher").error();
+					}else {
+						db.execute("update "+table+" set changereq=1 where id=?",Arrays.asList(id));
+						db.execute("insert into taxvoucher_ll_change(vrefid,lgid,collectioncenterid,bankorgid,creatorid) values (?,?,?,?,?)",
+								Arrays.asList(request("vrefid"),request("lgid"),request("collectioncenterid"),request("bankorgid"),auth.getUserId()));
+						return Messenger.getMessenger().setMessage("Voucher Updated").success();
+					}
+				}
+			}catch (JSONException e) {
+				// TODO: handle exception
+			}
+			return Messenger.getMessenger().setMessage("Internal Error").error();
+		}
+		db.execute("update "+table+" set changereq=1 where id=?",Arrays.asList(id));
+		db.execute("insert into taxvoucher_ll_change(vrefid,lgid,collectioncenterid,bankorgid,creatorid) values (?,?,?,?,?)",
+				Arrays.asList(request("vrefid"),request("lgid"),request("collectioncenterid"),request("bankorgid"),auth.getUserId()));
+		return Messenger.getMessenger().setMessage("Voucher Updated").success();
+	}
+
 }

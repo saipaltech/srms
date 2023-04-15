@@ -271,4 +271,23 @@ public class ApiManager {
 		}
 		return null;
 	}
+	
+	/*
+	 * Calls Sutra API to get the Tax Voucher Usage status by voucher id
+	 * */
+	public JSONObject getVoucherDetails(String id) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/get-taxvoucher-detail?id="+id);
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
 }
