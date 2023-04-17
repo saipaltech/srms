@@ -1,4 +1,4 @@
-<div class="d-flex flex-column flex-shrink-0 p-3 sidebar showbar" style="width: 230px; position: fixed; height: 100%; top:0;background-color:#43596f; overflow-y: auto;">
+<div class="d-flex flex-column flex-shrink-0 p-3 sidebar showbar" style="width: 230px; position: fixed; height: 100%; top:0;background-color:#43596f; overflow-y: auto;" id="men">
   <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
       <img src="../../assets/Emblem_of_Nepal.svg" alt="Emblem of Nepal" class="d-block mx-auto" height="40">
     <span class="fs-4 space">SRMS
@@ -31,7 +31,28 @@
   <hr>
 </div>
 
-<a href="javascript:void(0)" (click)="closeSideBar()">
+<button href="javascript:void(0)" (click)="closeSideBar()" id="lis" style="all: unset; position: absolute !important;">
 <i class="bi bi-justify buttooon" style="position: absolute; left: 250px; font-size: x-large; cursor: pointer;"></i>
 
-</a>
+</button>
+
+<button  href="javascript:void(0)" (click)="overLaySideBar()" id="lisst" style="all:unset;position: absolute !important;">
+  <i class="bi bi-justify buttooon" style="position: absolute; left: 20px; font-size: x-large; cursor: pointer;"></i>
+</button>
+
+
+<div id="myNav" class="overlay" style="overflow-y: auto;">
+  <a href="javascript:void(0)" class="closebtn" (click)="overLaySideBar()">&times;</a>
+  <div class="overlay-content">
+    <ng-container *ngFor="let i of navcontent">
+      <a href="javascript:void(0)" class="nav-link text-white" routerLink="{{i.link}}"  (click)="overLaySideBar()">
+        <i class="{{i.icon}} ico"></i>
+        {{i.name}}
+    </a>
+    </ng-container>
+    <a href="javascript:void(0)" class="nav-link text-white" (click)="logout()" (click)="overLaySideBar()">
+      <i class="bi bi-box-arrow-in-left ico"></i>
+      Logout
+  </a>
+  </div>
+</div>
