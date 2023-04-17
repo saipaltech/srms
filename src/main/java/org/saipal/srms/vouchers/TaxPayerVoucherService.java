@@ -123,12 +123,12 @@ public class TaxPayerVoucherService extends AutoService {
 	public ResponseEntity<Map<String, Object>> getSpecific(String id) {
 		// String transactionid = request("id");
 //		String sql = "select bd.id, bd.depositdate, bd.bankvoucherno, lls.namenp as llsname,cc.namenp as collectioncentername, bd.accountnumber, bd.amount, bd.remarks, bd.transactionid from bank_deposits as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid where bd.id =" + id;
-		String sql = "select cast(bd.id as varchar) as id,cast (bd.date as date) as date, bd.voucherno,\r\n"
+		String sql = "select cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno,\r\n"
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.id=" + id
-				+ " group by bd.id,bd.date,bd.voucherno,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
+				+ " group by bd.id,bd.date,bd.voucherno,bd.lgid,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
 //		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql);
 		List<Map<String, Object>> revs = db.getResultListMap(
@@ -756,7 +756,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.voucherno=?";
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.karobarsanket=?";
 //		System.out.println(sql);
 		Map<String, Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno));
 		if(t==null) {
@@ -843,7 +843,8 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.voucherno=? ";
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.karobarsanket=? ";
+//		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(voucherno));
 		if(data==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
@@ -927,5 +928,97 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 		return Messenger.getMessenger().setMessage("Cannot determine the status, Please try again later.").error();
 	}
+	
+	public ResponseEntity<Map<String, Object>> getVoucherTransfer() {
+		if (!auth.hasPermission("bankuser")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		String condition = " where ttype=1 and changereq=1";
+		String approve = request("approve");
+		System.out.println("The approval Id is:" + approve);
+		if (!request("searchTerm").isEmpty()) {
+			List<String> searchbles = TaxPayerVoucher.searchables();
+			condition += "and (";
+			for (String field : searchbles) {
+				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
+			}
+			condition = condition.substring(0, condition.length() - 3);
+			condition += ")";
+		}
 
+		String sort = "";
+		if (!request("sortKey").isBlank()) {
+			if (!request("sortDir").isBlank()) {
+				sort = request("sortKey") + " " + request("sortDir");
+			}
+		}
+		if (sort.isBlank()) {
+			sort = "date desc";
+		}
+
+		Paginator p = new Paginator();
+		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
+				.select("cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno,\r\n"
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
+				+ "bd.amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n")
+				.sqlBody(" from taxvouchers as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid " + condition).paginate();
+//		System.out.println(result);
+		if (result != null) {
+			return ResponseEntity.ok(result);
+		} else {
+			return Messenger.getMessenger().error();
+		}
+	}
+
+	public ResponseEntity<Map<String, Object>> getdayclose() {
+		String date=request("date");
+		String lgid=request("lgid");
+		String acno=request("acno");
+		String sql="select ROW_NUMBER() OVER (ORDER BY taxvouchers.id) as sn, id, karobarsanket,taxpayername,amount from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
+		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(lgid, acno));
+		if(admlvl.isEmpty()) {
+			return Messenger.getMessenger().setMessage("No transaction found").error();
+		}else {
+			List<Map<String, Object>> list = new ArrayList<>();
+			if (!admlvl.isEmpty()) {
+				for (Tuple t : admlvl) {
+//					System.out.println(t.toString());
+					Map<String, Object> mapadmlvl = new HashMap<>();
+					mapadmlvl.put("id", t.get("id"));
+					mapadmlvl.put("sn", t.get("sn"));
+					mapadmlvl.put("karobarsanket", t.get("karobarsanket"));
+					mapadmlvl.put("amount", t.get("amount"));
+					mapadmlvl.put("taxpayername", t.get("taxpayername"));
+					
+					list.add(mapadmlvl);
+				}
+		}
+			return Messenger.getMessenger().setData(list).success();
+	}
+//		return null;
+}
+
+	public ResponseEntity<Map<String, Object>> submitdayclose() {
+		// TODO Auto-generated method stub
+		String date=request("date");
+		String lgid=request("lgid");
+		String acno=request("acno");
+		String sq="select count(id) as cid from dayclose where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
+		Map<String,Object> t = db.getSingleResultMap(sq,Arrays.asList(lgid,acno));
+//		System.out.println(t.get("cid"));
+		if(t.get("cid").toString().equals("1")) {
+			return Messenger.getMessenger().setMessage("Day close has been done already").error();
+		}
+		if(date.isBlank() ||lgid.isBlank() || acno.isBlank()) {
+			return Messenger.getMessenger().setMessage("Required field is not supplied.").error();
+		}
+		String sql = "insert into dayclose(lgid,accountno,creatorid,dateint) values (?,?,?,format(getdate(),'yyyyMMdd')) ";
+		DbResponse rowEffect = db.execute(sql,
+				Arrays.asList(lgid,acno,auth.getUserId()));
+		if (rowEffect.getErrorNumber() == 0) {
+			return Messenger.getMessenger().success();
+		}else {
+			return Messenger.getMessenger().error();
+		}
+	}
 }

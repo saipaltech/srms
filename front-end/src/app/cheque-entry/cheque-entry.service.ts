@@ -13,6 +13,13 @@ export class ChequeEntryService {
     return this.http.get(this.url+"/get-revenue-list?bankorgid="+bankorgid);
   }
 
+  getdayclose(data:any){
+    return this.http.post(this.url+"/getdayclose", data);
+  }
+  submitdayclose(data:any){
+    return this.http.post(this.url+"/submitdayclose", data);
+  }
+
   getBank() {
     return this.http.get(this.url+"/get-banks-list");
   }
