@@ -168,4 +168,9 @@ public class TaxPayerVoucherController {
 	public ResponseEntity<Map<String, Object>> saveEditDetailsOff(){
 		return objService.saveEditDetailsOff();
 	}
+
+	@GetMapping("vocuher-transfer")
+	public ResponseEntity<Map<String, Object>> voucherIndex(HttpServletRequest request) {
+		return objService.getVoucherTransfer();
+	}
 }
