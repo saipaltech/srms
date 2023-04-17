@@ -141,7 +141,7 @@ ngOnInit(): void {
   }});
   this.bvs.getLocalLevels().subscribe({next:(dt)=>{
       this.llgs = dt.data;
-      this.voucherBankForm.patchValue({"lgid":this.dlgid});
+      // this.voucherBankForm.patchValue({"lgid":this.dlgid});
     },error:err=>{
 
     }});
@@ -426,20 +426,10 @@ createItem(id = null) {
   } else {
     this.bvs.create(upd).subscribe({
       next:(result:any) => {
-        // alert('create')
       this.toastr.success('Item Successfully Saved!', 'Success');
-      // this.r.navigate(['report'], { state: { data: upd } });
-      // for(var i=0;i<this.items.length;i++){
-      //   console.log(i);
-      //   this.removeItems(i);
-      // }
       this.resetForm();
       this.getList();
     
-      
-
-      // this.istab=1;
-
       window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
     }, error:err => {
       this.toastr.error(err.error, 'Error');

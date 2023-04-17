@@ -756,7 +756,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.voucherno=?";
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.karobarsanket=?";
 //		System.out.println(sql);
 		Map<String, Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno));
 		if(t==null) {
@@ -831,7 +831,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.voucherno=? ";
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.karobarsanket=? ";
 //		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(voucherno));
 //		List<Map<String, Object>> revs = db.getResultListMap(
@@ -932,4 +932,55 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		return Messenger.getMessenger().setMessage("Voucher Updated").success();
 	}
 
+	public ResponseEntity<Map<String, Object>> getdayclose() {
+		String date=request("date");
+		String lgid=request("lgid");
+		String acno=request("acno");
+		String sql="select ROW_NUMBER() OVER (ORDER BY taxvouchers.id) as sn, id, karobarsanket,taxpayername,amount from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
+		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(lgid, acno));
+		if(admlvl.isEmpty()) {
+			return Messenger.getMessenger().setMessage("No transaction found").error();
+		}else {
+			List<Map<String, Object>> list = new ArrayList<>();
+			if (!admlvl.isEmpty()) {
+				for (Tuple t : admlvl) {
+//					System.out.println(t.toString());
+					Map<String, Object> mapadmlvl = new HashMap<>();
+					mapadmlvl.put("id", t.get("id"));
+					mapadmlvl.put("sn", t.get("sn"));
+					mapadmlvl.put("karobarsanket", t.get("karobarsanket"));
+					mapadmlvl.put("amount", t.get("amount"));
+					mapadmlvl.put("taxpayername", t.get("taxpayername"));
+					
+					list.add(mapadmlvl);
+				}
+		}
+			return Messenger.getMessenger().setData(list).success();
+	}
+//		return null;
+}
+
+	public ResponseEntity<Map<String, Object>> submitdayclose() {
+		// TODO Auto-generated method stub
+		String date=request("date");
+		String lgid=request("lgid");
+		String acno=request("acno");
+		String sq="select count(id) as cid from dayclose where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
+		Map<String,Object> t = db.getSingleResultMap(sq,Arrays.asList(lgid,acno));
+//		System.out.println(t.get("cid"));
+		if(t.get("cid").toString().equals("1")) {
+			return Messenger.getMessenger().setMessage("Day close has been done already").error();
+		}
+		if(date.isBlank() ||lgid.isBlank() || acno.isBlank()) {
+			return Messenger.getMessenger().setMessage("Required field is not supplied.").error();
+		}
+		String sql = "insert into dayclose(lgid,accountno,creatorid,dateint) values (?,?,?,format(getdate(),'yyyyMMdd')) ";
+		DbResponse rowEffect = db.execute(sql,
+				Arrays.asList(lgid,acno,auth.getUserId()));
+		if (rowEffect.getErrorNumber() == 0) {
+			return Messenger.getMessenger().success();
+		}else {
+			return Messenger.getMessenger().error();
+		}
+	}
 }
