@@ -40,7 +40,7 @@ public class TaxPayerVoucherController {
 //		System.out.println("Reached at Index");
 		return objService.indexcheque();
 	}
-
+	
 	@PostMapping("")
 	public ResponseEntity<Map<String, Object>> store(HttpServletRequest request) throws JSONException {
 		Validator validator = validationService.validate(TaxPayerVoucher.rules());
@@ -49,6 +49,19 @@ public class TaxPayerVoucherController {
 		} else {
 			return objService.store();
 		}
+	}
+	
+	@PostMapping("getdayclose")
+	public ResponseEntity<Map<String, Object>> getdayclose(HttpServletRequest request) throws JSONException {
+		
+			return objService.getdayclose();
+		
+	}
+	@PostMapping("submitdayclose")
+	public ResponseEntity<Map<String, Object>> submitdayclose(HttpServletRequest request) throws JSONException {
+		
+			return objService.submitdayclose();
+		
 	}
 
 	@GetMapping("{id}")

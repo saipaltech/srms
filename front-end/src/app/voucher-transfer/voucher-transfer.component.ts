@@ -281,7 +281,7 @@ getRevenue(){
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {
           this.transDetails = dt.data;
-          this.bankForm.patchValue({'lgid':this.transDetails.lgid})
+          // this.bankForm.patchValue({'lgid':this.transDetails.lgid})
           if (this.transDetails.trantype == 1) {
             this.istab = 1;
           } else {
