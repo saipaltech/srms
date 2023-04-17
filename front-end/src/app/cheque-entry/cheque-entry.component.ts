@@ -94,9 +94,14 @@ openModal(template: TemplateRef<any>, id:any,cstatus:any) {
 
 }
 
+formvalue=true; 
+
 clearCheque(id:any){
+  console.log(this.details);
   if (window.confirm('Are you sure this cheque is already cleared?')) {
   this.bvs.clearCheque(id).subscribe({next:(dt)=>{
+    console.log(this.details);
+    window.open("/#/cheque-report?voucherno="+this.details.voucherno+'&palika='+this.details.lgid +'&formvalue='+this.formvalue, '_blank');
     this.getList();
     this.toastr.success("Cheque status changed to cleared.","Success")
     this.modalRef?.hide();
@@ -440,7 +445,7 @@ createItem(id = null) {
 
       // this.istab=1;
 
-      window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
+      window.open("/#/cheque-report?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank');
     }, error:err => {
       this.toastr.error(err.error, 'Error');
     }

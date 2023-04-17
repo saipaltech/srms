@@ -68,7 +68,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       taxpayername: ['',Validators.required],
       taxpayerpan: ['',Validators.pattern('[0-9]+')],
       depositedby:['',Validators.required],
-      depcontact: ['',[Validators.required,Validators.pattern('[0-9]{10}')]],
+      depcontact: ['',[Validators.required,Validators.pattern('[0-9]')]],
       lgid: ['',Validators.required],
       // llgname: ['',Validators.required],
       collectioncenterid: ['',Validators.required],
@@ -85,7 +85,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
 }
 
 openModal(template: TemplateRef<any>, id:any) {
-  this.modalRef = this.modalService.show(template);
+  this.modalRef = this.modalService.show(template, Object.assign({}, { class: 'gray modal-lg' }));
   this.getDetails(id);
 }
 

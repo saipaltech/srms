@@ -1,5 +1,5 @@
 <div class="row g-5 justify-content-center">
-  <div class="col-md-7 col-lg-8">
+  <div class="col-12">
 
     <div class="card">
       <div class="card-header">
@@ -7,7 +7,7 @@
           <div class="col-md-8 text-start">
             Search Voucher
           </div>
-          <!-- <div class="col-md-4 text-end listdiv">
+          <div class="col-md-4 text-end listdiv">
             <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
               <i class="bi bi-list"></i> List of Vouchers
             </button>
@@ -17,7 +17,7 @@
             <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
               <i class="bi bi-reply"></i> Back to Form
             </button>
-          </div> -->
+          </div>
         </div>
       </div>
       <div class="card-body">
@@ -38,14 +38,22 @@
 
 
           <div class="modal-body" *ngIf="transDetails">
-            जम्मा गरेको मिति :  {{transDetails.date}}
-            <br>
-            बैंक भौचर नंबर: {{transDetails.voucherno}}
-            <br>
-            पालिका: {{transDetails.llsname}}
-            <br>
-            संकलन केन्द्र: {{transDetails.collectioncentername}}
-            <br>
+            <div class="row">
+              <div class="col-md-6">
+                जम्मा गरेको मिति :  {{transDetails.date}}
+              </div>
+              <div class="col-md-6">
+                बैंक भौचर नंबर: {{transDetails.voucherno}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                पालिका: {{transDetails.llsname}}
+              </div>
+              <div class="col-6">
+                संकलन केन्द्र: {{transDetails.collectioncentername}}
+              </div>
+            </div>            
             खाता नंबर: {{transDetails.accountno}}
             <br>
             प्रयोजन: {{transDetails.purpose}}
@@ -65,16 +73,23 @@
                 <tr><th>जम्मा रकम</th><th>{{transDetails.amount}}</th></tr>
               </tbody>
             </table>
-            करदाताको पान नंबर: {{transDetails.taxpayerpan}}
-            <br>
-            करदाताको नाम: {{transDetails.taxpayername}}
-            <br>
-            जम्मा गर्नेको नाम:{{transDetails.depositedby}}
-            <br>
-            जम्मा गर्नेको सम्पर्क नंबर: {{transDetails.depcontact}}
-            <br>
+            <div class="row"> 
+              <div class="col-6">
+                करदाताको पान नंबर: {{transDetails.taxpayerpan}}
+              </div>
+              <div class="col-6">
+                करदाताको नाम: {{transDetails.taxpayername}}
+              </div>
             </div>
-
+            <div class="row">
+              <div class="col-6">
+                जम्मा गर्नेको नाम:{{transDetails.depositedby}}
+              </div>
+              <div class="col-6">
+                जम्मा गर्नेको सम्पर्क नंबर: {{transDetails.depcontact}}
+              </div>
+            </div>
+            </div>
           <div class="row g-3">
             <input type="hidden" formControlName="id" />
             
@@ -152,26 +167,20 @@
             <!--table-borderless-->
             <thead>
               <tr>
-                <th scope="col">Transaction Id</th>
-                <th scope="col">Office Name</th>
-                <th scope="col">Voucher Date</th>
-                <th scope="col">Account No.</th>
+                <th scope="col">Voucher Number</th>
+                <th scope="col">Account Number</th>
+                <th scope="col">Date</th>
                 <th scope="col">Amount</th>
-
-
-
+                <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of lists; let i = index">
-                <td>{{ item.transactionid }}</td>
-                <td>{{ item.officename }}</td>
-                <td>{{ item.voucherdate }}</td>
-                <td>{{ item.accountnumber }}</td>
+                <td>{{ item.voucherno }}</td>
+                <td>{{ item.accountno }}</td>
+                <td>{{ item.date }}</td>
                 <td>{{ item.amount }}</td>
-
-
-
+                <td><button class="btn btn-success btn-sm" (click)="openModal(template, item.id)"> <i class="bi bi-eye"></i> </button></td>
               </tr>
             </tbody>
           </table>
@@ -207,3 +216,93 @@
 
   </div>
 </div>
+
+
+
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Voucher Details</h4>
+    <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body" *ngIf="details">
+
+    <div class="row">
+      <div class="col-6">
+        जम्मा गरेको मिति : {{details.date}}
+      </div>
+      <div class="col-6">
+        बैंक भौचर नंबर: {{details.voucherno}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        पालिका: {{details.llsname}}
+      </div>
+      <div class="col-md-6">
+        संकलन केन्द्र: {{details.collectioncentername}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        खाता नंबर: {{details.accountno}}
+      </div>
+      <div class="col-6">
+        रकम: {{details.amount}}
+      </div>
+    </div>
+
+    <!-- <br>
+    राजस्व शिर्षक: {{details.revenuetitle}}
+    <br> -->
+    प्रयोजन: {{details.purpose}}
+    <br>
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th scope="col"> राजस्व शिर्षक</th>
+          <th scope="col">रकम(रु.)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of details.revs; let i = index">
+          <td>{{r.namenp}}[{{r.revenueid}}]</td>
+          <td>{{r.amount}}</td>
+        </tr>
+        <tr>
+          <th>जम्मा रकम</th>
+          <th>{{details.amount}}</th>
+        </tr>
+      </tbody>
+    </table>
+    <div class="row">
+      <div class="col-md-6">
+        करदाताको पान नंबर: {{details.taxpayerpan}}
+      </div>
+      <div class="col-md-6">
+        करदाताको नाम: {{details.taxpayername}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        जम्मा गर्नेको नाम:{{details.depositedby}}
+      </div>
+      <div class="col-md-6">
+        जम्मा गर्नेको सम्पर्क नंबर: {{details.depcontact}}
+      </div>
+    </div>
+
+    <!-- <div *ngIf=hideApproveButton> -->
+      <div>
+      <hr>
+
+      <div class="row">
+        <div class="d-flex justify-content-center">
+          <!-- <button class="btn btn-success btn-sm" type="submit" (click)="approveVoucher(details.id)">Approve</button> -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ng-template>

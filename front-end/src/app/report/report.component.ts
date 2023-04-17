@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Router, ActivatedRouteSnapshot, RouterStateSnapshot, ActivatedRoute } from '@angular/router';
-
 
 @Component({
   selector: 'app-report',
@@ -8,24 +6,20 @@ import { Router, ActivatedRouteSnapshot, RouterStateSnapshot, ActivatedRoute } f
   styleUrls: ['./report.component.scss']
 })
 export class ReportComponent {
-  // data = this.route.snapshot.data;  
+  bsInlineValue = new Date();
+  bsInlineRangeValue: Date[];
+  maxDate = new Date();
 
+  constructor() {
+    this.maxDate.setDate(this.maxDate.getDate() + 7);
+    this.bsInlineRangeValue = [this.bsInlineValue, this.maxDate];
+  }
 
-  myVariable: any;
-constructor(private router: ActivatedRoute) {
-  this.router.queryParams.subscribe(params => {
-    // Retrieve the 'result' query parameter value
-    this.myVariable = params['result'];
-    console.log(this.myVariable); // Log the retrieved value to the console
-  });
-  // this.myVariable = this.router.snapshot.queryParamMap.get('result');
-  // const myVariable = this.router.snapshot.queryParamMap.get('result');
+  buttonClick(){
+    console.log(this.bsInlineRangeValue);
+    console.log("UP start value, below end date");
+    console.log(this.maxDate);
 
-  // console.log(this.myVariable)
-}
-
-
-
-  
+  }
 
 }

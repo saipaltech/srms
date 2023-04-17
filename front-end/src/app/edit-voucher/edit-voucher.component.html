@@ -1,5 +1,5 @@
 <div class="row g-5 justify-content-center">
-  <div class="col-md-7 col-lg-8">
+  <div class="col-12">
 
     <div class="card">
       <div class="card-header">
@@ -38,14 +38,23 @@
 
 
           <div class="modal-body" *ngIf="transDetails">
-            जम्मा गरेको मिति :  {{transDetails.date}}
-            <br>
-            बैंक भौचर नंबर: {{transDetails.voucherno}}
-            <br>
-            पालिका: {{transDetails.llsname}}
-            <br>
-            संकलन केन्द्र: {{transDetails.collectioncentername}}
-            <br>
+            <div class="row">
+              <div class="col-6">
+                जम्मा गरेको मिति :  {{transDetails.date}}
+              </div>
+              <div class="col-6">
+                बैंक भौचर नंबर: {{transDetails.voucherno}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                पालिका: {{transDetails.llsname}}
+              </div>
+              <div class="col-6">
+                संकलन केन्द्र: {{transDetails.collectioncentername}}
+              </div>
+            </div>
+           
             खाता नंबर: {{transDetails.accountno}}
             <br>
             प्रयोजन: {{transDetails.purpose}}
@@ -65,14 +74,23 @@
                 <tr><th>जम्मा रकम</th><th>{{transDetails.amount}}</th></tr>
               </tbody>
             </table>
-            करदाताको पान नंबर: {{transDetails.taxpayerpan}}
-            <br>
-            करदाताको नाम: {{transDetails.taxpayername}}
-            <br>
-            जम्मा गर्नेको नाम:{{transDetails.depositedby}}
-            <br>
-            जम्मा गर्नेको सम्पर्क नंबर: {{transDetails.depcontact}}
-            <br>
+            <div class="row">
+              <div class="col-6">
+                करदाताको पान नंबर: {{transDetails.taxpayerpan}}
+              </div>  
+              <div class="col-6">
+                करदाताको नाम: {{transDetails.taxpayername}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                जम्मा गर्नेको नाम:{{transDetails.depositedby}}
+              </div>
+              <div class="col-6">
+                जम्मा गर्नेको सम्पर्क नंबर: {{transDetails.depcontact}}
+              </div>
+            </div>
+
             </div>
 
           <div class="row g-3">
