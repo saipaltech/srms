@@ -1,0 +1,47 @@
+<div class="row g-5 justify-content-center">
+    <div class="col-md-7 col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <p>Day Close</p>
+        </div>
+  
+        <div class="card-body">
+          <form>
+            <div class="row">
+              <div class="col-6">
+                <ng-select [(ngModel)]="selectedCar" placeholder="Select Palika">
+                    <ng-option *ngFor="let car of cars" [value]="car.id">{{car.name}}</ng-option>
+                 </ng-select>
+              </div>
+              <div class="col-6">
+                <input type="text" class="form-control form-control-sm" placeholder="Enter Khata Number">
+              </div>
+            </div>
+            <br>
+          </form>
+
+          <table class="display responsive-table w-100 table table-striped datatable" style="word-wrap: anywhere;"> <!--table-borderless-->
+            <thead>
+              <tr>
+    
+                <th scope="col">Voucher No.</th>
+                <th scope="col">Tax Payer</th>
+                <th scope="col">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+    
+    
+              <tr >
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+    
+              </tr>
+    
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
