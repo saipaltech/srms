@@ -336,4 +336,22 @@ public class ApiManager {
 		}
 		return null;
 	}
+
+	public JSONObject getPalikaResponse(String id) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
+					.setParam("id",id)
+					.post(url + "/srms/taxpayer-voucher-update-response");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
 }

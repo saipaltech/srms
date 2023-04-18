@@ -1038,20 +1038,49 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	
 	
 	public ResponseEntity<Map<String, Object>> getSpecificAnotherPalika(String id) {
-		// String transactionid = request("id");
-//		String sql = "select bd.id, bd.depositdate, bd.bankvoucherno, lls.namenp as llsname,cc.namenp as collectioncentername, bd.accountnumber, bd.amount, bd.remarks, bd.transactionid from bank_deposits as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid where bd.id =" + id;
 		String sql = "select cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno,\r\n"
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.id=" + id
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.id=?"
 				+ " group by bd.id,bd.date,bd.voucherno,bd.lgid,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
-//		System.out.println(sql);
-		Map<String, Object> data = db.getSingleResultMap(sql);
+
+		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(id));
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(id));
 		data.put("revs", revs);
+		Tuple t = db.getSingleResult("select * from taxvoucher_ll_change where vrefid=? and id = (select top 1 id from taxvoucher_ll_change order by createdon desc)",Arrays.asList(id));
+		Map<String,Object> msg = new HashMap<>();
+		if(t!=null) {
+			if((t.get("palikaresponse")+"").equals("0")) {
+				JSONObject presp = api.getPalikaResponse(id);
+				if(presp!=null) {
+					try {
+						if(presp.getInt("status")==1) {
+							JSONObject sdata = presp.getJSONObject("data");
+							int repStatus = sdata.getInt("palikaresponse");
+							String reason = sdata.getString("responsereason");
+							if(repStatus==0) {
+								msg.put("palikaresponse", "0");
+								msg.put("responsereason", "");
+							}else {
+								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where vrefid=? and id = (select top 1 id from taxvoucher_ll_change order by createdon desc)",Arrays.asList(repStatus,reason,id));
+								msg.put("palikaresponse", repStatus);
+								msg.put("responsereason", reason);
+							}
+						}
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}else {
+				msg.put("palikaresponse", t.get("palikaresponse"));
+				msg.put("responsereason", t.get("responsereason"));
+			}
+		}
+		data.put("status", msg);
 		return ResponseEntity.ok(data);
 	}
 

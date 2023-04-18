@@ -227,7 +227,12 @@
     </button>
   </div>
   <div class="modal-body" *ngIf="details">
-
+    <div class="alert alert-success" role="alert" *ngIf="details.status?.palikaresponse==2">
+      {{details.status?.responsereason || "Update Change Granted"}}
+    </div>
+    <div class="alert alert-danger" role="alert" *ngIf="details.status?.palikaresponse==3">
+      {{details.status?.responsereason}}
+    </div>
     <div class="row">
       <div class="col-6">
         जम्मा गरेको मिति : {{details.date}}
@@ -299,7 +304,8 @@
 
       <div class="row">
         <div class="d-flex justify-content-center">
-          <!-- <button class="btn btn-success btn-sm" type="submit" (click)="approveVoucher(details.id)">Approve</button> -->
+          <button class="btn btn-success btn-sm" *ngIf="details.status?.palikaresponse==2" type="button" (click)="updateChanges(details.id)">Settle Updates</button>
+          <button class="btn btn-success btn-sm" *ngIf="details.status?.palikaresponse==3" type="button" (click)="updateChanges(details.id)">Terminate Updates</button>
         </div>
       </div>
     </div>
