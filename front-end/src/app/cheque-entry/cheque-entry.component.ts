@@ -97,6 +97,7 @@ openModal(template: TemplateRef<any>, id:any,cstatus:any) {
 formvalue=true; 
 
 clearCheque(id:any){
+  this.getDetails(id);
   console.log(this.details);
   if (window.confirm('Are you sure this cheque is already cleared?')) {
   this.bvs.clearCheque(id).subscribe({next:(dt)=>{
@@ -233,7 +234,7 @@ getBankAccounts(){
       this.getPalikaDetails();
       this.getBankAccounts();
     }});
-    this.voucherBankForm.patchValue({'lgid':this.dlgid});
+    // this.voucherBankForm.patchValue({'lgid':this.dlgid});
     this.items=new Array();
     this.istab=1;
   }
