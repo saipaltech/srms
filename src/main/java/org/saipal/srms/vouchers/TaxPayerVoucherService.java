@@ -1050,7 +1050,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(id));
 		data.put("revs", revs);
-		Tuple t = db.getSingleResult("select * from taxvoucher_ll_change where vrefid=? and id = (select top 1 id from taxvoucher_ll_change order by createdon desc)",Arrays.asList(id));
+		Tuple t = db.getSingleResult("select * from taxvoucher_ll_change where vrefid=? and caseterminated=0",Arrays.asList(id));
 		Map<String,Object> msg = new HashMap<>();
 		if(t!=null) {
 			if((t.get("palikaresponse")+"").equals("0")) {
@@ -1065,7 +1065,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 								msg.put("palikaresponse", "0");
 								msg.put("responsereason", "");
 							}else {
-								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where vrefid=? and id = (select top 1 id from taxvoucher_ll_change order by createdon desc)",Arrays.asList(repStatus,reason,id));
+								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where vrefid=? and caseterminated=0",Arrays.asList(repStatus,reason,id));
 								msg.put("palikaresponse", repStatus);
 								msg.put("responsereason", reason);
 							}
@@ -1083,5 +1083,41 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		data.put("status", msg);
 		return ResponseEntity.ok(data);
 	}
+	
+	public ResponseEntity<Map<String, Object>> settlePalikaChange(String id) {
+		String type=request("type");
+		Tuple t = db.getSingleResult("select top 1 * from taxvoucher_ll_change where vrefid=? and caseterminated=0",Arrays.asList(id));
+		Map<String,Object> msg = new HashMap<>();
+		if(t!=null) {
+			if((t.get("palikaresponse")+"").equals("0")) {
+				JSONObject presp = api.getPalikaResponse(id);
+				if(presp!=null) {
+					try {
+						if(presp.getInt("status")==1) {
+							JSONObject sdata = presp.getJSONObject("data");
+							int repStatus = sdata.getInt("palikaresponse");
+							String reason = sdata.getString("responsereason");
+							if(repStatus==0) {
+								msg.put("palikaresponse", "0");
+								msg.put("responsereason", "");
+							}else {
+								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where vrefid=? and caseterminated=0",Arrays.asList(repStatus,reason,id));
+								msg.put("palikaresponse", repStatus);
+								msg.put("responsereason", reason);
+							}
+						}
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}else {
+				msg.put("palikaresponse", t.get("palikaresponse"));
+				msg.put("responsereason", t.get("responsereason"));
+			}
+		}
+		return Messenger.getMessenger().setMessage("Invalid Request..").error();
+	}
+	
 
 }

@@ -68,6 +68,7 @@ export class VoucherTransferComponent {
   }
 
   openModal(template: TemplateRef<any>, id:any) {
+    this.details = undefined;
     this.modalRef = this.modalService.show(template, Object.assign({}, { class: 'gray modal-lg' }));
     this.getDetails(id);  
   }
