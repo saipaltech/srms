@@ -242,20 +242,23 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-6">
-        पालिका: {{details.llsname}}
+      <div class="col-6">
+        रकम: {{details.amount}}
       </div>
       <div class="col-md-6">
-        संकलन केन्द्र: {{details.collectioncentername}}
+        <!-- पालिका: {{details.llsname}} -->
+      </div>
+      <div class="col-md-6">
+        <!-- संकलन केन्द्र: {{details.collectioncentername}} -->
       </div>
     </div>
     <div class="row">
       <div class="col-6">
-        खाता नंबर: {{details.accountno}}
+        <!-- खाता नंबर: {{details.accountno}} -->
       </div>
-      <div class="col-6">
+      <!-- <div class="col-6">
         रकम: {{details.amount}}
-      </div>
+      </div> -->
     </div>
 
     <!-- <br>
@@ -301,6 +304,32 @@
     <!-- <div *ngIf=hideApproveButton> -->
       <div>
       <hr>
+
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th scope="col" colspan="2">संसोधन गर्नु पर्ने</th>
+          </tr>
+          <tr>
+            <th scope="col">साविक</th>
+            <th scope="col">संसोधन पछि</th>
+          </tr>
+        </thead>
+        <tbody *ngFor="let r of details.revs; let i = index">
+          <tr>
+            <td>पालिका: {{details.llsname}}</td>
+            <td>पालिका: </td>
+          </tr>
+          <tr>
+            <td>संकलन केन्द्र: {{details.collectioncentername}}</td>
+            <td>संकलन केन्द्र: </td>
+          </tr>
+          <tr>
+            <td>खाता नो. : {{details.accountno}}</td>
+            <td>खाता नो. : </td>
+          </tr>
+        </tbody>
+      </table>
 
       <div class="row">
         <div class="d-flex justify-content-center">
