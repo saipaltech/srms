@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ApiService } from '../api.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-report',
@@ -6,20 +9,53 @@ import { Component } from '@angular/core';
   styleUrls: ['./report.component.scss']
 })
 export class ReportComponent {
-  bsInlineValue = new Date();
-  bsInlineRangeValue: Date[];
-  maxDate = new Date();
 
-  constructor() {
-    this.maxDate.setDate(this.maxDate.getDate() + 7);
-    this.bsInlineRangeValue = [this.bsInlineValue, this.maxDate];
+  formLayout: any;
+
+  reportForm!: FormGroup
+
+  formattedDateStartDate!: any;
+  formattedDateEndDate!: any;
+
+  model: any = {};
+
+  constructor(private fb: FormBuilder,private http: ApiService, private toastr: ToastrService) {
+    this.formLayout = {
+      from:['', Validators.required],
+      to:['', Validators.required]
+    }
+
+    this.reportForm = fb.group(this.formLayout)
   }
 
-  buttonClick(){
-    console.log(this.bsInlineRangeValue);
-    console.log("UP start value, below end date");
-    console.log(this.maxDate);
+  url="taxpayer-voucher"; 
 
+  reportFormSubmit(){
+
+    console.log(this.reportForm.value.from);
+    console.log(this.reportForm.value.to);
+
+    if(this.reportForm.valid){
+      this.model = this.reportForm;
+      this.http.get(this.url+'/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to).subscribe({next: (data) =>{
+        this.model = data;
+        console.log(this.model);
+      } 
+    })
+    }
+    else{
+      Object.keys(this.reportForm.controls).forEach(field => {
+        const singleFormControl = this.reportForm.get(field);
+        singleFormControl?.markAsTouched({onlySelf: true});
+      });
+        this.toastr.error('Unable to Fetch Data', 'Error');
+
+    }
+  }
+
+  clearButton(){
+   this.reportForm = this.fb.group(this.formLayout);
+   this.model =  undefined;
   }
 
 }

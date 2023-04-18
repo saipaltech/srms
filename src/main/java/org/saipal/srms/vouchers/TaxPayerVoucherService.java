@@ -1021,4 +1021,15 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			return Messenger.getMessenger().error();
 		}
 	}
+
+	public ResponseEntity<List<Map<String, Object>>> getReport() {
+		String startDate = request("from");
+		String endDate = request("to");
+		String sql = "SELECT * FROM "+ table +" WHERE Date >= '"+startDate+"' AND Date <= '"+endDate+"'";
+		System.out.println(sql);
+		
+//		Map<String, Object> data = db.getSingleResultMap(sql);
+		List<Map<String, Object>> data = db.getResultListMap(sql,Arrays.asList());
+		return ResponseEntity.ok(data);
+	}
 }
