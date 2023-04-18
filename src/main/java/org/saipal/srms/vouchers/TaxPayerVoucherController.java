@@ -186,4 +186,9 @@ public class TaxPayerVoucherController {
 	public ResponseEntity<Map<String, Object>> voucherIndex(HttpServletRequest request) {
 		return objService.getVoucherTransfer();
 	}
+	
+	@GetMapping("get-report")
+	public ResponseEntity<List<Map<String, Object>>> getReport(HttpServletRequest request) {
+		return objService.getReport();
+	}
 }
