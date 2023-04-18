@@ -354,4 +354,23 @@ public class ApiManager {
 		}
 		return null;
 	}
+
+	public JSONObject settlePalikaChange(String vrefid,String id) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
+					.setParam("id",id)
+					.setParam("vrefid",vrefid)
+					.post(url + "/srms/taxpayer-voucher-settle-update");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
 }

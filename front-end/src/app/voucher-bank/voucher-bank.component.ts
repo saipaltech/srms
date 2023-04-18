@@ -68,7 +68,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       taxpayername: ['',Validators.required],
       taxpayerpan: ['',Validators.pattern('[0-9]+')],
       depositedby:['',Validators.required],
-      depcontact: ['',[Validators.required,Validators.pattern('[0-9]')]],
+      depcontact: ['',[Validators.required,/*Validators.pattern('[0-9]')*/]],
       lgid: ['',Validators.required],
       // llgname: ['',Validators.required],
       collectioncenterid: ['',Validators.required],

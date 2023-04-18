@@ -1084,36 +1084,37 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		return ResponseEntity.ok(data);
 	}
 	
-	public ResponseEntity<Map<String, Object>> settlePalikaChange(String id) {
-		String type=request("type");
+	public ResponseEntity<Map<String, Object>> settlePalikaChange() {
+		String id = request("id");
 		Tuple t = db.getSingleResult("select top 1 * from taxvoucher_ll_change where vrefid=? and caseterminated=0",Arrays.asList(id));
-		Map<String,Object> msg = new HashMap<>();
 		if(t!=null) {
-			if((t.get("palikaresponse")+"").equals("0")) {
-				JSONObject presp = api.getPalikaResponse(id);
-				if(presp!=null) {
-					try {
+			try {
+			if((t.get("palikaresponse")+"").equals("2")) {
+				
+					JSONObject presp = api.settlePalikaChange(id,t.get("id")+"");
+					if(presp!=null) {
 						if(presp.getInt("status")==1) {
-							JSONObject sdata = presp.getJSONObject("data");
-							int repStatus = sdata.getInt("palikaresponse");
-							String reason = sdata.getString("responsereason");
-							if(repStatus==0) {
-								msg.put("palikaresponse", "0");
-								msg.put("responsereason", "");
-							}else {
-								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where vrefid=? and caseterminated=0",Arrays.asList(repStatus,reason,id));
-								msg.put("palikaresponse", repStatus);
-								msg.put("responsereason", reason);
-							}
+							db.execute("update "+table+" set hasChangeReqest=0,lgid=?,collectioncenterid=?,accountno=? where id=?",Arrays.asList(t.get("lgid"),t.get("collectioncenterid"),t.get("bankorgid"),id));
+							db.execute("update taxvoucher_ll_change set caseterminated=1 ,terminationdate=getDate() where vrefid=? and caseterminated=0",Arrays.asList(id));
+							return Messenger.getMessenger().setMessage("Data Successfully updated").success();
 						}
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					}else {
+						return Messenger.getMessenger().setMessage("Error on communication with SuTRA ").error();
 					}
+			}else if((t.get("palikaresponse")+"").equals("3")) {
+				JSONObject presp = api.settlePalikaChange(id,t.get("id")+"");
+				if(presp!=null) {
+					if(presp.getInt("status")==1) {
+						db.execute("update "+table+" set hasChangeReqest=0 where id=?",Arrays.asList(id));
+						db.execute("update taxvoucher_ll_change set caseterminated=1,terminationdate=getDate() where vrefid=? and caseterminated=0 and id=?",Arrays.asList(id,t.get("id")));
+						return Messenger.getMessenger().setMessage("Data Successfully updated").success();
+					}
+				}else {
+					return Messenger.getMessenger().setMessage("Error on communication with SuTRA ").error();
 				}
-			}else {
-				msg.put("palikaresponse", t.get("palikaresponse"));
-				msg.put("responsereason", t.get("responsereason"));
+			}
+			}catch (JSONException e) {
+				// TODO: handle exception
 			}
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request..").error();

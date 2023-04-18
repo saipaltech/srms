@@ -85,7 +85,9 @@ getDetails(id:any){
 }
 
 updateChanges(id:string){
-
+  this.RS.updateChanges(id).subscribe({next:(d:any)=>{
+    
+  }});
 }
 
 
