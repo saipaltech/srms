@@ -933,7 +933,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = " where ttype=1 and changereq=1";
+		String condition = " where ttype=1 and hasChangeReqest=1";
 		String approve = request("approve");
 		System.out.println("The approval Id is:" + approve);
 		if (!request("searchTerm").isEmpty()) {
@@ -1032,4 +1032,24 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		List<Map<String, Object>> data = db.getResultListMap(sql,Arrays.asList());
 		return ResponseEntity.ok(data);
 	}
+	
+	
+	public ResponseEntity<Map<String, Object>> getSpecificAnotherPalika(String id) {
+		// String transactionid = request("id");
+//		String sql = "select bd.id, bd.depositdate, bd.bankvoucherno, lls.namenp as llsname,cc.namenp as collectioncentername, bd.accountnumber, bd.amount, bd.remarks, bd.transactionid from bank_deposits as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid where bd.id =" + id;
+		String sql = "select cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno,\r\n"
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
+				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
+				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.id=" + id
+				+ " group by bd.id,bd.date,bd.voucherno,bd.lgid,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
+//		System.out.println(sql);
+		Map<String, Object> data = db.getSingleResultMap(sql);
+		List<Map<String, Object>> revs = db.getResultListMap(
+				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
+				Arrays.asList(id));
+		data.put("revs", revs);
+		return ResponseEntity.ok(data);
+	}
+
 }

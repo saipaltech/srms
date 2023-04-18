@@ -62,6 +62,6 @@ remove(id: string) {
 }
 
 getDetails(id: string) {
-  return this.http.get(this.url + '/get-specific/' + id);  
+  return this.http.get(this.url + '/get-specific-another-palika/' + id);  
 }
 }
