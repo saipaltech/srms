@@ -787,7 +787,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> saveEditDetails() {
 		String id = request("id");
 		String taxpayername = request("taxpayername");
-		String taxpayerpan = request("taxpayerpan");
+		String taxpayerpan = request("taxpayerpan").isBlank()?"0":request("taxpayerpan");
 		String amount = request("amount");
 		String sql = "select  top 1 *,cast((format(getdate(),'yyyyMMdd')) as numeric) as today from "+table+" where id=? and bankid=? and branchid=?";
 		Map<String,Object> t = db.getSingleResultMap(sql,Arrays.asList(id,auth.getBankId(),auth.getBranchId()));
@@ -811,6 +811,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 							if(ups!=null) {
 								if(ups.getInt("status")==1) {
 									db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amount=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,id));
+									return Messenger.getMessenger().setMessage("Voucher Updated").success();
 								}else {
 									return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
 								}
@@ -821,6 +822,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 							if(ups!=null) {
 								if(ups.getInt("status")==1) {
 									db.execute("update "+table+" set taxpayername=? ,taxpayerpan=? where id=?",Arrays.asList(taxpayername,taxpayerpan,id));
+									return Messenger.getMessenger().setMessage("Voucher Updated").success();
 								}else {
 									return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
 								}
@@ -839,7 +841,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	
 	public ResponseEntity<Map<String, Object>> getEditDetailsOff() {
 		String voucherno = request("voucherno");
-		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.changereq,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno,\r\n"
+		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.hasChangeReqest,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno,\r\n"
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
@@ -852,7 +854,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if((data.get("isused")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
 		}
-		if((data.get("changereq")+"").equals("1")) {
+		if((data.get("hasChangeReqest")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Change request is already in process.").error();
 		}
 		
@@ -898,7 +900,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if((t.get("lgid")+"").equals(lgid)) {
 			return Messenger.getMessenger().setMessage("Canot transfer to same local level.").error();
 		}
-		if((t.get("changereq")+"").equals("1")) {
+		if((t.get("hasChangeReqest")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Change request is already in process.").error();
 		}
 		
@@ -911,12 +913,13 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 						db.execute("update "+table+" set isused=1 where id=?",Arrays.asList(t.get("id")));
 						return Messenger.getMessenger().setMessage("Already used voucher").error();
 					} else {
-						JSONObject pdata = api.sendDataToSutraPalikachange(id, lgid, ccid, acno,remarks,auth.getUserId());
+						String llid = db.newIdInt();
+						JSONObject pdata = api.sendDataToSutraPalikachange(id,llid, lgid, ccid, acno,remarks,auth.getUserId());
 						if(pdata!=null) {
 							if(pdata.getInt("status")==1) {
-								db.execute("update "+table+" set changereq=1 where id=?",Arrays.asList(id));
-								db.execute("insert into taxvoucher_ll_change(vrefid,lgid,collectioncenterid,bankorgid,remarks,creatorid) values (?,?,?,?,?,?)",
-										Arrays.asList(id,lgid,ccid,acno,remarks,auth.getUserId()));
+								db.execute("update "+table+" set hasChangeReqest=1 where id=?",Arrays.asList(id));
+								db.execute("insert into taxvoucher_ll_change(id,vrefid,lgid,collectioncenterid,bankorgid,remarks,creatorid) values (?,?,?,?,?,?,?)",
+										Arrays.asList(llid,id,lgid,ccid,acno,remarks,auth.getUserId()));
 								return Messenger.getMessenger().setMessage("Voucher change requst sent.").success();
 							}
 						}
@@ -933,7 +936,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = " where ttype=1 and changereq=1";
+		String condition = " where ttype=1 and hasChangeReqest=1";
 		String approve = request("approve");
 		System.out.println("The approval Id is:" + approve);
 		if (!request("searchTerm").isEmpty()) {

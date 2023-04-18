@@ -226,7 +226,7 @@ public class ApiManager {
 		return null;
 	}
 	
-	public JSONObject sendDataToSutraPalikachange(String id,String lgid,String collectioncenterid,String accountno,String remarks,String userid) {
+	public JSONObject sendDataToSutraPalikachange(String id,String llid,String lgid,String collectioncenterid,String accountno,String remarks,String userid) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
@@ -234,6 +234,7 @@ public class ApiManager {
 					.setHeader("Authorization", "Bearer "+tok)
 					.setHeader("Content-Type", "application/x-www-form-urlencoded")
 					.setParam("id",id)
+					.setParam("llid",llid)
 					.setParam("lgid",lgid)
 					.setParam("collectioncenterid",collectioncenterid)
 					.setParam("accountno",accountno)					
