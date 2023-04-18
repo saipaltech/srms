@@ -1,13 +1,56 @@
-<form>
-<div class="row">
-    <div class="col-6">
-      <input type="email" class="form-control form-control-sm" placeholder="From">
+<div class="row g-5 justify-content-center">
+  <div class="col-md-7 col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <p>Report</p>
+      </div>
+
+      <div class="card-body">
+        <div class="row">
+         
+          <form class="needs-validation" [formGroup]="reportForm" (ngSubmit)="reportFormSubmit()">
+              <div class="row">
+                <div class="col-6">
+                  <label>From</label>
+                  <input class="form form-control" type="date" formControlName="from">
+                </div>
+                <div class="col-6">
+                  <label>To</label>
+                  <input class="form form-control" type="date" formControlName="to">
+                </div>
+              </div>
+              <br>
+            <button class="btn btn-success btn-sm" type="submit">Show</button> &nbsp;
+            <button class="btn btn-danger btn-sm" type="button" (click)="clearButton()">Clear</button>
+          </form>  
+          
+          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="tableView">
+            <!--table-borderless-->
+            <thead>
+              <tr>
+                <th scope="col">Account Number</th>
+                <!-- <th scope="col">Date</th> -->
+                <th scope="col">Voucher No.</th>
+                <th scope="col">TaxPayerName</th>
+                <th scope="col">Amount</th>                
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of model; let i = index">
+                <td>{{ item.accountno }}</td>
+                <!-- <td>{{ item.date }}</td> -->
+                <td>{{ item.voucherno }}</td>
+                <td>{{ item.taxpayername }}</td>
+                <td>{{ item.amount }}</td>
+              </tr>
+
+
+            </tbody>
+          </table>
+
+        </div>
+      </div>
     </div>
-    <div class="col-6">
-      <input type="text" class="form-control form-control-sm" placeholder="To">
-    </div>
-    
+  </div>
 </div>
-<br>
-<button type="submit" class="btn btn-success btn-sm">Show</button>
-  </form>

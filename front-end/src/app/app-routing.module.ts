@@ -17,6 +17,8 @@ import { NewNavComponent } from './new-nav/new-nav.component';
 import { ChequeEntryComponent } from './cheque-entry/cheque-entry.component';
 import { EditVoucherComponent } from './edit-voucher/edit-voucher.component';
 import { VoucherTransferComponent } from './voucher-transfer/voucher-transfer.component';
+import { DayCloseComponent } from './day-close/day-close.component';
+import { ChequeReportComponent } from './cheque-report/cheque-report.component';
 
 const routes: Routes = [
 {
@@ -75,6 +77,10 @@ const routes: Routes = [
             path: 'report',
             component: ReportComponent
           },
+          {
+            path: 'day-close',
+            component: DayCloseComponent
+          }
           
         ]
       },
@@ -90,6 +96,10 @@ const routes: Routes = [
       {
         path: 'report-generate',
         component: TrialComponent
+      },
+      {
+        path: 'cheque-report',
+        component: ChequeReportComponent
       },
 
     ]

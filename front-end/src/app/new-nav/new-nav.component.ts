@@ -65,6 +65,11 @@ export class NewNavComponent implements OnInit{
       sb.classList.add('hidebar');
       buttooon.style.left='0';
     }
-    
+  }
+
+  overLaySideBar(){
+    var elem = document.getElementById("myNav");
+    elem!.classList.toggle('overlayNav');
+    // elem!.classList.toggle('closeoverlayNav');
   }
 }

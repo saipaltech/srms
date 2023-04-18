@@ -38,6 +38,10 @@ import { ChequeEntryComponent } from './cheque-entry/cheque-entry.component';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { EditVoucherComponent } from './edit-voucher/edit-voucher.component';
 import { VoucherTransferComponent } from './voucher-transfer/voucher-transfer.component';
+import { DayCloseComponent } from './day-close/day-close.component';
+import { ChequeReportComponent } from './cheque-report/cheque-report.component';
+
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 
 
@@ -65,7 +69,9 @@ import { VoucherTransferComponent } from './voucher-transfer/voucher-transfer.co
     NewNavComponent,
     ChequeEntryComponent,
     EditVoucherComponent,
-    VoucherTransferComponent
+    VoucherTransferComponent,
+    DayCloseComponent,
+    ChequeReportComponent
   ],
   imports: [
     BrowserModule,
@@ -79,7 +85,8 @@ import { VoucherTransferComponent } from './voucher-transfer/voucher-transfer.co
     PaginationModule.forRoot(),
     ModalModule.forRoot(),
     BsDropdownModule.forRoot(),
-    TooltipModule.forRoot()
+    TooltipModule.forRoot(),
+    BsDatepickerModule.forRoot(),
   ],
   providers: [
     AppConfig,

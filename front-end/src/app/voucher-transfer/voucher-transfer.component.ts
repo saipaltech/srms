@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ValidationService } from '../validation.service';
 import { DatePipe } from '@angular/common';
 import { VoucherTransferService } from './voucher-transfer.service';
 import { VoucherServiceOff } from '../voucher-bank-off/voucher.service';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 
 @Component({
@@ -37,7 +38,9 @@ export class VoucherTransferComponent {
   items=new Array();
   revs:any;
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: VoucherTransferService,private bvs:VoucherServiceOff, private datePipe: DatePipe) {
+  modalRef?: BsModalRef;
+
+  constructor(private toastr: ToastrService,private modalService: BsModalService ,private fb: FormBuilder, private RS: VoucherTransferService,private bvs:VoucherServiceOff, private datePipe: DatePipe) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id: [],
@@ -64,9 +67,21 @@ export class VoucherTransferComponent {
     })
   }
 
+  openModal(template: TemplateRef<any>, id:any) {
+    this.modalRef = this.modalService.show(template, Object.assign({}, { class: 'gray modal-lg' }));
+    this.getDetails(id);  
+  }
 
+  details : any;
 
-
+getDetails(id:any){
+  this.bvs.getDetails(id).subscribe({next:(dt)=>{
+    this.details = dt;
+    // console.log(this.details);
+  },error:err=>{
+    this.toastr.error("Unable to Fetch Data","Error")
+  }});
+}
 
 
   ngOnInit(): void {
@@ -81,7 +96,7 @@ export class VoucherTransferComponent {
     },error:err=>{
 
     }});
-    // this.getList();
+    this.getList();
   }
 
   getPalikaDetails(){
@@ -266,7 +281,7 @@ getRevenue(){
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {
           this.transDetails = dt.data;
-          this.bankForm.patchValue({'lgid':this.transDetails.lgid})
+          // this.bankForm.patchValue({'lgid':this.transDetails.lgid})
           if (this.transDetails.trantype == 1) {
             this.istab = 1;
           } else {

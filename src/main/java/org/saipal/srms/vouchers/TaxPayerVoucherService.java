@@ -123,12 +123,12 @@ public class TaxPayerVoucherService extends AutoService {
 	public ResponseEntity<Map<String, Object>> getSpecific(String id) {
 		// String transactionid = request("id");
 //		String sql = "select bd.id, bd.depositdate, bd.bankvoucherno, lls.namenp as llsname,cc.namenp as collectioncentername, bd.accountnumber, bd.amount, bd.remarks, bd.transactionid from bank_deposits as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid where bd.id =" + id;
-		String sql = "select cast(bd.id as varchar) as id,cast (bd.date as date) as date, bd.voucherno,\r\n"
+		String sql = "select cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno,\r\n"
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.id=" + id
-				+ " group by bd.id,bd.date,bd.voucherno,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
+				+ " group by bd.id,bd.date,bd.voucherno,bd.lgid,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
 //		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql);
 		List<Map<String, Object>> revs = db.getResultListMap(
@@ -756,7 +756,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.voucherno=?";
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.karobarsanket=?";
 //		System.out.println(sql);
 		Map<String, Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno));
 		if(t==null) {
@@ -780,13 +780,15 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			}catch (JSONException e) {
 				// TODO: handle exception
 			}
-			return Messenger.getMessenger().setMessage("Internal Error").error();
 		}
-		return Messenger.getMessenger().setData(t).success();
+		return Messenger.getMessenger().setMessage("Cannot determine the status, Please try again later.").error();
 	}
 	
 	public ResponseEntity<Map<String, Object>> saveEditDetails() {
 		String id = request("id");
+		String taxpayername = request("taxpayername");
+		String taxpayerpan = request("taxpayerpan");
+		String amount = request("amount");
 		String sql = "select  top 1 *,cast((format(getdate(),'yyyyMMdd')) as numeric) as today from "+table+" where id=? and bankid=? and branchid=?";
 		Map<String,Object> t = db.getSingleResultMap(sql,Arrays.asList(id,auth.getBankId(),auth.getBranchId()));
 		if(t==null) {
@@ -805,24 +807,34 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 						return Messenger.getMessenger().setMessage("Already used voucher").error();
 					}else {
 						if((t.get("today")+"").equals(t.get("dateint")+"")) {
-							db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amount=? where id=?",Arrays.asList(request("taxpayername"),request("taxpayerpan"),request("amount"),id));
+							JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount);
+							if(ups!=null) {
+								if(ups.getInt("status")==1) {
+									db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amount=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,id));
+								}else {
+									return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
+								}
+							}
+							return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
 						}else {
-							db.execute("update "+table+" set taxpayername=? ,taxpayerpan=? where id=?",Arrays.asList(request("taxpayername"),request("taxpayerpan"),id));
+							JSONObject ups =  api.saveVoucherUpdates(id,taxpayername,taxpayerpan,"");
+							if(ups!=null) {
+								if(ups.getInt("status")==1) {
+									db.execute("update "+table+" set taxpayername=? ,taxpayerpan=? where id=?",Arrays.asList(taxpayername,taxpayerpan,id));
+								}else {
+									return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
+								}
+							}
+							return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
 						}
-						return Messenger.getMessenger().setMessage("Voucher Updated").success();
 					}
 				}
 			}catch (JSONException e) {
 				// TODO: handle exception
 			}
-			return Messenger.getMessenger().setMessage("Internal Error").error();
-		}
-		if((t.get("today")+"").equals(t.get("dateint")+"")) {
-			db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amount=? where id=?",Arrays.asList(request("taxpayername"),request("taxpayerpan"),request("amount"),id));
-		}else {
-			db.execute("update "+table+" set taxpayername=? ,taxpayerpan=? where id=?",Arrays.asList(request("taxpayername"),request("taxpayerpan"),id));
-		}
-		return Messenger.getMessenger().setMessage("Voucher Updated").success();
+			
+		}		
+		return Messenger.getMessenger().setMessage("Cannot determine the status, Please try again later.").error();
 	}
 	
 	public ResponseEntity<Map<String, Object>> getEditDetailsOff() {
@@ -831,24 +843,19 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.voucherno=? ";
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.karobarsanket=? ";
 //		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(voucherno));
-//		List<Map<String, Object>> revs = db.getResultListMap(
-//				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
-//				Arrays.asList(id));
-//		data.put("revs", revs);
-//		String sql = "select  top 1 *,cast(id as varchar) as iid,cast((format(getdate(),'yyyyMMdd')) as numeric) as today from "+table+" where voucherno=? and bankid=? and branchid=?";
-//		Map<String,Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno,auth.getBankId(),auth.getBranchId()));
 		if(data==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
-		}
-		if((data.get("changereq")+"").equals("1")) {
-			return Messenger.getMessenger().setMessage("Change request is already in process.").error();
 		}
 		if((data.get("isused")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
 		}
+		if((data.get("changereq")+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("Change request is already in process.").error();
+		}
+		
 		JSONObject sdata = api.getVoucherDetails(data.get("id")+"");
 		if(sdata!=null) {
 			try {
@@ -864,20 +871,20 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			}catch (JSONException e) {
 				// TODO: handle exception
 			}
-			return Messenger.getMessenger().setMessage("Internal Error").error();
+			
 		}
-		return Messenger.getMessenger().setData(data).success();
+		return Messenger.getMessenger().setMessage("Cannot determine the status, Please try again later.").error();
 	}
+	
 	@Transactional
 	public ResponseEntity<Map<String, Object>> saveEditDetailsOff() {
-		
 		String id = request("id");
 		String lgid=request("lgid");
 		String ccid=request("collectioncenterid");
 		String acno=request("accountno");
 		String remarks=request("remarks");
 		if(id.isBlank() ||lgid.isBlank() || ccid.isBlank() || acno.isBlank()|| remarks.isBlank()) {
-			return Messenger.getMessenger().setMessage("Required field is not supplied.").error();
+			return Messenger.getMessenger().setMessage("Required fields are not supplied.").error();
 		}
 		
 		String sql = "select  top 1 *,cast((format(getdate(),'yyyyMMdd')) as numeric) as today from "+table+" where id=? and bankid=? and branchid=?";
@@ -903,33 +910,146 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 					if(d.getInt("isused")==1) {
 						db.execute("update "+table+" set isused=1 where id=?",Arrays.asList(t.get("id")));
 						return Messenger.getMessenger().setMessage("Already used voucher").error();
-					}else {
-						db.execute("update "+table+" set changereq=1 where id=?",Arrays.asList(id));
-						db.execute("insert into taxvoucher_ll_change(vrefid,lgid,collectioncenterid,bankorgid,remarks,creatorid) values (?,?,?,?,?,?)",
-								Arrays.asList(id,lgid,ccid,acno,auth.getUserId()));
-						JSONObject pdata =api.sendDataToSutraPalikachange(id, lgid, ccid, acno,remarks,auth.getUserId());
+					} else {
+						JSONObject pdata = api.sendDataToSutraPalikachange(id, lgid, ccid, acno,remarks,auth.getUserId());
 						if(pdata!=null) {
-							
-								if(pdata.getInt("status")==1) {
-									return Messenger.getMessenger().setMessage("Voucher Updated").success();
-								}else {
-									throw new JSONException("Not able to update");
-								}
-							}else {
-								throw new JSONException("Not able to update");
+							if(pdata.getInt("status")==1) {
+								db.execute("update "+table+" set changereq=1 where id=?",Arrays.asList(id));
+								db.execute("insert into taxvoucher_ll_change(vrefid,lgid,collectioncenterid,bankorgid,remarks,creatorid) values (?,?,?,?,?,?)",
+										Arrays.asList(id,lgid,ccid,acno,remarks,auth.getUserId()));
+								return Messenger.getMessenger().setMessage("Voucher change requst sent.").success();
 							}
-//						return Messenger.getMessenger().setMessage("Voucher Updated").success();
+						}
 					}
 				}
 			}catch (JSONException e) {
 				// TODO: handle exception
 			}
-			return Messenger.getMessenger().setMessage("Internal Error").error();
 		}
-		db.execute("update "+table+" set changereq=1 where id=?",Arrays.asList(id));
-		db.execute("insert into taxvoucher_ll_change(vrefid,lgid,collectioncenterid,bankorgid,creatorid) values (?,?,?,?,?)",
-				Arrays.asList(id,lgid,ccid,acno,auth.getUserId()));
-		return Messenger.getMessenger().setMessage("Voucher Updated").success();
+		return Messenger.getMessenger().setMessage("Cannot determine the status, Please try again later.").error();
+	}
+	
+	public ResponseEntity<Map<String, Object>> getVoucherTransfer() {
+		if (!auth.hasPermission("bankuser")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		String condition = " where ttype=1 and hasChangeReqest=1";
+		String approve = request("approve");
+		System.out.println("The approval Id is:" + approve);
+		if (!request("searchTerm").isEmpty()) {
+			List<String> searchbles = TaxPayerVoucher.searchables();
+			condition += "and (";
+			for (String field : searchbles) {
+				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
+			}
+			condition = condition.substring(0, condition.length() - 3);
+			condition += ")";
+		}
+
+		String sort = "";
+		if (!request("sortKey").isBlank()) {
+			if (!request("sortDir").isBlank()) {
+				sort = request("sortKey") + " " + request("sortDir");
+			}
+		}
+		if (sort.isBlank()) {
+			sort = "date desc";
+		}
+
+		Paginator p = new Paginator();
+		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
+				.select("cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno,\r\n"
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
+				+ "bd.amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n")
+				.sqlBody(" from taxvouchers as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid " + condition).paginate();
+//		System.out.println(result);
+		if (result != null) {
+			return ResponseEntity.ok(result);
+		} else {
+			return Messenger.getMessenger().error();
+		}
+	}
+
+	public ResponseEntity<Map<String, Object>> getdayclose() {
+		String date=request("date");
+		String lgid=request("lgid");
+		String acno=request("acno");
+		String sql="select ROW_NUMBER() OVER (ORDER BY taxvouchers.id) as sn, id, karobarsanket,taxpayername,amount from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
+		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(lgid, acno));
+		if(admlvl.isEmpty()) {
+			return Messenger.getMessenger().setMessage("No transaction found").error();
+		}else {
+			List<Map<String, Object>> list = new ArrayList<>();
+			if (!admlvl.isEmpty()) {
+				for (Tuple t : admlvl) {
+//					System.out.println(t.toString());
+					Map<String, Object> mapadmlvl = new HashMap<>();
+					mapadmlvl.put("id", t.get("id"));
+					mapadmlvl.put("sn", t.get("sn"));
+					mapadmlvl.put("karobarsanket", t.get("karobarsanket"));
+					mapadmlvl.put("amount", t.get("amount"));
+					mapadmlvl.put("taxpayername", t.get("taxpayername"));
+					
+					list.add(mapadmlvl);
+				}
+		}
+			return Messenger.getMessenger().setData(list).success();
+	}
+//		return null;
+}
+
+	public ResponseEntity<Map<String, Object>> submitdayclose() {
+		// TODO Auto-generated method stub
+		String date=request("date");
+		String lgid=request("lgid");
+		String acno=request("acno");
+		String sq="select count(id) as cid from dayclose where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
+		Map<String,Object> t = db.getSingleResultMap(sq,Arrays.asList(lgid,acno));
+//		System.out.println(t.get("cid"));
+		if(t.get("cid").toString().equals("1")) {
+			return Messenger.getMessenger().setMessage("Day close has been done already").error();
+		}
+		if(date.isBlank() ||lgid.isBlank() || acno.isBlank()) {
+			return Messenger.getMessenger().setMessage("Required field is not supplied.").error();
+		}
+		String sql = "insert into dayclose(lgid,accountno,creatorid,dateint) values (?,?,?,format(getdate(),'yyyyMMdd')) ";
+		DbResponse rowEffect = db.execute(sql,
+				Arrays.asList(lgid,acno,auth.getUserId()));
+		if (rowEffect.getErrorNumber() == 0) {
+			return Messenger.getMessenger().success();
+		}else {
+			return Messenger.getMessenger().error();
+		}
+	}
+
+	public ResponseEntity<List<Map<String, Object>>> getReport() {
+		String startDate = request("from");
+		String endDate = request("to");
+		String sql = "SELECT * FROM "+ table +" WHERE Date >= '"+startDate+"' AND Date <= '"+endDate+"'";
+		System.out.println(sql);
+		
+//		Map<String, Object> data = db.getSingleResultMap(sql);
+		List<Map<String, Object>> data = db.getResultListMap(sql,Arrays.asList());
+		return ResponseEntity.ok(data);
+	}
+	
+	
+	public ResponseEntity<Map<String, Object>> getSpecificAnotherPalika(String id) {
+		// String transactionid = request("id");
+//		String sql = "select bd.id, bd.depositdate, bd.bankvoucherno, lls.namenp as llsname,cc.namenp as collectioncentername, bd.accountnumber, bd.amount, bd.remarks, bd.transactionid from bank_deposits as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid where bd.id =" + id;
+		String sql = "select cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno,\r\n"
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
+				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
+				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.id=" + id
+				+ " group by bd.id,bd.date,bd.voucherno,bd.lgid,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
+//		System.out.println(sql);
+		Map<String, Object> data = db.getSingleResultMap(sql);
+		List<Map<String, Object>> revs = db.getResultListMap(
+				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
+				Arrays.asList(id));
+		data.put("revs", revs);
+		return ResponseEntity.ok(data);
 	}
 
 }

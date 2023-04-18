@@ -27,7 +27,7 @@ export class VoucherTransferService {
 
   getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean) {
 
-    let urlPart = '?perPage=' + perPage + '&page=' + page;
+    let urlPart = '/vocuher-transfer?perPage=' + perPage + '&page=' + page;
     if (typeof searchTerm !== 'undefined' || searchTerm !== '') {
         urlPart += '&searchOption=all&searchTerm=' + searchTerm;
     }
@@ -59,5 +59,9 @@ getRevenue(bankorgid:any) {
 remove(id: string) {
   return this.http.delete(this.url + '/' + id);
 
+}
+
+getDetails(id: string) {
+  return this.http.get(this.url + '/get-specific-another-palika/' + id);  
 }
 }

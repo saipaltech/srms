@@ -12,6 +12,26 @@ body{
     background-color: #f8f9fa;
 }
 
+@media (max-width: 1405px) {
+  #men{
+    left: -500px;
+  }
+}
+
+@media (max-width: 1405px) {
+  #lis {
+    left: -500px !important;
+  }
+}
+
+@media (min-width: 1406px) {
+  #lisst {
+   display: none !important;
+  }
+}
+
+
+
 @import "~@ng-select/ng-select/themes/default.theme.css";
 
 .req::after{
