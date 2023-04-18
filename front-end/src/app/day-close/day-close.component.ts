@@ -103,11 +103,12 @@ acs:any;
     }
     model1:any;
     daycloseFormSubmit(){
-      console.log(this.check);
+      // console.log(this.check);
       if(this.check==false){
         alert("Missing tick");
         return;
       }
+      if (window.confirm('Are  you sure you want to save ?')) {
       this.model1 = this.daycloseForm.value;
       this.bvs.submitdayclose(this.model1).subscribe({
         next:(result:any) => {
@@ -121,6 +122,7 @@ acs:any;
         this.toastr.error(err.error.message, 'Error');
       }
       });
+    }
     }
 
     resetForm(){
