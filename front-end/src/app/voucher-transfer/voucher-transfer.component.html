@@ -321,15 +321,15 @@
         <tbody *ngFor="let r of details.revs; let i = index">
           <tr>
             <td>पालिका: {{details.llsname}}</td>
-            <td>पालिका: </td>
+            <td>पालिका: {{details.tlnamenp}} </td>
           </tr>
           <tr>
             <td>संकलन केन्द्र: {{details.collectioncentername}}</td>
-            <td>संकलन केन्द्र: </td>
+            <td>संकलन केन्द्र: {{details.tcnamenp}}</td>
           </tr>
           <tr>
-            <td>खाता नो. : {{details.accountno}}</td>
-            <td>खाता नो. : </td>
+            <td>खाता न. : {{details.accountnumber}}[{{details.accountname}}]</td>
+            <td>खाता न. : {{details.taccountnumber}}[{{details.taccountname}}]</td>
           </tr>
         </tbody>
       </table>

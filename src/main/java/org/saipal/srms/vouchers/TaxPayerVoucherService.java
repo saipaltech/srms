@@ -123,11 +123,11 @@ public class TaxPayerVoucherService extends AutoService {
 	public ResponseEntity<Map<String, Object>> getSpecific(String id) {
 		// String transactionid = request("id");
 //		String sql = "select bd.id, bd.depositdate, bd.bankvoucherno, lls.namenp as llsname,cc.namenp as collectioncentername, bd.accountnumber, bd.amount, bd.remarks, bd.transactionid from bank_deposits as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid where bd.id =" + id;
-		String sql = "select cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno,\r\n"
-				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
-				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
-				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.id=" + id
+		String sql = "select cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno, "
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.accountno, bd.revenuetitle, "
+				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
+				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid  "
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid " + "where bd.id=" + id
 				+ " group by bd.id,bd.date,bd.voucherno,bd.lgid,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
 //		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql);
@@ -380,11 +380,11 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if(voucherno.isBlank()) {
 			return Messenger.getMessenger().setMessage("Voucherno is required").error();
 		}
-		String sql = "select cast(bd.id as varchar) as id,cast (bd.date as date) as date, bd.voucherno,\r\n"
-				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
-				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
-				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.voucherno=" + voucherno
+		String sql = "select cast(bd.id as varchar) as id,cast (bd.date as date) as date, bd.voucherno, "
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.accountno, bd.revenuetitle, "
+				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
+				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid  "
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid " + "where bd.voucherno=" + voucherno
 				+ " group by bd.id,bd.date,bd.voucherno,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
 //		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql);
@@ -709,18 +709,18 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> getRevenueDetails() {
 		String voucher = request("voucherno");
 		String palika = request("palika");
-		String sql = "SELECT cr.namenp as revenuetitle,\r\n"
-				+ "       dbo.eng2nep(ROW_NUMBER() OVER (ORDER BY tvd.revenueid)) as sn, \r\n"
-				+ "       dbo.getrs(cast(tvd.amount as float)) as amountwords, \r\n"
-				+ "       dbo.eng2nep(tvd.amount) as amount, \r\n"
-				+ "       dbo.eng2nep(tvd.revenueid) as revenuecode,\r\n"
-				+ "       total_amount.amountwords as total_amount,\r\n"
-				+ "       total_amount_no.totalamountno as total_amount_no\r\n" + "FROM taxvouchers_detail tvd \r\n"
-				+ "JOIN taxvouchers tv ON tv.id = tvd.mainid \r\n" + "JOIN crevenue cr ON cr.code = tvd.revenueid \r\n"
-				+ "CROSS APPLY (\r\n" + "    SELECT dbo.getrs(cast(sum(amount) as float)) as amountwords\r\n"
-				+ "    FROM taxvouchers_detail\r\n" + "    WHERE mainid = tv.id\r\n" + ") as total_amount\r\n"
-				+ "CROSS APPLY (\r\n" + "    SELECT dbo.eng2nep(cast(sum(amount) as float)) as totalamountno\r\n"
-				+ "    FROM taxvouchers_detail\r\n" + "    WHERE mainid = tv.id\r\n" + ") as total_amount_no\r\n"
+		String sql = "SELECT cr.namenp as revenuetitle, "
+				+ "       dbo.eng2nep(ROW_NUMBER() OVER (ORDER BY tvd.revenueid)) as sn,  "
+				+ "       dbo.getrs(cast(tvd.amount as float)) as amountwords,  "
+				+ "       dbo.eng2nep(tvd.amount) as amount,  "
+				+ "       dbo.eng2nep(tvd.revenueid) as revenuecode, "
+				+ "       total_amount.amountwords as total_amount, "
+				+ "       total_amount_no.totalamountno as total_amount_no " + "FROM taxvouchers_detail tvd  "
+				+ "JOIN taxvouchers tv ON tv.id = tvd.mainid  " + "JOIN crevenue cr ON cr.code = tvd.revenueid  "
+				+ "CROSS APPLY ( " + "    SELECT dbo.getrs(cast(sum(amount) as float)) as amountwords "
+				+ "    FROM taxvouchers_detail " + "    WHERE mainid = tv.id " + ") as total_amount "
+				+ "CROSS APPLY ( " + "    SELECT dbo.eng2nep(cast(sum(amount) as float)) as totalamountno "
+				+ "    FROM taxvouchers_detail " + "    WHERE mainid = tv.id " + ") as total_amount_no "
 				+ "WHERE tv.voucherno = ? AND tv.lgid = ?;";
 
 		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(voucher, palika));
@@ -752,11 +752,11 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 
 	public ResponseEntity<Map<String, Object>> getEditDetails() {
 		String voucherno = request("voucherno");
-		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.isused,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno,\r\n"
-				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
-				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
-				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.karobarsanket=?";
+		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.isused,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno, "
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.accountno, bd.revenuetitle, "
+				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
+				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid  "
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid " + "where bd.karobarsanket=?";
 //		System.out.println(sql);
 		Map<String, Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno));
 		if(t==null) {
@@ -841,11 +841,11 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	
 	public ResponseEntity<Map<String, Object>> getEditDetailsOff() {
 		String voucherno = request("voucherno");
-		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.hasChangeReqest,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno,\r\n"
-				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
-				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
-				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.karobarsanket=? ";
+		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.hasChangeReqest,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno, "
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.accountno, bd.revenuetitle, "
+				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
+				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid  "
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid " + "where bd.karobarsanket=? ";
 //		System.out.println(sql);
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(voucherno));
 		if(data==null) {
@@ -961,9 +961,9 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno,\r\n"
-				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
-				+ "bd.amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n")
+				.select("cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno, "
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.accountno, bd.revenuetitle, "
+				+ "bd.amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby ")
 				.sqlBody(" from taxvouchers as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid " + condition).paginate();
 //		System.out.println(result);
 		if (result != null) {
@@ -1038,13 +1038,19 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	
 	
 	public ResponseEntity<Map<String, Object>> getSpecificAnotherPalika(String id) {
-		String sql = "select cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno,\r\n"
-				+ "lls.namenp as llsname,cc.namenp as collectioncentername,\r\n" + "bd.accountno, bd.revenuetitle,\r\n"
-				+ "SUM(t2.amount) as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby\r\n"
-				+ "from taxvouchers as bd left JOIN taxvouchers_detail t2 ON bd.id = t2.mainid join collectioncenter cc on cc.id = bd.collectioncenterid \r\n"
-				+ "join admin_local_level_structure lls on lls.id = bd.lgid\r\n" + "where bd.id=?"
-				+ " group by bd.id,bd.date,bd.voucherno,bd.lgid,lls.namenp,cc.namenp,bd.accountno,bd.revenuetitle, bd.purpose,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby";
-
+		String sql = "select cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno, "
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.accountno, bd.revenuetitle, "
+				+ "amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby, "
+				+" als.namenp as tlnamenp,tcc.namenp as tcnamenp,ba.accountnumber,ba.accountname,bat.accountnumber as taccountnumber,bat.accountname as taccountname"
+				+ " from taxvouchers as bd  "
+				+ "join collectioncenter cc on cc.id = bd.collectioncenterid  "
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid "
+				+ "join taxvoucher_ll_change llc on llc.vrefid = bd.id "
+				+ "join admin_local_level_structure als on als.id = llc.lgid "
+				+ "join collectioncenter tcc on tcc.id = llc.collectioncenterid "
+				+ "join bankaccount bat on bat.id = llc.bankorgid "
+				+ "join bankaccount ba on ba.id = bd.accountno "
+				+ "where bd.id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(id));
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
