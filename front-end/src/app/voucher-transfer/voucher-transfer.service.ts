@@ -22,7 +22,7 @@ export class VoucherTransferService {
     // return this.api.update(this.path,id,data);
   }
   updateChanges( id:string){
-    return this.http.post(this.url+"/"+"/settle-updates",{id:id})
+    return this.http.post(this.url+"/settle-updates",{id:id})
   }
 
   constructor(private http: ApiService) { 

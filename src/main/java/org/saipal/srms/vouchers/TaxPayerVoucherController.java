@@ -196,7 +196,7 @@ public class TaxPayerVoucherController {
 		return objService.getSpecificAnotherPalika(id);
 	}
 	
-	@GetMapping("settle-updates")
+	@PostMapping("settle-updates")
 	public ResponseEntity<Map<String, Object>> settlePalikaChange(){
 		return objService.settlePalikaChange();
 	}
