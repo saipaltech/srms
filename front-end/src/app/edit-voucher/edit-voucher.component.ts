@@ -131,6 +131,7 @@ export class EditVoucherComponent {
      
      // Add the new item to the items array
      this.items.push(newItem);
+     console.log(this.items);
      this.calctotal();
      this.bankForm.patchValue({"revenuecode":''});
      this.bankForm.patchValue({"amount":''});
@@ -230,6 +231,8 @@ export class EditVoucherComponent {
         next: (dt) => {
           this.transDetails = dt.data;
           this.getRevenue(this.transDetails.accountno);
+          this.items=this.transDetails.revs;
+          this.calctotal();
           this.bankForm.patchValue({'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount});
         
           if (this.transDetails.trantype == 1) {

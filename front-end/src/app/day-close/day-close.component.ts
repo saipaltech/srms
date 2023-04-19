@@ -40,11 +40,13 @@ export class DayCloseComponent {
           acno: ['',Validators.required],
           lgid: ['',Validators.required],
           
+          
         }
         this.formLayout1 = {
           date: [this.myDate],
           acno: ['',Validators.required],
           lgid: ['',Validators.required],
+          corebankid:['']
           
         }
         this.voucherBankForm =fb.group(this.formLayout);
@@ -110,7 +112,7 @@ acs:any;
     }
     model1:any;
     daycloseFormSubmit(){
-      // console.log(this.check);
+      console.log(this.check);
       if(this.check==false){
         alert("Missing tick");
         return;
@@ -126,6 +128,7 @@ acs:any;
         // this.getList();
       
       }, error:err => {
+        // console.log(err.error);
         this.toastr.error(err.error.message, 'Error');
       }
       });
