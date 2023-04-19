@@ -68,7 +68,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       taxpayername: ['',Validators.required],
       taxpayerpan: ['',Validators.pattern('[0-9]+')],
       depositedby:['',Validators.required],
-      depcontact: ['',[Validators.required,/*Validators.pattern('[0-9]')*/]],
+      depcontact: ['',[Validators.required,Validators.pattern('[0-9]+')]],
       lgid: ['',Validators.required],
       // llgname: ['',Validators.required],
       collectioncenterid: ['',Validators.required],
@@ -243,6 +243,7 @@ getBankAccounts(){
   }
 
 
+
   altmsg(msg:any){
     if(msg=="Invalid Pattern."){
       return "Number only";
@@ -252,7 +253,7 @@ getBankAccounts(){
 
   mobile(msg:any){
     if(msg=="Invalid Pattern."){
-      return "Need 10 digit mobile number";
+      return "Number only";
     }
     return msg;
   }
@@ -422,7 +423,8 @@ createItem(id = null) {
       // this.r.navigate(['report'], { state: { data: upd } });
       this.resetForm();
       this.getList();
-      window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
+      let ks=result.data;
+      window.open("/#/report-generate?voucherno="+ks+'&palika='+upd.lgid, '_blank')
     }, error:err => {
       this.toastr.error(err.error, 'Error');
     }

@@ -130,7 +130,7 @@
                 </div>
               </div>
             </div> -->
-            <div *ngIf="transDetails.today==transDetails.dateint" class="col-6">
+            <!-- <div *ngIf="transDetails.today==transDetails.dateint" class="col-6">
               <label class="form-label req">Amount</label>
               <div class="input-group has-validation">
                 <input formControlName="amount" type="text" class="form-control form-control-sm"
@@ -139,9 +139,9 @@
                   {{ vs.getMessage(bankForm.controls["amount"]) }}
                 </div>
               </div>
-            </div>
+            </div> -->
 
-            <!-- <div class="col-sm-6">
+            <div  *ngIf="transDetails.today==transDetails.dateint" class="col-sm-6">
               <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
               <ng-select formControlName="revenuecode" [(ngModel)]="selectedRevenue"  >
                 <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
@@ -188,7 +188,7 @@
                 </tbody>
               </table>
     
-            </div> -->
+            </div>
          
 
           </div>

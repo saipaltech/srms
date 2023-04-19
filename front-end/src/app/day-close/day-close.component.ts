@@ -87,6 +87,7 @@ acs:any;
       this.lists=undefined;
       this.model = this.voucherBankForm.value;
       // console.log(this.model.acno);
+      if (this.voucherBankForm.valid) {
       this.bvs.getdayclose(this.model).subscribe({
         next:(result:any) => {
           this.lists=result.data;
@@ -100,6 +101,12 @@ acs:any;
         this.toastr.error(err.error.message, 'Error');
       }
       });
+    }else{
+      Object.keys(this.voucherBankForm.controls).forEach(field => {
+        const singleFormControl = this.voucherBankForm.get(field);
+        singleFormControl?.markAsTouched({onlySelf: true});
+      });
+    }
     }
     model1:any;
     daycloseFormSubmit(){
