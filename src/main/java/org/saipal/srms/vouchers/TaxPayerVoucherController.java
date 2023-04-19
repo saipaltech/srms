@@ -191,4 +191,13 @@ public class TaxPayerVoucherController {
 	public ResponseEntity<List<Map<String, Object>>> getReport(HttpServletRequest request) {
 		return objService.getReport();
 	}
+	@GetMapping("get-specific-another-palika/{id}")
+	public ResponseEntity<Map<String, Object>> getSpecificAnotherPalika(HttpServletRequest request, @PathVariable String id){
+		return objService.getSpecificAnotherPalika(id);
+	}
+	
+	@GetMapping("settle-updates")
+	public ResponseEntity<Map<String, Object>> settlePalikaChange(){
+		return objService.settlePalikaChange();
+	}
 }

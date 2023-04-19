@@ -21,6 +21,9 @@ export class VoucherTransferService {
     return this.http.put(this.url + '/' + id, data);
     // return this.api.update(this.path,id,data);
   }
+  updateChanges( id:string){
+    return this.http.post(this.url+"/"+"/settle-updates",{id:id})
+  }
 
   constructor(private http: ApiService) { 
   }
@@ -62,6 +65,6 @@ remove(id: string) {
 }
 
 getDetails(id: string) {
-  return this.http.get(this.url + '/get-specific/' + id);  
+  return this.http.get(this.url + '/get-specific-another-palika/' + id);  
 }
 }

@@ -19,6 +19,8 @@ export class ReportComponent {
 
   model: any = {};
 
+  tableView = false;
+
   constructor(private fb: FormBuilder,private http: ApiService, private toastr: ToastrService) {
     this.formLayout = {
       from:['', Validators.required],
@@ -39,7 +41,8 @@ export class ReportComponent {
       this.model = this.reportForm;
       this.http.get(this.url+'/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to).subscribe({next: (data) =>{
         this.model = data;
-        console.log(this.model);
+        // console.log(this.model);
+        this.tableView = true
       } 
     })
     }
@@ -56,6 +59,7 @@ export class ReportComponent {
   clearButton(){
    this.reportForm = this.fb.group(this.formLayout);
    this.model =  undefined;
+   this.tableView = false;
   }
 
 }

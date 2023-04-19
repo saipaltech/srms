@@ -68,6 +68,7 @@ export class VoucherTransferComponent {
   }
 
   openModal(template: TemplateRef<any>, id:any) {
+    this.details = undefined;
     this.modalRef = this.modalService.show(template, Object.assign({}, { class: 'gray modal-lg' }));
     this.getDetails(id);  
   }
@@ -75,11 +76,17 @@ export class VoucherTransferComponent {
   details : any;
 
 getDetails(id:any){
-  this.bvs.getDetails(id).subscribe({next:(dt)=>{
+  this.RS.getDetails(id).subscribe({next:(dt)=>{
     this.details = dt;
     // console.log(this.details);
   },error:err=>{
     this.toastr.error("Unable to Fetch Data","Error")
+  }});
+}
+
+updateChanges(id:string){
+  this.RS.updateChanges(id).subscribe({next:(d:any)=>{
+    
   }});
 }
 

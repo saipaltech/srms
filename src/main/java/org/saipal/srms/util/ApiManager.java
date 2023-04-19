@@ -226,7 +226,7 @@ public class ApiManager {
 		return null;
 	}
 	
-	public JSONObject sendDataToSutraPalikachange(String id,String lgid,String collectioncenterid,String accountno,String remarks,String userid) {
+	public JSONObject sendDataToSutraPalikachange(String id,String llid,String lgid,String collectioncenterid,String accountno,String remarks,String userid) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
@@ -234,6 +234,7 @@ public class ApiManager {
 					.setHeader("Authorization", "Bearer "+tok)
 					.setHeader("Content-Type", "application/x-www-form-urlencoded")
 					.setParam("id",id)
+					.setParam("llid",llid)
 					.setParam("lgid",lgid)
 					.setParam("collectioncenterid",collectioncenterid)
 					.setParam("accountno",accountno)					
@@ -327,6 +328,43 @@ public class ApiManager {
 					.setParam("taxpayerpan",taxpayerpan)
 					.setParam("amount",amount)
 					.post(url + "/srms/taxpayer-voucher-update-namechange");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+
+	public JSONObject getPalikaResponse(String id) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
+					.setParam("id",id)
+					.post(url + "/srms/taxpayer-voucher-update-response");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+
+	public JSONObject settlePalikaChange(String vrefid,String id) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
+					.setParam("id",id)
+					.setParam("vrefid",vrefid)
+					.post(url + "/srms/taxpayer-voucher-settle-update");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
 			}

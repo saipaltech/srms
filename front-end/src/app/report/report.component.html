@@ -24,7 +24,7 @@
             <button class="btn btn-danger btn-sm" type="button" (click)="clearButton()">Clear</button>
           </form>  
           
-          <table class="display responsive-table w-100 table table-striped datatable">
+          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="tableView">
             <!--table-borderless-->
             <thead>
               <tr>
