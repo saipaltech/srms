@@ -337,7 +337,7 @@ public class ApiManager {
 		return null;
 	}
 
-	public JSONObject getPalikaResponse(String id) {
+	public JSONObject getPalikaResponse(String vrefid,String id) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
@@ -345,7 +345,8 @@ public class ApiManager {
 					.setHeader("Authorization", "Bearer "+tok)
 					.setHeader("Content-Type", "application/x-www-form-urlencoded")
 					.setParam("id",id)
-					.post(url + "/srms/taxpayer-voucher-update-response");
+					.setParam("vrefid",vrefid)
+					.get(url + "/srms/get-palika-response");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
 			}

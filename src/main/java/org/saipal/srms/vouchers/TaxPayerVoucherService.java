@@ -1087,28 +1087,30 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "join collectioncenter tcc on tcc.id = llc.collectioncenterid "
 				+ "join bankaccount bat on bat.id = llc.bankorgid "
 				+ "join bankaccount ba on ba.id = bd.accountno "
-				+ "where bd.id=?";
+				+ "where bd.id=? and haschangerequest=1";
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(id));
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(id));
 		data.put("revs", revs);
-		Tuple t = db.getSingleResult("select * from taxvoucher_ll_change where vrefid=? and caseterminated=0",Arrays.asList(id));
+		Tuple t = db.getSingleResult("select top 1 * from taxvoucher_ll_change where vrefid=? and caseterminated=0",Arrays.asList(id));
 		Map<String,Object> msg = new HashMap<>();
 		if(t!=null) {
 			if((t.get("palikaresponse")+"").equals("0")) {
-				JSONObject presp = api.getPalikaResponse(id);
+				JSONObject presp = api.getPalikaResponse(id,t.get("id")+"");
+				System.out.println(presp.toString());
 				if(presp!=null) {
 					try {
 						if(presp.getInt("status")==1) {
 							JSONObject sdata = presp.getJSONObject("data");
 							int repStatus = sdata.getInt("palikaresponse");
 							String reason = sdata.getString("responsereason");
+							String llcid = sdata.getString("id");
 							if(repStatus==0) {
 								msg.put("palikaresponse", "0");
 								msg.put("responsereason", "");
 							}else {
-								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where vrefid=? and caseterminated=0",Arrays.asList(repStatus,reason,id));
+								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where id=?",Arrays.asList(repStatus,reason,llcid));
 								msg.put("palikaresponse", repStatus);
 								msg.put("responsereason", reason);
 							}
@@ -1133,7 +1135,6 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if(t!=null) {
 			try {
 			if((t.get("palikaresponse")+"").equals("2")) {
-				
 					JSONObject presp = api.settlePalikaChange(id,t.get("id")+"");
 					if(presp!=null) {
 						if(presp.getInt("status")==1) {
