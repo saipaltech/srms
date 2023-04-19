@@ -19,6 +19,8 @@ import { EditVoucherComponent } from './edit-voucher/edit-voucher.component';
 import { VoucherTransferComponent } from './voucher-transfer/voucher-transfer.component';
 import { DayCloseComponent } from './day-close/day-close.component';
 import { ChequeReportComponent } from './cheque-report/cheque-report.component';
+import { NewDesignComponent } from './new-design/new-design.component';
+import { NewMainBodyComponent } from './new-main-body/new-main-body.component';
 
 const routes: Routes = [
 {
@@ -26,7 +28,7 @@ const routes: Routes = [
     children:[
       {
         path: '',
-        component: MainBodyComponent,
+        component: NewMainBodyComponent,
         canActivate:[AuthGuard],
         children:[
           {
@@ -101,7 +103,10 @@ const routes: Routes = [
         path: 'cheque-report',
         component: ChequeReportComponent
       },
-
+      {
+        path: 'new-design',
+        component: NewMainBodyComponent
+      },
     ]
   },
   {
