@@ -42,6 +42,10 @@ import { DayCloseComponent } from './day-close/day-close.component';
 import { ChequeReportComponent } from './cheque-report/cheque-report.component';
 
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { NewDesignComponent } from './new-design/new-design.component';
+import { NewHeaderComponent } from './new-header/new-header.component';
+import { NewSidebarComponent } from './new-sidebar/new-sidebar.component';
+import { NewMainBodyComponent } from './new-main-body/new-main-body.component';
 
 
 
@@ -71,7 +75,11 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     EditVoucherComponent,
     VoucherTransferComponent,
     DayCloseComponent,
-    ChequeReportComponent
+    ChequeReportComponent,
+    NewDesignComponent,
+    NewHeaderComponent,
+    NewSidebarComponent,
+    NewMainBodyComponent
   ],
   imports: [
     BrowserModule,

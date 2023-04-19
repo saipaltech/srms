@@ -1,0 +1,60 @@
+<div class="sidebarDisplay" style="width: 250px;height: calc(100vh); background-color:#1f497d;"
+id="sidebar">
+
+<ul class="list-unstyled p-2" *ngIf="navcontent">
+    <li class="mb-1">
+        <button
+            class="btn btn-toggle d-inline-flex rounded border-0 collapsed text-white show text-start" (click)="openDropdown($event)">
+            <i class="bi bi-alarm ico"></i>
+           &nbsp; Dropdown Example
+            <div>&nbsp;&nbsp;<i class="bi bi-chevron-right ico"></i></div>
+        </button>
+        <div class="collapse" id="home-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal  text-white pb-1 small" style="display: block;">
+                <li><a href="javascript:void(0)"
+                        class="link-light d-inline-flex text-decoration-none rounded buttonExpand">Overview</a>
+                </li>
+                <li><a href="javascript:void(0)"
+                        class="link-light d-inline-flex text-decoration-none rounded buttonExpand">Updates</a>
+                </li>
+                <li><a href="javascript:void(0)"
+                        class="link-light d-inline-flex text-decoration-none rounded buttonExpand">Reports</a>
+                </li>
+            </ul>
+        </div>
+    </li>   
+    <ng-container *ngFor="let i of navcontent">
+    <li class="mb-1">
+        <button
+            class="btn btn-toggle d-inline-flex rounded border-0 collapsed text-white show text-start" routerLink="{{i.link}}">
+            <i class="{{i.icon}} ico"></i>
+           &nbsp; {{i.name}}
+
+            <!-- <div class="text-end">&nbsp;&nbsp;<i class="bi bi-chevron-right"></i></div> -->
+
+        </button>
+        <div class="collapse" id="home-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small" style="display: block;">
+                <li><a href="#"
+                        class="link-dark d-inline-flex text-decoration-none rounded buttonExpand">Overview</a>
+                </li>
+                <li><a href="#"
+                        class="link-dark d-inline-flex text-decoration-none rounded buttonExpand">Updates</a>
+                </li>
+                <li><a href="#"
+                        class="link-dark d-inline-flex text-decoration-none rounded buttonExpand">Reports</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+</ng-container>
+    <li class="border-top my-3"></li>
+    <li class="mb-1">
+        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed text-white text-start" (click)="logout()">
+            <i class="bi bi-globe-americas"></i> &nbsp; LogOut
+        </button>
+    </li> 
+</ul>
+
+
+</div>
