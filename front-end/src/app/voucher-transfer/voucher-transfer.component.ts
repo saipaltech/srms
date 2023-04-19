@@ -95,7 +95,7 @@ updateChanges(id:string){
     this.pagination.perPage = this.perPages[0];
     this.bankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
       this.getPalikaDetails();
-      this.getBankAccounts();
+      // this.getBankAccounts();
     }});
     this.bvs.getLocalLevels().subscribe({next:(dt)=>{
       this.llgs = dt.data;
@@ -154,21 +154,35 @@ getRevenue(){
     }});
 
 }
-  getBankAccounts(){
+patchac(){
+  for (const item of this.acs) {
+    if (item.name === this.transDetails.accountname) {
+     
+      this.bankForm.patchValue({"accountno":item.id});
+      break;
+    }
+  }
+} 
+
+getBankAccounts(){
     // this.acs  = undefined;
     const llgCode = this.bankForm.value['lgid'];
     if(llgCode){
       this.RS.getBankAccounts(llgCode).subscribe({
         next:(d)=>{
           this.acs = d.data;
-          if(d.data.length==1){
-            this.bankForm.patchValue({"accountno":d.data[0].acno});
-          }
+          this.patchac();
+          // if(d.data.length==1){
+          //   this.bankForm.patchValue({"accountno":d.data[0].acno});
+          // }
+         
         },error:err=>{
           // console.log(err);
         }
       });
     }
+
+    
     
   }
 

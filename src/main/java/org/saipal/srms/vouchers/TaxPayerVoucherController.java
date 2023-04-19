@@ -169,7 +169,7 @@ public class TaxPayerVoucherController {
 		return objService.getEditDetails();
 	}
 	@PostMapping("update-details")
-	public ResponseEntity<Map<String, Object>> saveEditDetails(){
+	public ResponseEntity<Map<String, Object>> saveEditDetails() throws JSONException{
 		return objService.saveEditDetails();
 	}
 	

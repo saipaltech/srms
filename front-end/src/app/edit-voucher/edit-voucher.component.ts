@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { ValidationService } from '../validation.service';
 import { DatePipe } from '@angular/common';
 import { EditVoucherService } from './edit-voucher.service';
+import { ChequeEntryService } from '../cheque-entry/cheque-entry.service';
 
 
 @Component({
@@ -36,7 +37,7 @@ export class EditVoucherComponent {
   items=new Array();
   revs:any;
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: EditVoucherService, private datePipe: DatePipe) {
+  constructor(private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private RS: EditVoucherService, private datePipe: DatePipe) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id: [],
@@ -161,13 +162,16 @@ export class EditVoucherComponent {
     // console.log (this.model.transactionid)
 
     // this.bankForm.controls['transactionid'].setValue(this.transDetails.id)
-
+    this.addItem();
+    this.bankForm.patchValue({amount:this.totalAmt});
+    if (window.confirm('Are  you sure you want to save this voucher?')) {
     if (this.bankForm.valid) {
       
       // this.bankForm.controls['transactionid'].setValue(this.transDetails.transactionid)
       // this.bankForm.controls['id'].setValue(this.transDetails.id)
       this.bankForm.patchValue({ "id": this.transDetails.id });
       this.model = this.bankForm.value;
+      this.model.voucherinfo=this.items;
       // this.createItem(this.bankForm.value.id);
       this.RS.create(this.model).subscribe({
         next: (result: any) => {
@@ -176,6 +180,7 @@ export class EditVoucherComponent {
           this.bankForm = this.fb.group(this.formLayout);
           this.srchForm.patchValue({'srch_term':""});
           this.getList();
+          this.items=new Array();
         }, error: err => {
           this.toastr.error(err.error.message, 'Error');
         }
@@ -187,6 +192,7 @@ export class EditVoucherComponent {
       });
       // this.toastr.error('Please fill all the required* fields', 'Error');
     }
+  }
   }
   showList = false;
   showForm = true;
@@ -205,14 +211,25 @@ export class EditVoucherComponent {
     this.showForm = !this.showForm;
     this.transDetails = "";
   }
+  getRevenue(id:any){
+    this.bvs.getRevenue(id).subscribe({next:(dt)=>{
+      this.revs = dt.data;
+    },error:err=>{
+
+    }});
+
+  }
 
   transDetails: any;
   istab = 1;
   search() {
+    this.transDetails=undefined;
+    this.items=new Array();
     if (this.srchForm.valid) {
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {
           this.transDetails = dt.data;
+          this.getRevenue(this.transDetails.accountno);
           this.bankForm.patchValue({'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount});
         
           if (this.transDetails.trantype == 1) {
