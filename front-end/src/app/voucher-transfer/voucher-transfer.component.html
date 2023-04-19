@@ -94,7 +94,7 @@
             <input type="hidden" formControlName="id" />
             
             <div class="col-sm-6">
-              <label for="firstName" class="form-label req">पालिका</label>
+              <label for="firstName" class="form-label req">परिवर्तन गर्नुपर्ने  पालिका</label>
               <ng-select formControlName="lgid" (change)="getBankAccounts()">
                 <ng-option *ngFor="let l of llgs" [value]="l.code">{{
                   l.name

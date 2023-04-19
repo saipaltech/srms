@@ -240,7 +240,7 @@ getRevenue(){
       this.RS.create(this.model).subscribe({
         next: (result: any) => {
           this.transDetails = undefined;
-          this.toastr.success('Item Successfully Saved!', 'Success');
+          this.toastr.success(result.message, 'Success');
           this.bankForm = this.fb.group(this.formLayout);
           this.srchForm.patchValue({'srch_term':""});
           this.getList();
