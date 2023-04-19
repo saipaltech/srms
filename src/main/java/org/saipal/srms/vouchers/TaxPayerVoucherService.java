@@ -891,7 +891,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(data.get("id")+""));
-		System.out.println(revs);
+//		System.out.println(revs);
 		data.put("revs", revs);
 		if((data.get("isused")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
