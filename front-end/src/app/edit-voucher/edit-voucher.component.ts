@@ -5,6 +5,7 @@ import { ValidationService } from '../validation.service';
 import { DatePipe } from '@angular/common';
 import { EditVoucherService } from './edit-voucher.service';
 import { ChequeEntryService } from '../cheque-entry/cheque-entry.service';
+import { VoucherTransferService } from '../voucher-transfer/voucher-transfer.service';
 
 
 @Component({
@@ -37,7 +38,7 @@ export class EditVoucherComponent {
   items=new Array();
   revs:any;
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private RS: EditVoucherService, private datePipe: DatePipe) {
+  constructor(private toastr: ToastrService, private fb: FormBuilder,private rs:VoucherTransferService,private bvs:ChequeEntryService, private RS: EditVoucherService, private datePipe: DatePipe) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id: [],
@@ -45,7 +46,11 @@ export class EditVoucherComponent {
       taxpayerpan: [''],
       // remarks: ['', Validators.required],
       amount:['',Validators.pattern('[0-9]+')],
-      revenuecode: ['']
+      revenuecode: [''],
+      lgid:['',Validators.required],
+      accountno:['',Validators.required],
+      collectioncenterid:['',Validators.required]
+
 
 
     }
@@ -65,13 +70,39 @@ export class EditVoucherComponent {
 
 
 
-
+llgs:any;
 
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
+    this.bankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
+      this.getPalikaDetails();
+      this.getBankAccounts();
+    }});
+    this.bvs.getLocalLevels().subscribe({next:(dt)=>{
+      this.llgs = dt.data;
+      // this.voucherBankForm.patchValue({"lgid":this.dlgid});
+    },error:err=>{
+
+    }});
     // this.getRevenue();
     // this.getList();
   }
+ccs:any;
+  getPalikaDetails(){
+    this.bankForm.patchValue({"collectioncenterid":''});
+    const llgCode = this.bankForm.value['lgid'];
+    this.bvs.getCostCentres(llgCode).subscribe({
+      next:(d)=>{
+        this.ccs = d.data;
+        if(d.data.length==1){
+          this.bankForm.patchValue({"collectioncenterid":d.data[0].code});
+        }
+      },error:err=>{
+        // console.log(err);
+      }
+    });
+  }
+
 
   searchList() {
     this.pagination.perPage = this.srchFormList.value.entries;
@@ -212,8 +243,9 @@ export class EditVoucherComponent {
     this.showForm = !this.showForm;
     this.transDetails = "";
   }
-  getRevenue(id:any){
-    this.bvs.getRevenue(id).subscribe({next:(dt)=>{
+  getRevenue(){
+    const bankorgid=this.bankForm.value["accountno"];
+    this.bvs.getRevenue(bankorgid).subscribe({next:(dt)=>{
       this.revs = dt.data;
     },error:err=>{
 
@@ -230,16 +262,17 @@ export class EditVoucherComponent {
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {
           this.transDetails = dt.data;
-          this.getRevenue(this.transDetails.accountno);
+          // this.getRevenue(this.transDetails.accountno);
           this.items=this.transDetails.revs;
           this.calctotal();
-          this.bankForm.patchValue({'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount});
+          this.bankForm.patchValue({'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount,'lgid':this.transDetails.lgid});
         
           if (this.transDetails.trantype == 1) {
             this.istab = 1;
           } else {
             this.istab = 2;
           }
+          this.bankForm.patchValue({'collectioncenterid':this.transDetails.collectioncenterid,'accountno':this.transDetails.accountno});
         }, error: error => {
           // console.log(error);
           // alert(5)
@@ -247,6 +280,28 @@ export class EditVoucherComponent {
         }
       });
     }
+  }
+acs:any;
+  getBankAccounts(){
+    // this.acs  = undefined;
+    const llgCode = this.bankForm.value['lgid'];
+    if(llgCode){
+      this.rs.getBankAccounts(llgCode).subscribe({
+        next:(d)=>{
+          this.acs = d.data;
+          // this.patchac();
+          // if(d.data.length==1){
+          //   this.bankForm.patchValue({"accountno":d.data[0].acno});
+          // }
+         
+        },error:err=>{
+          // console.log(err);
+        }
+      });
+    }
+
+    
+    
   }
 
   resetFilters() {

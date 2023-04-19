@@ -764,7 +764,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 
 	public ResponseEntity<Map<String, Object>> getEditDetails() {
 		String voucherno = request("voucherno");
-		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.isused,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno, "
+		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.isused,bd.dateint,cast(bd.collectioncenterid as varchar) as collectioncenterid,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.accountno, bd.revenuetitle, "
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid  "
@@ -834,7 +834,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 							JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount);
 							if(ups!=null) {
 								if(ups.getInt("status")==1) {
-									System.out.println("hello");
+//									System.out.println("hello");
 									db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amount=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,id));
 									db.execute("delete from taxvouchers_detail where mainid=?",Arrays.asList(id));
 									if (jarr.length() > 0) {
@@ -1015,8 +1015,19 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		String date=request("date");
 		String lgid=request("lgid");
 		String acno=request("acno");
-		String sql="select ROW_NUMBER() OVER (ORDER BY taxvouchers.id) as sn, id, karobarsanket,taxpayername,amount from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
-		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(lgid, acno));
+		System.out.println(lgid);
+		String cond="";
+		if(!lgid.isBlank()) {
+			cond+=" and taxvouchers.lgid='"+lgid+"'";
+		}
+		if(!acno.isBlank()) {
+			cond+=" and taxvouchers.accountno='"+acno+"'";
+		}
+		
+//		String sql="select ROW_NUMBER() OVER (ORDER BY taxvouchers.id) as sn, cast(id as varchar) as id, karobarsanket,taxpayername,amount from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
+		String sql="select cast(accountno as varchar) as accountno,bankaccount.accountname,bankaccount.accountnumber,admin_local_level_structure.namenp as palika,cast(taxvouchers.lgid as varchar) as lgid,SUM(amount) as amount from taxvouchers"
+				+ " join admin_local_level_structure on admin_local_level_structure.id=taxvouchers.lgid join bankaccount on bankaccount.id=taxvouchers.accountno where  dateint=format(getdate(),'yyyyMMdd') and  taxvouchers.bankid=? "+cond+" group by taxvouchers.lgid,taxvouchers.accountno,bankaccount.accountname,bankaccount.accountnumber,admin_local_level_structure.namenp ";
+		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(auth.getBankId()));
 		if(admlvl.isEmpty()) {
 			return Messenger.getMessenger().setMessage("No transaction found").error();
 		}else {
@@ -1025,11 +1036,12 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				for (Tuple t : admlvl) {
 //					System.out.println(t.toString());
 					Map<String, Object> mapadmlvl = new HashMap<>();
-					mapadmlvl.put("id", t.get("id"));
-					mapadmlvl.put("sn", t.get("sn"));
-					mapadmlvl.put("karobarsanket", t.get("karobarsanket"));
+					mapadmlvl.put("accountno", t.get("accountno"));
+					mapadmlvl.put("lgid", t.get("lgid"));
 					mapadmlvl.put("amount", t.get("amount"));
-					mapadmlvl.put("taxpayername", t.get("taxpayername"));
+					mapadmlvl.put("accountname", t.get("accountname"));
+					mapadmlvl.put("accountnumber", t.get("accountnumber"));
+					mapadmlvl.put("palika", t.get("palika"));
 					
 					list.add(mapadmlvl);
 				}

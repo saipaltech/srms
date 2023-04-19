@@ -37,8 +37,8 @@ export class DayCloseComponent {
         this.formLayout = {
           id:[],
           date: [this.myDate],
-          acno: ['',Validators.required],
-          lgid: ['',Validators.required],
+          acno: [''],
+          lgid: [''],
           
           
         }

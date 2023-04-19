@@ -120,6 +120,40 @@
                 </div>
               </div>
             </div>
+            <div class="col-sm-6">
+              <label for="firstName" class="form-label req"> पालिका</label>
+              <ng-select formControlName="lgid" (change)="getBankAccounts()">
+                <ng-option *ngFor="let l of llgs" [value]="l.code">{{
+                  l.name
+                }}</ng-option>
+              </ng-select>
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['lgid'])">{{vs.getMessage(bankForm.controls['lgid'])}}</div>
+            </div>
+    
+            <div class="col-sm-6">
+              <label for="lastName" class="form-label req">संकलन केन्द्र</label>
+              <ng-select formControlName="collectioncenterid" >
+                <ng-option *ngFor="let cc of ccs" [value]="cc.code">{{
+                  cc.name
+                }}</ng-option>
+              </ng-select>
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['collectioncenterid'])">{{vs.getMessage(bankForm.controls['collectioncenterid'])}}</div>
+            </div>
+    
+    
+            <div class="col-6">
+              <label for="username" class="form-label req">खाता नंबर</label>
+              <select
+                class="form-select form-select-sm" (change)="getRevenue()"
+                formControlName="accountno"
+                [ngClass]="vs.getControlClass(bankForm.controls['accountno'])"
+              >
+                <option value="">Select Account Number</option>
+                <option *ngFor="let ac of acs" value="{{ac.id}}">{{ac.acno}}[{{ac.name}}]</option>
+              </select>
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['accountno'])">{{vs.getMessage(bankForm.controls['accountno'])}}</div>
+            </div>
+            <div class="col-6"></div>
             <!-- <div class="col-6">
               <label class="form-label req">Remarks</label>
               <div class="input-group has-validation">
