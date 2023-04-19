@@ -46,6 +46,7 @@ import { NewDesignComponent } from './new-design/new-design.component';
 import { NewHeaderComponent } from './new-header/new-header.component';
 import { NewSidebarComponent } from './new-sidebar/new-sidebar.component';
 import { NewMainBodyComponent } from './new-main-body/new-main-body.component';
+import { HttpInterceptorService } from './http-interceptor.service';
 
 
 
@@ -103,6 +104,11 @@ import { NewMainBodyComponent } from './new-main-body/new-main-body.component';
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy
+    },
+    {
+        provide: HTTP_INTERCEPTORS,
+        useClass: HttpInterceptorService,
+        multi: true,
     },
     AuthGuard,
     AuthService,
