@@ -282,6 +282,7 @@
       <thead>
         <tr>
           <th scope="col">Voucher No.</th>
+          <th scope="col">Karobar Sanket</th>
           <th scope="col">Date</th>
           <th scope="col">Tax Payer Name</th>
           <th scope="col">Account No</th>
@@ -293,6 +294,7 @@
       <tbody>
         <tr *ngFor="let item of lists; let i = index">
           <td>{{ item.voucherno }}</td>
+          <td>{{ item.karobarsanket }}</td>
           <td>{{ item.date }}</td>
           <td>{{ item.taxpayername }}</td>
           <td>{{ item.accountno }}</td>
