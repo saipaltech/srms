@@ -155,9 +155,12 @@ getRevenue(){
 
 }
 patchac(){
+  // console.log( this.transDetails);
   for (const item of this.acs) {
+    // console.log(item.name);
+    // console.log(this.transDetails.accountname)
     if (item.name === this.transDetails.accountname) {
-     
+    
       this.bankForm.patchValue({"accountno":item.id});
       break;
     }
@@ -252,12 +255,12 @@ getBankAccounts(){
   bankFormSubmit() {
     // this.model.transactionid = this.transDetails.transactionid;
     // console.log (this.model.transactionid)
-
+    this.bankForm.patchValue({ "id": this.transDetails.id });
     if (this.bankForm.valid) {
+      
       this.model = this.bankForm.value;
-     
       // this.bankForm.controls['id'].setValue(this.transDetails.id)
-      this.bankForm.patchValue({ "id": this.transDetails.id })
+     
       this.RS.create(this.model).subscribe({
         next: (result: any) => {
           this.transDetails = undefined;

@@ -1,0 +1,50 @@
+<nav class="navbar navbar-expand-lg"
+style="height: calc(6vh); width: calc(100vw); color: white; background-color: #1f497d;">
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-start p-2">
+        <a class="navbar-brand text-white" href="javascript:void(0)" (click)="sideBar()">
+            <i class="bi bi-list ico" style="font-size: x-large;"></i>
+            <span class=""><b> SRMS (Bank Module)</b></span> 
+        </a>
+    </div>
+
+    <div class="d-flex justify-content-center p-2" style="width:50%">
+        <a class="navbar-brand text-white" href="javascript:void(0)">
+            <img src="../../assets/Emblem_of_Nepal.svg" alt="Emblem of Nepal" height="25px"> SuTRA Revenue Management System 
+                <br>
+                <span style="margin-left: 5%;"></span> {{bank}} [{{branch}}]
+        </a>
+    </div>
+
+    <div class="d-flex justify-content-end p-2">
+
+       <a href="javascript:void(0)" routerLink="user-profile" style="all: unset; cursor: pointer;">
+        <b class="text-warning">{{username}}</b>        
+       </a> 
+        
+        <!-- <div class="dropdown">
+            <a href="#"
+                class="d-flex align-items-center justify-content-center p-3 link-dark text-decoration-none dropdown-toggle"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="https://github.com/mdo.png" alt="mdo" width="24" height="24"
+                    class="rounded-circle">
+            </a>
+            <ul class="dropdown-menu text-small shadow" style="left: -97px;">
+                <li><a class="dropdown-item" href="#">New project...</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="#">Sign out</a></li>
+            </ul>
+        </div> -->
+
+    </div>
+
+</div>
+
+
+</nav>

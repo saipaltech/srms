@@ -44,6 +44,7 @@
                 </select>
                 <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['acno'])">{{vs.getMessage(voucherBankForm.controls['acno'])}}</div>
               </div>
+             
             </div>
             <br>
             <div class="row">
@@ -80,10 +81,27 @@
           <form *ngIf="lists" class="needs-validation"
           [formGroup]="daycloseForm"
           (ngSubmit)="daycloseFormSubmit()">
+          <div class="row">
+            <div class="col-6">
           <input class="form-check-input" type="checkbox" #check value=""  (click)="checkvalue(check.checked)" id="flexCheckDefault">
           <label class="form-check-label" for="flexCheckDefault">
             &nbsp; &nbsp;माथिको बिबरण ठिक छ |
           </label>
+          </div>
+          <div class="col-6">
+            <label for="username" class="form-label "> Core Banking ID</label>
+            <div class="input-group has-validation">
+              <input
+             
+                formControlName="corebankid"
+                type="text"
+                class="form-control form-control-sm"
+               
+                [ngClass]="vs.getControlClass(daycloseForm.controls['corebankid'])">
+                <div [ngClass]="vs.getMessageClass(daycloseForm.controls['corebankid'])">{{vs.getMessage(daycloseForm.controls['corebankid'])}}</div>
+            </div>
+          </div>
+        </div>
         <input type="hidden" formControlName="acno" value="{{model.acno}}">
         <input type="hidden" formControlName="lgid" value="{{model.lgid}}">
         <input type="hidden" formControlName="date" value="{{model.date}}">

@@ -776,13 +776,14 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
 		}
 		List<Map<String, Object>> revs = db.getResultListMap(
-				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
+				"select td.revenueid as rc,concat(td.revenueid,'[',cr.namenp,']') as rv,td.amount as amt from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(t.get("id")+""));
 		t.put("revs", revs);
 		if((t.get("isused")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
 		}
 		JSONObject sdata = api.getVoucherDetails(t.get("id")+"");
+//		System.out.println(sdata);
 		if(sdata!=null) {
 			try {
 				if(sdata.getInt("status")==1) {
@@ -886,7 +887,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(data.get("id")+""));
-		System.out.println(revs);
+//		System.out.println(revs);
 		data.put("revs", revs);
 		if((data.get("isused")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
@@ -1038,11 +1039,14 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 //		return null;
 }
 
+	@Transactional
 	public ResponseEntity<Map<String, Object>> submitdayclose() {
 		// TODO Auto-generated method stub
 		String date=request("date");
+		String cbid=request("corebankid");
 		String lgid=request("lgid");
 		String acno=request("acno");
+		String id=db.newIdInt();
 		String sq="select count(id) as cid from dayclose where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
 		Map<String,Object> t = db.getSingleResultMap(sq,Arrays.asList(lgid,acno));
 //		System.out.println(t.get("cid"));
@@ -1052,10 +1056,20 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if(date.isBlank() ||lgid.isBlank() || acno.isBlank()) {
 			return Messenger.getMessenger().setMessage("Required field is not supplied.").error();
 		}
-		String sql = "insert into dayclose(lgid,accountno,creatorid,dateint) values (?,?,?,format(getdate(),'yyyyMMdd')) ";
+		String sql = "insert into dayclose(id,lgid,accountno,creatorid,corebankid,dateint) values (?,?,?,?,?,format(getdate(),'yyyyMMdd')) ";
 		DbResponse rowEffect = db.execute(sql,
-				Arrays.asList(lgid,acno,auth.getUserId()));
+				Arrays.asList(id,lgid,acno,auth.getUserId(),cbid));
 		if (rowEffect.getErrorNumber() == 0) {
+			String sql1="select id, karobarsanket,taxpayername,amount from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
+			List<Tuple> admlvl = db.getResultList(sql1, Arrays.asList(lgid, acno));
+			System.out.println(admlvl);
+			if (!admlvl.isEmpty()) {
+				for (Tuple tt : admlvl) {
+					String sql2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint) values (?,?,?,format(getdate(),'yyyyMMdd')) ";
+					db.execute(sql2,
+							Arrays.asList(id,tt.get("id"),tt.get("karobarsanket")));
+				}
+		}
 			return Messenger.getMessenger().success();
 		}else {
 			return Messenger.getMessenger().error();
