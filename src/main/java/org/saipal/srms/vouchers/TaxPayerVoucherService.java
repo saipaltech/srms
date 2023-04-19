@@ -884,18 +884,19 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if(data==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
 		}
-		List<Map<String, Object>> revs = db.getResultListMap(
-				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
-				Arrays.asList(data.get("id")+""));
-//		System.out.println(revs);
-		data.put("revs", revs);
+		if((data.get("today")+"").equals((data.get("dateint")+""))) {
+			return Messenger.getMessenger().setMessage("Not able to update this voucher, Please use Same day Voucher Modification.").error();
+		}
 		if((data.get("isused")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
 		}
 		if((data.get("hasChangeReqest")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Change request is already in process.").error();
 		}
-		
+		List<Map<String, Object>> revs = db.getResultListMap(
+				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
+				Arrays.asList(data.get("id")+""));
+		data.put("revs", revs);
 		JSONObject sdata = api.getVoucherDetails(data.get("id")+"");
 		if(sdata!=null) {
 			try {
@@ -932,6 +933,10 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if(t==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
 		}
+		if((t.get("today")+"").equals((t.get("dateint")+""))) {
+			return Messenger.getMessenger().setMessage("Not able to update this voucher, Please use Same day Voucher Modification.").error();
+		}
+		
 		if((t.get("isused")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
 		}

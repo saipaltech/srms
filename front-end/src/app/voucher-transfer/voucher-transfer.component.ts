@@ -86,7 +86,11 @@ getDetails(id:any){
 
 updateChanges(id:string){
   this.RS.updateChanges(id).subscribe({next:(d:any)=>{
-    
+    this.toastr.success(d.message,"Success");
+    this.getList();
+    this.modalRef?.hide();    
+  },error:err=>{
+    this.toastr.error(err.error.message,"Error");
   }});
 }
 
@@ -95,7 +99,7 @@ updateChanges(id:string){
     this.pagination.perPage = this.perPages[0];
     this.bankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
       this.getPalikaDetails();
-      // this.getBankAccounts();
+      this.getBankAccounts();
     }});
     this.bvs.getLocalLevels().subscribe({next:(dt)=>{
       this.llgs = dt.data;
@@ -154,38 +158,21 @@ getRevenue(){
     }});
 
 }
-patchac(){
-  // console.log( this.transDetails);
-  for (const item of this.acs) {
-    // console.log(item.name);
-    // console.log(this.transDetails.accountname)
-    if (item.name === this.transDetails.accountname) {
-    
-      this.bankForm.patchValue({"accountno":item.id});
-      break;
-    }
-  }
-} 
-
-getBankAccounts(){
+  getBankAccounts(){
     // this.acs  = undefined;
     const llgCode = this.bankForm.value['lgid'];
     if(llgCode){
       this.RS.getBankAccounts(llgCode).subscribe({
         next:(d)=>{
           this.acs = d.data;
-          this.patchac();
-          // if(d.data.length==1){
-          //   this.bankForm.patchValue({"accountno":d.data[0].acno});
-          // }
-         
+          if(d.data.length==1){
+            this.bankForm.patchValue({"accountno":d.data[0].acno});
+          }
         },error:err=>{
           // console.log(err);
         }
       });
     }
-
-    
     
   }
 
@@ -255,16 +242,16 @@ getBankAccounts(){
   bankFormSubmit() {
     // this.model.transactionid = this.transDetails.transactionid;
     // console.log (this.model.transactionid)
-    this.bankForm.patchValue({ "id": this.transDetails.id });
+
     if (this.bankForm.valid) {
-      
       this.model = this.bankForm.value;
-      // this.bankForm.controls['id'].setValue(this.transDetails.id)
      
+      // this.bankForm.controls['id'].setValue(this.transDetails.id)
+      this.bankForm.patchValue({ "id": this.transDetails.id })
       this.RS.create(this.model).subscribe({
         next: (result: any) => {
           this.transDetails = undefined;
-          this.toastr.success(result.message, 'Success');
+          this.toastr.success('Item Successfully Saved!', 'Success');
           this.bankForm = this.fb.group(this.formLayout);
           this.srchForm.patchValue({'srch_term':""});
           this.getList();
