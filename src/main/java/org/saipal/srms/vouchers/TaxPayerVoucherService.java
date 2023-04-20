@@ -808,11 +808,14 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		String taxpayerpan = request("taxpayerpan").isBlank()?"0":request("taxpayerpan");
 		String amount = request("amount");
 		String voucher = request("voucherinfo");
+		String lgid = request("lgid");
+		String ccid= request("collectioncenterid");
+		String acno = request("accountno");
 		if (voucher.startsWith("{")) {
 			voucher = "[" + voucher + "]";
 		}
 		JSONArray jarr = new JSONArray(voucher);
-		String sql = "select  top 1 *,cast((format(getdate(),'yyyyMMdd')) as numeric) as today from "+table+" where id=? and bankid=? and branchid=?";
+		String sql = "select  top 1 *,cast((format(getdate(),'yyyyMMdd')) as numeric) as today,lgid from "+table+" where id=? and bankid=? and branchid=?";
 		Map<String,Object> t = db.getSingleResultMap(sql,Arrays.asList(id,auth.getBankId(),auth.getBranchId()));
 		if(t==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
@@ -830,11 +833,16 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 						return Messenger.getMessenger().setMessage("Already used voucher").error();
 					}else {
 						if((t.get("today")+"").equals(t.get("dateint")+"")) {
+							if(!(t.get("lgid")+"").equals(lgid)) {
+								//same day palika change
+								db.execute("insert into taxvouchers_log (id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr) select id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr from "+table+" where id=?",Arrays.asList(id));
+								db.execute("insert into taxvouchers_log (id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr) select id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr,amountdr from "+table+" where id=?",Arrays.asList(id));
+								db.execute("update "+table+" set cramount=?,lgid=?,collectioncenterid=?,accountno=? where id=?",Arrays.asList(amount,lgid,ccid,acno,id));
+							}
 //							System.out.println("here i am ");
 							JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount);
 							if(ups!=null) {
 								if(ups.getInt("status")==1) {
-//									System.out.println("hello");
 									db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amount=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,id));
 									db.execute("delete from taxvouchers_detail where mainid=?",Arrays.asList(id));
 									if (jarr.length() > 0) {
@@ -884,18 +892,19 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if(data==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
 		}
-		List<Map<String, Object>> revs = db.getResultListMap(
-				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
-				Arrays.asList(data.get("id")+""));
-//		System.out.println(revs);
-		data.put("revs", revs);
+		if((data.get("today")+"").equals((data.get("dateint")+""))) {
+			return Messenger.getMessenger().setMessage("Not able to update this voucher, Please use Same day Voucher Modification.").error();
+		}
 		if((data.get("isused")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
 		}
 		if((data.get("hasChangeReqest")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Change request is already in process.").error();
 		}
-		
+		List<Map<String, Object>> revs = db.getResultListMap(
+				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
+				Arrays.asList(data.get("id")+""));
+		data.put("revs", revs);
 		JSONObject sdata = api.getVoucherDetails(data.get("id")+"");
 		if(sdata!=null) {
 			try {
@@ -932,6 +941,10 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if(t==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
 		}
+		if((t.get("today")+"").equals((t.get("dateint")+""))) {
+			return Messenger.getMessenger().setMessage("Not able to update this voucher, Please use Same day Voucher Modification.").error();
+		}
+		
 		if((t.get("isused")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
 		}
@@ -955,6 +968,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 						JSONObject pdata = api.sendDataToSutraPalikachange(id,llid, lgid, ccid, acno,remarks,auth.getUserId());
 						if(pdata!=null) {
 							if(pdata.getInt("status")==1) {
+								db.execute("insert into taxvouchers_log (id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr) select id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr,amountdr from "+table+" where id=?",Arrays.asList(id));
 								db.execute("update "+table+" set hasChangeReqest=1 where id=?",Arrays.asList(id));
 								db.execute("insert into taxvoucher_ll_change(id,vrefid,lgid,collectioncenterid,bankorgid,remarks,creatorid) values (?,?,?,?,?,?,?)",
 										Arrays.asList(llid,id,lgid,ccid,acno,remarks,auth.getUserId()));
@@ -1113,28 +1127,30 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "join collectioncenter tcc on tcc.id = llc.collectioncenterid "
 				+ "join bankaccount bat on bat.id = llc.bankorgid "
 				+ "join bankaccount ba on ba.id = bd.accountno "
-				+ "where bd.id=?";
+				+ "where bd.id=? and haschangerequest=1";
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(id));
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(id));
 		data.put("revs", revs);
-		Tuple t = db.getSingleResult("select * from taxvoucher_ll_change where vrefid=? and caseterminated=0",Arrays.asList(id));
+		Tuple t = db.getSingleResult("select top 1 * from taxvoucher_ll_change where vrefid=? and caseterminated=0",Arrays.asList(id));
 		Map<String,Object> msg = new HashMap<>();
 		if(t!=null) {
 			if((t.get("palikaresponse")+"").equals("0")) {
-				JSONObject presp = api.getPalikaResponse(id);
+				JSONObject presp = api.getPalikaResponse(id,t.get("id")+"");
+				System.out.println(presp.toString());
 				if(presp!=null) {
 					try {
 						if(presp.getInt("status")==1) {
 							JSONObject sdata = presp.getJSONObject("data");
 							int repStatus = sdata.getInt("palikaresponse");
 							String reason = sdata.getString("responsereason");
+							String llcid = sdata.getString("id");
 							if(repStatus==0) {
 								msg.put("palikaresponse", "0");
 								msg.put("responsereason", "");
 							}else {
-								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where vrefid=? and caseterminated=0",Arrays.asList(repStatus,reason,id));
+								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where id=?",Arrays.asList(repStatus,reason,llcid));
 								msg.put("palikaresponse", repStatus);
 								msg.put("responsereason", reason);
 							}
@@ -1159,7 +1175,6 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if(t!=null) {
 			try {
 			if((t.get("palikaresponse")+"").equals("2")) {
-				
 					JSONObject presp = api.settlePalikaChange(id,t.get("id")+"");
 					if(presp!=null) {
 						if(presp.getInt("status")==1) {
