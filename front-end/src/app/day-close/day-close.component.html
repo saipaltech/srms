@@ -67,16 +67,18 @@
                 <th scope="col">Account Number</th>
                 <th scope="col">Debit</th>
                 <th scope="col">Credit</th>
+                <th scope="col">Core Banking ID</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of lists; let i = index">
                 <!-- <td>{{ i+1 }}</td> -->
-                <td><input class="form-check-input" type="checkbox" #check value="{{item.accountnumber}}"  (click)="checkvalue(check.checked)" name="dayclose"></td>
+                <td><input class="form-check-input" type="checkbox" (change)="onCheckboxChange($event)" value="{{item.lgid}}||{{item.accountno}}"   name="dayclose"></td>
                 <td>{{ item.palika }}</td>
                 <td>{{ item.accountname }}[{{ item.accountnumber }}]</td>
                 <td>{{ item.amount }}</td>
                 <td>{{ item.amount }}</td>
+                <td><input type="text" formControlName="corebankid_{{item.accountno}}"></td>
               
               </tr>
       
@@ -85,25 +87,13 @@
           </table>
           
           <div class="row">
-            <div class="col-6">
+            <div class="col-4">
           <input class="form-check-input" type="checkbox" #check value=""  (click)="checkvalue(check.checked)" id="flexCheckDefault">
           <label class="form-check-label" for="flexCheckDefault">
             &nbsp; &nbsp;माथिको बिबरण ठिक छ |
           </label>
           </div>
-          <div class="col-6">
-            <label for="username" class="form-label "> Core Banking ID</label>
-            <div class="input-group has-validation">
-              <input
-             
-                formControlName="corebankid"
-                type="text"
-                class="form-control form-control-sm"
-               
-                [ngClass]="vs.getControlClass(daycloseForm.controls['corebankid'])">
-                <div [ngClass]="vs.getMessageClass(daycloseForm.controls['corebankid'])">{{vs.getMessage(daycloseForm.controls['corebankid'])}}</div>
-            </div>
-          </div>
+         
         </div>
         <input type="hidden" formControlName="acno" value="{{model.acno}}">
         <input type="hidden" formControlName="lgid" value="{{model.lgid}}">

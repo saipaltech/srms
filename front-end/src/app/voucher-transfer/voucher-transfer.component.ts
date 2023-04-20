@@ -146,6 +146,7 @@ updateChanges(id:string){
       }
     );
   }
+
 acs:any;
 llgs:any;
 ccs:any;
@@ -242,12 +243,12 @@ getRevenue(){
   bankFormSubmit() {
     // this.model.transactionid = this.transDetails.transactionid;
     // console.log (this.model.transactionid)
-
+    this.bankForm.patchValue({ "id": this.transDetails.id })
     if (this.bankForm.valid) {
       this.model = this.bankForm.value;
      
       // this.bankForm.controls['id'].setValue(this.transDetails.id)
-      this.bankForm.patchValue({ "id": this.transDetails.id })
+     
       this.RS.create(this.model).subscribe({
         next: (result: any) => {
           this.transDetails = undefined;
