@@ -2,7 +2,7 @@
 id="sidebar">
 
 <ul class="list-unstyled p-2" *ngIf="navcontent">
-    <li class="mb-1">
+    <!-- <li class="mb-1">
         <button
             class="btn btn-toggle d-inline-flex rounded border-0 collapsed text-white show text-start" (click)="openDropdown($event)">
             <i class="bi bi-alarm ico"></i>
@@ -22,7 +22,7 @@ id="sidebar">
                 </li>
             </ul>
         </div>
-    </li>   
+    </li>    -->
     <ng-container *ngFor="let i of navcontent">
     <li class="mb-1">
         <button (click)="activeButton($event)"
