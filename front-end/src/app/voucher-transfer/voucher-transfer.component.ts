@@ -84,14 +84,17 @@ getDetails(id:any){
   }});
 }
 
-updateChanges(id:string){
-  this.RS.updateChanges(id).subscribe({next:(d:any)=>{
-    this.toastr.success(d.message,"Success");
-    this.getList();
-    this.modalRef?.hide();    
-  },error:err=>{
-    this.toastr.error(err.error.message,"Error");
-  }});
+updateChanges(id:string,type:string){
+  const msg = type=='1'?"Settle Updates":"Cancel Updates";
+  if(confirm("You are about to "+msg+".")){
+    this.RS.updateChanges(id,type).subscribe({next:(d:any)=>{
+      this.toastr.success(d.message,"Success");
+      this.getList();
+      this.modalRef?.hide();    
+    },error:err=>{
+      this.toastr.error(err.error.message,"Error");
+    }});
+  }  
 }
 
 

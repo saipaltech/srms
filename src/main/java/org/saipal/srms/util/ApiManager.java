@@ -356,7 +356,7 @@ public class ApiManager {
 		return null;
 	}
 
-	public JSONObject settlePalikaChange(String vrefid,String id) {
+	public JSONObject settlePalikaChange(String id,String lgid,String ccid,String bankorgid) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
@@ -364,7 +364,9 @@ public class ApiManager {
 					.setHeader("Authorization", "Bearer "+tok)
 					.setHeader("Content-Type", "application/x-www-form-urlencoded")
 					.setParam("id",id)
-					.setParam("vrefid",vrefid)
+					.setParam("lgid",lgid)
+					.setParam("collectioncenterid",ccid)
+					.setParam("bankorgid",bankorgid)
 					.post(url + "/srms/taxpayer-voucher-settle-update");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");

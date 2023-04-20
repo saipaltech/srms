@@ -21,8 +21,8 @@ export class VoucherTransferService {
     return this.http.put(this.url + '/' + id, data);
     // return this.api.update(this.path,id,data);
   }
-  updateChanges( id:string){
-    return this.http.post(this.url+"/settle-updates",{id:id})
+  updateChanges( id:string,type:string){
+    return this.http.post(this.url+"/settle-updates",{id:id,type});
   }
 
   constructor(private http: ApiService) { 
