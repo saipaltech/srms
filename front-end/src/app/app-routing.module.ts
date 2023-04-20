@@ -21,6 +21,7 @@ import { DayCloseComponent } from './day-close/day-close.component';
 import { ChequeReportComponent } from './cheque-report/cheque-report.component';
 import { NewDesignComponent } from './new-design/new-design.component';
 import { NewMainBodyComponent } from './new-main-body/new-main-body.component';
+import { NiceAdminComponent } from './nice-admin/nice-admin.component';
 
 const routes: Routes = [
 {
@@ -105,7 +106,7 @@ const routes: Routes = [
       },
       {
         path: 'new-design',
-        component: NewMainBodyComponent
+        component: NiceAdminComponent
       },
     ]
   },
