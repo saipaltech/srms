@@ -26,16 +26,19 @@ export class NewHeaderComponent {
   sideBar(){
 
     var li = document.getElementById("sidebar");
-  
-  
+
+    // var menuTexts: any = document.getElementsByClassName('textHide');
+
+    // for (let i of menuTexts){
+    //   i.classList.toggle('hide')
+    // }
   
     if (li!.classList.contains('sidebarDisplay')){
       li!.classList.remove('sidebarDisplay');
-      li!.classList.add('sidebarHide')
+      li!.classList.add('sidebarHide');
     }
   
-    else if (li!.classList.contains('sidebarHide')){
-  
+    else if (li!.classList.contains('sidebarHide')){  
       li!.classList.remove('sidebarHide');
       li!.classList.add('sidebarDisplay');
     }
