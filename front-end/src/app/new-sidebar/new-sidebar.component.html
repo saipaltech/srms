@@ -28,7 +28,10 @@ id="sidebar">
         <button (click)="activeButton($event)"
             class="colorCheck btn btn-toggle d-inline-flex rounded border-0 collapsed text-white show text-start" routerLink="{{i.link}}">
             <i class="{{i.icon}} ico"></i>
-           &nbsp; {{i.name}}
+        <span class="colorCheck textHide">
+            &nbsp; {{i.name}}
+        </span>
+           
 
             <!-- <div class="text-end">&nbsp;&nbsp;<i class="bi bi-chevron-right"></i></div> -->
 
@@ -51,7 +54,9 @@ id="sidebar">
     <li class="border-top my-3"></li>
     <li class="mb-1">
         <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed text-white text-start" (click)="logout()">
-            <i class="bi bi-globe-americas"></i> &nbsp; Logout
+            <i class="bi bi-globe-americas"></i> 
+            <span class="textHide">&nbsp; Logout</span>
+            
         </button>
     </li> 
 </ul>
