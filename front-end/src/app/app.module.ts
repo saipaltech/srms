@@ -47,7 +47,11 @@ import { NewHeaderComponent } from './new-header/new-header.component';
 import { NewSidebarComponent } from './new-sidebar/new-sidebar.component';
 import { NewMainBodyComponent } from './new-main-body/new-main-body.component';
 import { HttpInterceptorService } from './http-interceptor.service';
+import { NiceAdminComponent } from './nice-admin/nice-admin.component';
+import { SidebaritemComponent, SidebaritemInnerComponent } from './nice-admin/sidebaritem.component';
 
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 
 @NgModule({
@@ -80,7 +84,10 @@ import { HttpInterceptorService } from './http-interceptor.service';
     NewDesignComponent,
     NewHeaderComponent,
     NewSidebarComponent,
-    NewMainBodyComponent
+    NewMainBodyComponent,
+    NiceAdminComponent,
+    SidebaritemComponent,
+SidebaritemInnerComponent
   ],
   imports: [
     BrowserModule,
@@ -96,6 +103,8 @@ import { HttpInterceptorService } from './http-interceptor.service';
     BsDropdownModule.forRoot(),
     TooltipModule.forRoot(),
     BsDatepickerModule.forRoot(),
+    BsDropdownModule.forRoot(),
+    CollapseModule.forRoot(),
   ],
   providers: [
     AppConfig,

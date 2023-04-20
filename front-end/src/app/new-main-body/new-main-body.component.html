@@ -1,17 +1,7 @@
-<main class="d-flex flex-nowrap" style="width: calc(100vh)">
-    <div class="d-flex">
-        <div class="d-flex flex-column w-100">
-            <app-new-header></app-new-header>
-            <div class="d-flex">
-               <app-new-sidebar></app-new-sidebar>                
-                <div class="p-3 w-100" style="background-color: #f8f9fa;">
-                    <div class="container">
-                        <router-outlet></router-outlet> 
-                    </div>              
-                </div>
-            </div>
-        </div>
-    </div>
+<app-new-header></app-new-header>
+<app-new-sidebar></app-new-sidebar>
+<main id="main" class="main">
+    <section class="section">
+        <router-outlet></router-outlet>
+    </section>
 </main>
-
-
