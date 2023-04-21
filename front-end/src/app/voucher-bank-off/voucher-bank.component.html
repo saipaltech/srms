@@ -5,7 +5,7 @@
       <div class="card-header">
         <div class="row">
           <div class="col-md-8 text-start">
-            बैंक भौचर प्रविष्टि
+            राजस्व दाखिला फारम (Deposit Slip) [Off Branch]
           </div>
     
           <div class="col-md-4 text-end"  *ngIf = !hideButton>
@@ -46,7 +46,7 @@
         </div>
 
         <div class="col-6">
-          <label for="address" class="form-label">Deposit Slip No.</label>
+          <label for="address" class="form-label">दाखिला फारम (Deposit Slip) नं.</label>
           <input
             formControlName="voucherno"
             type="text"
@@ -302,7 +302,8 @@
           <td *ngIf="item.approved == 0"><span class="badge text-bg-danger">Not Approved</span></td>
           <td *ngIf="item.approved == 1"><span class="badge text-bg-primary"> Approved</span></td>  
           <td *ngIf="item.approved == 1"><button class="btn btn-success btn-sm" (click)="openModal(template, item.id)"><i class="bi bi-eye-fill"></i></button></td>
-          <td *ngIf="item.approved == 0"><button class="btn btn-success btn-sm" (click)="openModal(template, item.id)"><i class="bi bi-eye-fill"></i></button>
+          <td style="width: 120px;" *ngIf="item.approved == 0"><button class="btn btn-success btn-sm" (click)="openModal(template, item.id)"><i class="bi bi-eye-fill"></i></button>
+            &nbsp;&nbsp;
             <button class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i></button></td>
         </tr>
 
@@ -368,7 +369,7 @@
   <div class="modal-body" *ngIf="details">
     जम्मा गरेको मिति :  {{details.date}}
     <br>
-    Deposit Slip No.: {{details.voucherno}}
+    दाखिला फारम (Deposit Slip) नं.: {{details.voucherno}}
     <br>
     पालिका: {{details.llsname}}
     <br>

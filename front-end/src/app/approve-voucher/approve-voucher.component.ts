@@ -7,8 +7,8 @@ import { Component } from '@angular/core';
 })
 export class ApproveVoucherComponent {
 
-  hideForm = true
-  hideButton= true
-  hideApproveButton= true
-
+  hideForm = true;
+  hideButton= true;
+  hideApproveButton= true;
+  approvePageTitle=true;
 }

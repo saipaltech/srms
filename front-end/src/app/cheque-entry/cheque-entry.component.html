@@ -49,7 +49,7 @@
       </div>
 
       <div class="col-6">
-        <label for="address" class="form-label">Deposit Slip No.</label>
+        <label for="address" class="form-label">दाखिला फारम (Deposit Slip) नं.</label>
         <input
           formControlName="voucherno"
           type="text"
@@ -361,9 +361,11 @@
           <td *ngIf="item.cstatus == 0"><span class="badge text-bg-danger">Not Cleared</span></td>
           <td *ngIf="item.cstatus == 1"><span class="badge text-bg-primary"> Cleared</span></td>       
           <td *ngIf="item.cstatus == 1"><button class="btn btn-success btn-sm"  title="View" (click)="openModal(template, item.id,item.cstatus)"><i class="bi bi-eye-fill"></i></button></td>
-          <td *ngIf="item.cstatus == 0">
+          <td style="width: 160px;" *ngIf="item.cstatus == 0">
             <button class="btn btn-success btn-sm" (click)="openModal(template, item.id,item.cstatus)" title="View"><i class="bi bi-eye-fill"></i></button>
+            &nbsp;&nbsp;
             <button class="btn btn-info btn-sm" (click)="clearCheque(item.id)" title="Cheque Cleared"><i class="bi bi-arrow-return-right"></i></button>
+            &nbsp;
             <button class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i></button>
           </td>
         </tr>
@@ -434,7 +436,7 @@
     जम्मा गरेको मिति :  {{details.date}}
 
     <br>
-    Deposit Slip No.: {{details.voucherno}}
+    दाखिला फारम (Deposit Slip) नं.: {{details.voucherno}}
     <br>
     पालिका: {{details.llsname}}
     <br>

@@ -254,3 +254,15 @@ width: 80%;
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
+
+
+
+.sidebar-nav .nav-link {
+  padding: 5px 15px !important;
+}
+
+
+.stopClick{
+  pointer-events: none;
+}
