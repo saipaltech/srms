@@ -203,6 +203,14 @@ public class AutoService {
 	public boolean shouldUpdatePartially() {
 		return false;
 	}
+	
+	public boolean isdayclosed(String lgid,String bankorgid) {
+		Tuple t=db.getSingleResult("select count(id) as c from dayclose where lgid=? and bankorgid=? and dateint=format(getdate(),'yyyyMMdd')", Arrays.asList(lgid,bankorgid));
+		if(Integer.parseInt(t.get(0)+"")>0) {
+			return true;
+		}
+		return false;
+	}
 
 	public List<Tuple> getSelections(String table, String fields, String order) {
 		String sql = "select " + fields + " from " + table;

@@ -464,7 +464,7 @@ export class VoucherBankComponent implements OnInit {
           // upd.approved=result.data.approved;
           window.open("/#/report-generate?voucherno=" + ks + '&palika=' + upd.lgid, '_blank')
         }, error: err => {
-          this.toastr.error(err.error, 'Error');
+          this.toastr.error(err.error.message, 'Error');
         }
       });
     }

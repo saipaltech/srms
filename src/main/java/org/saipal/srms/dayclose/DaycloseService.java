@@ -39,25 +39,34 @@ public class DaycloseService extends AutoService {
 		System.out.println(lgid);
 		String cond="";
 		if(!lgid.isBlank()) {
-			cond+=" and taxvouchers.lgid='"+lgid+"'";
+			cond+=" and t.lgid='"+lgid+"'";
 		}
 		if(!acno.isBlank()) {
-			cond+=" and taxvouchers.accountno='"+acno+"'";
+			cond+=" and t.accountno='"+acno+"'";
+		}
+		
+		String cond1="";
+		if(!lgid.isBlank()) {
+			cond1+=" and t.lgid='"+lgid+"'";
+		}
+		if(!acno.isBlank()) {
+			cond1+=" and t.bankorgid='"+acno+"'";
 		}
 		
 		String sql = "select *,(amountcr-amountdr) as balance from (select accountno,accountname,accountnumber,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
-				+" select cast(accountno as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,amountcr, amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.accountno where  dateint=format(getdate(),'yyyyMMdd') and  t.bankid=?" 
+				+" select  cast(t.accountno as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.accountno left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.accountno and dc.dateint=t.dateint   where  dc.id is null and t.dateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=1 "+cond 
 				+" union"
-				+" select cast(accountno as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,amountcr, amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.accountno where  dateint=format(getdate(),'yyyyMMdd') and  t.bankid=?" 
-				+" ) a group by accountno,accountname,accountnumber,palika,lgid) b";
-		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBankId()));
+				+" select  cast(t.accountno as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.accountno  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.accountno and dc.dateint=t.dateint   where  dc.id is null and  t.dateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.ttype=1 "+cond 
+				+ " union"
+				+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint   where  dc.id is null and  t.depositdateint=format(getdate(),'yyyyMMdd') and  t.bankid=?  "+cond1
+				+" ) a group by accountno,accountname,accountnumber,palika,lgid) b ";
+		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBankId(),auth.getBankId()));
 		if(admlvl.isEmpty()) {
 			return Messenger.getMessenger().setMessage("No transaction found").error();
 		}else {
 			List<Map<String, Object>> list = new ArrayList<>();
 			if (!admlvl.isEmpty()) {
 				for (Tuple t : admlvl) {
-//					System.out.println(t.toString());
 					Map<String, Object> mapadmlvl = new HashMap<>();
 					mapadmlvl.put("accountno", t.get("accountno"));
 					mapadmlvl.put("lgid", t.get("lgid"));
@@ -66,6 +75,7 @@ public class DaycloseService extends AutoService {
 					mapadmlvl.put("accountname", t.get("accountname"));
 					mapadmlvl.put("accountnumber", t.get("accountnumber"));
 					mapadmlvl.put("palika", t.get("palika"));
+					mapadmlvl.put("balance", t.get("balance"));
 					
 					list.add(mapadmlvl);
 				}

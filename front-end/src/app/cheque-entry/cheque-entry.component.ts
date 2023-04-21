@@ -102,7 +102,7 @@ clearCheque(id:any){
   if (window.confirm('Are you sure this cheque is already cleared?')) {
   this.bvs.clearCheque(id).subscribe({next:(dt)=>{
     console.log(this.details);
-    window.open("/#/cheque-report?voucherno="+this.details.voucherno+'&palika='+this.details.lgid +'&formvalue='+this.formvalue, '_blank');
+    window.open("/#/cheque-report?voucherno="+this.details.karobarsanket+'&palika='+this.details.lgid +'&formvalue='+this.formvalue, '_blank');
     this.getList();
     this.toastr.success("Cheque status changed to cleared.","Success")
     this.modalRef?.hide();
@@ -448,7 +448,7 @@ createItem(id = null) {
       this.toastr.success('Item Successfully Saved!', 'Success');
       this.resetForm();
       this.getList();  
-      let ks=result.data;
+      let ks=result.data.karobarsanket;
       // this.istab=1;
       window.open("/#/cheque-report?voucherno="+ks+'&palika='+upd.lgid, '_blank');
       // window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')

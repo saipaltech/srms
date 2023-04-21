@@ -85,7 +85,7 @@ public class BankVoucherService extends AutoService {
 		if(Float.parseFloat(amount)!=Float.parseFloat(actualAmount)) {
 			return Messenger.getMessenger().setMessage("Deposited amount and Voucher amount does not match.").error();
 		}
-		 sql = "UPDATE " + table + " set depositdate=?,bankvoucherno=?,remarks=?,creatorid=?,approverid=?,approved=1 where transactionid=? and bankid=?";
+		 sql = "UPDATE " + table + " set depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,creatorid=?,approverid=?,approved=1 where transactionid=? and bankid=?";
 		 rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks,auth.getUserId(),auth.getUserId(),model.transactionid,auth.getBankId()));
 		//System.out.println(rowEffect.getErrorNumber());
 		if (rowEffect.getErrorNumber() == 0) {

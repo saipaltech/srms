@@ -160,6 +160,9 @@ public class TaxPayerVoucherService extends AutoService {
 		String sql = "";
 		TaxPayerVoucher model = new TaxPayerVoucher();
 		model.loadData(document);
+		if(isdayclosed(model.lgid,model.accountno)) {
+			return Messenger.getMessenger().setMessage("Cannot update record.Already Day closed.").error();
+		}
 //		String usq = "select count(voucherno) from taxvouchers where voucherno=? and bankid=?";
 //		Tuple res = db.getSingleResult(usq, Arrays.asList(model.voucherno, auth.getBankId()));
 //		if ((!(res.get(0) + "").equals("0"))) {
@@ -180,6 +183,8 @@ public class TaxPayerVoucherService extends AutoService {
 		if (model.chequeamount.isBlank()) {
 			model.chequeamount = "0";
 		}
+		
+			
 		String id = db.newIdInt();
 		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,accountno,revenuecode,purpose,amount,creatorid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,amountcr) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),?)";
 		DbResponse rowEffect = db.execute(sql,
@@ -823,6 +828,9 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		String acno = request("accountno");
 		if (voucher.startsWith("{")) {
 			voucher = "[" + voucher + "]";
+		}
+		if(isdayclosed(lgid,acno)) {
+			return Messenger.getMessenger().setMessage("Cannot update record.Already Day closed.").error();
 		}
 		JSONArray jarr = new JSONArray(voucher);
 		String sql = "select  top 1 *,cast((format(getdate(),'yyyyMMdd')) as numeric) as today from "+table+" where id=? and bankid=? and branchid=?";

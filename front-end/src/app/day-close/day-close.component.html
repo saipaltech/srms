@@ -67,6 +67,7 @@
                 <th scope="col">Account Number</th>
                 <th scope="col">Debit</th>
                 <th scope="col">Credit</th>
+                <th scope="col">Balance</th>
                 <th scope="col">Core Banking ID</th>
               </tr>
             </thead>
@@ -78,6 +79,7 @@
                 <td>{{ item.accountname }}[{{ item.accountnumber }}]</td>
                 <td>{{ item.amountdr }}</td>
                 <td>{{ item.amountcr }}</td>
+                <td>{{ item.balance }}</td>
                 <td><input type="text" id="textbox{{i}}" formControlName="{{item.accountno}}"></td>
               
               </tr>
