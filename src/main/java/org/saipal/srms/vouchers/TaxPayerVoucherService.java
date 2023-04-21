@@ -775,13 +775,18 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if(t==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
 		}
+		if((t.get("isused")+"").equals("1")) {
+			return Messenger.getMessenger().setMessage("Already used voucher").error();
+		}
+		if(!(t.get("today")+"").equals(t.get("dateint")+"")) {
+			return Messenger.getMessenger().setMessage("Not a same day transaction").error();
+		}
+		
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid as rc,concat(td.revenueid,'[',cr.namenp,']') as rv,td.amount as amt from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(t.get("id")+""));
 		t.put("revs", revs);
-		if((t.get("isused")+"").equals("1")) {
-			return Messenger.getMessenger().setMessage("Already used voucher").error();
-		}
+		
 		JSONObject sdata = api.getVoucherDetails(t.get("id")+"");
 //		System.out.println(sdata);
 		if(sdata!=null) {
@@ -908,6 +913,10 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		JSONObject sdata = api.getVoucherDetails(data.get("id")+"");
 		if(sdata!=null) {
 			try {
+				//data not found in sutra
+				if(sdata.getInt("status")==2) {
+					return Messenger.getMessenger().setData(data).success();
+				}
 				if(sdata.getInt("status")==1) {
 					JSONObject d = sdata.getJSONObject("data");
 					if(d.getInt("isused")==1) {
@@ -963,20 +972,13 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 					if(d.getInt("isused")==1) {
 						db.execute("update "+table+" set isused=1 where id=?",Arrays.asList(t.get("id")));
 						return Messenger.getMessenger().setMessage("Already used voucher").error();
-					} else {
-						String llid = db.newIdInt();
-						JSONObject pdata = api.sendDataToSutraPalikachange(id,llid, lgid, ccid, acno,remarks,auth.getUserId());
-						if(pdata!=null) {
-							if(pdata.getInt("status")==1) {
-								
-								db.execute("update "+table+" set hasChangeReqest=1 where id=?",Arrays.asList(id));
-								db.execute("insert into taxvoucher_ll_change(id,vrefid,lgid,collectioncenterid,bankorgid,remarks,creatorid) values (?,?,?,?,?,?,?)",
-										Arrays.asList(llid,id,lgid,ccid,acno,remarks,auth.getUserId()));
-								return Messenger.getMessenger().setMessage("Voucher change requst sent.").success();
-							}
-						}
 					}
 				}
+				String llid = db.newIdInt();
+				db.execute("update "+table+" set hasChangeReqest=1 where id=?",Arrays.asList(id));
+				db.execute("insert into taxvoucher_ll_change(id,vrefid,lgid,collectioncenterid,bankorgid,remarks,creatorid,palikaresponse) values (?,?,?,?,?,?,?,2)",
+						Arrays.asList(llid,id,lgid,ccid,acno,remarks,auth.getUserId()));
+				return Messenger.getMessenger().setMessage("Voucher change requst sent.").success();
 			}catch (JSONException e) {
 				// TODO: handle exception
 			}
@@ -989,8 +991,6 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String condition = " where ttype=1 and hasChangeReqest=1";
-		String approve = request("approve");
-		System.out.println("The approval Id is:" + approve);
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
 			condition += "and (";
@@ -1017,7 +1017,6 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.accountno, bd.revenuetitle, "
 				+ "bd.amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby ")
 				.sqlBody(" from taxvouchers as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid " + condition).paginate();
-//		System.out.println(result);
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -1153,12 +1152,14 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ " from taxvouchers as bd  "
 				+ "join collectioncenter cc on cc.id = bd.collectioncenterid  "
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid "
-				+ "join taxvoucher_ll_change llc on llc.vrefid = bd.id "
+				+ "join taxvoucher_ll_change llc on llc.vrefid = bd.id and caseterminated = 1 "
 				+ "join admin_local_level_structure als on als.id = llc.lgid "
 				+ "join collectioncenter tcc on tcc.id = llc.collectioncenterid "
 				+ "join bankaccount bat on bat.id = llc.bankorgid "
 				+ "join bankaccount ba on ba.id = bd.accountno "
 				+ "where bd.id=? and hasChangeReqest=1";
+		System.out.println(sql);
+		System.out.println(id);
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(id));
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
@@ -1167,30 +1168,32 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		Tuple t = db.getSingleResult("select top 1 * from taxvoucher_ll_change where vrefid=? and caseterminated=0",Arrays.asList(id));
 		Map<String,Object> msg = new HashMap<>();
 		if(t!=null) {
-			if((t.get("palikaresponse")+"").equals("0")) {
-				JSONObject presp = api.getPalikaResponse(id,t.get("id")+"");
+			if((t.get("palikaresponse")+"").equals("2")) {
+				msg.put("palikaresponse", t.get("palikaresponse"));
+				msg.put("responsereason", t.get("responsereason"));
+				//JSONObject presp = api.getPalikaResponse(id,t.get("id")+"");
 //				System.out.println(presp.toString());
-				if(presp!=null) {
-					try {
-						if(presp.getInt("status")==1) {
-							JSONObject sdata = presp.getJSONObject("data");
-							int repStatus = sdata.getInt("palikaresponse");
-							String reason = sdata.getString("responsereason");
-							String llcid = sdata.getString("id");
-							if(repStatus==0) {
-								msg.put("palikaresponse", "0");
-								msg.put("responsereason", "");
-							}else {
-								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where id=?",Arrays.asList(repStatus,reason,llcid));
-								msg.put("palikaresponse", repStatus);
-								msg.put("responsereason", reason);
-							}
-						}
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+//				if(presp!=null) {
+//					try {
+//						if(presp.getInt("status")==1) {
+//							JSONObject sdata = presp.getJSONObject("data");
+//							int repStatus = sdata.getInt("palikaresponse");
+//							String reason = sdata.getString("responsereason");
+//							String llcid = sdata.getString("id");
+//							if(repStatus==0) {
+//								msg.put("palikaresponse", "0");
+//								msg.put("responsereason", "");
+//							}else {
+//								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where id=?",Arrays.asList(repStatus,reason,llcid));
+//								msg.put("palikaresponse", repStatus);
+//								msg.put("responsereason", reason);
+//							}
+//						}
+//					} catch (JSONException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
 			}else {
 				msg.put("palikaresponse", t.get("palikaresponse"));
 				msg.put("responsereason", t.get("responsereason"));
@@ -1202,35 +1205,37 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	
 	public ResponseEntity<Map<String, Object>> settlePalikaChange() {
 		String id = request("id");
+		String type=request("type");
+		if(type.isBlank() || id.isBlank()) {
+			return Messenger.getMessenger().setMessage("Invalid Request..").error();
+		}
+		if(!(type.equals("1") || type.equals("0"))) {
+			return Messenger.getMessenger().setMessage("Invalid Operation").error();
+		}
 		Tuple t = db.getSingleResult("select top 1 * from taxvoucher_ll_change where vrefid=? and caseterminated=0",Arrays.asList(id));
 		if(t!=null) {
-			try {
-			if((t.get("palikaresponse")+"").equals("2")) {
-					JSONObject presp = new JSONObject("{status:1}");//api.settlePalikaChange(id,t.get("id")+"");
+			if(!(t.get("palikaresponse")+"").equals("2")) {
+				return Messenger.getMessenger().setMessage("Voucher Cannot be updated, has invalid status.").success();
+			}
+			if(type.equals("1")) {
+				try {
+					JSONObject presp = api.settlePalikaChange(id,t.get("lgid")+"",t.get("collectioncenterid")+"",t.get("bankorgid")+"");
 					if(presp!=null) {
 						if(presp.getInt("status")==1) {
 							db.execute("insert into taxvouchers_log (id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr) select id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr,amountdr from "+table+" where id=?",Arrays.asList(id));
 							db.execute("update "+table+" set hasChangeReqest=0,lgid=?,collectioncenterid=?,accountno=? where id=?",Arrays.asList(t.get("lgid"),t.get("collectioncenterid"),t.get("bankorgid"),id));
 							db.execute("update taxvoucher_ll_change set caseterminated=1 ,terminationdate=getDate() where vrefid=? and caseterminated=0",Arrays.asList(id));
-							return Messenger.getMessenger().setMessage("Data Successfully updated").success();
+							return Messenger.getMessenger().setMessage("Voucher Updated Successfully ").success();
 						}
-					}else {
-						return Messenger.getMessenger().setMessage("Error on communication with SuTRA ").error();
 					}
-			}else if((t.get("palikaresponse")+"").equals("3")) {
-				JSONObject presp = api.settlePalikaChange(id,t.get("id")+"");
-				if(presp!=null) {
-					if(presp.getInt("status")==1) {
-						db.execute("update "+table+" set hasChangeReqest=0 where id=?",Arrays.asList(id));
-						db.execute("update taxvoucher_ll_change set caseterminated=1,terminationdate=getDate() where vrefid=? and caseterminated=0 and id=?",Arrays.asList(id,t.get("id")));
-						return Messenger.getMessenger().setMessage("Data Successfully updated").success();
-					}
-				}else {
-					return Messenger.getMessenger().setMessage("Error on communication with SuTRA ").error();
+				}catch(JSONException e) {
+					
 				}
-			}
-			}catch (JSONException e) {
-				// TODO: handle exception
+				
+			}else {
+				db.execute("update "+table+" set hasChangeReqest=0 where id=?",Arrays.asList(id));
+				db.execute("update taxvoucher_ll_change set caseterminated=1 ,terminationdate=getDate() where vrefid=? and caseterminated=0",Arrays.asList(id));
+				return Messenger.getMessenger().setMessage("Voucher Update Cancelled").success();
 			}
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request..").error();

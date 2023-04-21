@@ -230,12 +230,6 @@
     </button>
   </div>
   <div class="modal-body" *ngIf="details">
-    <div class="alert alert-success" role="alert" *ngIf="details.status?.palikaresponse==2">
-      {{details.status?.responsereason || "Update Change Granted"}}
-    </div>
-    <div class="alert alert-danger" role="alert" *ngIf="details.status?.palikaresponse==3">
-      {{details.status?.responsereason}}
-    </div>
     <div class="row">
       <div class="col-6">
         जम्मा गरेको मिति : {{details.date}}
@@ -335,9 +329,10 @@
       </table>
 
       <div class="row">
-        <div class="d-flex justify-content-center">
-          <button class="btn btn-success btn-sm" *ngIf="details.status?.palikaresponse==2" type="button" (click)="updateChanges(details.id)">Settle Updates</button>
-          <button class="btn btn-success btn-sm" *ngIf="details.status?.palikaresponse==3" type="button" (click)="updateChanges(details.id)">Terminate Updates</button>
+        <div class="d-flex">
+          <button class="btn btn-success btn-sm display-start" *ngIf="details.status?.palikaresponse==2" type="button" (click)="updateChanges(details.id,'1')">Settle Updates</button>
+          &nbsp;&nbsp;&nbsp;
+          <button class="btn btn-danger btn-sm" *ngIf="details.status?.palikaresponse==2" type="button" (click)="updateChanges(details.id,'0')">Cancel Updates</button>
         </div>
       </div>
     </div>
