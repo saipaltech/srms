@@ -153,4 +153,9 @@ public class BankService extends AutoService {
 //		return ResponseEntity.ok(api.getBanks().toString());
 	}
 
+	public ResponseEntity<List<Map<String, Object>>> getDistrict() {
+		String sql = "select districtid as id,namenp from admin_district ";
+		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList()));
+	}
+
 }

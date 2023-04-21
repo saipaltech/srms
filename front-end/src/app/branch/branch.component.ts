@@ -41,7 +41,9 @@ export class BranchComponent {
       bankid: ['',Validators.required],
       name: ['',Validators.required],
       dlgid:[''],
-      code: [''],
+      code: ['',Validators.required],
+      district:['',Validators.required],
+      maddress:[''],
       disabled: ['0',Validators.required],
       approved: ['1',Validators.required],
       
@@ -57,8 +59,17 @@ export class BranchComponent {
     this.pagination.perPage = this.perPages[0];
     this.getList();
     this.getBanks();
+    this.getDistrict();
     this.bvs.getLocalLevels().subscribe({next:(dt)=>{
       this.llgs = dt.data;
+    },error:err=>{
+
+    }});
+  }
+dist:any;
+  getDistrict(){
+    this.bs.getDistrict().subscribe({next:(d:any)=>{
+      this.dist = d;
     },error:err=>{
 
     }});

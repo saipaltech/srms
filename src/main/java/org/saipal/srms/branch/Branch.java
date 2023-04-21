@@ -15,6 +15,8 @@ public class Branch {
 	public String bankid;
 	public String dlgid;
 	public String code;
+	public String district;
+	public String maddress;
 	public String approved;
 	public String disabled;
 

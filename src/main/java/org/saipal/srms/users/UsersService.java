@@ -103,9 +103,9 @@ public class UsersService extends AutoService {
 					+ "";
 		}
 
-		sql = "INSERT INTO users(name, post, username, password,amountlimit, mobile ,bankid, branchid , disabled, approved) VALUES (?,?,?,?,?,?,?,?,?,?)";
+		sql = "INSERT INTO users(name, post,permid, username, password,amountlimit, mobile ,bankid, branchid , disabled, approved) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
-				Arrays.asList(model.name, model.post, model.username, model.password,
+				Arrays.asList(model.name, model.post,model.permid, model.username, model.password,
 						model.amountlimit.isBlank() ? 0 : model.amountlimit, model.mobile, bankId, model.branchid,
 						model.disabled, model.approved));
 		String permid = request("permid") + "";
@@ -140,6 +140,11 @@ public class UsersService extends AutoService {
 		if ((!(resp.get(0) + "").equals("1"))) {
 			return Messenger.getMessenger().setMessage("Headbranch does not exists.").error();
 		}
+		Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$");
+        Matcher matcher = pattern.matcher(model.password);
+        if (!matcher.matches()) {
+        	return Messenger.getMessenger().setMessage("Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.").error();
+        } 
 		model.password = pe.encode(model.password);
 		sql = "INSERT INTO users(name, post,username,permid, password, mobile ,bankid, branchid ,disabled, approved) VALUES (?,?,?,?,?,?,?,(select top 1 id from branches where bankid=? and ishead=1),?,?)";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username, model.password,
