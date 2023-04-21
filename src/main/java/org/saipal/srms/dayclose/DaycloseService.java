@@ -44,10 +44,12 @@ public class DaycloseService extends AutoService {
 			cond+=" and taxvouchers.accountno='"+acno+"'";
 		}
 		
-//		String sql="select ROW_NUMBER() OVER (ORDER BY taxvouchers.id) as sn, cast(id as varchar) as id, karobarsanket,taxpayername,amount from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
-		String sql="select cast(accountno as varchar) as accountno,bankaccount.accountname,bankaccount.accountnumber,admin_local_level_structure.namenp as palika,cast(taxvouchers.lgid as varchar) as lgid,SUM(amount) as amount from taxvouchers"
-				+ " join admin_local_level_structure on admin_local_level_structure.id=taxvouchers.lgid join bankaccount on bankaccount.id=taxvouchers.accountno where  dateint=format(getdate(),'yyyyMMdd') and  taxvouchers.bankid=? "+cond+" group by taxvouchers.lgid,taxvouchers.accountno,bankaccount.accountname,bankaccount.accountnumber,admin_local_level_structure.namenp ";
-		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(auth.getBankId()));
+		String sql = "select accountno,accountname,accountnumber,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
+				+ " select cast(accountno as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,amountcr, amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.accountno where  dateint=format(getdate(),'yyyyMMdd') and  t.bankid=?"
+				+ " union"
+				+ " select cast(accountno as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,amountcr, amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.accountno where  dateint=format(getdate(),'yyyyMMdd') and  t.bankid=?"
+				+ " ) a group by accountno,accountname,accountnumber,palika,lgid";
+		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBankId()));
 		if(admlvl.isEmpty()) {
 			return Messenger.getMessenger().setMessage("No transaction found").error();
 		}else {
@@ -58,7 +60,8 @@ public class DaycloseService extends AutoService {
 					Map<String, Object> mapadmlvl = new HashMap<>();
 					mapadmlvl.put("accountno", t.get("accountno"));
 					mapadmlvl.put("lgid", t.get("lgid"));
-					mapadmlvl.put("amount", t.get("amount"));
+					mapadmlvl.put("amountcr", t.get("amountcr"));
+					mapadmlvl.put("amountdr", t.get("amountdr"));
 					mapadmlvl.put("accountname", t.get("accountname"));
 					mapadmlvl.put("accountnumber", t.get("accountnumber"));
 					mapadmlvl.put("palika", t.get("palika"));
