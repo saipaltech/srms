@@ -216,6 +216,8 @@ public class ApiManager {
 					.setParam("cstatus",tpv.get("cstatus")+"")
 					.setParam("ttype",tpv.get("ttype")+"")
 					.setParam("revenue",revs)
+					.setParam("amountdr",tpv.get("amountdr")+"")
+					.setParam("amountcr",tpv.get("amountcr")+"")
 					.post(url + "/srms/taxpayer-voucher");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");

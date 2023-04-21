@@ -236,10 +236,10 @@ public class TaxPayerVoucherService extends AutoService {
 					}
 				}
 			}
-			String usq = "select karobarsanket from taxvouchers where id=?";
-			Tuple res = db.getSingleResult(usq, Arrays.asList(id));
+			String usq = "select karobarsanket, approved from taxvouchers where id=?";
+			Map <String, Object> res = db.getSingleResultMap(usq, Arrays.asList(id));
 			
-			return Messenger.getMessenger().setData(res.get(0)+"").success();
+			return Messenger.getMessenger().setData(res).success();
 		} else {
 			return Messenger.getMessenger().error();
 		}
@@ -623,16 +623,16 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	 * they are already not pushed to the Sutra
 	 */
 	public ResponseEntity<String> getVoucherDetailsByVoucherNo() {
-		String voucherno = request("voucherno");
+		String karobarsanket = request("karobarsanket");
 		String bankid = request("bankid");
-		if (voucherno.isBlank()) {
+		if (karobarsanket.isBlank()) {
 			return ResponseEntity.ok("{status:0,message:\"Bank Voucher No. required\"}");
 		}
 		if (bankid.isBlank()) {
 			return ResponseEntity.ok("{status:0,message:\"Bank is required\"}");
 		}
-		Tuple t = db.getSingleResult("select top 1 * from " + table + " where voucherno=? and bankid=? and approved=1",
-				Arrays.asList(voucherno, bankid));
+		Tuple t = db.getSingleResult("select top 1 * from " + table + " where karobarsanket=? and bankid=? and approved=1",
+				Arrays.asList(karobarsanket, bankid));
 		if (t != null) {
 			String revs = "";
 			List<Tuple> list = db.getResultList(
@@ -648,6 +648,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				JSONObject data = new JSONObject();
 				data.put("id", t.get("id") + "");
 				data.put("date", t.get("date") + "");
+				data.put("karobarsanket", t.get("karobarsanket") + "");
 				data.put("voucherno", t.get("voucherno") + "");
 				data.put("taxpayername", t.get("taxpayername") + "");
 				data.put("taxpayerpan", t.get("taxpayerpan") + "");
@@ -670,6 +671,8 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				data.put("chequeno", t.get("chequeno") + "");
 				data.put("cstatus", t.get("cstatus") + "");
 				data.put("ttype", t.get("ttype") + "");
+				data.put("amountdr", t.get("amountdr") + "");
+				data.put("amountcr", t.get("amountcr") + "");
 				data.put("revenue", revs);
 				JSONObject j = new JSONObject();
 				j.put("status", 1);
@@ -707,7 +710,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> generateReport() {
 		String voucher = request("voucherno");
 		String palika = request("palika");
-		String sql = "select  dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amount as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amount) as amount,dbo.eng2nep(accountno) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date, dbo.eng2nep(revenuecode) as revenuecode from "
+		String sql = "select  tv.approved, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amount as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amount) as amount,dbo.eng2nep(accountno) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date, dbo.eng2nep(revenuecode) as revenuecode from "
 				+ "taxvouchers tv " + "left join bankaccount ba on ba.id=tv.accountno "
 				+ "left join bankinfo bi on bi.id=tv.bankid "
 				+ "left join admin_local_level_structure lls on lls.id=tv.lgid "
@@ -1163,6 +1166,67 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			}
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request..").error();
+	}
+
+	public ResponseEntity<String> getVoucherDetailsByVoucherId() {
+		String id = request("id");
+		if (id.isBlank()) {
+			return ResponseEntity.ok("{status:0,message:\"Bank Voucher No. required\"}");
+		}
+		Tuple t = db.getSingleResult("select top 1 * from " + table + " where id=? and approved=1",
+				Arrays.asList(id));
+		if (t != null) {
+			String revs = "";
+			List<Tuple> list = db.getResultList(
+					"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
+					Arrays.asList(t.get("id")));
+			if (list.size() > 0) {
+				for (Tuple tp : list) {
+					revs += tp.get(0) + ",";
+				}
+				revs = revs.substring(0, (revs.length() - 1));
+			}
+			try {
+				JSONObject data = new JSONObject();
+				data.put("id", t.get("id") + "");
+				data.put("date", t.get("date") + "");
+				data.put("karobarsanket", t.get("karobarsanket") + "");
+				data.put("voucherno", t.get("voucherno") + "");
+				data.put("taxpayername", t.get("taxpayername") + "");
+				data.put("taxpayerpan", t.get("taxpayerpan") + "");
+				data.put("depositedby", t.get("depositedby") + "");
+				data.put("depcontact", t.get("depcontact") + "");
+				data.put("lgid", t.get("lgid") + "");
+				data.put("collectioncenterid", t.get("collectioncenterid") + "");
+				data.put("accountno", t.get("accountno") + "");
+				data.put("revenuecode", t.get("revenuecode") + "");
+				data.put("purpose", t.get("purpose") + "");
+				data.put("amount", t.get("amount") + "");
+				data.put("bankid", t.get("bankid") + "");
+				data.put("branchid", t.get("branchid") + "");
+				data.put("creatorid", t.get("creatorid") + "");
+				data.put("approved", t.get("approved") + "");
+				data.put("approverid", t.get("approverid") + "");
+				data.put("updatedon", t.get("updatedon") + "");
+				data.put("chequebank", t.get("chequebank") + "");
+				data.put("chequeamount", t.get("chequeamount") + "");
+				data.put("chequeno", t.get("chequeno") + "");
+				data.put("cstatus", t.get("cstatus") + "");
+				data.put("ttype", t.get("ttype") + "");
+				data.put("amountdr", t.get("amountdr") + "");
+				data.put("amountcr", t.get("amountcr") + "");
+				data.put("revenue", revs);
+				JSONObject j = new JSONObject();
+				j.put("status", 1);
+				j.put("message", "success");
+				j.put("data", data);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Such voucher exists.\"}");
 	}
 	
 

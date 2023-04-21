@@ -86,6 +86,10 @@ public class UsersController {
 	public ResponseEntity<List<Map<String, Object>>> getUserDetails(HttpServletRequest request) {
 		return objService.getUserList();
 	}
+	@GetMapping("/get-usertypes")
+	public ResponseEntity<List<Map<String, Object>>> getUerTypes() {
+		return objService.getUerTypes();
+	}
 	
 	@GetMapping("/get-front-menu")
 	public ResponseEntity<List<Map<String, Object>>> frontMenu() {

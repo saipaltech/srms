@@ -98,6 +98,16 @@ public class Authenticated {
 		return false;
 	}
 	
+	public boolean canFromUserTable(String key) {
+		Tuple t = db.getSingleResult("select count(id) from users u  where u.id=? and u.permid=?",Arrays.asList(getUserId(),key));
+		if(t!=null) {
+			if(Integer.parseInt((t.get(0)+""))>0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean canSystemApi() {
 		String sql = "select permid from users where id=?";
 		Tuple t = db.getSingleResult(sql,Arrays.asList(getUserId()));

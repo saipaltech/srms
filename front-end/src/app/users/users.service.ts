@@ -61,4 +61,7 @@ remove(id: string) {
   return this.http.delete(this.url + '/' + id);
 
 }
+getUserTypes(){
+  return this.http.get(this.url+"/get-usertypes");
+}
 }
