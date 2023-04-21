@@ -265,14 +265,14 @@ ccs:any;
           // this.getRevenue(this.transDetails.accountno);
           this.items=this.transDetails.revs;
           this.calctotal();
-          this.bankForm.patchValue({'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount,'lgid':this.transDetails.lgid});
+          this.bankForm.patchValue({'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount});
         
           if (this.transDetails.trantype == 1) {
             this.istab = 1;
           } else {
             this.istab = 2;
           }
-          this.bankForm.patchValue({'collectioncenterid':this.transDetails.collectioncenterid,'accountno':this.transDetails.accountno});
+          // this.bankForm.patchValue({'collectioncenterid':this.transDetails.collectioncenterid,'accountno':this.transDetails.accountno});
         }, error: error => {
           // console.log(error);
           // alert(5)

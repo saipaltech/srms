@@ -29,6 +29,7 @@ export class DayCloseComponent {
     ];
     
   // textboxes: FormArray ;
+  
   voucherBankForm!: FormGroup;
   daycloseForm!: FormGroup;
   formBuilder: any;
@@ -50,12 +51,14 @@ export class DayCloseComponent {
           date: [this.myDate],
           acno: ['',Validators.required],
           lgid: ['',Validators.required],
+          corebank:this.fb.group({}),
           // textboxes: this.fb.array([]),
           options: this.fb.array([], [Validators.required])
           // lists: new FormControl([])
           
         }
         this.voucherBankForm =fb.group(this.formLayout);
+
         this.daycloseForm =fb.group(this.formLayout1);
         // this.textboxes = this.daycloseForm.get('textboxes') as FormArray;
        
@@ -124,7 +127,20 @@ acs:any;
       this.bvs.getdayclose(this.model).subscribe({
         next:(result:any) => {
           this.lists=result.data;
-          this.daycloseForm.patchValue({'lgid':this.model.lgid,'acno':this.model.acno});
+          let cb=[];
+          for(var i in this.lists){
+            cb[this.lists[i].accountno]=[''];
+          }
+          this.daycloseForm=this.fb.group({
+            date: [this.myDate],
+            acno: ['',Validators.required],
+            lgid: ['',Validators.required],
+            corebank:this.fb.group(cb),
+            options: this.fb.array([], [Validators.required])
+          
+            
+          });
+          // this.daycloseForm.patchValue({'lgid':this.model.lgid,'acno':this.model.acno});
         
         // this.toastr.success('Item Successfully Saved!', 'Success');
         // this.resetForm();
