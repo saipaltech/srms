@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from '../api.service';
 import { ToastrService } from 'ngx-toastr';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
-  styleUrls: ['./report.component.scss']
+  styleUrls: ['./report.component.scss'],
+  providers: [DatePipe]
 })
 export class ReportComponent {
 
@@ -21,9 +23,13 @@ export class ReportComponent {
 
   tableView = false;
 
-  constructor(private fb: FormBuilder,private http: ApiService, private toastr: ToastrService) {
+  myDate: any = new Date();
+
+  constructor(private fb: FormBuilder,private http: ApiService, private toastr: ToastrService, private datePipe: DatePipe,) {
+    this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
+
     this.formLayout = {
-      from:['', Validators.required],
+      from:[this.myDate, Validators.required],
       to:['', Validators.required]
     }
 

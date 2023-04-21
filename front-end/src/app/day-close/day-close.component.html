@@ -76,9 +76,9 @@
                 <td><input class="form-check-input" type="checkbox" (change)="onCheckboxChange($event)" value="{{item.lgid}}||{{item.accountno}}"   name="dayclose"></td>
                 <td>{{ item.palika }}</td>
                 <td>{{ item.accountname }}[{{ item.accountnumber }}]</td>
+                <td></td>
                 <td>{{ item.amount }}</td>
-                <td>{{ item.amount }}</td>
-                <td><input type="text" formControlName="corebankid_{{item.accountno}}"></td>
+                <td><input type="text" id="textbox{{i}}" formControlName="{{item.accountno}}"></td>
               
               </tr>
       

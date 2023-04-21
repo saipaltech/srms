@@ -28,7 +28,7 @@ export class DayCloseComponent {
         { id: 4, name: 'Audi' },
     ];
     
-    
+  // textboxes: FormArray ;
   voucherBankForm!: FormGroup;
   daycloseForm!: FormGroup;
   formBuilder: any;
@@ -45,18 +45,19 @@ export class DayCloseComponent {
           
           
         }
+        
         this.formLayout1 = {
           date: [this.myDate],
           acno: ['',Validators.required],
           lgid: ['',Validators.required],
-          corebankid:[''],
+          // textboxes: this.fb.array([]),
           options: this.fb.array([], [Validators.required])
           // lists: new FormControl([])
           
         }
         this.voucherBankForm =fb.group(this.formLayout);
         this.daycloseForm =fb.group(this.formLayout1);
-
+        // this.textboxes = this.daycloseForm.get('textboxes') as FormArray;
        
        
       
@@ -115,6 +116,7 @@ acs:any;
     model: any = {};
     lists:any;
     voucherBankFormSubmit(){
+     
       this.lists=undefined;
       this.model = this.voucherBankForm.value;
       // console.log(this.model.acno);
@@ -141,7 +143,7 @@ acs:any;
     }
     model1:any;
     daycloseFormSubmit(){
-     
+      // this.textboxes.push(new FormControl(''));
       // console.log(this.check);
       if(this.check==false){
         alert("Missing tick");
@@ -150,6 +152,7 @@ acs:any;
       if (window.confirm('Are  you sure you want to save ?')) {
       this.model1 = this.daycloseForm.value;
       this.model1.selection=this.selectedval;
+     
       this.bvs.submitdayclose(this.model1).subscribe({
         next:(result:any) => {
           // this.lists=result.data;

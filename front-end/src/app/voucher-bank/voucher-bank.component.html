@@ -39,7 +39,7 @@
             </div>
 
             <div class="col-6">
-              <label for="address" class="form-label">बैंक भौचर नंबर</label>
+              <label for="address" class="form-label">Deposit Slip No.</label>
               <input formControlName="voucherno" type="text" class="form-control form-control-sm"
                 [ngClass]="vs.getControlClass(voucherBankForm.controls['voucherno'])">
               <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['voucherno'])">
@@ -245,7 +245,7 @@
             <!--table-borderless-->
             <thead>
               <tr>
-                <th scope="col">Voucher No.</th>
+                <th scope="col">Deposit Slip No.</th>
                 <th scope="col">Karobar Sanket</th>
                 <th scope="col">Date</th>
                 <th scope="col">Tax Payer Name</th>
@@ -258,7 +258,7 @@
             <tbody>
               <tr *ngFor="let item of lists; let i = index">
                 <td>{{ item.voucherno }}</td>
-                <td>{{ item.karobarsanket }}</td>
+                <td>{{ item.approved === 1 ? item.karobarsanket : 'To be Approved' }}</td>
                 <td>{{ item.date }}</td>
                 <td>{{ item.taxpayername }}</td>
                 <td>{{ item.accountno }}</td>
@@ -326,7 +326,7 @@
         जम्मा गरेको मिति : {{details.date}}
       </div>
       <div class="col-6">
-        बैंक भौचर नंबर: {{details.voucherno}}
+        Deposit Slip No.: {{details.voucherno}}
       </div>
     </div>
     <div class="row">

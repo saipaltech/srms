@@ -51,8 +51,8 @@ export class UsersComponent implements OnInit, OnDestroy {
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.pattern('^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$')]],
       disabled: ['0', Validators.required],
-      approved: ['1', [Validators.required,Validators.pattern('^\d{10}$')]],
-      mobile: ['', Validators.required],
+      approved: ['1', [Validators.required]],
+      mobile: ['', [Validators.required,Validators.pattern('^[0-9]{10}$')]],
       amountlimit: ['0'],
       permid: ['', Validators.required]
 
@@ -166,7 +166,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   bankFormSubmit() {
     if (this.bankForm.valid) {
       if (this.bankForm.value.permid == 3) {
-        if (this.bankForm.value.amountlimit.trim() === '') {
+        if ((this.bankForm.value.amountlimit+"").trim()=='') {
           this.toastr.warning("Set limit for the user" + this.bankForm.value.amountlimit, "Warning");
           return;
         }
