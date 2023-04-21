@@ -764,7 +764,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 
 	public ResponseEntity<Map<String, Object>> getEditDetails() {
 		String voucherno = request("voucherno");
-		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.isused,bd.dateint,cast(bd.collectioncenterid as varchar) as collectioncenterid,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno, "
+		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.approved,bd.isused,bd.dateint,cast(bd.collectioncenterid as varchar) as collectioncenterid,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.accountno, bd.revenuetitle, "
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid  "
@@ -779,14 +779,16 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
 		}
 		if(!(t.get("today")+"").equals(t.get("dateint")+"")) {
-			return Messenger.getMessenger().setMessage("Not a same day transaction").error();
+//			return Messenger.getMessenger().setMessage("Not a same day transaction").error();
 		}
 		
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid as rc,concat(td.revenueid,'[',cr.namenp,']') as rv,td.amount as amt from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(t.get("id")+""));
 		t.put("revs", revs);
-		
+		if((t.get("approved")+"").equals("0")) {
+			return Messenger.getMessenger().setData(t).success();
+		}
 		JSONObject sdata = api.getVoucherDetails(t.get("id")+"");
 //		System.out.println(sdata);
 		if(sdata!=null) {
@@ -827,6 +829,34 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 		if((t.get("isused")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
+		}
+		if((t.get("approved")+"").equals("0")) {
+			if((t.get("today")+"").equals(t.get("dateint")+"")) {
+				if(!(t.get("lgid")+"").equals(lgid)) {
+					//same day palika change
+					db.execute("insert into taxvouchers_log (id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr) select id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr from "+table+" where id=?",Arrays.asList(id));
+					db.execute("insert into taxvouchers_log (id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr) select id ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,accountno ,revenuecode ,revenuetitle ,amount ,purpose ,creatorid ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr,amountdr from "+table+" where id=?",Arrays.asList(id));
+					db.execute("update "+table+" set amountcr=?,lgid=?,collectioncenterid=?,accountno=? where id=?",Arrays.asList(amount,lgid,ccid,acno,id));
+					
+					db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amount=?,amountcr=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,amount,id));
+					db.execute("delete from taxvouchers_detail where mainid=?",Arrays.asList(id));
+					if (jarr.length() > 0) {
+						for (int i = 0; i < jarr.length(); i++) {
+							JSONObject objects = jarr.getJSONObject(i);
+							String sq1 = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
+							db.execute(sq1, Arrays.asList(db.newIdInt(), id, objects.get("rc"), objects.get("amt")));
+						}
+					}
+					return Messenger.getMessenger().setMessage("Voucher Updated").success();
+				}else {
+					return Messenger.getMessenger().setMessage("Cannot transfer to same local level.").success();
+				}
+			}else {
+				db.execute("update "+table+" set taxpayername=? ,taxpayerpan=? where id=?",Arrays.asList(taxpayername,taxpayerpan,id));
+				return Messenger.getMessenger().setMessage("Voucher Updated").success();
+				
+			}
+//			return Messenger.getMessenger().setMessage("Voucher Updated").success();
 		}
 		JSONObject sdata = api.getVoucherDetails(t.get("id")+"");
 		if(sdata!=null) {

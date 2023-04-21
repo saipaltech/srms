@@ -120,7 +120,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-6" *ngIf="transDetails.today==transDetails.dateint">
               <label for="firstName" class="form-label req"> पालिका</label>
               <ng-select formControlName="lgid" (change)="getBankAccounts()">
                 <ng-option *ngFor="let l of llgs" [value]="l.code">{{
@@ -130,7 +130,7 @@
               <div [ngClass]="vs.getMessageClass(bankForm.controls['lgid'])">{{vs.getMessage(bankForm.controls['lgid'])}}</div>
             </div>
     
-            <div class="col-sm-6">
+            <div class="col-sm-6" *ngIf="transDetails.today==transDetails.dateint">
               <label for="lastName" class="form-label req">संकलन केन्द्र</label>
               <ng-select formControlName="collectioncenterid" >
                 <ng-option *ngFor="let cc of ccs" [value]="cc.code">{{
@@ -141,7 +141,7 @@
             </div>
     
     
-            <div class="col-6">
+            <div class="col-6" *ngIf="transDetails.today==transDetails.dateint">
               <label for="username" class="form-label req">खाता नंबर</label>
               <select
                 class="form-select form-select-sm" (change)="getRevenue()"
@@ -183,7 +183,7 @@
               <div [ngClass]="vs.getMessageClass(bankForm.controls['revenuecode'])">{{vs.getMessage(bankForm.controls['revenuecode'])}}</div>
             </div>
     
-            <div class="col-5">
+            <div class="col-5" *ngIf="transDetails.today==transDetails.dateint">
               <label for="username" class="form-label req">रकम</label>
               <div class="input-group has-validation">
                 <input
@@ -195,13 +195,13 @@
                 <div [ngClass]="vs.getMessageClass(bankForm.controls['amount'])">{{altmsg(vs.getMessage(bankForm.controls['amount']))}}</div>
               </div>
             </div>
-            <div class="col-1">
+            <div class="col-1" *ngIf="transDetails.today==transDetails.dateint">
               <label>&nbsp;</label>
               <div class="input-group has-validation">
               <button type="button" class="btn btn-success btn-sm" (click)="addItem()">Add </button>
               </div>
             </div>
-            <div  *ngIf="items.length" class="col-12">
+            <div  *ngIf="transDetails.today==transDetails.dateint && items.length" class="col-12">
               <table class="layout display responsive-table" style="word-wrap: anywhere;">
                 <thead>
                   <tr>
