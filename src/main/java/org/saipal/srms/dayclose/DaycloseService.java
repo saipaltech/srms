@@ -44,11 +44,11 @@ public class DaycloseService extends AutoService {
 			cond+=" and taxvouchers.accountno='"+acno+"'";
 		}
 		
-		String sql = "select accountno,accountname,accountnumber,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
-				+ " select cast(accountno as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,amountcr, amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.accountno where  dateint=format(getdate(),'yyyyMMdd') and  t.bankid=?"
-				+ " union"
-				+ " select cast(accountno as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,amountcr, amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.accountno where  dateint=format(getdate(),'yyyyMMdd') and  t.bankid=?"
-				+ " ) a group by accountno,accountname,accountnumber,palika,lgid";
+		String sql = "select *,(amountcr-amountdr) as balance from (select accountno,accountname,accountnumber,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
+				+" select cast(accountno as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,amountcr, amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.accountno where  dateint=format(getdate(),'yyyyMMdd') and  t.bankid=?" 
+				+" union"
+				+" select cast(accountno as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,amountcr, amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.accountno where  dateint=format(getdate(),'yyyyMMdd') and  t.bankid=?" 
+				+" ) a group by accountno,accountname,accountnumber,palika,lgid) b";
 		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBankId()));
 		if(admlvl.isEmpty()) {
 			return Messenger.getMessenger().setMessage("No transaction found").error();
