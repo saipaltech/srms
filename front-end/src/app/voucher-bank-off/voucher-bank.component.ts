@@ -378,7 +378,8 @@ createItem(id = null) {
       // this.r.navigate(['report'], { state: { data: upd } });
       this.resetForm();
       this.getList();
-      let ks=result.data;
+      let ks=result.data.karobarsanket;
+      upd.approved=result.data.approved;
       window.open("/#/report-generate?voucherno="+ks+'&palika='+upd.lgid, '_blank')
     }, error:err => {
       this.toastr.error(err.error, 'Error');

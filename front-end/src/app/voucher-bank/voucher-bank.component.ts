@@ -424,7 +424,7 @@ createItem(id = null) {
       this.resetForm();
       this.getList();
       let ks=result.data.karobarsanket;
-      upd.approved=result.data.approved;
+      // upd.approved=result.data.approved;
       window.open("/#/report-generate?voucherno="+ks+'&palika='+upd.lgid, '_blank')
     }, error:err => {
       this.toastr.error(err.error, 'Error');
