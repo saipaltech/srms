@@ -276,8 +276,10 @@ voucherBankFormSubmit(){
     return;
   }
   else if(!this.voucherBankForm.value['revenuecode']){
-    this.toastr.error('Please fill all the राजस्व शिर्षक field', 'Error');
-    return;
+    if(this.items.length<=0){
+      this.toastr.error('Please fill all the राजस्व शिर्षक field', 'Error');
+      return;
+     } 
   }
    
   if (window.confirm('Are  you sure you want to save this voucher?')) {
