@@ -318,10 +318,11 @@ public class ApiManager {
 		return null;
 	}
 
-	public JSONObject saveVoucherUpdates(String id, String taxpayername, String taxpayerpan, String amount) {
+	public JSONObject saveVoucherUpdates(String id, String taxpayername, String taxpayerpan, String amount,String lgid,String ccid,String acno,String voucher) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
+			
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
 					.setHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -329,6 +330,10 @@ public class ApiManager {
 					.setParam("taxpayername",taxpayername)
 					.setParam("taxpayerpan",taxpayerpan)
 					.setParam("amount",amount)
+					.setParam("voucherinfo",voucher)
+					.setParam("lgid",lgid)
+					.setParam("collectioncenterid",ccid)
+					.setParam("accountno",acno)
 					.post(url + "/srms/taxpayer-voucher-update-namechange");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");

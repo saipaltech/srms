@@ -878,7 +878,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 								db.execute("update "+table+" set amountcr=?,lgid=?,collectioncenterid=?,accountno=? where id=?",Arrays.asList(amount,lgid,ccid,acno,id));
 							}
 //							System.out.println("here i am ");
-							JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount);
+							JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount,lgid,ccid,acno,voucher);
 							if(ups!=null) {
 								if(ups.getInt("status")==1) {
 									db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amount=?,amountcr=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,amount,id));
@@ -897,7 +897,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 							}
 							return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
 						}else {
-							JSONObject ups =  api.saveVoucherUpdates(id,taxpayername,taxpayerpan,"");
+							JSONObject ups =  api.saveVoucherUpdates(id,taxpayername,taxpayerpan,"","","","","");
 							if(ups!=null) {
 								if(ups.getInt("status")==1) {
 									db.execute("update "+table+" set taxpayername=? ,taxpayerpan=? where id=?",Arrays.asList(taxpayername,taxpayerpan,id));
@@ -920,7 +920,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	
 	public ResponseEntity<Map<String, Object>> getEditDetailsOff() {
 		String voucherno = request("voucherno");
-		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,cast(bankaccount.accountname as varchar) as accountname,bd.hasChangeReqest,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno, "
+		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.approved,cast(bankaccount.accountname as varchar) as accountname,bd.hasChangeReqest,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amount,cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.accountno, bd.revenuetitle, "
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid  "
@@ -939,10 +939,15 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if((data.get("hasChangeReqest")+"").equals("1")) {
 			return Messenger.getMessenger().setMessage("Change request is already in process.").error();
 		}
+		
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(data.get("id")+""));
 		data.put("revs", revs);
+//		if((data.get("approved")+"").equals("0")) {
+//			
+//			return Messenger.getMessenger().setData(data).success();
+//		}
 		JSONObject sdata = api.getVoucherDetails(data.get("id")+"");
 		if(sdata!=null) {
 			try {
