@@ -56,6 +56,7 @@ public class TaxPayerVoucher {
 //		rules.put("voucherno", "required");
 		rules.put("taxpayername", "required");
 		rules.put("depositedby", "required");
+		rules.put("collectioncenterid", "required");
 		return rules;
 	}
 
