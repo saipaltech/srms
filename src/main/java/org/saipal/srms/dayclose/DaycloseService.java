@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.service.IrdPanSearchService;
@@ -83,22 +84,26 @@ public class DaycloseService extends AutoService {
 			items = "[" + items + "]";
 		}
 		String corebank=request("corebank");
+		JSONObject cb = new JSONObject(corebank);
+		System.out.println(cb);
 		JSONArray jarr = new JSONArray(items);
-		String id=db.newIdInt();
+		
 		if (jarr.length() > 0) {
 			for (int i = 0; i < jarr.length(); i++) {
 				String[] parts = jarr.get(i).toString().split("\\|\\|");
 				String sq="select count(id) as cid from dayclose where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
 				Map<String,Object> t = db.getSingleResultMap(sq,Arrays.asList(parts[0],parts[1]));
 				if(t.get("cid").toString().equals("0")) {
-					String sql = "insert into dayclose(id,lgid,accountno,creatorid,corebankid,dateint) values (?,?,?,?,?,format(getdate(),'yyyyMMdd')) ";
+					String id=db.newIdInt();
+//					System.out.println(cb.get(parts[1]));
+					String sql = "insert into dayclose(id,lgid,accountno,bankid,branchid,creatorid,corebankid,dateint) values (?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd')) ";
 					DbResponse rowEffect = db.execute(sql,
-							Arrays.asList(id,parts[0],parts[1],auth.getUserId(),cbid));
-					String sql1="select id, karobarsanket,taxpayername,amount from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
+							Arrays.asList(id,parts[0],parts[1],auth.getUserId(),cb.get(parts[1])));
+					String sql1="select * from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
 					List<Tuple> admlvl = db.getResultList(sql1, Arrays.asList(parts[0],parts[1]));
 					if (!admlvl.isEmpty()) {
 						for (Tuple tt : admlvl) {
-							String sql2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint) values (?,?,?,format(getdate(),'yyyyMMdd')) ";
+							String sql2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,amount,purpose,syncstatus,approved,approverid,createdon,updatedon,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr) values (?,?,?,format(getdate(),'yyyyMMdd')) ";
 							db.execute(sql2,
 									Arrays.asList(id,tt.get("id"),tt.get("karobarsanket")));
 						}
