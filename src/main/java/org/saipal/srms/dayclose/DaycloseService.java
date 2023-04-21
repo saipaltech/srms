@@ -99,16 +99,16 @@ public class DaycloseService extends AutoService {
 				if(t.get("cid").toString().equals("0")) {
 					String id=db.newIdInt();
 //					System.out.println(cb.get(parts[1]));
-					String sql = "insert into dayclose(id,lgid,accountno,bankid,branchid,creatorid,corebankid,dateint) values (?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd')) ";
+					String sql = "insert into dayclose(id,lgid,bankorgid,accountno,accountname,amountdr,amountcr,bankid,branchid,creatorid,corebankid,dateint) values (?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd')) ";
 					DbResponse rowEffect = db.execute(sql,
-							Arrays.asList(id,parts[0],parts[1],auth.getUserId(),cb.get(parts[1])));
+							Arrays.asList(id,parts[0],parts[1],parts[2],parts[3],parts[4],parts[5],auth.getBankId(),auth.getBranchId(),auth.getUserId(),cb.get(parts[1])));
 					String sql1="select * from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
 					List<Tuple> admlvl = db.getResultList(sql1, Arrays.asList(parts[0],parts[1]));
 					if (!admlvl.isEmpty()) {
 						for (Tuple tt : admlvl) {
-							String sql2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,amount,purpose,syncstatus,approved,approverid,createdon,updatedon,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr) values (?,?,?,format(getdate(),'yyyyMMdd')) ";
+							String sql2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,amount,purpose,syncstatus,approved,approverid,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr) values (?,?,?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 							db.execute(sql2,
-									Arrays.asList(id,tt.get("id"),tt.get("karobarsanket")));
+									Arrays.asList(id,tt.get("id"),tt.get("karobarsanket"),tt.get("voucherno"),tt.get("date"),tt.get("taxpayername"),tt.get("taxpayerpan"),tt.get("depositedby"),tt.get("depcontact"),tt.get("lgid"),tt.get("collectioncenterid"),tt.get("bankid"),tt.get("branchid"),tt.get("accountno"),tt.get("amount"),tt.get("purpose"),tt.get("syncstatus"),tt.get("approved"),tt.get("approverid"),tt.get("ttype"),tt.get("chequebank"),tt.get("chequeno"),tt.get("chequeamount"),tt.get("cstatus"),tt.get("chequetype"),tt.get("isused"),tt.get("hasChangeReqest"),tt.get("changeReqestDate"),tt.get("amountdr"),tt.get("amountcr")));
 						}
 				}
 					
