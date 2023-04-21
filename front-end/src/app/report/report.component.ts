@@ -30,7 +30,7 @@ export class ReportComponent {
 
     this.formLayout = {
       from:[this.myDate, Validators.required],
-      to:['', Validators.required]
+      to:[this.myDate, Validators.required]
     }
 
     this.reportForm = fb.group(this.formLayout)
