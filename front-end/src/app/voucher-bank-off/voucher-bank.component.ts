@@ -48,7 +48,7 @@ export class VoucherBankOffComponent implements OnInit {
   isDesc: boolean = false;
   srchForm!: FormGroup;
   model: any = {};
-  approved ="";
+  approved ="0";
   items=new Array();
 
 constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherServiceOff, private modalService: BsModalService, private r: Router,private auth:AuthService){
