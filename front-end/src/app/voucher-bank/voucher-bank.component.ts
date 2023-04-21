@@ -25,7 +25,7 @@ export class VoucherBankComponent implements OnInit {
   @Input() hideForm!: boolean;
   @Input() hideButton!: boolean;
   @Input() hideApproveButton!: boolean;
-  @Input() status = "";
+  @Input() approvePageTitle!: boolean;
 
 
   myDate: any = new Date();
