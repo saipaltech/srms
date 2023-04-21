@@ -14,10 +14,10 @@ export class ChequeEntryService {
   }
 
   getdayclose(data:any){
-    return this.http.post(this.url+"/getdayclose", data);
+    return this.http.post(this.url1+"/getdayclose", data);
   }
   submitdayclose(data:any){
-    return this.http.post(this.url+"/submitdayclose", data);
+    return this.http.post(this.url1+"/submitdayclose", data);
   }
 
   getBank() {
@@ -33,6 +33,7 @@ export class ChequeEntryService {
   getBankAccounts(llgCode: any) {
     return this.http.get(this.url+"/get-bank-accounts?llgcode="+llgCode);
   }
+  url1="dayclose";
   url="taxpayer-voucher"; 
   create(data: any) {
     // console.log(data);
