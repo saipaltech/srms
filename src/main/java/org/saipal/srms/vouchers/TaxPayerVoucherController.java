@@ -51,18 +51,7 @@ public class TaxPayerVoucherController {
 		}
 	}
 	
-	@PostMapping("getdayclose")
-	public ResponseEntity<Map<String, Object>> getdayclose(HttpServletRequest request) throws JSONException {
-		
-			return objService.getdayclose();
-		
-	}
-	@PostMapping("submitdayclose")
-	public ResponseEntity<Map<String, Object>> submitdayclose(HttpServletRequest request) throws JSONException {
-		
-			return objService.submitdayclose();
-		
-	}
+	
 
 	@GetMapping("{id}")
 	public ResponseEntity<Map<String, Object>> edit(HttpServletRequest request, @PathVariable String id) {
