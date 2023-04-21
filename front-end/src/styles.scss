@@ -261,3 +261,8 @@ width: 80%;
 .sidebar-nav .nav-link {
   padding: 5px 15px !important;
 }
+
+
+.stopClick{
+  pointer-events: none;
+}

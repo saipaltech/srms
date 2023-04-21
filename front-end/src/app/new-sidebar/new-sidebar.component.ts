@@ -75,15 +75,6 @@ export class NewSidebarComponent {
     element.nextElementSibling?.classList.toggle('show')
   }
 
-  activeButton(e: any) {
-    var element: HTMLElement = e.target;
-    var el: any = document.getElementsByClassName('colorCheck')
-
-    for (let i of el) {
-      i.classList.remove('buttonColor')
-    }
-    element.classList.add('buttonColor');
-  }
 
   logout() {
     if (confirm("Are you sure you want to logout?")) {

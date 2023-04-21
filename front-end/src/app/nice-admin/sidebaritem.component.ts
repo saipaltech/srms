@@ -4,9 +4,9 @@ import { Component, Input } from '@angular/core';
   selector: 'app-sidebaritem',
   template: `<li class="nav-item" *ngFor="let mit of menuItems">
     <app-sidebaritem-inner *ngIf="hasSubMenu(mit)" [menuItem]="mit"></app-sidebaritem-inner>
-    <a [ngClass]="!isChildLink?'nav-link collapsed':''" [routerLink]="mit.link" *ngIf="!hasSubMenu(mit)">
-          <i class="{{mit.icon}} ico"></i>
-          <span>{{mit.name}}</span>
+    <a (click)="activeButton($event)" [ngClass]="!isChildLink?'nav-link collapsed':''" [routerLink]="mit.link" *ngIf="!hasSubMenu(mit)">
+          <i class="{{mit.icon}} ico stopClick"></i>
+          <span class="stopClick">{{mit.name}}</span>
         </a>
 </li>`,
 })
@@ -15,6 +15,20 @@ export class SidebaritemComponent {
   @Input("isChildLink") isChildLink?=false;
   active = false;
   constructor() { }
+
+  activeButton(e: any) {
+    var element: HTMLElement = e.target;
+    var el: any = document.getElementsByClassName('nav-link')
+
+    for (let i of el) {
+      if (!i.classList.contains('collapsed')){
+        i.classList.add('collapsed')
+      }
+    }
+    // console.log(element.children[1])
+    element.classList.remove('collapsed');
+  }
+
 
   hasSubMenu(mit:any){
     if(mit.hasOwnProperty('childs')){
