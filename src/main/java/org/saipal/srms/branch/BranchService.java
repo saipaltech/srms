@@ -75,7 +75,7 @@ public class BranchService extends AutoService {
 		if ((!(res.get(0) + "").equals("0"))) {
 			return Messenger.getMessenger().setMessage("Branch Code already exists.").error();
 		}
-		sql = "INSERT INTO branches(name,district,maddress, bankid,code,dlgid, disabled, approved) VALUES (?,?,?,?,?,?)";
+		sql = "INSERT INTO branches(name,district,maddress, bankid,code,dlgid, disabled, approved) VALUES (?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name,model.district,model.maddress,model.bankid, model.code,model.dlgid.isBlank()? 0 : model.dlgid,model.disabled, model.approved));
 
 		if (rowEffect.getErrorNumber() == 0) {

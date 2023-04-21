@@ -82,6 +82,7 @@ public class DaycloseService extends AutoService {
 		if (!items.startsWith("[")) {
 			items = "[" + items + "]";
 		}
+		String corebank=request("corebank");
 		JSONArray jarr = new JSONArray(items);
 		String id=db.newIdInt();
 		if (jarr.length() > 0) {
