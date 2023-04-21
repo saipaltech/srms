@@ -227,6 +227,7 @@ public class UsersService extends AutoService {
 		exclude.add("bank");
 		exclude.add("branch");
 		exclude.add("users");
+		exclude.add("approve-voucher");
 		String sql = "";
 		if (auth.hasPermissionOnly("*")) {
 			sql = "select * from front_menu order by morder";
@@ -238,6 +239,7 @@ public class UsersService extends AutoService {
 		}
 		if (auth.hasPermissionOnly("banksupervisor")) {
 			exclude.remove("users");
+			exclude.remove("approve-voucher");
 		}
 
 		sql = "select * from front_menu where link not in ('" + String.join("','", exclude) + "') order by morder";
@@ -297,6 +299,16 @@ public class UsersService extends AutoService {
 		}
 		return Messenger.getMessenger().setMessage("User Does not Exist..").error();
 	
+	}
+
+	public ResponseEntity<List<Map<String, Object>>> getUerTypes() {
+		if(auth.canFromUserTable("4")) {
+			return ResponseEntity.ok(Arrays.asList(Map.of("id",3,"name","Bank User")));
+		}
+		if(auth.hasPermission("bankhq")) {
+			return ResponseEntity.ok(Arrays.asList(Map.of("id",3,"name","Bank User"),Map.of("id",4,"name","Supervisor")));
+		}
+		return ResponseEntity.ok(Arrays.asList());
 	}
 
 }

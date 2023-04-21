@@ -40,6 +40,7 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   resetPawsswordForm!: FormGroup;
   resetPawsswordFormLayout: any;
+  userTypes:any;
 
   constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService, private bs: BranchService, private modalService: BsModalService) {
     this.formLayout = {
@@ -126,8 +127,16 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.pagination.perPage = this.perPages[0];
     this.getList();
     this.getBranches();
+    this.getUserTypes();
     // this.toastr.info("Password must be at least eight characters long and must contain at least one uppercase,number and special character. Eg. Srms@123#","Password Information",{timeOut: 0})
 
+  }
+  getUserTypes(){
+    this.RS.getUserTypes().subscribe({next:(d)=>{
+      this.userTypes = d; 
+    },error:(er)=>{
+      console.log(er);
+    }});
   }
 
   getBranches() {

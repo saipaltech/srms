@@ -37,8 +37,7 @@
                 <select class="form-select form-select-sm" formControlName="permid"
                   [ngClass]="vs.getControlClass(bankForm.controls['permid'])">
                   <option value="">Select User Type..</option>
-                  <option value="4">Supervisor</option>
-                  <option value="3">Bank User</option>
+                  <option value="{{it.id}}" *ngFor="let it of userTypes">{{it.name}}</option>
                 </select>
               </div>
             </div>

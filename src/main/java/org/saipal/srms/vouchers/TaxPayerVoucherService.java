@@ -623,16 +623,16 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	 * they are already not pushed to the Sutra
 	 */
 	public ResponseEntity<String> getVoucherDetailsByVoucherNo() {
-		String voucherno = request("voucherno");
+		String karobarsanket = request("karobarsanket");
 		String bankid = request("bankid");
-		if (voucherno.isBlank()) {
+		if (karobarsanket.isBlank()) {
 			return ResponseEntity.ok("{status:0,message:\"Bank Voucher No. required\"}");
 		}
 		if (bankid.isBlank()) {
 			return ResponseEntity.ok("{status:0,message:\"Bank is required\"}");
 		}
-		Tuple t = db.getSingleResult("select top 1 * from " + table + " where voucherno=? and bankid=? and approved=1",
-				Arrays.asList(voucherno, bankid));
+		Tuple t = db.getSingleResult("select top 1 * from " + table + " where karobarsanket=? and bankid=? and approved=1",
+				Arrays.asList(karobarsanket, bankid));
 		if (t != null) {
 			String revs = "";
 			List<Tuple> list = db.getResultList(
@@ -648,6 +648,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				JSONObject data = new JSONObject();
 				data.put("id", t.get("id") + "");
 				data.put("date", t.get("date") + "");
+				data.put("karobarsanket", t.get("karobarsanket") + "");
 				data.put("voucherno", t.get("voucherno") + "");
 				data.put("taxpayername", t.get("taxpayername") + "");
 				data.put("taxpayerpan", t.get("taxpayerpan") + "");
@@ -670,6 +671,8 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				data.put("chequeno", t.get("chequeno") + "");
 				data.put("cstatus", t.get("cstatus") + "");
 				data.put("ttype", t.get("ttype") + "");
+				data.put("amountdr", t.get("amountdr") + "");
+				data.put("amountcr", t.get("amountcr") + "");
 				data.put("revenue", revs);
 				JSONObject j = new JSONObject();
 				j.put("status", 1);
