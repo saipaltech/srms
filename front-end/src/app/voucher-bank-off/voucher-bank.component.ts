@@ -48,7 +48,7 @@ export class VoucherBankOffComponent implements OnInit {
   isDesc: boolean = false;
   srchForm!: FormGroup;
   model: any = {};
-  approved ="";
+  approved ="0";
   items=new Array();
 
 constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherServiceOff, private modalService: BsModalService, private r: Router,private auth:AuthService){
@@ -261,6 +261,19 @@ checkvalue(isChecked: boolean){
   
 
 voucherBankFormSubmit(){
+  if (!this.voucherBankForm.value['collectioncenterid']){
+    this.toastr.error('Please fill the संकलन केन्द्र field', 'Error');
+    return;
+  }
+  else if(!this.voucherBankForm.value['lgid']){
+    this.toastr.error('Please fill the पालिका field', 'Error');
+    return;
+  }
+  else if(!this.voucherBankForm.value['revenuecode']){
+    this.toastr.error('Please fill all the राजस्व शिर्षक field', 'Error');
+    return;
+  }
+   
   if (window.confirm('Are  you sure you want to save this voucher?')) {
   this.addItem();
   this.voucherBankForm.patchValue({amount:this.totalAmt});
