@@ -74,4 +74,9 @@ public class BankController {
 	public ResponseEntity<List<Map<String, Object>>> getBanksFromSutra() {
 		return objService.getBanksFromSutra();
 	}
+	
+	@GetMapping("/getDistrict")
+	public ResponseEntity<List<Map<String, Object>>> getDistrict() {
+		return objService.getDistrict();
+	}
 }

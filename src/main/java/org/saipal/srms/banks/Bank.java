@@ -13,6 +13,8 @@ public class Bank {
 	public String name;
 	public String code;
 	public String bankid;
+	public String district;
+	public String maddress;
 	public String approved;
 	public String disabled;
 

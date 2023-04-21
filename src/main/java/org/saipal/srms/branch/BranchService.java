@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Tuple;
+
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.util.DB;
@@ -68,8 +70,13 @@ public class BranchService extends AutoService {
 		String sql = "";
 		Branch model = new Branch();
 		model.loadData(document);
-		sql = "INSERT INTO branches(name, bankid,code,dlgid, disabled, approved) VALUES (?,?,?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.bankid, model.code,model.dlgid.isBlank()? 0 : model.dlgid,model.disabled, model.approved));
+		String usq = "select count(code) from branches where code=? and bankid=?";
+		Tuple res = db.getSingleResult(usq, Arrays.asList(model.code,model.bankid));
+		if ((!(res.get(0) + "").equals("0"))) {
+			return Messenger.getMessenger().setMessage("Branch Code already exists.").error();
+		}
+		sql = "INSERT INTO branches(name,district,maddress, bankid,code,dlgid, disabled, approved) VALUES (?,?,?,?,?,?)";
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name,model.district,model.maddress,model.bankid, model.code,model.dlgid.isBlank()? 0 : model.dlgid,model.disabled, model.approved));
 
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -79,7 +86,7 @@ public class BranchService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
-		String sql = "select id,name,code,bankid,cast(dlgid as varchar) as dlgid, disabled, approved from " + table + " where id=?";
+		String sql = "select id,name,district,maddress,code,bankid,cast(dlgid as varchar) as dlgid, disabled, approved from " + table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
 	}
@@ -91,8 +98,8 @@ public class BranchService extends AutoService {
 		DbResponse rowEffect;
 		Branch model = new Branch();
 		model.loadData(document);
-		String sql = "UPDATE branches set name=?,code=?,dlgid=?,disabled=?,approved=? where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.name,model.code,model.dlgid,model.disabled,model.approved,model.id));
+		String sql = "UPDATE branches set name=?,district=?,maddress=?,code=?,dlgid=?,disabled=?,approved=? where id=?";
+		rowEffect = db.execute(sql, Arrays.asList(model.name,model.district,model.maddress,model.code,model.dlgid,model.disabled,model.approved,model.id));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 

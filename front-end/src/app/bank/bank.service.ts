@@ -9,6 +9,9 @@ export class BankService {
   getBankFromSutra() {
     return this.api.get(this.url+'/banks-from-sutra');
   }
+  getDistrict(){
+    return this.api.get(this.url+'/getDistrict');
+  }
   url="bank";
   create(data: any) {
     // console.log(data);
