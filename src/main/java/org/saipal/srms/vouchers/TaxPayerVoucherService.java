@@ -1137,6 +1137,67 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request..").error();
 	}
+
+	public ResponseEntity<String> getVoucherDetailsByVoucherId() {
+		String id = request("id");
+		if (id.isBlank()) {
+			return ResponseEntity.ok("{status:0,message:\"Bank Voucher No. required\"}");
+		}
+		Tuple t = db.getSingleResult("select top 1 * from " + table + " where id=? and approved=1",
+				Arrays.asList(id));
+		if (t != null) {
+			String revs = "";
+			List<Tuple> list = db.getResultList(
+					"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
+					Arrays.asList(t.get("id")));
+			if (list.size() > 0) {
+				for (Tuple tp : list) {
+					revs += tp.get(0) + ",";
+				}
+				revs = revs.substring(0, (revs.length() - 1));
+			}
+			try {
+				JSONObject data = new JSONObject();
+				data.put("id", t.get("id") + "");
+				data.put("date", t.get("date") + "");
+				data.put("karobarsanket", t.get("karobarsanket") + "");
+				data.put("voucherno", t.get("voucherno") + "");
+				data.put("taxpayername", t.get("taxpayername") + "");
+				data.put("taxpayerpan", t.get("taxpayerpan") + "");
+				data.put("depositedby", t.get("depositedby") + "");
+				data.put("depcontact", t.get("depcontact") + "");
+				data.put("lgid", t.get("lgid") + "");
+				data.put("collectioncenterid", t.get("collectioncenterid") + "");
+				data.put("accountno", t.get("accountno") + "");
+				data.put("revenuecode", t.get("revenuecode") + "");
+				data.put("purpose", t.get("purpose") + "");
+				data.put("amount", t.get("amount") + "");
+				data.put("bankid", t.get("bankid") + "");
+				data.put("branchid", t.get("branchid") + "");
+				data.put("creatorid", t.get("creatorid") + "");
+				data.put("approved", t.get("approved") + "");
+				data.put("approverid", t.get("approverid") + "");
+				data.put("updatedon", t.get("updatedon") + "");
+				data.put("chequebank", t.get("chequebank") + "");
+				data.put("chequeamount", t.get("chequeamount") + "");
+				data.put("chequeno", t.get("chequeno") + "");
+				data.put("cstatus", t.get("cstatus") + "");
+				data.put("ttype", t.get("ttype") + "");
+				data.put("amountdr", t.get("amountdr") + "");
+				data.put("amountcr", t.get("amountcr") + "");
+				data.put("revenue", revs);
+				JSONObject j = new JSONObject();
+				j.put("status", 1);
+				j.put("message", "success");
+				j.put("data", data);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Such voucher exists.\"}");
+	}
 	
 
 }
