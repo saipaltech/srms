@@ -53,7 +53,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       disabled: ['0', Validators.required],
       approved: ['1', [Validators.required]],
       mobile: ['', [Validators.required,Validators.pattern('^[0-9]{10}$')]],
-      amountlimit: ['0'],
+      amountlimit: [''],
       permid: ['', Validators.required]
 
     }

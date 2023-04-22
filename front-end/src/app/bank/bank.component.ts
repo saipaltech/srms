@@ -219,6 +219,7 @@ export class BankUsersComponent {
     this.formLayout = {
       bankid:[''],
       username: ['',Validators.required],
+      email: ['',[Validators.required,Validators.email]],
       name: ['',Validators.required],
       post: ['',Validators.required],
       password: ['',Validators.required],

@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { DatePipe, DOCUMENT } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, NgForm } from '@angular/forms';
 import { VoucherService } from './voucher.service';
 import { ValidationService } from '../validation.service';
 
@@ -9,6 +9,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 import { Router, NavigationExtras, Route } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { AppConfig } from '../app.config';
 
 
 
@@ -55,7 +56,7 @@ export class VoucherBankComponent implements OnInit {
   items = new Array();
   isChecked: boolean = false;
 
-  constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder, private bvs: VoucherService, private modalService: BsModalService, private r: Router, private auth: AuthService) {
+  constructor(private appconfig:AppConfig ,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder, private bvs: VoucherService, private modalService: BsModalService, private r: Router, private auth: AuthService) {
     const ud = this.auth.getUserDetails();
     if (ud) {
       this.dlgid = ud.dlgid;
@@ -88,6 +89,11 @@ export class VoucherBankComponent implements OnInit {
   openModal(template: TemplateRef<any>, id: any) {
     this.modalRef = this.modalService.show(template, Object.assign({}, { class: 'gray modal-lg' }));
     this.getDetails(id);
+  }
+  @ViewChild('f') public userFrm?: NgForm
+
+  showSlip(lgid:any,karobar:any,){
+    window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-generate?voucherno="+karobar+"&palika="+lgid, "_blank");
   }
 
   details: any;

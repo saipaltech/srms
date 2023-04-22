@@ -102,6 +102,7 @@
               <div class="input-group has-validation">
                 <input formControlName="amountlimit" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['amountlimit'])" />
+                  <small class="form-text text-muted "><span style="color:red">**</span>For limit 0, all vouchers require supervisor approval. For limit -1, All vouchers are approved automatcally. Otherwise, only the vouchers exceeding the limit given require supervisor approval.</small>
                 <div [ngClass]="vs.getMessageClass(bankForm.controls['amountlimit'])">
                   {{ vs.getMessage(bankForm.controls["amountlimit"]) }}
                 </div>

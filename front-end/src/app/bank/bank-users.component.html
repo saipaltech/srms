@@ -41,6 +41,20 @@
                   </div>
                 </div>
               </div>
+              <div class="col-6">
+                <label class="form-label req">Email</label>
+                <div class="input-group has-validation">
+                  <input
+                    formControlName="email"
+                    type="text"
+                    class="form-control form-control-sm"
+                    [ngClass]="vs.getControlClass(bankUserForm.controls['email'])"
+                  />
+                  <div [ngClass]="vs.getMessageClass(bankUserForm.controls['email'])">
+                    {{ vs.getMessage(bankUserForm.controls["email"]) }}
+                  </div>
+                </div>
+              </div>
 
               <div class="col-6">
                 <label class="form-label req">Post</label>

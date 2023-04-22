@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping("/taxpayer-voucher")
@@ -188,5 +189,14 @@ public class TaxPayerVoucherController {
 	@PostMapping("settle-updates")
 	public ResponseEntity<Map<String, Object>> settlePalikaChange(){
 		return objService.settlePalikaChange();
+	}
+	
+	@GetMapping("report-generate")
+	public ModelAndView reportGenerate() {
+		Map<String,Object> dt = objService.generateReport().getBody();
+		Map<String,Object> revd = objService.getRevenueDetails().getBody();
+		Map<String,Object> rev1= (Map)((List)revd.get("data")).get(0);
+		Map<String,Object> data = Map.of("data",dt,"revd",revd,"tot",Map.of("totn",rev1.get("total_amount_no"),"tota",rev1.get("total_amount")));
+		return new ModelAndView("voucher-bank-copy",data);
 	}
 }

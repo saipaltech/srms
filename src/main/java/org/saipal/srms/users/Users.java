@@ -22,6 +22,7 @@ public class Users {
 	public String mobile;
 	public String amountlimit;
 	public String permid;
+	public String email;
     
 	public void loadData(RequestParser doc) {
 		for (Field f : this.getClass().getFields()) {

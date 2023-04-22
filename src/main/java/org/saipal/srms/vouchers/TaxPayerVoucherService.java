@@ -715,7 +715,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> generateReport() {
 		String voucher = request("voucherno");
 		String palika = request("palika");
-		String sql = "select  tv.approved, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amount as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amount) as amount,dbo.eng2nep(accountno) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date, dbo.eng2nep(revenuecode) as revenuecode from "
+		String sql = "select  tv.approved,(case when tv.approved='1' then karobarsanket else 'To be Approved' end) as approved_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amount as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amount) as amount,dbo.eng2nep(accountno) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date, dbo.eng2nep(revenuecode) as revenuecode from "
 				+ "taxvouchers tv " + "left join bankaccount ba on ba.id=tv.accountno "
 				+ "left join bankinfo bi on bi.id=tv.bankid "
 				+ "left join admin_local_level_structure lls on lls.id=tv.lgid "
@@ -1241,6 +1241,4 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Such voucher exists.\"}");
 	}
-	
-
 }
