@@ -10,6 +10,10 @@ public class MainController {
 	
 	@GetMapping("")
 	public String index() {
+		return "redirect:web";
+	}
+	@GetMapping("web")
+	public String web() {
 		return "index";
 	}
 }
