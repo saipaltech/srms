@@ -130,7 +130,7 @@ public class BranchService extends AutoService {
 			sql = "select id,name from " + table + " where id !=1";
 		} else {
 			String condition="";
-			if(auth.hasPermissionOnly("banksupervisor")) {
+			if(auth.hasPermissionOnly("banksupervisor") && !auth.hasPermissionOnly("bankhq")) {
 				condition =" and id='"+auth.getBranchId()+"' ";
 			}
 			sql = "select id,name from " + table + " where bankid ='" + bankId + "' "+condition;

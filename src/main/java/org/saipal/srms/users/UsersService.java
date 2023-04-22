@@ -146,9 +146,9 @@ public class UsersService extends AutoService {
         	return Messenger.getMessenger().setMessage("Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.").error();
         } 
 		model.password = pe.encode(model.password);
-		sql = "INSERT INTO users(name, post,username,permid, password, mobile ,bankid, branchid ,disabled, approved) VALUES (?,?,?,?,?,?,?,(select top 1 id from branches where bankid=? and ishead=1),?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username, model.password,
-				model.permid, model.mobile, model.bankid, model.bankid, model.disabled, model.approved));
+		sql = "INSERT INTO users(name, post,username,permid, password, mobile ,bankid, branchid ,disabled, approved) VALUES (?,?,?,'4',?,?,?,(select top 1 id from branches where bankid=? and ishead=1),?,?)";
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username,model.password
+				, model.mobile, model.bankid, model.bankid, model.disabled, model.approved));
 		if (rowEffect.getErrorNumber() == 0) {
 			String sqls = "Insert into users_perms (userid, permid) values((select top 1 id from users where username = ?), 2),((select top 1 id from users where username = ?), 3)";
 			db.execute(sqls, Arrays.asList(model.username, model.username));
@@ -191,7 +191,6 @@ public class UsersService extends AutoService {
 			sqls= "insert into users_perms (userid,permid) values (?,?),(?,3)";
 			rowEffects = db.execute(sqls,  Arrays.asList(model.id, permid,model.id));
 		}else {
-
 			sqls = "insert into users_perms (userid,permid) values (?,?)";
 			rowEffects = db.execute(sqls, Arrays.asList(model.id, permid));
 		}
@@ -236,6 +235,7 @@ public class UsersService extends AutoService {
 		if (auth.hasPermissionOnly("bankhq")) {
 			exclude.remove("branch");
 			exclude.remove("users");
+			exclude.remove("approve-voucher");
 		}
 		if (auth.hasPermissionOnly("banksupervisor")) {
 			exclude.remove("users");
@@ -302,12 +302,13 @@ public class UsersService extends AutoService {
 	}
 
 	public ResponseEntity<List<Map<String, Object>>> getUerTypes() {
-		if(auth.canFromUserTable("4")) {
-			return ResponseEntity.ok(Arrays.asList(Map.of("id",3,"name","Bank User")));
-		}
 		if(auth.hasPermission("bankhq")) {
 			return ResponseEntity.ok(Arrays.asList(Map.of("id",3,"name","Bank User"),Map.of("id",4,"name","Supervisor")));
 		}
+		if(auth.canFromUserTable("4")) {
+			return ResponseEntity.ok(Arrays.asList(Map.of("id",3,"name","Bank User")));
+		}
+		
 		return ResponseEntity.ok(Arrays.asList());
 	}
 
