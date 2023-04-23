@@ -52,6 +52,7 @@ import { SidebaritemComponent, SidebaritemInnerComponent } from './nice-admin/si
 
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { FrontEndPasswordChangeComponent } from './front-end-password-change/front-end-password-change.component';
 
 
 @NgModule({
@@ -87,7 +88,8 @@ import { CollapseModule } from 'ngx-bootstrap/collapse';
     NewMainBodyComponent,
     NiceAdminComponent,
     SidebaritemComponent,
-SidebaritemInnerComponent
+SidebaritemInnerComponent,
+FrontEndPasswordChangeComponent
   ],
   imports: [
     BrowserModule,

@@ -118,11 +118,15 @@ public class AuthService {
 		String sql = "select top 1 otp from otp_log where reqid=? and userid=? and expiry>=GETDATE() and otp=? order by createdat desc";
 		Tuple tt = db.getSingleResult(sql, Arrays.asList(reqid,userid,otp));
 		if(tt!=null) {
-			sql = "select u.id,username,password,u.name, b.namenp as baname, bs.name as branchname,bs.dlgid from users u join bankinfo b on b.id=u.bankid join branches bs on bs.id=u.branchid where u.id=?";
+			sql = "select u.id,username,password,u.name, u.pwchangedate, b.namenp as baname, bs.name as branchname,bs.dlgid from users u join bankinfo b on b.id=u.bankid join branches bs on bs.id=u.branchid where u.id=?";
 			Tuple t = db.getSingleResult(sql,Arrays.asList(userid));
 			if(t!=null) {
-				String token = jwtHelper.createToken(t.get("id")+"");
 				Map<String,String> data = new HashMap<>();
+				if(needpwdchange(t.get("pwchangedate"))) {
+					data.put("username",t.get("username")+"");
+					return Messenger.getMessenger().setData(data).success();
+				}
+				String token = jwtHelper.createToken(t.get("id")+"");
 				data.put("token", token);
 				data.put("name", t.get("name")+"");
 				data.put("username",t.get("username")+"");
@@ -151,5 +155,17 @@ public class AuthService {
 			}
 		}
 		return Messenger.getMessenger().setMessage("Invalid username or password, Please try again.").error();
+	}
+	
+	public boolean needpwdchange(Object pwdchangedate) {
+		if(pwdchangedate==null) {
+			return true;
+		}
+		if((pwdchangedate+"").isBlank()) {
+			return true;
+		}
+		//check date logic
+		
+		return false;
 	}
 }
