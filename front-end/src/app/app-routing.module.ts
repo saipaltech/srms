@@ -22,6 +22,7 @@ import { ChequeReportComponent } from './cheque-report/cheque-report.component';
 import { NewDesignComponent } from './new-design/new-design.component';
 import { NewMainBodyComponent } from './new-main-body/new-main-body.component';
 import { NiceAdminComponent } from './nice-admin/nice-admin.component';
+import { FrontEndPasswordChangeComponent } from './front-end-password-change/front-end-password-change.component';
 
 const routes: Routes = [
 {
@@ -105,14 +106,17 @@ const routes: Routes = [
         component: ChequeReportComponent
       },
       {
-        path: 'new-design',
-        component: NiceAdminComponent
+        path: 'password-change',
+        component: FrontEndPasswordChangeComponent
       },
     ]
   },
   {
     path:"**",
     redirectTo:"/login"
+  },{
+    path: "password-change",
+    redirectTo:"/password-change"
   }
   
 ];

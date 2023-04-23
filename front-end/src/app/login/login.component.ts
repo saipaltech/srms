@@ -106,10 +106,15 @@ export class TwoFaModalComponent implements OnInit {
           reqid:this.reqid,
           userid:this.userid
         };
-        this.authService.loginWithOtp(data).subscribe({next:(dt)=>{
+        this.authService.loginWithOtp(data).subscribe({next:(dt:any)=>{
             this.bsModalRef.hide();
-            this.notify.success("Login successful.");
-            this.router.navigate(['/']);
+            if(dt.token){
+              this.notify.success("Login successful.");
+              this.router.navigate(['/']);
+            }
+            this.notify.info("You need to change password before login.");
+              this.router.navigate(['/password-change'],{ state: { username: dt.username } });
+            
         },error:err=>{
           this.notify.error(err.message);
         }})
