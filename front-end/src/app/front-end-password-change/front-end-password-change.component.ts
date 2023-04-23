@@ -26,7 +26,7 @@ export class FrontEndPasswordChangeComponent {
       this.loginForm = this.fb.group({
         oldpassword:['',[Validators.required]],
           password:['', Validators.required],
-          rpassword:['', Validators.required]
+          cpassword:['', Validators.required]
       });
 
 
@@ -42,7 +42,8 @@ export class FrontEndPasswordChangeComponent {
       }
       this.disabled = true;
       this.model = this.loginForm.value;
-      this.RS.changePassword(this.model)
+      this.model.username=this.username;
+      this.RS.changePasswordLogin(this.model)
         .subscribe({next:data=>{
           // this.openModalWithComponent(data.reqid,data.userid);
               this.notify.success(data.message);

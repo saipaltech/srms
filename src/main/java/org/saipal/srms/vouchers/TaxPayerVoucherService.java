@@ -487,6 +487,30 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Not found\"}");
 	}
+	public ResponseEntity<String> getAllLocalLevels() {
+		String cond="";
+		List<Tuple> d = db.getResultList(
+				"select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid=? "+cond+" order by als.namenp",
+				Arrays.asList(auth.getBankId()));
+
+		if (d.size() > 0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for (Tuple t : d) {
+					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"), "id", t.get("id") + ""));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Not found\"}");
+	}
 
 	public ResponseEntity<String> getCostCentres() {
 		String llgCode = request("llgcode");

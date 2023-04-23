@@ -78,9 +78,8 @@ llgs:any;
       this.getPalikaDetails();
       this.getBankAccounts();
     }});
-    this.bvs.getLocalLevels().subscribe({next:(dt)=>{
+    this.RS.getAllLocalLevels().subscribe({next:(dt)=>{
       this.llgs = dt.data;
-      // this.voucherBankForm.patchValue({"lgid":this.dlgid});
     },error:err=>{
 
     }});
@@ -94,9 +93,12 @@ ccs:any;
     this.bvs.getCostCentres(llgCode).subscribe({
       next:(d)=>{
         this.ccs = d.data;
-        if(d.data.length==1){
-          this.bankForm.patchValue({"collectioncenterid":d.data[0].code});
-        }
+        setTimeout(()=>{
+          if(this.transDetails){
+            this.bankForm.patchValue({"collectioncenterid":this.transDetails.collectioncenterid});
+          }
+        });
+        
       },error:err=>{
         // console.log(err);
       }
@@ -107,24 +109,8 @@ ccs:any;
   searchList() {
     this.pagination.perPage = this.srchFormList.value.entries;
     this.searchTerm = this.srchFormList.value.srch_term;
-    this.getList();
   }
 
-  getList(pageno?: number | undefined) {
-    const page = pageno || 1;
-    this.RS.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(
-      (result: any) => {
-        this.lists = result.data;
-        //console.log(this.lists)
-        this.pagination.total = result.total;
-        this.pagination.currentPage = result.currentPage;
-        //console.log(result);
-      },
-      error => {
-        this.toastr.error(error.error);
-      }
-    );
-  }
   selectedRevenue:any;
   altmsg(msg:any){
     if(msg=="Invalid Pattern."){
@@ -182,7 +168,6 @@ ccs:any;
     
   
   removeItem(index:any) {
-   
     this.items.splice(index, 1);
     this.calctotal();
   }
@@ -208,11 +193,11 @@ ccs:any;
       this.RS.create(this.model).subscribe({
         next: (result: any) => {
           this.transDetails = undefined;
-          this.toastr.success('Item Successfully Saved!', 'Success');
-          this.bankForm = this.fb.group(this.formLayout);
+          this.toastr.success(result.message, 'Success');
+          this.resetForm();
+          //this.bankForm = this.fb.group(this.formLayout);
           this.srchForm.patchValue({'srch_term':""});
-          this.getList();
-          this.items=new Array();
+          this.items=[];
         }, error: err => {
           this.toastr.error(err.error.message, 'Error');
         }
@@ -240,8 +225,11 @@ ccs:any;
 
   resetForm() {
     this.bankForm = this.fb.group(this.formLayout);
-    this.showForm = !this.showForm;
-    this.transDetails = "";
+    this.bankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
+      this.getPalikaDetails();
+      this.getBankAccounts();
+    }});
+    this.transDetails = undefined;
   }
   getRevenue(){
     const bankorgid=this.bankForm.value["accountno"];
@@ -265,7 +253,7 @@ ccs:any;
           // this.getRevenue(this.transDetails.accountno);
           this.items=this.transDetails.revs;
           this.calctotal();
-          this.bankForm.patchValue({'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount});
+          this.bankForm.patchValue({lgid:this.transDetails.lgid,'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount});
         
           if (this.transDetails.trantype == 1) {
             this.istab = 1;
@@ -283,7 +271,7 @@ ccs:any;
   }
   
   
-acs:any;
+  acs:any;
   getBankAccounts(){
     // this.acs  = undefined;
     const llgCode = this.bankForm.value['lgid'];
@@ -291,65 +279,27 @@ acs:any;
       this.rs.getBankAccounts(llgCode).subscribe({
         next:(d)=>{
           this.acs = d.data;
-          // this.patchac();
-          // if(d.data.length==1){
-          //   this.bankForm.patchValue({"accountno":d.data[0].acno});
-          // }
-         
+          setTimeout(()=>{
+            if(this.transDetails){
+              this.bankForm.patchValue({"accountno":this.transDetails.accountno});
+            }
+          });
         },error:err=>{
           // console.log(err);
         }
       });
     }
-
-    
-    
   }
-
-  resetFilters() {
-    this.isDesc = false;
-    this.column = '';
-    this.searchTerm = '';
-    this.pagination.currentPage = 1;
-    this.getList();
-  }
-
-  paginatedData($event: { page: number | undefined; }) {
-    this.getList($event.page);
-  }
-
-  changePerPage(perPage: number) {
-    this.pagination.perPage = perPage;
-    this.pagination.currentPage = 1;
-    this.getList();
-  }
-
-
-  
 
   getUpdateItem(id: any) {
-    this.RS.getEdit(id).subscribe(
-      (result: any) => {
+    this.RS.getEdit(id).subscribe({
+      next:(result: any) => {
         this.model = result;
         this.bankForm.patchValue(result);
         this.changeFields();
-      },
-      (error: any) => {
+      },error:(error: any) => {
         this.toastr.error(error.error, 'Error');
       }
-    );
-  }
-
-  deleteItem(id: any) {
-    if (window.confirm('Are sure you want to delete this item?')) {
-      this.RS.remove(id).subscribe((result: any) => {
-        this.toastr.success('Item Successfully Deleted!', 'Success');
-        this.getList();
-      }, (error: { error: any; }) => {
-        this.toastr.error(error.error, 'Error');
-      });
+  });
     }
-  }
-
-
 }

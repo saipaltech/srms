@@ -319,9 +319,9 @@ public class UsersService extends AutoService {
 		
 		Tuple t = db.getSingleResult("select id, password from users where username= ?", Arrays.asList(username));
 		if (t != null) {
-			if (pe.matches(oldpassword, t.get(0) + "")) {
+			if (pe.matches(oldpassword, t.get("password") + "")) {
 				DbResponse rowEffect = db
-						.execute("update users set password='" + pe.encode(password) + "', pwchangedate=format(getdate(),yyyyMMdd) where id=" + t.get("id"));
+						.execute("update users set password='" + pe.encode(password) + "', pwchangedate=format(getdate(),'yyyyMMdd') where id=" + t.get("id"));
 				if (rowEffect.getErrorNumber() == 0) {
 					return Messenger.getMessenger().setMessage("Password Changed Successfully").success();
 				} else {

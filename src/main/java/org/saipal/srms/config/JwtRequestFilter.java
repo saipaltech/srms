@@ -45,8 +45,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		}
 		if(requestURI.startsWith("/auth/login")||
 				requestURI.startsWith("/auth/2fa") || 
-				requestURI.startsWith("/auth/api-login") || 
-				requestURI.startsWith("/auth/api-login")) {
+				requestURI.startsWith("/auth/api-login") ||
+				requestURI.startsWith("/web") ||
+				requestURI.startsWith("/users/change-password-login")) {
 			return true;
 		}
 		return false;
@@ -56,6 +57,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String jwtToken = getTokenfromRequest(request);
+		System.out.println(request.getRequestURI());
 		if (jwtToken != null) {
 			/*
 			 * @Author: Lifecracker87 Accesses token from request header Validates the token

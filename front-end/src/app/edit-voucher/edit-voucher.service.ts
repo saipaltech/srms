@@ -23,6 +23,10 @@ export class EditVoucherService {
     // return this.api.update(this.path,id,data);
   }
 
+  getAllLocalLevels(){
+    return this.http.get(this.url+"/get-all-local-levels");
+  }
+
   constructor(private http: ApiService) { 
   }
 

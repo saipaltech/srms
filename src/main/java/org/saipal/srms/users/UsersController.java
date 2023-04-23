@@ -110,7 +110,6 @@ public class UsersController {
 	
 	@PostMapping("change-password-login")
 	public ResponseEntity<Map<String, Object>> changePasswordLogin(HttpServletRequest request) {
-		
 			return objService.changePasswordLogin();
 	}
 
