@@ -67,7 +67,7 @@ constructor(private datePipe: DatePipe, private toastr: ToastrService, private f
       lgid: ['',Validators.required],
       // llgname: ['',Validators.required],
       collectioncenterid: ['',Validators.required],
-      accountno:['',Validators.required],
+      bankorgid:['',Validators.required],
       revenuecode: [''],
       purpose: [''],
       amount:['',Validators.pattern('[0-9]+')],
@@ -160,7 +160,7 @@ ngOnInit(): void {
     this.getBank();
 }
 getRevenue(){
-  const bankorgid=this.voucherBankForm.value["accountno"];
+  const bankorgid=this.voucherBankForm.value["bankorgid"];
    this.bvs.getRevenue(bankorgid).subscribe({next:(dt)=>{
       this.revs = dt.data;
     },error:err=>{
@@ -209,7 +209,7 @@ getBankAccounts(){
       next:(d)=>{
         this.acs = d.data;
         if(d.data.length==1){
-          this.voucherBankForm.patchValue({"accountno":d.data[0].acno});
+          this.voucherBankForm.patchValue({"bankorgid":d.data[0].id});
         }
       },error:err=>{
         //console.log(err);

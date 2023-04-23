@@ -49,7 +49,7 @@ export class VoucherTransferComponent {
       revenuecode: [''],
       lgid:[''],
       collectioncenterid:[''],
-      accountno:['']
+      bankorgid:['']
 
 
 
@@ -154,7 +154,7 @@ acs:any;
 llgs:any;
 ccs:any;
 getRevenue(){
-  const bankorgid=this.bankForm.value["accountno"];
+  const bankorgid=this.bankForm.value["bankorgid"];
    this.RS.getRevenue(bankorgid).subscribe({next:(dt)=>{
       this.revs = dt.data;
     },error:err=>{
@@ -170,7 +170,7 @@ getRevenue(){
         next:(d)=>{
           this.acs = d.data;
           if(d.data.length==1){
-            this.bankForm.patchValue({"accountno":d.data[0].acno});
+            this.bankForm.patchValue({"bankorgid":d.data[0].id});
           }
         },error:err=>{
           // console.log(err);

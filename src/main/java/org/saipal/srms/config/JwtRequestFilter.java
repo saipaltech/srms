@@ -57,7 +57,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String jwtToken = getTokenfromRequest(request);
-		System.out.println(request.getRequestURI());
 		if (jwtToken != null) {
 			/*
 			 * @Author: Lifecracker87 Accesses token from request header Validates the token
