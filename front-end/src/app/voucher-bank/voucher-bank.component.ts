@@ -92,7 +92,7 @@ export class VoucherBankComponent implements OnInit {
   }
   @ViewChild('f') public userFrm?: NgForm
 
-  showSlip(lgid:any,karobar:any,){
+  showSlip(lgid:any,karobar:any){
     window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-generate?voucherno="+karobar+"&palika="+lgid, "_blank");
   }
 

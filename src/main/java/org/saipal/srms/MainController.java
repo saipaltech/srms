@@ -12,6 +12,7 @@ public class MainController {
 	public String index() {
 		return "redirect:web";
 	}
+	
 	@GetMapping("web")
 	public String web() {
 		return "index";

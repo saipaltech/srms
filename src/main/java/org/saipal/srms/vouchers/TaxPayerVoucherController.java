@@ -196,7 +196,7 @@ public class TaxPayerVoucherController {
 		Map<String,Object> dt = objService.generateReport().getBody();
 		Map<String,Object> revd = objService.getRevenueDetails().getBody();
 		Map<String,Object> rev1= (Map)((List)revd.get("data")).get(0);
-		Map<String,Object> data = Map.of("data",dt,"revd",revd,"tot",Map.of("totn",rev1.get("total_amount_no"),"tota",rev1.get("total_amount")));
+		Map<String,Object> data = Map.of("data",dt,"revd",revd.get("data"),"tot",Map.of("totn",rev1.get("total_amount_no"),"tota",rev1.get("total_amount")));
 		return new ModelAndView("voucher-bank-copy",data);
 	}
 }

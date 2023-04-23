@@ -45,6 +45,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		}
 		if(requestURI.startsWith("/auth/login")||
 				requestURI.startsWith("/auth/2fa") || 
+				requestURI.startsWith("/auth/api-login") || 
 				requestURI.startsWith("/auth/api-login")) {
 			return true;
 		}
