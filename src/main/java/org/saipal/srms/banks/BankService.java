@@ -140,9 +140,9 @@ public class BankService extends AutoService {
 		String bankId = auth.getBankId();
 		String sql = "";
 		if (bankId.equals("1")) {
-			sql = "select id,namenp from " + table + " where id !=1";
+			sql = "select id,namenp from " + table + " where id !=1 and id not in (select distinct bankid from branches)";
 		} else {
-			sql = "select id,namenp from " + table + " where id ='" + bankId + "'";
+			sql = "select id,namenp from " + table + " where id ='" + bankId + "' and id not in (select distinct bankid from branches)";
 		}
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}

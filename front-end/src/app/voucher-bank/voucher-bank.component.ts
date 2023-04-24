@@ -176,13 +176,15 @@ export class VoucherBankComponent implements OnInit {
 
   }
   getAndSetPanDetails() {
-    this.bvs.getPanDetails(this.voucherBankForm.get("taxpayerpan")?.value).subscribe({
-      next: (d) => {
-        if (d.data) {
-          this.voucherBankForm.patchValue({ "taxpayername": d.data.taxpayer, "depositedby": d.data.taxpayer, "depcontact": d.data.contactNo })
+    if(this.voucherBankForm.get("taxpayerpan")?.value){
+      this.bvs.getPanDetails(this.voucherBankForm.get("taxpayerpan")?.value).subscribe({
+        next: (d) => {
+          if (d.data) {
+            this.voucherBankForm.patchValue({ "taxpayername": d.data.taxpayer, "depositedby": d.data.taxpayer, "depcontact": d.data.contactNo })
+          }
         }
-      }
-    });
+      });
+    }
   }
   getPalikaDetails() {
     this.voucherBankForm.patchValue({ "collectioncenterid": '' });
