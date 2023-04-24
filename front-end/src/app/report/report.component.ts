@@ -76,6 +76,12 @@ export class ReportComponent {
 
   i=1;
 
+  // this.route.queryParams.subscribe(params => {
+  //   this.voucherno = params['voucherno'];
+  //   this.palika = params['palika'];
+
+  // });
+
   reportFormSubmit(){
 
     console.log(this.reportForm.value.from);
