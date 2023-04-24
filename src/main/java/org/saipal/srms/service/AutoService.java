@@ -252,4 +252,31 @@ public class AutoService {
 		List<Tuple> list = db.getResultList(sql);
 		return list;
 	}
+	
+	public String nep2EngNum(String str) {		 
+		str=str.replace("०", "0");
+		str=str.replace("१", "1");
+		str=str.replace("२", "2");
+		str=str.replace("३", "3");
+		str=str.replace("४", "4");
+		str=str.replace("५", "5");
+		str=str.replace("६", "6");
+		str=str.replace("७", "7");
+		str=str.replace("८", "8");
+		str=str.replace("९", "9");
+		return str.trim();
+	}
+	public String eng2NepNum(String str) { 
+		str=str.replace("0","०" );
+		str=str.replace("1","१");
+		str=str.replace("2","२");
+		str=str.replace("3","३");
+		str=str.replace("4","४");
+		str=str.replace("5","५");
+		str=str.replace("6","६");
+		str=str.replace("7","७");
+		str=str.replace("8","८");
+		str=str.replace("9","९");
+		return str.trim();
+	}
 }

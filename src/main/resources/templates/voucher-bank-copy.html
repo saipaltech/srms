@@ -109,14 +109,10 @@
         <tr>
           <th scope="row"></th>
           <td colspan="2">कुल जम्मा</td>
-          {{#tot}}
-              <td>{{totn}}</td>
-           {{/tot}}
+          <td>{{amount}}</td>
         </tr>
         <tr>
-        {{#tot}}
-          <th colspan="4">जम्मा गरेको अक्षरमा : {{tota}} </th>
-          {{/tot}}
+          <th colspan="4">जम्मा गरेको अक्षरमा : {{amountwords}} </th>
         </tr>
 
       </tbody>
@@ -147,9 +143,7 @@
             </tr>
             <tr>
               <td scope="row">रकम</td>
-              {{#tot}}
-              <td>{{totn}}</td>
-              {{/tot}}
+              <td>{{amount}}</td>
             </tr>
           </tbody>
         </table>
