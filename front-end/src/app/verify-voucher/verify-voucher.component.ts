@@ -49,7 +49,7 @@ export class VerifyVoucherComponent {
 
     this.srchForm = this.fb.group({
       entries: ['10'],
-      srch_term: ['', [Validators.required, Validators.pattern('[0-9]+')]]
+      srch_term: ['', [Validators.required]]
     })
 
     this.srchFormList = this.fb.group({
