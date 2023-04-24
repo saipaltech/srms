@@ -17,6 +17,18 @@ export class NewSidebarComponent {
     this.http.get("users/get-front-menu").subscribe({
       next: (dt) => {
         this.navcontent = dt;
+        this.navcontent.push({
+          name: "Report",
+          link: '/report',
+          icon: "bi bi-newspaper ico stopClick",
+          childs:[
+            {
+              name: "Day Close",
+              link: '/report?type=vv',
+              icon: "bi bi-circle",
+            }
+          ]
+        });
       }, error: err => {
         console.log(err);
       }
