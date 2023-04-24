@@ -300,6 +300,25 @@ public class ApiManager {
 	}
 	
 	/*
+	 * Calls Sutra API to get the cheque details by the karobarsanket and bankid
+	 * */
+	public JSONObject getChequeDetails(String karobarsanket) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/get-cheque-details?karobarsanket="+karobarsanket);
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/*
 	 * Calls Sutra API to get the Tax Voucher Usage status by voucher id
 	 * */
 	public JSONObject getVoucherDetails(String id) {
