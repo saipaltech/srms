@@ -74,6 +74,8 @@ export class ReportComponent {
    }
   }
 
+  i=1;
+
   reportFormSubmit(){
 
     console.log(this.reportForm.value.from);
