@@ -1092,10 +1092,10 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		String sql = null;
 		String condition= " WHERE dateint >= '"+startDate+"' AND dateint <= '"+endDate+"'";
 		if (type.equals("cad")) {
-			sql = "SELECT tx.*, tx.amountcr as amount,ba.accountnumber as accountno FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid " + condition;
+			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid " + condition +" and tx.approved=1";
 		}
 		else if (type.equals("chd")) {
-			sql = "SELECT tx.*, tx.amountcr as amount,ba.accountnumber as accountno FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid " + condition;
+			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid" + condition + " and tx.cstatus=1";
 			}
 		else if (type.equals("vv")) {
 			sql = "select * from bank_deposits WHERE depositdateint >= '"+startDate+"' AND depositdateint <= '"+endDate+"'";
