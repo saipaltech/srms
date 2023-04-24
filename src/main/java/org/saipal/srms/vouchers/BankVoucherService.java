@@ -69,6 +69,12 @@ public class BankVoucherService extends AutoService {
 			items = "[" + items + "]";
 		}
 		JSONArray jarr = new JSONArray(items);
+		if (jarr.length() > 0) {
+			for (int i = 0; i < jarr.length(); i++) {
+				
+			
+			}
+		}
 		return null;
 	}
 
@@ -165,13 +171,21 @@ public class BankVoucherService extends AutoService {
 		String sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.orgid where karobarSanketNo=? and bd.bankid=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 		if(data==null) {
-			JSONObject dt =  api.getTransDetails(transactionid);
+			JSONObject dt =  api.getChequeDetails(transactionid);
 			if(dt!=null) {
 				try {
 					if(dt.getInt("status")==1) {
 						JSONObject d = dt.getJSONObject("data");
 						db.execute("insert into chequeBankDakhilaMain (cdid ,adminid ,orgid ,fyid ,trantype ,karobarSanketNo ,trandate ,trandatetint ,refNo ,narration ,bankorgid ,bankid ,accountno ,entrydate ,enterby) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 								Arrays.asList(d.get("cdid"),d.get("adminid"),d.get("orgid"),d.get("fyid"),d.get("trantype"),d.get("karobarSanketNo"),d.get("trandate"),d.get("trandatetint"),d.get("refNo"),d.get("narration"),d.get("bankorgid"),d.get("bankid"),d.get("accountno"),d.get("entrydate"),d.get("enterby")));
+						JSONArray dtls=d.getJSONArray("details_rows");
+						if(dtls.length()>0) {
+							for(int i=0;i<dtls.length();i++) {
+								JSONObject dd = dtls.getJSONObject(i);
+								db.execute("insert into chequeBankDakhilaDetail(did ,mainid ,rcid ,ksno ,bankid ,chequeno ,chequeamount ,taxpayername ) values(?,?,?,?,?,?,?,?)",
+										Arrays.asList(dd.get("did"),dd.get("mainid"),dd.get("rcid"),dd.get("ksno"),dd.get("bankid"),dd.get("chequeno"),dd.get("chequeamount"),dd.get("taxpayername")));
+							}
+						}
 						sql = "select bd.fyid,bd.trantype,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid  where karobarSanketNo=? and bd.bankid=?";
 						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 						return Messenger.getMessenger().setData(fdata).success();
