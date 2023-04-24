@@ -43,13 +43,16 @@ public class UsersService extends AutoService {
 		String condition = "";
 		String bankId = auth.getBankId();
 		if (bankId.equals("1")) {
-			condition = " where 1=1 ";
+			condition = " where u.id in (select userid from users_perms where permid=2)";
 		} else {
 			condition = " where u.bankid='" + bankId + "' ";
 		}
-		if(auth.hasPermissionOnly("banksupervisor")) {
-			condition +=" and u.branchid='"+auth.getBranchId()+"' ";
+		if(!auth.hasPermissionOnly("bankhq")) {
+			if(auth.hasPermissionOnly("banksupervisor")) {
+				condition +=" and u.branchid='"+auth.getBranchId()+"' ";
+			}
 		}
+		
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = Users.searchables();
 			condition += "and (";
