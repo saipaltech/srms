@@ -83,7 +83,7 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = " where id!=1 and ttype=2  ";
+		String condition = " where tx.id!=1 and ttype=2  ";
 		String approve = request("approvelog");
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
@@ -107,8 +107,8 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(id as char) as id,cast(date as date) as date,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,chequeamount as amount")
-				.sqlBody("from " + table + condition).paginate();
+				.select("cast(tx.id as char) as id,cast(date as date) as date,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,tx.lgid,collectioncenterid,bankorgid,purpose,chequeamount as amount, ba.accountnumber as accountno")
+				.sqlBody("from " + table + " tx join bankaccount ba on ba.id=tx.bankorgid" +condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -762,11 +762,12 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> getEditDetails() {
 		String voucherno = request("voucherno");
 		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.approved,bd.isused,bd.dateint,cast(bd.collectioncenterid as varchar) as collectioncenterid,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amountcr as amount,cast (bd.date as date) as date, bd.voucherno, "
-				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " 
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername, ba.accountnumber as accountno " 
 				+ "bd.bankorgid,"
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
 				+ "from taxvouchers as bd  "
 				+ "join collectioncenter cc on cc.id = bd.collectioncenterid  "
+				+"join bankaccount ba on ba.id = bd.bankorgid "
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid " 
 				+ "where bd.karobarsanket=?";
 		Map<String, Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno));
@@ -1044,8 +1045,8 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
 				.select("cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid, "
-				+ "bd.amountcr as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby ")
-				.sqlBody(" from taxvouchers as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid " + condition).paginate();
+				+ "bd.amountcr as amount, bd.purpose, ba.accountnumber as accountno ,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby ")
+				.sqlBody(" from taxvouchers as bd join collectioncenter cc on cc.id = bd.collectioncenterid join admin_local_level_structure lls on lls.id = bd.lgid join bankaccount ba on ba.id=bd.bankorgid " + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
