@@ -69,7 +69,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(tx.id as char) as id,cast(date as date) as date,tx.approved, voucherno,karobarsanket,taxpayername,taxpayerpan,depositedby,depcontact,tx.lgid,collectioncenterid,bankorgid,purpose,ba.accountnumber as accountno,amountcr as amount")
+				.select("cast(tx.id as char) as id,cast(date as date) as date,tx.approved, voucherno,karobarsanket,taxpayername,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,ba.accountnumber as accountno,amountcr as amount")
 				.sqlBody("from taxvouchers tx join bankaccount ba on  ba.id = tx.bankorgid "+ condition).paginate();
 //		System.out.println(result);
 		if (result != null) {
@@ -701,7 +701,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> generateReport() {
 		String voucher = request("voucherno");
 		String palika = request("palika");
-		String sql = "select  tv.approved,dbo.getrs(cast(tv.amountcr as float)) as amountwords,(case when tv.approved='1' then karobarsanket else 'To be Approved' end) as approved_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amountcr as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amountcr) as amount,dbo.eng2nep(ba.accountnumber) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date from "
+		String sql = "select  tv.approved,(case when tv.approved='1' then karobarsanket else 'To be Approved' end) as approved_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amountcr as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amountcr) as amount,dbo.eng2nep(ba.accountnumber) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date from "
 				+ "taxvouchers tv " 
 				+ "left join bankaccount ba on ba.id=tv.bankorgid "
 				+ "left join bankinfo bi on bi.id=tv.bankid "
@@ -719,7 +719,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "       dbo.eng2nep(ROW_NUMBER() OVER (ORDER BY tvd.revenueid)) as sn,  "
 //				+ "       dbo.getrs(cast(tvd.amount as float)) as amountwords,  "
 				+ "       dbo.eng2nep(tvd.amount) as amount,  "
-				+ "       dbo.eng2nep(tvd.revenueid) as revenuecode, "
+				+ "       dbo.eng2nep(tvd.revenueid) as revenuecode "
 //				+ "       total_amount.amountwords as total_amount, "
 //				+ "       total_amount_no.totalamountno as total_amount_no " 
 				+ "FROM taxvouchers_detail tvd  "
