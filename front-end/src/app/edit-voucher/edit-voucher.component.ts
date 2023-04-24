@@ -58,7 +58,7 @@ export class EditVoucherComponent {
 
     this.srchForm = this.fb.group({
       entries: ['10'],
-      srch_term: ['', [Validators.required, Validators.pattern('[0-9]+')]]
+      srch_term: ['', [Validators.required]]
     })
 
     this.srchFormList = this.fb.group({
@@ -77,6 +77,7 @@ llgs:any;
     this.bankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
       this.getPalikaDetails();
       this.getBankAccounts();
+      // this.getRevenue();
     }});
     this.RS.getAllLocalLevels().subscribe({next:(dt)=>{
       this.llgs = dt.data;
@@ -231,8 +232,9 @@ ccs:any;
     }});
     this.transDetails = undefined;
   }
-  getRevenue(){
-    const bankorgid=this.bankForm.value["bankorgid"];
+  getRevenue(bankorgid:any){
+    // const bankorgid=this.bankForm.value['bankorgid'];
+    console.log(bankorgid);
     this.bvs.getRevenue(bankorgid).subscribe({next:(dt)=>{
       this.revs = dt.data;
     },error:err=>{
@@ -250,7 +252,7 @@ ccs:any;
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {
           this.transDetails = dt.data;
-          // this.getRevenue(this.transDetails.accountno);
+       
           this.items=this.transDetails.revs;
           this.calctotal();
           this.bankForm.patchValue({lgid:this.transDetails.lgid,'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount});
@@ -260,6 +262,7 @@ ccs:any;
           } else {
             this.istab = 2;
           }
+         
           // this.bankForm.patchValue({'collectioncenterid':this.transDetails.collectioncenterid,'accountno':this.transDetails.accountno});
         }, error: error => {
           // console.log(error);
@@ -284,6 +287,7 @@ ccs:any;
               this.bankForm.patchValue({"bankorgid":this.transDetails.bankorgid});
             }
           });
+          this.getRevenue(this.transDetails.bankorgid);
         },error:err=>{
           // console.log(err);
         }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { VerifyVoucherService } from './verify-voucher.service';
 import { ValidationService } from '../validation.service';
 import { DatePipe } from '@angular/common';
@@ -31,8 +31,12 @@ export class VerifyVoucherComponent {
   srchForm!: FormGroup;
   srchFormList!: FormGroup;
   bankForm!: FormGroup;
+  chequeForm!: FormGroup;
   formLayout: any;
+  formLayout1: any;
   myDate: any = new Date();
+  
+  selectedval=new Array();
 
   constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: VerifyVoucherService, private datePipe: DatePipe) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
@@ -45,11 +49,19 @@ export class VerifyVoucherComponent {
       transactionid: ['', Validators.required],
 
     }
-    this.bankForm = fb.group(this.formLayout)
+
+    this.formLayout1 = {
+      id: [''],
+      transactionid: ['', Validators.required],
+      options: this.fb.array([], [Validators.required])
+
+    }
+    this.bankForm = fb.group(this.formLayout);
+    this.chequeForm = fb.group(this.formLayout1);
 
     this.srchForm = this.fb.group({
       entries: ['10'],
-      srch_term: ['', [Validators.required, Validators.pattern('[0-9]+')]]
+      srch_term: ['', [Validators.required]]
     })
 
     this.srchFormList = this.fb.group({
@@ -90,6 +102,10 @@ export class VerifyVoucherComponent {
     );
   }
 
+  chequeFormSubmit(){
+
+  }
+
   bankFormSubmit() {
     // this.model.transactionid = this.transDetails.transactionid;
     // console.log (this.model.transactionid)
@@ -112,6 +128,7 @@ export class VerifyVoucherComponent {
   }
   showList = false;
   showForm = true;
+  cDt=false;
   changeFields() {
     this.showList = !this.showList;
     this.showForm = !this.showForm;
@@ -131,6 +148,7 @@ export class VerifyVoucherComponent {
   transDetails: any;
   istab = 1;
   search() {
+    this.cDt=true;
     this.transDetails=undefined;
     if (this.srchForm.valid) {
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
@@ -150,6 +168,25 @@ export class VerifyVoucherComponent {
         }
       });
     }
+  }
+
+  onCheckboxChange(e:any) {
+
+    const options: FormArray = this.chequeForm.get('options') as FormArray;
+
+    if (e.target.checked) {
+
+      options.push(new FormControl(e.target.value));
+
+    } else {
+
+       const index = options.controls.findIndex(x => x.value === e.target.value);
+
+       options.removeAt(index);
+
+    }
+    console.log(options.value);
+    this.selectedval=options.value;
   }
 
   resetFilters() {

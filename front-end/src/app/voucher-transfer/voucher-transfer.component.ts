@@ -6,6 +6,7 @@ import { DatePipe } from '@angular/common';
 import { VoucherTransferService } from './voucher-transfer.service';
 import { VoucherServiceOff } from '../voucher-bank-off/voucher.service';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { ChequeEntryService } from '../cheque-entry/cheque-entry.service';
 
 
 @Component({
@@ -40,7 +41,7 @@ export class VoucherTransferComponent {
 
   modalRef?: BsModalRef;
 
-  constructor(private toastr: ToastrService,private modalService: BsModalService ,private fb: FormBuilder, private RS: VoucherTransferService,private bvs:VoucherServiceOff, private datePipe: DatePipe) {
+  constructor(private toastr: ToastrService,private modalService: BsModalService,private cs:ChequeEntryService ,private fb: FormBuilder, private RS: VoucherTransferService,private bvs:VoucherServiceOff, private datePipe: DatePipe) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id: [],
@@ -58,7 +59,7 @@ export class VoucherTransferComponent {
 
     this.srchForm = this.fb.group({
       entries: ['10'],
-      srch_term: ['', [Validators.required, Validators.pattern('[0-9]+')]]
+      srch_term: ['', [Validators.required]]
     })
 
     this.srchFormList = this.fb.group({
@@ -104,7 +105,7 @@ updateChanges(id:string,type:string){
       this.getPalikaDetails();
       this.getBankAccounts();
     }});
-    this.bvs.getLocalLevels().subscribe({next:(dt)=>{
+    this.cs.getLocalLevels().subscribe({next:(dt)=>{
       this.llgs = dt.data;
       // this.voucherBankForm.patchValue({"lgid":this.dlgid});
     },error:err=>{

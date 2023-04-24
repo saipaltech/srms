@@ -69,7 +69,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(tx.id as char) as id,cast(date as date) as date,tx.approved, voucherno,karobarsanket,taxpayername,taxpayerpan,depositedby,depcontact,tx.lgid,collectioncenterid,bankorgid,purpose,ba.accountnumber as accountno,amountcr as amount")
+				.select("cast(tx.id as char) as id,cast(date as date) as date,tx.approved, voucherno,karobarsanket,taxpayername,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,ba.accountnumber as accountno,amountcr as amount")
 				.sqlBody("from taxvouchers tx join bankaccount ba on  ba.id = tx.bankorgid "+ condition).paginate();
 //		System.out.println(result);
 		if (result != null) {
@@ -457,6 +457,36 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Not found\"}");
 	}
+	
+	public ResponseEntity<String> getLocalLevelsAllCheque() {
+		String cond="";
+		String sql="select top 1 dlgid from branches where bankid=? and id=?";
+//		Tuple tt=db.getSingleResult(sql,Arrays.asList(auth.getBankId(),auth.getBranchId()));
+//		if(tt.get(0)!=null) {
+//			cond= " where als.id <> "+tt.get(0);
+//		}
+		List<Tuple> d = db.getResultList(
+				"select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid=? "+cond+" order by als.namenp",
+				Arrays.asList(auth.getBankId()));
+
+		if (d.size() > 0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for (Tuple t : d) {
+					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"), "id", t.get("id") + ""));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Not found\"}");
+	}
 	public ResponseEntity<String> getAllLocalLevels() {
 		String cond="";
 		List<Tuple> d = db.getResultList(
@@ -701,14 +731,13 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> generateReport() {
 		String voucher = request("voucherno");
 		String palika = request("palika");
-		String sql = "select  tv.approved,dbo.getrs(cast(tv.amountcr as float)) as amountwords,(case when tv.approved='1' then karobarsanket else 'To be Approved' end) as approved_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amountcr as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amountcr) as amount,dbo.eng2nep(ba.accountnumber) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date from "
+		String sql = "select  tv.approved,(case when tv.approved='1' then dbo.eng2nep(karobarsanket) else 'To be Approved' end) as approved_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amountcr as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amountcr) as amount,dbo.eng2nep(ba.accountnumber) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date from "
 				+ "taxvouchers tv " 
 				+ "left join bankaccount ba on ba.id=tv.bankorgid "
 				+ "left join bankinfo bi on bi.id=tv.bankid "
 				+ "left join admin_local_level_structure lls on lls.id=tv.lgid "
 				+ "where karobarsanket=? and tv.lgid=? ";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(voucher, palika));
-		System.out.println("hello");
 		return ResponseEntity.ok(data);
 	}
 
@@ -717,20 +746,12 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		String palika = request("palika");
 		String sql = "SELECT cr.namenp as revenuetitle, "
 				+ "       dbo.eng2nep(ROW_NUMBER() OVER (ORDER BY tvd.revenueid)) as sn,  "
-//				+ "       dbo.getrs(cast(tvd.amount as float)) as amountwords,  "
 				+ "       dbo.eng2nep(tvd.amount) as amount,  "
-				+ "       dbo.eng2nep(tvd.revenueid) as revenuecode, "
-//				+ "       total_amount.amountwords as total_amount, "
-//				+ "       total_amount_no.totalamountno as total_amount_no " 
+				+ "       dbo.eng2nep(tvd.revenueid) as revenuecode "
 				+ "FROM taxvouchers_detail tvd  "
 				+ "JOIN taxvouchers tv ON tv.id = tvd.mainid  " 
 				+ "JOIN crevenue cr ON cr.code = tvd.revenueid  "
-//				+ "CROSS APPLY ( " + "    SELECT dbo.getrs(cast(sum(amount) as float)) as amountwords "
-//				+ "    FROM taxvouchers_detail " + "    WHERE mainid = tv.id " + ") as total_amount "
-//				+ "CROSS APPLY ( " + "    SELECT dbo.eng2nep(cast(sum(amount) as float)) as totalamountno "
-//				+ "    FROM taxvouchers_detail " + "    WHERE mainid = tv.id " + ") as total_amount_no "
 				+ "WHERE tv.karobarsanket = ? AND tv.lgid = ?";
-
 		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(voucher, palika));
 
 		List<Map<String, Object>> list = new ArrayList<>();
@@ -761,8 +782,12 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 
 	public ResponseEntity<Map<String, Object>> getEditDetails() {
 		String voucherno = request("voucherno");
+		if(voucherno.isBlank()) {
+			return Messenger.getMessenger().setMessage("Karobarsanket not provided.").error();
+		}
+		voucherno = nep2EngNum(voucherno);
 		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.approved,bd.isused,bd.dateint,cast(bd.collectioncenterid as varchar) as collectioncenterid,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amountcr as amount,cast (bd.date as date) as date, bd.voucherno, "
-				+ "lls.namenp as llsname,cc.namenp as collectioncentername, ba.accountnumber as accountno " 
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername, ba.accountnumber as accountno, " 
 				+ "bd.bankorgid,"
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
 				+ "from taxvouchers as bd  "
@@ -917,6 +942,10 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	
 	public ResponseEntity<Map<String, Object>> getEditDetailsOff() {
 		String voucherno = request("voucherno");
+		if(voucherno.isBlank()) {
+			return Messenger.getMessenger().setMessage("Karobarsanketno not provided.").error();
+		}
+		voucherno = nep2EngNum(voucherno);
 		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.approved,cast(bankaccount.accountname as varchar) as accountname,bd.hasChangeReqest,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amountcr as amount,cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid, "
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "

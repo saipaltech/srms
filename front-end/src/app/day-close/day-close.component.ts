@@ -119,7 +119,12 @@ acs:any;
     model: any = {};
     lists:any;
     voucherBankFormSubmit(){
-     
+     if(this.voucherBankForm.value.lgid==null){
+       this.voucherBankForm.patchValue({'lgid':''});
+     }
+     if(this.voucherBankForm.value.acno==null){
+      this.voucherBankForm.patchValue({'acno':''});
+    }
       this.lists=undefined;
       this.model = this.voucherBankForm.value;
       // console.log(this.model.acno);

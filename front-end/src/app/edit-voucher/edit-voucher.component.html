@@ -144,7 +144,7 @@
             <div class="col-6" *ngIf="transDetails.today==transDetails.dateint">
               <label for="username" class="form-label req">खाता नंबर</label>
               <select
-                class="form-select form-select-sm" (change)="getRevenue()"
+                class="form-select form-select-sm" #bnk (change)="getRevenue(bnk.value)"
                 formControlName="bankorgid"
                 [ngClass]="vs.getControlClass(bankForm.controls['bankorgid'])"
               >
