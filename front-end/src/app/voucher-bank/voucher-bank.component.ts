@@ -73,7 +73,7 @@ export class VoucherBankComponent implements OnInit {
       lgid: ['', Validators.required],
       // llgname: ['',Validators.required],
       collectioncenterid: ['', Validators.required],
-      accountno: ['', Validators.required],
+      bankorgid: ['', Validators.required],
       revenuecode: [''],
       purpose: [''],
       amount: ['', Validators.pattern('[0-9]+')],
@@ -165,7 +165,7 @@ export class VoucherBankComponent implements OnInit {
   }
 
   getRevenue() {
-    const bankorgid = this.voucherBankForm.value["accountno"];
+    const bankorgid = this.voucherBankForm.value["bankorgid"];
     this.bvs.getRevenue(bankorgid).subscribe({
       next: (dt) => {
         this.revs = dt.data;
@@ -207,7 +207,7 @@ export class VoucherBankComponent implements OnInit {
         next: (d) => {
           this.acs = d.data;
           if (d.data.length == 1) {
-            this.voucherBankForm.patchValue({ "accountno": d.data[0].acno });
+            this.voucherBankForm.patchValue({ "bankorgid": d.data[0].id });
           }
         }, error: err => {
           // console.log(err);

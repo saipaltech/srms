@@ -20,9 +20,7 @@ public class TaxPayerVoucher {
 	public String llgname;
 	public String collectioncenterid;
 	public String costcentername;
-	public String accountno;
-	public String revenuecode;
-	public String revenuetitle;
+	public String bankorgid;
 	public String purpose;
 	public String amount;
 	public String chequebank;
@@ -30,6 +28,8 @@ public class TaxPayerVoucher {
 	public String chequeamount;
 	public String ttype;
 	public String chequetype;
+	public String depositbankid;
+	public String depositbranchid;
 	
 
     

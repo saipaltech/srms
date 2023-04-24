@@ -48,7 +48,7 @@ export class EditVoucherComponent {
       amount:['',Validators.pattern('[0-9]+')],
       revenuecode: [''],
       lgid:['',Validators.required],
-      accountno:['',Validators.required],
+      bankorgid:['',Validators.required],
       collectioncenterid:['',Validators.required]
 
 
@@ -232,7 +232,7 @@ ccs:any;
     this.transDetails = undefined;
   }
   getRevenue(){
-    const bankorgid=this.bankForm.value["accountno"];
+    const bankorgid=this.bankForm.value["bankorgid"];
     this.bvs.getRevenue(bankorgid).subscribe({next:(dt)=>{
       this.revs = dt.data;
     },error:err=>{
@@ -281,7 +281,7 @@ ccs:any;
           this.acs = d.data;
           setTimeout(()=>{
             if(this.transDetails){
-              this.bankForm.patchValue({"accountno":this.transDetails.accountno});
+              this.bankForm.patchValue({"bankorgid":this.transDetails.bankorgid});
             }
           });
         },error:err=>{

@@ -54,7 +54,7 @@
                 संकलन केन्द्र: {{transDetails.collectioncentername}}
               </div>
             </div>            
-            खाता नंबर: {{transDetails.accountno}}
+            खाता नंबर: {{transDetails.bankorgid}}
             <br>
             प्रयोजन: {{transDetails.purpose}}
             <br>
@@ -118,13 +118,13 @@
               <label for="username" class="form-label req">खाता नंबर</label>
               <select
                 class="form-select form-select-sm" (change)="getRevenue()"
-                formControlName="accountno"
-                [ngClass]="vs.getControlClass(bankForm.controls['accountno'])"
+                formControlName="bankorgid"
+                [ngClass]="vs.getControlClass(bankForm.controls['bankorgid'])"
               >
                 <option value="">Select Account Number</option>
                 <option *ngFor="let ac of acs" value="{{ac.id}}">{{ac.acno}}[{{ac.name}}]</option>
               </select>
-              <div [ngClass]="vs.getMessageClass(bankForm.controls['accountno'])">{{vs.getMessage(bankForm.controls['accountno'])}}</div>
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['bankorgid'])">{{vs.getMessage(bankForm.controls['bankorgid'])}}</div>
             </div>
             <div class="col-6">
               <label class="form-label">Remarks</label>
@@ -177,7 +177,7 @@
             <tbody>
               <tr *ngFor="let item of lists; let i = index">
                 <td>{{ item.voucherno }}</td>
-                <td>{{ item.accountno }}</td>
+                <td>{{ item.bankorgid }}</td>
                 <td>{{ item.date }}</td>
                 <td>{{ item.amount }}</td>
                 <td><button class="btn btn-success btn-sm" (click)="openModal(template, item.id)"> <i class="bi bi-eye"></i> </button></td>
@@ -251,7 +251,7 @@
     </div>
     <div class="row">
       <div class="col-6">
-        <!-- खाता नंबर: {{details.accountno}} -->
+        <!-- खाता नंबर: {{details.bankorgid}} -->
       </div>
       <!-- <div class="col-6">
         रकम: {{details.amount}}

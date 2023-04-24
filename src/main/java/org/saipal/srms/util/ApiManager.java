@@ -200,13 +200,11 @@ public class ApiManager {
 					.setParam("depcontact",tpv.get("depcontact")+"")
 					.setParam("lgid",tpv.get("lgid")+"")
 					.setParam("collectioncenterid",tpv.get("collectioncenterid")+"")
-					.setParam("accountno",tpv.get("accountno")+"")
-					.setParam("revenuecode",tpv.get("revenuecode")+"")
+					.setParam("bankorgid",tpv.get("bankorgid")+"")
 					.setParam("purpose",tpv.get("purpose")+"")
-					.setParam("amount",tpv.get("amount")+"")
 					.setParam("bankid",tpv.get("bankid")+"")
 					.setParam("branchid",tpv.get("branchid")+"")
-					.setParam("creatorid",tpv.get("creatorid")+"")
+					.setParam("deposituserid",tpv.get("deposituserid")+"")
 					.setParam("approved",tpv.get("approved")+"")
 					.setParam("approverid",tpv.get("approverid")+"")
 					.setParam("updatedon",tpv.get("updatedon")+"")
@@ -218,6 +216,8 @@ public class ApiManager {
 					.setParam("revenue",revs)
 					.setParam("amountdr",tpv.get("amountdr")+"")
 					.setParam("amountcr",tpv.get("amountcr")+"")
+					.setParam("depositbankid", tpv.get("depositbankid") + "")
+					.setParam("depositbranchid", tpv.get("depositbranchid") + "")
 					.post(url + "/srms/taxpayer-voucher");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
@@ -333,7 +333,7 @@ public class ApiManager {
 					.setParam("voucherinfo",voucher)
 					.setParam("lgid",lgid)
 					.setParam("collectioncenterid",ccid)
-					.setParam("accountno",acno)
+					.setParam("bankorgid",acno)
 					.post(url + "/srms/taxpayer-voucher-update-namechange");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");

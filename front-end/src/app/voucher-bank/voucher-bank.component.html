@@ -76,13 +76,13 @@
 
             <div class="col-6">
               <label for="username" class="form-label req">खाता नंबर</label>
-              <select class="form-select form-select-sm" (change)="getRevenue()" formControlName="accountno"
-                [ngClass]="vs.getControlClass(voucherBankForm.controls['accountno'])">
+              <select class="form-select form-select-sm" (change)="getRevenue()" formControlName="bankorgid"
+                [ngClass]="vs.getControlClass(voucherBankForm.controls['bankorgid'])">
                 <option value="">Select Account Number</option>
                 <option *ngFor="let ac of acs" value="{{ac.id}}">{{ac.acno}}[{{ac.name}}]</option>
               </select>
-              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['accountno'])">
-                {{vs.getMessage(voucherBankForm.controls['accountno'])}}</div>
+              <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['bankorgid'])">
+                {{vs.getMessage(voucherBankForm.controls['bankorgid'])}}</div>
             </div>
 
             <div class="col-sm-6">
