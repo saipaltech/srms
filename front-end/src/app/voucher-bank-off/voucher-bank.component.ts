@@ -9,6 +9,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 import { Router, NavigationExtras, Route } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { AppConfig } from '../app.config';
 
 
 
@@ -51,7 +52,7 @@ export class VoucherBankOffComponent implements OnInit {
   approved ="0";
   items=new Array();
 
-constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherServiceOff, private modalService: BsModalService, private r: Router,private auth:AuthService){
+constructor(private appconfig:AppConfig ,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherServiceOff, private modalService: BsModalService, private r: Router,private auth:AuthService){
   
   this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
@@ -137,12 +138,20 @@ getRevenue(){
 
 }
 
-getAndSetPanDetails(){
-  this.bvs.getPanDetails(this.voucherBankForm.get("taxpayerpan")?.value).subscribe({next:(d)=>{
-    if(d.data){
-      this.voucherBankForm.patchValue({"taxpayername":d.data.taxpayer,"depositedby":d.data.taxpayer,"depcontact":d.data.contactNo})
-    }
-  }});
+getAndSetPanDetails() {
+  if(this.voucherBankForm.get("taxpayerpan")?.value){
+    this.bvs.getPanDetails(this.voucherBankForm.get("taxpayerpan")?.value).subscribe({
+      next: (d) => {
+        if (d.data) {
+          this.voucherBankForm.patchValue({ "taxpayername": d.data.taxpayer, "depositedby": d.data.taxpayer, "depcontact": d.data.contactNo })
+        }
+      }
+    });
+  }
+}
+
+showSlip(lgid:any,karobar:any){
+  window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-generate?voucherno="+karobar+"&palika="+lgid, "_blank");
 }
 getPalikaDetails(){
   this.voucherBankForm.patchValue({"collectioncenterid":''});
