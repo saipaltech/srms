@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
@@ -60,6 +61,15 @@ public class BankVoucherService extends AutoService {
 		} else {
 			return Messenger.getMessenger().error();
 		}
+	}
+	
+	public ResponseEntity<Map<String, Object>> chequeDeposit() throws JSONException {
+		String items=request("selection");
+		if (!items.startsWith("[")) {
+			items = "[" + items + "]";
+		}
+		JSONArray jarr = new JSONArray(items);
+		return null;
 	}
 
 	public ResponseEntity<Map<String, Object>> update() {
@@ -150,7 +160,35 @@ public class BankVoucherService extends AutoService {
 	
 	
 	private ResponseEntity<Map<String, Object>> getTransDetailsCheque() {
-		return null;
+		String transactionid = request("transactionid"); 
+		transactionid = nep2EngNum(transactionid);
+		String sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.orgid where karobarSanketNo=? and bd.bankid=?";
+		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
+		if(data==null) {
+			JSONObject dt =  api.getTransDetails(transactionid);
+			if(dt!=null) {
+				try {
+					if(dt.getInt("status")==1) {
+						JSONObject d = dt.getJSONObject("data");
+						db.execute("insert into chequeBankDakhilaMain (cdid ,adminid ,orgid ,fyid ,trantype ,karobarSanketNo ,trandate ,trandatetint ,refNo ,narration ,bankorgid ,bankid ,accountno ,entrydate ,enterby) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+								Arrays.asList(d.get("cdid"),d.get("adminid"),d.get("orgid"),d.get("fyid"),d.get("trantype"),d.get("karobarSanketNo"),d.get("trandate"),d.get("trandatetint"),d.get("refNo"),d.get("narration"),d.get("bankorgid"),d.get("bankid"),d.get("accountno"),d.get("entrydate"),d.get("enterby")));
+						sql = "select bd.fyid,bd.trantype,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid  where karobarSanketNo=? and bd.bankid=?";
+						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
+						return Messenger.getMessenger().setData(fdata).success();
+					}else {
+						return Messenger.getMessenger().setMessage(dt.getString("message")).error();
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
+			}
+			return Messenger.getMessenger().setMessage("No such transaction found.").error();
+		}
+		String sqld="select cast(cb.did as varchar) as did ,cb.mainid ,cb.rcid ,cb.ksno ,cb.bankid ,cb.chequeno ,cb.chequeamount ,cb.taxpayername ,cb.isbankreceived ,cb.bankreceivedby ,cb.bankreceiveddate,bi.namenp as bankname from chequeBankDakhilaDetail cb join bankinfo bi on bi.id=cb.bankid where mainid=?";
+		List <Map<String, Object>> dtl = db.getResultListMap(sqld, Arrays.asList(data.get("cdid")));
+		data.put("details", dtl);
+		return Messenger.getMessenger().setData(data).success();
 	}
 
 	/*

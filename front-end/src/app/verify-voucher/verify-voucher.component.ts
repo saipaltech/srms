@@ -52,7 +52,7 @@ export class VerifyVoucherComponent {
 
     this.formLayout1 = {
       id: [''],
-      transactionid: ['', Validators.required],
+      transactionid: [''],
       options: this.fb.array([], [Validators.required])
 
     }
@@ -101,9 +101,28 @@ export class VerifyVoucherComponent {
       }
     );
   }
-
+model1:any;
   chequeFormSubmit(){
-
+    if (window.confirm('Are  you sure you want to save ?')) {
+      this.model1 = this.chequeForm.value;
+      this.model1.selection=this.selectedval;
+     
+      this.RS.submitCheque(this.model1).subscribe({
+        next:(result:any) => {
+          // this.lists=result.data;
+        
+        this.toastr.success('Item Successfully Saved!', 'Success');
+        this.resetForm();
+        this.chequeForm.value['options']="";
+        this.selectedval=new Array();
+        // this.getList();
+      
+      }, error:err => {
+        // console.log(err.error);
+        this.toastr.error(err.error.message, 'Error');
+      }
+      });
+    }
   }
 
   bankFormSubmit() {
@@ -129,6 +148,7 @@ export class VerifyVoucherComponent {
   showList = false;
   showForm = true;
   cDt=false;
+  bDt=false;
   changeFields() {
     this.showList = !this.showList;
     this.showForm = !this.showForm;
@@ -148,14 +168,22 @@ export class VerifyVoucherComponent {
   transDetails: any;
   istab = 1;
   search() {
-    this.cDt=true;
+    // this.cDt=true;
     this.transDetails=undefined;
     if (this.srchForm.valid) {
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {
           this.transDetails = dt.data;
-          this.bankForm.patchValue({ "id": this.transDetails.id });
-          this.bankForm.patchValue({ "transactionid": this.transDetails.transactionid })
+          if(this.transDetails.trantype==9){
+            this.cDt=true;
+            this.bDt=false;
+          }else{
+            this.bDt=true;
+            this.cDt=false;
+            this.bankForm.patchValue({ "id": this.transDetails.id });
+            this.bankForm.patchValue({ "transactionid": this.transDetails.transactionid })
+          }
+       
           if (this.transDetails.trantype == 1) {
             this.istab = 1;
           } else {
