@@ -104,7 +104,10 @@ export class ReportComponent {
   clearButton(){
    this.reportForm = this.fb.group(this.formLayout);
    this.model =  undefined;
-   this.tableView = false;
+   this.cad = false;
+   this.chd = false;
+   this.dc=false;
+   this.vv=false;
   }
 
 }
