@@ -10,13 +10,28 @@
          
           <form class="needs-validation" [formGroup]="reportForm" (ngSubmit)="reportFormSubmit()">
               <div class="row">
-                <div class="col-6">
+                <div class="col-md-6">
                   <label>From</label>
-                  <input class="form form-control" type="date" formControlName="from">
+                  <input class="form form-control form-control-sm" type="date" formControlName="from">
                 </div>
-                <div class="col-6">
+                <div class="col-md-6">
                   <label>To</label>
-                  <input class="form form-control" type="date" formControlName="to">
+                  <input class="form form-control form-control-sm" type="date" formControlName="to">
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Select Report Type</label>
+                  <select class="form-select form-select-sm" formControlName="type">
+                    <option selected>Select One..</option>
+                    <option value="cad">Cash Deposite</option>
+                    <option value="chd">Cheque Deposite</option>
+                    <option value="vv">Verified Voucher</option>
+                    <option value="dc">Day Close</option>
+                  </select>
+                  <div [ngClass]="vs.getMessageClass(reportForm.controls['type'])">
+                    {{vs.getMessage(reportForm.controls['type'])}}</div>
                 </div>
               </div>
               <br>
@@ -24,25 +39,117 @@
             <button class="btn btn-danger btn-sm" type="button" (click)="clearButton()">Clear</button>
           </form>  
           
-          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="tableView">
+          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="cad">
             <!--table-borderless-->
             <thead>
               <tr>
-                <th scope="col">Account Number</th>
                 <!-- <th scope="col">Date</th> -->
+                <th scope="col">Account Number</th>
                 <th scope="col">Voucher No.</th>
                 <th scope="col">TaxPayerName</th>
-                <th scope="col">Amount</th>                
+                <th scope="col">Amount</th>  
+                <th scope="col">Status</th>                
 
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of model; let i = index">
                 <td>{{ item.accountno }}</td>
-                <!-- <td>{{ item.date }}</td> -->
                 <td>{{ item.voucherno }}</td>
                 <td>{{ item.taxpayername }}</td>
                 <td>{{ item.amount }}</td>
+                <ng-container *ngIf="cad">
+                <td *ngIf="item.approved == 0"><span class="badge text-bg-danger">Not Approved</span></td>
+                <td *ngIf="item.approved == 1"><span class="badge text-bg-primary"> Approved</span></td>
+                </ng-container>
+                <ng-container *ngIf="chd">
+                <td *ngIf="item.cstatus == 0"><span class="badge text-bg-danger">Not Cleared</span></td>
+                <td *ngIf="item.cstatus == 1"><span class="badge text-bg-primary"> Cleared</span></td> 
+               </ng-container> 
+              </tr>
+
+
+            </tbody>
+          </table>
+
+          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="chd">
+            <!--table-borderless-->
+            <thead>
+              <tr>
+                <!-- <th scope="col">Date</th> -->
+                <th scope="col">Account Number</th>
+                <th scope="col">Voucher No.</th>
+                <th scope="col">TaxPayerName</th>
+                <th scope="col">Amount</th>  
+                <th scope="col">Status</th>                
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of model; let i = index">
+                <td>{{ item.accountno }}</td>
+                <td>{{ item.voucherno }}</td>
+                <td>{{ item.taxpayername }}</td>
+                <td>{{ item.amount }}</td>
+                <ng-container *ngIf="cad">
+                <td *ngIf="item.approved == 0"><span class="badge text-bg-danger">Not Approved</span></td>
+                <td *ngIf="item.approved == 1"><span class="badge text-bg-primary"> Approved</span></td>
+                </ng-container>
+                <ng-container *ngIf="chd">
+                <td *ngIf="item.cstatus == 0"><span class="badge text-bg-danger">Not Cleared</span></td>
+                <td *ngIf="item.cstatus == 1"><span class="badge text-bg-primary"> Cleared</span></td> 
+               </ng-container> 
+              </tr>
+
+
+            </tbody>
+          </table>
+
+          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="vv">
+            <!--table-borderless-->
+            <thead>
+              <tr>
+                <th scope="col">Transaction Id</th>
+                <th scope="col">Office Name</th>
+                <th scope="col">Voucher Date</th>
+                <th scope="col">Account No.</th>
+                <th scope="col">Amount</th>
+       
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of model; let i = index">
+                <td>{{ item.transactionid }}</td>
+                <td>{{ item.officename }}</td>
+                <td>{{ item.voucherdate }}</td>
+                <td>{{ item.accountnumber }}</td>
+                <td>{{ item.amount }}</td>
+              </tr>
+
+
+            </tbody>
+          </table>
+
+          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="dc">
+            <!--table-borderless-->
+            <thead>
+              <tr>
+                <th scope="col">Palika</th>
+                <th scope="col">Account Number</th>
+                <th scope="col">Debit</th>
+                <th scope="col">Credit</th>
+                <th scope="col">Balance</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of model; let i = index">
+                <td>{{ item.palika }}</td>
+                <td>{{ item.accountname }}[{{ item.accountnumber }}]</td>
+                <td>{{ item.amountdr }}</td>
+                <td>{{ item.amountcr }}</td>
+                <td>{{ item.balance }}</td>
               </tr>
 
 
