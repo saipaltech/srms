@@ -107,8 +107,8 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(tx.id as char) as id,cast(date as date) as date,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,tx.lgid,collectioncenterid,bankorgid,purpose,chequeamount as amount, ba.accountnumber as accountno")
-				.sqlBody("from " + table + " tx join bankaccount ba on ba.id=tx.bankorgid" +condition).paginate();
+				.select("cast(tx.id as char) as id,cast(date as date) as date,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,chequeamount as amount,  ba.accountnumber as accountno")
+				.sqlBody("from " + table +  " tx join bankaccount ba on ba.id=tx.bankorgid " +condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -232,7 +232,7 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
-		String sql = "select date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,llgcode,llgname,costcentercode,costcentername,bankorgid,purpose,amountcr as amount from "
+		String sql = "select * from "
 				+ table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
@@ -261,7 +261,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> chequeclear() {
 		String id = request("id");
-		Tuple c = db.getSingleResult("select id,amount,cstatus from " + table + " where id=?", Arrays.asList(id));
+		Tuple c = db.getSingleResult("select id,cstatus from " + table + " where id=?", Arrays.asList(id));
 		if ((c.get("cstatus") + "").equals("1")) {
 			return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
 		}
@@ -701,7 +701,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> generateReport() {
 		String voucher = request("voucherno");
 		String palika = request("palika");
-		String sql = "select  tv.approved,(case when tv.approved='1' then karobarsanket else 'To be Approved' end) as approved_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amountcr as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amountcr) as amount,dbo.eng2nep(ba.accountnumber) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date from "
+		String sql = "select  tv.approved,dbo.getrs(cast(tv.amountcr as float)) as amountwords,(case when tv.approved='1' then karobarsanket else 'To be Approved' end) as approved_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amountcr as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amountcr) as amount,dbo.eng2nep(ba.accountnumber) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date from "
 				+ "taxvouchers tv " 
 				+ "left join bankaccount ba on ba.id=tv.bankorgid "
 				+ "left join bankinfo bi on bi.id=tv.bankid "
@@ -717,18 +717,18 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		String palika = request("palika");
 		String sql = "SELECT cr.namenp as revenuetitle, "
 				+ "       dbo.eng2nep(ROW_NUMBER() OVER (ORDER BY tvd.revenueid)) as sn,  "
-				+ "       dbo.getrs(cast(tvd.amount as float)) as amountwords,  "
+//				+ "       dbo.getrs(cast(tvd.amount as float)) as amountwords,  "
 				+ "       dbo.eng2nep(tvd.amount) as amount,  "
 				+ "       dbo.eng2nep(tvd.revenueid) as revenuecode, "
-				+ "       total_amount.amountwords as total_amount, "
-				+ "       total_amount_no.totalamountno as total_amount_no " 
+//				+ "       total_amount.amountwords as total_amount, "
+//				+ "       total_amount_no.totalamountno as total_amount_no " 
 				+ "FROM taxvouchers_detail tvd  "
 				+ "JOIN taxvouchers tv ON tv.id = tvd.mainid  " 
 				+ "JOIN crevenue cr ON cr.code = tvd.revenueid  "
-				+ "CROSS APPLY ( " + "    SELECT dbo.getrs(cast(sum(amount) as float)) as amountwords "
-				+ "    FROM taxvouchers_detail " + "    WHERE mainid = tv.id " + ") as total_amount "
-				+ "CROSS APPLY ( " + "    SELECT dbo.eng2nep(cast(sum(amount) as float)) as totalamountno "
-				+ "    FROM taxvouchers_detail " + "    WHERE mainid = tv.id " + ") as total_amount_no "
+//				+ "CROSS APPLY ( " + "    SELECT dbo.getrs(cast(sum(amount) as float)) as amountwords "
+//				+ "    FROM taxvouchers_detail " + "    WHERE mainid = tv.id " + ") as total_amount "
+//				+ "CROSS APPLY ( " + "    SELECT dbo.eng2nep(cast(sum(amount) as float)) as totalamountno "
+//				+ "    FROM taxvouchers_detail " + "    WHERE mainid = tv.id " + ") as total_amount_no "
 				+ "WHERE tv.karobarsanket = ? AND tv.lgid = ?";
 
 		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(voucher, palika));
@@ -740,11 +740,11 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				Map<String, Object> mapadmlvl = new HashMap<>();
 				mapadmlvl.put("sn", t.get("sn"));
 				mapadmlvl.put("revenuetitle", t.get("revenuetitle"));
-				mapadmlvl.put("amountwords", t.get("amountwords"));
+//				mapadmlvl.put("amountwords", t.get("amountwords"));
 				mapadmlvl.put("amount", t.get("amount"));
 				mapadmlvl.put("revenuecode", t.get("revenuecode"));
-				mapadmlvl.put("total_amount", t.get("total_amount"));
-				mapadmlvl.put("total_amount_no", t.get("total_amount_no"));
+//				mapadmlvl.put("total_amount", t.get("total_amount"));
+//				mapadmlvl.put("total_amount_no", t.get("total_amount_no"));
 				list.add(mapadmlvl);
 			}
 			System.out.println("aaaa");
