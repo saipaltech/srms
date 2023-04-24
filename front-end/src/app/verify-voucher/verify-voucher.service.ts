@@ -18,6 +18,9 @@ export class VerifyVoucherService {
     return this.http.post(this.url, data);
 
   }
+  submitCheque(data:any){
+    return this.http.post(this.url+'/chequeDeposit', data);
+  }
   update(id: any, data: any) {
     return this.http.put(this.url + '/' + id, data);
     // return this.api.update(this.path,id,data);

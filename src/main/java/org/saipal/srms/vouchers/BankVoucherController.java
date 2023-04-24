@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jettison.json.JSONException;
 import org.saipal.srms.util.Messenger;
 import org.saipal.srms.util.ValidationService;
 import org.saipal.srms.util.Validator;
@@ -62,6 +63,13 @@ public class BankVoucherController {
 		} else {
 			return objService.update();
 		}
+	}
+	
+	@PostMapping("chequeDeposit")
+	public ResponseEntity<Map<String, Object>> chequeDeposit(HttpServletRequest request) throws JSONException {
+		
+			return objService.chequeDeposit();
+		
 	}
 
 //	@DeleteMapping("/{id}")
