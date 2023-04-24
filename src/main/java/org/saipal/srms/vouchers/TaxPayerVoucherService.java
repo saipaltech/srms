@@ -1086,12 +1086,27 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	
 
 	public ResponseEntity<List<Map<String, Object>>> getReport() {
-		String startDate = request("from");
-		String endDate = request("to");
-		String sql = "SELECT * FROM "+ table +" WHERE Date >= '"+startDate+"' AND Date <= '"+endDate+"'";
-		System.out.println(sql);
-		
-//		Map<String, Object> data = db.getSingleResultMap(sql);
+		String startDate = request("from").replace("-", "");
+		String endDate = request("to").replace("-", "");
+		String type = request("type")+"";
+		String sql = null;
+		String condition= " WHERE dateint >= '"+startDate+"' AND dateint <= '"+endDate+"'";
+		if (type.equals("cad")) {
+			sql = "SELECT tx.*, tx.amountcr as amount,ba.accountnumber as accountno FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid " + condition;
+		}
+		else if (type.equals("chd")) {
+			sql = "SELECT tx.*, tx.amountcr as amount,ba.accountnumber as accountno FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid " + condition;
+			}
+		else if (type.equals("vv")) {
+			sql = "select * from bank_deposits WHERE depositdateint >= '"+startDate+"' AND depositdateint <= '"+endDate+"'";
+		}
+		else if (type.equals("dc")) {
+			sql = "select dc.*, lls.namenp as palika, (amountcr-amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid " + condition;
+		}
+		else {
+			sql = "SELECT * FROM "+ table + condition;
+		}
+
 		List<Map<String, Object>> data = db.getResultListMap(sql,Arrays.asList());
 		return ResponseEntity.ok(data);
 	}
