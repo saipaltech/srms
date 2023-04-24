@@ -132,6 +132,7 @@
             <!--table-borderless-->
             <thead>
               <tr>
+                <th>S.N</th>
                 <th scope="col">Palika</th>
                 <th scope="col">Account Number</th>
                 <th scope="col">Debit</th>
@@ -142,6 +143,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of model; let i = index">
+                <td>{{i+1}}</td>
                 <td>{{ item.palika }}</td>
                 <td>{{ item.accountname }}[{{ item.accountno }}]</td>
                 <td>{{ item.amountdr }}</td>
