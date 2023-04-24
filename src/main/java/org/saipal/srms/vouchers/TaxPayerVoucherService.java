@@ -457,6 +457,36 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Not found\"}");
 	}
+	
+	public ResponseEntity<String> getLocalLevelsAllCheque() {
+		String cond="";
+		String sql="select top 1 dlgid from branches where bankid=? and id=?";
+//		Tuple tt=db.getSingleResult(sql,Arrays.asList(auth.getBankId(),auth.getBranchId()));
+//		if(tt.get(0)!=null) {
+//			cond= " where als.id <> "+tt.get(0);
+//		}
+		List<Tuple> d = db.getResultList(
+				"select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid=? "+cond+" order by als.namenp",
+				Arrays.asList(auth.getBankId()));
+
+		if (d.size() > 0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for (Tuple t : d) {
+					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"), "id", t.get("id") + ""));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level Not found\"}");
+	}
 	public ResponseEntity<String> getAllLocalLevels() {
 		String cond="";
 		List<Tuple> d = db.getResultList(
@@ -1056,12 +1086,27 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	
 
 	public ResponseEntity<List<Map<String, Object>>> getReport() {
-		String startDate = request("from");
-		String endDate = request("to");
-		String sql = "SELECT * FROM "+ table +" WHERE Date >= '"+startDate+"' AND Date <= '"+endDate+"'";
-		System.out.println(sql);
-		
-//		Map<String, Object> data = db.getSingleResultMap(sql);
+		String startDate = request("from").replace("-", "");
+		String endDate = request("to").replace("-", "");
+		String type = request("type")+"";
+		String sql = null;
+		String condition= " WHERE dateint >= '"+startDate+"' AND dateint <= '"+endDate+"'";
+		if (type.equals("cad")) {
+			sql = "SELECT tx.*, tx.amountcr as amount,ba.accountnumber as accountno FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid " + condition;
+		}
+		else if (type.equals("chd")) {
+			sql = "SELECT tx.*, tx.amountcr as amount,ba.accountnumber as accountno FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid " + condition;
+			}
+		else if (type.equals("vv")) {
+			sql = "select * from bank_deposits WHERE depositdateint >= '"+startDate+"' AND depositdateint <= '"+endDate+"'";
+		}
+		else if (type.equals("dc")) {
+			sql = "select dc.*, lls.namenp as palika, (amountcr-amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid " + condition;
+		}
+		else {
+			sql = "SELECT * FROM "+ table + condition;
+		}
+
 		List<Map<String, Object>> data = db.getResultListMap(sql,Arrays.asList());
 		return ResponseEntity.ok(data);
 	}
