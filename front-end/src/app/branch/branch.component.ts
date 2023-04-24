@@ -78,7 +78,9 @@ dist:any;
   getBanks(){
     this.bs.getBankFromSutra().subscribe({next:(d:any)=>{
       this.banks = d;
+      if (this.banks.length){
       this.bankForm.patchValue({'bankid':d[0].id});
+      }
     },error:err=>{
 
     }});

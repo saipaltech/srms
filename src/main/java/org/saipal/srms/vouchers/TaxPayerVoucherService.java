@@ -41,7 +41,7 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = " where id!=1  and ttype=1 ";
+		String condition = " where tx.id!=1  and ttype=1 ";
 		String approve = request("approve");
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
@@ -54,7 +54,7 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 
 		if (!approve.isBlank()) {
-			condition += " and approved='" + approve + "'";
+			condition += " and tx.approved='" + approve + "'";
 		}
 
 		String sort = "";
@@ -69,8 +69,8 @@ public class TaxPayerVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(id as char) as id,cast(date as date) as date,approved, voucherno,karobarsanket,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,amountcr as amount")
-				.sqlBody("from " + table + condition).paginate();
+				.select("cast(tx.id as char) as id,cast(date as date) as date,tx.approved, voucherno,karobarsanket,taxpayername,taxpayerpan,depositedby,depcontact,tx.lgid,collectioncenterid,bankorgid,purpose,ba.accountnumber as accountno,amountcr as amount")
+				.sqlBody("from taxvouchers tx join bankaccount ba on  ba.id = tx.bankorgid "+ condition).paginate();
 //		System.out.println(result);
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -119,9 +119,10 @@ public class TaxPayerVoucherService extends AutoService {
 	public ResponseEntity<Map<String, Object>> getSpecific(String id) {
 		String sql = "select cast(bd.id as varchar) as id,karobarsanket, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid,"
-				+ "amountcr as amount, bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
+				+ "amountcr as amount, ba.accountnumber as accountno ,bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
 				+ "from taxvouchers as bd "
 				+ "join collectioncenter cc on cc.id = bd.collectioncenterid  "
+				+" join bankaccount ba on ba.id = bd.bankorgid "
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid where bd.id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(id));
 		List<Map<String, Object>> revs = db.getResultListMap(

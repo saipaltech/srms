@@ -250,11 +250,11 @@
             <!--table-borderless-->
             <thead>
               <tr>
-                <th scope="col">Deposit Slip No.</th>
-                <th scope="col">Karobar Sanket</th>
                 <th scope="col">Date</th>
                 <th scope="col">Tax Payer Name</th>
                 <th scope="col">Account No</th>
+                <th scope="col">Deposit Slip No.</th>
+                <th scope="col">Karobar Sanket</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Status</th>
                 <th scope="col">Action</th>
@@ -262,11 +262,11 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of lists; let i = index">
-                <td>{{ item.voucherno }}</td>
-                <td>{{ item.approved === 1 ? item.karobarsanket : 'To be Approved' }}</td>
                 <td>{{ item.date }}</td>
                 <td>{{ item.taxpayername }}</td>
                 <td>{{ item.accountno }}</td>
+                <td>{{ item.voucherno }}</td>
+                <td>{{ item.approved === 1 ? item.karobarsanket : 'To be Approved' }}</td>
                 <td>{{ item.amount }}</td>
                 <td *ngIf="item.approved == 0"><span class="badge text-bg-danger">Not Approved</span></td>
                 <td *ngIf="item.approved == 1"><span class="badge text-bg-primary"> Approved</span></td>

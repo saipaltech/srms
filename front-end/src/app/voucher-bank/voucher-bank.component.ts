@@ -143,8 +143,8 @@ export class VoucherBankComponent implements OnInit {
     this.getList();
     this.voucherBankForm.get("lgid")?.valueChanges.subscribe({
       next: (d) => {
-        this.getPalikaDetails();
-        this.getBankAccounts();
+        this.getPalikaDetails?.();
+        this.getBankAccounts?.();
       }
     });
     this.bvs.getLocalLevels().subscribe({
