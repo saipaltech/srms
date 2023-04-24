@@ -71,8 +71,11 @@ public class BankVoucherService extends AutoService {
 		JSONArray jarr = new JSONArray(items);
 		if (jarr.length() > 0) {
 			for (int i = 0; i < jarr.length(); i++) {
-				
+			String usq="select * from chequeBankDakhilaDetail where did=?";	
+			Tuple res = db.getSingleResult(usq, Arrays.asList(jarr.get(i)));
 			
+			String sql="insert into taxvouchers(id,bankid,karobarsanket,chequeno,chequeamount,cstatus,chequebank,lgid,date,taxpayername,bankorgid,amountcr,cstatus) values(?,?,?,?,?,?,?,?,?,?,?)";
+			db.execute(sql,Arrays.asList(res.get("did"),res.get("bankid"),res.get("ksno"),res.get("chequeno"),res.get("chequeamount"),res.get("cstatus")));
 			}
 		}
 		return null;
@@ -172,29 +175,37 @@ public class BankVoucherService extends AutoService {
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 		if(data==null) {
 			JSONObject dt =  api.getChequeDetails(transactionid);
+			System.out.println(dt.toString());
 			if(dt!=null) {
 				try {
 					if(dt.getInt("status")==1) {
+//						System.out.println("here");
 						JSONObject d = dt.getJSONObject("data");
-						db.execute("insert into chequeBankDakhilaMain (cdid ,adminid ,orgid ,fyid ,trantype ,karobarSanketNo ,trandate ,trandatetint ,refNo ,narration ,bankorgid ,bankid ,accountno ,entrydate ,enterby) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-								Arrays.asList(d.get("cdid"),d.get("adminid"),d.get("orgid"),d.get("fyid"),d.get("trantype"),d.get("karobarSanketNo"),d.get("trandate"),d.get("trandatetint"),d.get("refNo"),d.get("narration"),d.get("bankorgid"),d.get("bankid"),d.get("accountno"),d.get("entrydate"),d.get("enterby")));
-						JSONArray dtls=d.getJSONArray("details_rows");
+						DbResponse rf= db.execute("insert into chequeBankDakhilaMain (cdid ,adminid ,orgid ,fyid ,trantype ,karobarSanketNo ,trandate ,trandatetint ,refNo ,narration ,bankorgid ,bankid ,accountno ,entrydate ,enterby) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+								Arrays.asList(d.get("cdid"),d.get("adminid"),d.get("orgid"),d.get("fyid"),d.get("trantype"),d.get("karobarsanketno"),d.get("trandate"),d.get("trandatetint"),d.get("refno"),d.get("narration"),d.get("bankorgid"),d.get("bankid"),d.get("accountno"),d.get("entrydate"),d.get("enterby")));
+						System.out.println("first if");
+						 JSONArray dtls=d.getJSONArray("details_rows");
+						
 						if(dtls.length()>0) {
 							for(int i=0;i<dtls.length();i++) {
 								JSONObject dd = dtls.getJSONObject(i);
 								db.execute("insert into chequeBankDakhilaDetail(did ,mainid ,rcid ,ksno ,bankid ,chequeno ,chequeamount ,taxpayername ) values(?,?,?,?,?,?,?,?)",
 										Arrays.asList(dd.get("did"),dd.get("mainid"),dd.get("rcid"),dd.get("ksno"),dd.get("bankid"),dd.get("chequeno"),dd.get("chequeamount"),dd.get("taxpayername")));
+								System.out.println("loop");
 							}
 						}
-						sql = "select bd.fyid,bd.trantype,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid  where karobarSanketNo=? and bd.bankid=?";
+						sql = "select bd.fyid,bd.trantype,bd.karobarSanketNo,bd.cdid,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid  where karobarSanketNo=? and bd.bankid=?";
 						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
+						String sqld="select cast(cb.did as varchar) as did ,cb.mainid ,cb.rcid ,cb.ksno ,cb.bankid ,cb.chequeno ,cb.chequeamount ,cb.taxpayername ,cb.isbankreceived ,cb.bankreceivedby ,cb.bankreceiveddate,bi.namenp as bankname from chequeBankDakhilaDetail cb join bankinfo bi on bi.id=cb.bankid where mainid=?";
+						List <Map<String, Object>> dtl = db.getResultListMap(sqld, Arrays.asList(fdata.get("cdid")));
+						fdata.put("details", dtl);
 						return Messenger.getMessenger().setData(fdata).success();
 					}else {
 						return Messenger.getMessenger().setMessage(dt.getString("message")).error();
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
-					//e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 			return Messenger.getMessenger().setMessage("No such transaction found.").error();
