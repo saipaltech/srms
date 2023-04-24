@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Tuple;
+import javax.transaction.Transactional;
 
 @Component
 public class BankVoucherService extends AutoService {
@@ -167,7 +168,7 @@ public class BankVoucherService extends AutoService {
 		return Messenger.getMessenger().setData(data).success();
 	}
 	
-	
+	@Transactional
 	private ResponseEntity<Map<String, Object>> getTransDetailsCheque() {
 		String transactionid = request("transactionid"); 
 		transactionid = nep2EngNum(transactionid);
@@ -194,7 +195,7 @@ public class BankVoucherService extends AutoService {
 								System.out.println("loop");
 							}
 						}
-						sql = "select bd.fyid,bd.trantype,bd.karobarSanketNo,bd.cdid,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid  where karobarSanketNo=? and bd.bankid=?";
+						sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.orgid where karobarSanketNo=? and bd.bankid=?";
 						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 						String sqld="select cast(cb.did as varchar) as did ,cb.mainid ,cb.rcid ,cb.ksno ,cb.bankid ,cb.chequeno ,cb.chequeamount ,cb.taxpayername ,cb.isbankreceived ,cb.bankreceivedby ,cb.bankreceiveddate,bi.namenp as bankname from chequeBankDakhilaDetail cb join bankinfo bi on bi.id=cb.bankid where mainid=?";
 						List <Map<String, Object>> dtl = db.getResultListMap(sqld, Arrays.asList(fdata.get("cdid")));
