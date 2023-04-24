@@ -37,7 +37,7 @@ export class VerifyVoucherComponent {
   constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: VerifyVoucherService, private datePipe: DatePipe) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
-      id: [],
+      id: [''],
       amount: ['', [Validators.required, Validators.pattern('[0-9]+')]],
       depositdate: [this.myDate],
       bankvoucherno: [Math.floor(10000000 + Math.random() * 90000000)],
@@ -131,10 +131,13 @@ export class VerifyVoucherComponent {
   transDetails: any;
   istab = 1;
   search() {
+    this.transDetails=undefined;
     if (this.srchForm.valid) {
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {
           this.transDetails = dt.data;
+          this.bankForm.patchValue({ "id": this.transDetails.id });
+          this.bankForm.patchValue({ "transactionid": this.transDetails.transactionid })
           if (this.transDetails.trantype == 1) {
             this.istab = 1;
           } else {
