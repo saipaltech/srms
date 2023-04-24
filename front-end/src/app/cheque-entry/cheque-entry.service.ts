@@ -46,7 +46,7 @@ export class ChequeEntryService {
   }
 
   getLocalLevels(){
-    return this.http.get(this.url+"/get-local-levels-all");
+    return this.http.get(this.url+"/get-local-levels-all-cheque");
   }
 
   constructor(private http: ApiService) { 

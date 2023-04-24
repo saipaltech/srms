@@ -168,6 +168,10 @@ getRevenue(){
     }});
 
 }
+
+getUpdateItem(id:any){
+
+}
 banks:any;
 getBank(){
  

@@ -94,6 +94,11 @@ public class TaxPayerVoucherController {
 		return objService.getLocalLevelsAll();
 	}
 	
+	@GetMapping("get-local-levels-all-cheque")
+	public ResponseEntity<String> getLocalLevelsAllCheque() {
+		return objService.getLocalLevelsAllCheque();
+	}
+	
 	@GetMapping("get-all-local-levels")
 	public ResponseEntity<String> getAllLocalLevels() {
 		return objService.getAllLocalLevels();
