@@ -194,7 +194,7 @@ acs:any;
     }
 
     viewdayclose(lgid:any,acno:any,bankid:any){
-      window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-dayclose?lgid="+ lgid + '&bankorgid=' + acno+'&bankid='+bankid, '_blank')
+      window.open(this.appconfig.baseUrl+"taxpayer-voucher/dayclose-details?lgid="+ lgid + '&bankorgid=' + acno+'&bankid='+bankid, '_blank')
     }
 
     resetForm(){

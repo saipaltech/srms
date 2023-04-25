@@ -42,7 +42,7 @@ public class DaycloseService extends AutoService {
 			cond+=" and t.lgid='"+lgid+"'";
 		}
 		if(!acno.isBlank()) {
-			cond+=" and t.accountno='"+acno+"'";
+			cond+=" and t.bankorgid='"+acno+"'";
 		}
 		
 		String cond1="";
@@ -76,6 +76,7 @@ public class DaycloseService extends AutoService {
 					mapadmlvl.put("accountnumber", t.get("accountnumber"));
 					mapadmlvl.put("palika", t.get("palika"));
 					mapadmlvl.put("balance", t.get("balance"));
+					mapadmlvl.put("bankid", t.get("bankid"));
 					
 					list.add(mapadmlvl);
 				}

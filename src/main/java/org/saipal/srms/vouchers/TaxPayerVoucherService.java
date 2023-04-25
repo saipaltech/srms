@@ -1147,7 +1147,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				cond+=" and t.lgid='"+lgid+"'";
 			}
 			if(!bankorgid.isBlank()) {
-				cond+=" and t.accountno='"+bankorgid+"'";
+				cond+=" and t.bankorgid='"+bankorgid+"'";
 			}
 			
 			String cond1="";
