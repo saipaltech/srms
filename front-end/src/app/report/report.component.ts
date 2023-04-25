@@ -38,10 +38,31 @@ export class ReportComponent implements OnInit{
 
     this.reportForm = fb.group(this.formLayout)
   }
-  type:any;
   ngOnInit(): void {
-    
+    this.route.queryParams.subscribe(params => {
+      this.type = params['type'];
+    });
   }
+  type:any;
+
+  reportType ="";
+
+  parameterChange(){
+
+      if (this.type == 'vv'){
+        this.reportType = "Verified Voucher "
+      }
+      else if (this.type == 'cad'){
+        this.reportType = "Cash Deposit "
+      }
+      else if (this.type == 'chd'){
+        this.reportType = "Cheque Deposit "
+      }
+      else if (this.type == 'dc'){
+        this.reportType = "Day Close "
+      }
+  }
+
 
   url="taxpayer-voucher"; 
   cad=false;

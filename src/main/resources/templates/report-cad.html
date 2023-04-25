@@ -32,21 +32,29 @@ table.responsive-table {
   box-shadow: none !important;
 }
 
+@media print {
+  .my-div {
+    display: block !important;
+    visibility: visible !important;
+    opacity:1 !important;
+  }
+}
+
 </style>
 
 </head>
 <body>
-<div class=container>
+<div class="container">
 <div class="row mt-4 mb-4">
     <div class="d-flex align-items-center justify-content-center w-100">
-        <p class="logo d-flex align-items-center" style="text-align: center;">
+        <span class="logo d-flex align-items-center" style="text-align: center;">
             <img src="/web/assets/Emblem_of_Nepal.svg" alt="Emblem of Nepal" height="60px">
-            <span class="d-none d-lg-block" style="font-size: 15px; line-height: 1.5">
+            <span class="d-none d-lg-block my-div" style="font-size: 15px; line-height: 1.5">
                 महालेखा नियन्त्रक कार्यालय <br> स्थानीय तह संचितकोष व्यवस्थापन प्रणाली (<span style="color:red;font-size: 12.9px; line-height: 1.3">S</span>u<span style="color:red;font-size: 12.9px; line-height: 1.3">TRA</span>)
                 <br>
                 Revenue Module: Bank Interface
             </span>
-        </p>
+        </span>
 
     </div>
 </div>
