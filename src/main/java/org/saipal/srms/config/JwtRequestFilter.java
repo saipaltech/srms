@@ -48,7 +48,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				requestURI.startsWith("/auth/api-login") ||
 				requestURI.startsWith("/web") ||
 				requestURI.startsWith("/users/change-password-login") ||
-				requestURI.startsWith("/taxpayer-voucher/get-reportf")) {
+				requestURI.startsWith("/taxpayer-voucher/get-report")) {
 			return true;
 		}
 		return false;

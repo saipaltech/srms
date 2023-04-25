@@ -188,8 +188,11 @@ public class TaxPayerVoucherController {
 	}
 	
 	@GetMapping("get-report")
-	public ResponseEntity<List<Map<String, Object>>> getReport(HttpServletRequest request) {
-		return objService.getReport();
+	public ModelAndView getReport(HttpServletRequest request) {
+		Map<String,Object> data = objService.getReport().getBody();
+		
+		return new ModelAndView(data.get("view")+"",Map.of("rdata",data));
+		
 	}
 	@GetMapping("get-reportf")
 	public ModelAndView getReportf(HttpServletRequest request) {

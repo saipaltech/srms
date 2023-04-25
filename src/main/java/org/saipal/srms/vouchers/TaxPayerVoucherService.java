@@ -1085,13 +1085,17 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 
 	
 
-	public ResponseEntity<List<Map<String, Object>>> getReport() {
+	public ResponseEntity<Map<String, Object>> getReport() {
 		String startDate = request("from").replace("-", "");
 		String endDate = request("to").replace("-", "");
 		String type = request("type")+"";
+		String repTitle="";
+		String viewName = "report-";
 		String sql = null;
 		String condition= " WHERE dateint >= '"+startDate+"' AND dateint <= '"+endDate+"'";
 		if (type.equals("cad")) {
+			repTitle = "Cash Deposit, From:"+request("form")+" To:"+request("to");
+			viewName = viewName+type;
 			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid " + condition +" and tx.approved=1";
 		}
 		else if (type.equals("chd")) {
@@ -1108,7 +1112,11 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 
 		List<Map<String, Object>> data = db.getResultListMap(sql,Arrays.asList());
-		return ResponseEntity.ok(data);
+		Map<String,Object> fdata = new HashMap<>();
+		fdata.put("title",repTitle);
+		fdata.put("view", viewName);
+		fdata.put("data",data);
+		return ResponseEntity.ok(fdata);
 	}
 	
 	
