@@ -23,8 +23,25 @@ export class NewSidebarComponent {
           icon: "bi bi-newspaper ico stopClick",
           childs:[
             {
+              name: "Cash Deposit",
+              link: '/report',
+              queryparameter:{ type: 'cad' },
+              icon: "bi bi-circle",
+            }, {
+              name: "Cheque Deposit",
+              link: '/report',
+              queryparameter:{ type: 'chd' },
+              icon: "bi bi-circle",
+            },{
+              name: "Verified Voucher",
+              link: '/report',
+              queryparameter:{ type: 'vv' },
+              icon: "bi bi-circle",
+            }
+            ,{
               name: "Day Close",
-              link: '/report?type=vv',
+              link: '/report',
+              queryparameter:{ type: 'dc' },
               icon: "bi bi-circle",
             }
           ]

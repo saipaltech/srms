@@ -2,7 +2,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <p>Report</p>
+        <p>{{reportType}}Report</p>
       </div>
 
       <div class="card-body mt-3">
@@ -20,7 +20,7 @@
                 </div>
               </div>
               <br>
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col-md-6">
                   <label>Select Report Type</label>
                   <select class="form-select form-select-sm" formControlName="type">
@@ -33,7 +33,7 @@
                   <div [ngClass]="vs.getMessageClass(reportForm.controls['type'])">
                     {{vs.getMessage(reportForm.controls['type'])}}</div>
                 </div>
-              </div>
+              </div> -->
               <br>
             <button class="btn btn-success btn-sm" type="submit">Show</button> &nbsp;
             <button class="btn btn-danger btn-sm" type="button" (click)="clearButton()">Clear</button>
