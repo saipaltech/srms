@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from '../api.service';
 import { ToastrService } from 'ngx-toastr';
 import { DatePipe } from '@angular/common';
 import { ValidationService } from '../validation.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-report',
@@ -11,7 +12,7 @@ import { ValidationService } from '../validation.service';
   styleUrls: ['./report.component.scss'],
   providers: [DatePipe]
 })
-export class ReportComponent {
+export class ReportComponent implements OnInit{
 
   formLayout: any;
 
@@ -27,16 +28,19 @@ export class ReportComponent {
 
   myDate: any = new Date();
 
-  constructor(private fb: FormBuilder,private http: ApiService, private toastr: ToastrService, private datePipe: DatePipe) {
+  constructor(private fb: FormBuilder,private http: ApiService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
 
     this.formLayout = {
       from:[this.myDate, Validators.required],
       to:[this.myDate, Validators.required],
-      type:['', Validators.required]
     }
 
     this.reportForm = fb.group(this.formLayout)
+  }
+  type:any;
+  ngOnInit(): void {
+    
   }
 
   url="taxpayer-voucher"; 
@@ -89,7 +93,11 @@ export class ReportComponent {
 
     if(this.reportForm.valid){
       this.model = this.reportForm;
-      this.http.get(this.url+'/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type="+this.reportForm.value.type).subscribe({next: (data) =>{
+      this.route.queryParams.subscribe(params => {
+        this.type = params['type'];
+      });
+      console.log(this.type)
+      this.http.get(this.url+'/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type='"+this.type+"'").subscribe({next: (data) =>{
         this.model = data;
         // console.log(this.model);
         // this.tableView = true

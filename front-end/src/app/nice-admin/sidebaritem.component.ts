@@ -4,7 +4,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-sidebaritem',
   template: `<li class="nav-item" *ngFor="let mit of menuItems">
     <app-sidebaritem-inner *ngIf="hasSubMenu(mit)" [menuItem]="mit"></app-sidebaritem-inner>
-    <a (click)="activeButton($event)" [ngClass]="!isChildLink?'nav-link collapsed':''" [routerLink]="mit.link" *ngIf="!hasSubMenu(mit)">
+    <a (click)="activeButton($event)" [ngClass]="!isChildLink?'nav-link collapsed':''" [routerLink]="mit.link" [queryParams]="mit.queryparameter?.type ? {type: mit.queryparameter.type} : null" *ngIf="!hasSubMenu(mit)">
           <i class="{{mit.icon}} ico stopClick"></i>
           <span class="stopClick">{{mit.name}}</span>
         </a>
