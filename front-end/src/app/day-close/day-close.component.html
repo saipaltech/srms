@@ -69,6 +69,7 @@
                 <th scope="col">Credit</th>
                 <th scope="col">Balance</th>
                 <th scope="col">Core Banking ID</th>
+                <th>View</th>
               </tr>
             </thead>
             <tbody formGroupName="corebank">
@@ -81,6 +82,7 @@
                 <td>{{ item.amountcr }}</td>
                 <td>{{ item.balance }}</td>
                 <td><input type="text" id="textbox{{i}}" formControlName="{{item.accountno}}"></td>
+                <td><button type="button" (click)="viewdayclose(item.lgid,item.accountno,item.bankid)">View</button></td>
               
               </tr>
       
