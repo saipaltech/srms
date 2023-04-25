@@ -194,6 +194,14 @@ public class TaxPayerVoucherController {
 		return new ModelAndView(data.get("view")+"",Map.of("rdata",data));
 		
 	}
+	
+	@GetMapping("dayclose-details")
+	public ModelAndView getReportDayClose(HttpServletRequest request) {
+		Map<String,Object> data = objService.getReportDetailsDayClose().getBody();
+		
+		return new ModelAndView(data.get("view")+"",Map.of("rdata",data));
+		
+	}
 	@GetMapping("get-reportf")
 	public ModelAndView getReportf(HttpServletRequest request) {
 		return  new ModelAndView("report-cad");

@@ -119,7 +119,7 @@ export class ReportComponent implements OnInit{
         this.type = params['type'];
       });
       console.log(this.type)
-      window.open(this.ap.baseUrl+'taxpayervoucher/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type='"+this.type+"'", "_blank");
+      window.open(this.ap.baseUrl+'taxpayer-voucher/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type="+this.type, "_blank");
     //   this.http.get(this.url+'/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type='"+this.type+"'").subscribe({next: (data) =>{
     //     this.model = data;
     //     // console.log(this.model);

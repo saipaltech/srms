@@ -1094,17 +1094,25 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		String sql = null;
 		String condition= " WHERE dateint >= '"+startDate+"' AND dateint <= '"+endDate+"'";
 		if (type.equals("cad")) {
-			repTitle = "Cash Deposit, From:"+request("form")+" To:"+request("to");
+			repTitle = "Cash Deposit, From:"+request("from")+" To:"+request("to");
 			viewName = viewName+type;
 			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid " + condition +" and tx.approved=1";
 		}
 		else if (type.equals("chd")) {
+			repTitle = "Cheque Deposit, From:"+request("from")+" To:"+request("to");
+			viewName = viewName+type;
 			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM "+ table+" tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid" + condition + " and tx.cstatus=1";
 			}
 		else if (type.equals("vv")) {
+//			System.out.println("VERIFIED VOUCHER REACHED");
+			repTitle = "Verified Vouchers, From:"+request("from")+" To:"+request("to");
+			viewName = viewName+type;
+			System.out.println(viewName);
 			sql = "select * from bank_deposits WHERE depositdateint >= '"+startDate+"' AND depositdateint <= '"+endDate+"'";
 		}
 		else if (type.equals("dc")) {
+			repTitle = "Day Close, From:"+request("from")+" To:"+request("to");
+			viewName = viewName+type;
 			sql = "select dc.*, lls.namenp as palika, (amountcr-amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid " + condition;
 		}
 		else {
@@ -1112,6 +1120,60 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 
 		List<Map<String, Object>> data = db.getResultListMap(sql,Arrays.asList());
+		Map<String,Object> fdata = new HashMap<>();
+		fdata.put("title",repTitle);
+		fdata.put("view", viewName);
+		fdata.put("data",data);
+		return ResponseEntity.ok(fdata);
+	}
+	
+	
+	
+	public ResponseEntity<Map<String, Object>> getReportDetailsDayClose() {
+		String id = request("id");
+		String sql = null;
+		List<Map<String, Object>> data;
+		
+		if (!id.isBlank()) {
+			sql = "select dc.*, lls.namenp as palika, (amountcr-amountdr) as balance from dayclose_details dc join admin_local_level_structure lls on lls.id = dc.lgid where dcid='"+id+"'";
+			data = db.getResultListMap(sql);
+		}
+		else {
+			String lgid = request("lgid");
+			String bankorgid = request("bankorgid");
+			String bankid=request("bankid");
+			String cond="";
+			if(!lgid.isBlank()) {
+				cond+=" and t.lgid='"+lgid+"'";
+			}
+			if(!bankorgid.isBlank()) {
+				cond+=" and t.accountno='"+bankorgid+"'";
+			}
+			
+			String cond1="";
+			if(!lgid.isBlank()) {
+				cond1+=" and t.lgid='"+lgid+"'";
+			}
+			if(!bankorgid.isBlank()) {
+				cond1+=" and t.bankorgid='"+bankorgid+"'";
+			}
+			sql = "select *,(amountcr-amountdr) as balance from (select accountno,accountname,accountnumber,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
+					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint   where  dc.id is null and t.dateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=1 "+cond 
+					+" union"
+					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint   where  dc.id is null and  t.dateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.ttype=1 "+cond 
+					+ " union"
+					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint   where  dc.id is null and  t.depositdateint=format(getdate(),'yyyyMMdd') and  t.bankid=?  "+cond1
+					+" ) a group by accountno,accountname,accountnumber,palika,lgid) b ";
+			data = db.getResultListMap(sql,Arrays.asList(bankid,bankid,bankid));
+		}
+		
+		
+		String repTitle="Day Close Details";
+		String viewName = "dayclosedetails";
+		
+	
+		
+//		List<Map<String, Object>> data = db.getResultListMap(sql,Arrays.asList());
 		Map<String,Object> fdata = new HashMap<>();
 		fdata.put("title",repTitle);
 		fdata.put("view", viewName);
