@@ -12,6 +12,7 @@
 	<artifactId>srms</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>srms</name>
+	<packaging>war</packaging>
 	<description>Sutra Revenue Management for Banks</description>
 	<properties>
 		<java.version>11</java.version>
