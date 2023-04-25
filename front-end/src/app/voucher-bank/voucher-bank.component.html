@@ -240,10 +240,10 @@
             </div>
           </form>
           <div class="btn-group" dropdown *ngIf="!hideApproveButton">
-            <select class="form-select form-select-sm">
-              <option value="" (click)="setStatus('')">All Vouchers</option>
-              <option selected value="0" (click)="setStatus(0)">Unapproved Vouchers</option>
-              <option value="1" (click)="setStatus(1)">Approved Vouchers</option>
+            <select class="form-select form-select-sm" (change)="setStatus($event)">
+              <option value="" >All Vouchers</option>
+              <option selected value="0">Unapproved Vouchers</option>
+              <option value="1">Approved Vouchers</option>
             </select>
           </div>
           <table class="display responsive-table w-100 table table-striped datatable">
