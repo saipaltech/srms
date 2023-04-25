@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { DatePipe } from '@angular/common';
 import { ValidationService } from '../validation.service';
 import { ActivatedRoute } from '@angular/router';
+import { AppConfig } from '../app.config';
 
 @Component({
   selector: 'app-report',
@@ -28,7 +29,7 @@ export class ReportComponent implements OnInit{
 
   myDate: any = new Date();
 
-  constructor(private fb: FormBuilder,private http: ApiService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute) {
+  constructor(private fb: FormBuilder,private http: ApiService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute, private ap: AppConfig) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
 
     this.formLayout = {
@@ -118,13 +119,14 @@ export class ReportComponent implements OnInit{
         this.type = params['type'];
       });
       console.log(this.type)
-      this.http.get(this.url+'/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type='"+this.type+"'").subscribe({next: (data) =>{
-        this.model = data;
-        // console.log(this.model);
-        // this.tableView = true
-        this.setType();
-      } 
-    })
+      window.open(this.ap.baseUrl+'taxpayervoucher/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type='"+this.type+"'", "_blank");
+    //   this.http.get(this.url+'/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type='"+this.type+"'").subscribe({next: (data) =>{
+    //     this.model = data;
+    //     // console.log(this.model);
+    //     // this.tableView = true
+    //     this.setType();
+    //   } 
+    // })
     }
     else{
       Object.keys(this.reportForm.controls).forEach(field => {
