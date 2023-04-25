@@ -232,7 +232,7 @@ public class TaxPayerVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
-		String sql = "select * from "
+		String sql = "select cast(id as varchar) as id,cast(date as Date) as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,cast(lgid as varchar) as lgid,cast(collectioncenterid as varchar) as collectioncenterid ,cast(bankorgid as varchar) as bankorgid,purpose,deposituserid, cast(bankid as varchar) as bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,amountcr as amount,depositbankid,depositbranchid from "
 				+ table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);

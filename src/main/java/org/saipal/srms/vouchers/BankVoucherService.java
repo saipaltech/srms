@@ -1,6 +1,7 @@
 package org.saipal.srms.vouchers;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -70,16 +71,36 @@ public class BankVoucherService extends AutoService {
 			items = "[" + items + "]";
 		}
 		JSONArray jarr = new JSONArray(items);
-		if (jarr.length() > 0) {
-			for (int i = 0; i < jarr.length(); i++) {
-			String usq="select * from chequeBankDakhilaDetail where did=?";	
-			Tuple res = db.getSingleResult(usq, Arrays.asList(jarr.get(i)));
-			
-			String sql="insert into taxvouchers(id,bankid,karobarsanket,chequeno,chequeamount,cstatus,chequebank,lgid,date,taxpayername,bankorgid,amountcr,cstatus) values(?,?,?,?,?,?,?,?,?,?,?)";
-			db.execute(sql,Arrays.asList(res.get("did"),res.get("bankid"),res.get("ksno"),res.get("chequeno"),res.get("chequeamount"),res.get("cstatus")));
+		try {
+			if (jarr.length() > 0) {
+				for (int i = 0; i < jarr.length(); i++) {
+				String usq="select * from chequeBankDakhilaDetail where did=?";	
+				Tuple res = db.getSingleResult(usq, Arrays.asList(jarr.get(i)));
+				String sq="select * from chequeBankDakhilaMain where cdid=?";
+				Tuple rs = db.getSingleResult(sq, Arrays.asList(res.get("mainid")));
+				
+				String sq1="select count(id) as cid from taxvouchers where cref=?";
+				Tuple rs1 = db.getSingleResult(sq1, Arrays.asList(res.get("did")));
+				if(!rs1.get("cid").toString().equals("1")) {
+					String sql="insert into taxvouchers(cref,dateint,bankid,branchid,karobarsanket,chequeno,chequeamount,cstatus,chequebank,lgid,date,taxpayername,bankorgid,amountcr,ttype,depositbankid,depositbranchid,deposituserid,depositedby) values(?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+					DbResponse rf= db.execute(sql,Arrays.asList(res.get("did"),auth.getBankId(),auth.getBranchId(),res.get("ksno"),res.get("chequeno"),res.get("chequeamount"),0,res.get("bankid"),rs.get("orgid"),new Date(),res.get("taxpayername"),rs.get("bankorgid"),res.get("chequeamount"),2,auth.getBankId(),auth.getBranchId(),auth.getUserId(),res.get("taxpayername")));
+//					System.out.println(rf.getMessage());
+					String squ="update chequeBankDakhilaDetail set isbankreceived=?,bankreceivedby=?,bankreceiveddate=? where did=?";
+					db.execute(squ,Arrays.asList(1,auth.getBankId(),new Date(),jarr.get(i)));
+				}
+				
+				
+				
+				}
+				return Messenger.getMessenger().success();
+			}else {
+				return Messenger.getMessenger().setMessage("No Data to save").error();
 			}
+		} catch (Exception e) {
+			return Messenger.getMessenger().setMessage("Unable to save data").error();
 		}
-		return null;
+		
+		
 	}
 
 	public ResponseEntity<Map<String, Object>> update() {
@@ -172,11 +193,10 @@ public class BankVoucherService extends AutoService {
 	private ResponseEntity<Map<String, Object>> getTransDetailsCheque() {
 		String transactionid = request("transactionid"); 
 		transactionid = nep2EngNum(transactionid);
-		String sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.orgid where karobarSanketNo=? and bd.bankid=?";
+		String sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.orgid where karobarSanketNo=? and bd.bankid=? ";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 		if(data==null) {
 			JSONObject dt =  api.getChequeDetails(transactionid);
-			System.out.println(dt.toString());
 			if(dt!=null) {
 				try {
 					if(dt.getInt("status")==1) {
@@ -184,7 +204,7 @@ public class BankVoucherService extends AutoService {
 						JSONObject d = dt.getJSONObject("data");
 						DbResponse rf= db.execute("insert into chequeBankDakhilaMain (cdid ,adminid ,orgid ,fyid ,trantype ,karobarSanketNo ,trandate ,trandatetint ,refNo ,narration ,bankorgid ,bankid ,accountno ,entrydate ,enterby) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 								Arrays.asList(d.get("cdid"),d.get("adminid"),d.get("orgid"),d.get("fyid"),d.get("trantype"),d.get("karobarsanketno"),d.get("trandate"),d.get("trandatetint"),d.get("refno"),d.get("narration"),d.get("bankorgid"),d.get("bankid"),d.get("accountno"),d.get("entrydate"),d.get("enterby")));
-						System.out.println("first if");
+						
 						 JSONArray dtls=d.getJSONArray("details_rows");
 						
 						if(dtls.length()>0) {
@@ -192,7 +212,7 @@ public class BankVoucherService extends AutoService {
 								JSONObject dd = dtls.getJSONObject(i);
 								db.execute("insert into chequeBankDakhilaDetail(did ,mainid ,rcid ,ksno ,bankid ,chequeno ,chequeamount ,taxpayername ) values(?,?,?,?,?,?,?,?)",
 										Arrays.asList(dd.get("did"),dd.get("mainid"),dd.get("rcid"),dd.get("ksno"),dd.get("bankid"),dd.get("chequeno"),dd.get("chequeamount"),dd.get("taxpayername")));
-								System.out.println("loop");
+							
 							}
 						}
 						sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.orgid where karobarSanketNo=? and bd.bankid=?";
@@ -211,8 +231,8 @@ public class BankVoucherService extends AutoService {
 			}
 			return Messenger.getMessenger().setMessage("No such transaction found.").error();
 		}
-		String sqld="select cast(cb.did as varchar) as did ,cb.mainid ,cb.rcid ,cb.ksno ,cb.bankid ,cb.chequeno ,cb.chequeamount ,cb.taxpayername ,cb.isbankreceived ,cb.bankreceivedby ,cb.bankreceiveddate,bi.namenp as bankname from chequeBankDakhilaDetail cb join bankinfo bi on bi.id=cb.bankid where mainid=?";
-		List <Map<String, Object>> dtl = db.getResultListMap(sqld, Arrays.asList(data.get("cdid")));
+		String sqld="select cast(cb.did as varchar) as did ,cb.mainid ,cb.rcid ,cb.ksno ,cb.bankid ,cb.chequeno ,cb.chequeamount ,cb.taxpayername ,cb.isbankreceived ,cb.bankreceivedby ,cb.bankreceiveddate,bi.namenp as bankname from chequeBankDakhilaDetail cb join bankinfo bi on bi.id=cb.bankid where mainid=? and isbankreceived=?";
+		List <Map<String, Object>> dtl = db.getResultListMap(sqld, Arrays.asList(data.get("cdid"),0));
 		data.put("details", dtl);
 		return Messenger.getMessenger().setData(data).success();
 	}

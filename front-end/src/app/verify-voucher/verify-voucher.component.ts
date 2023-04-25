@@ -112,9 +112,13 @@ model1:any;
           // this.lists=result.data;
         
         this.toastr.success('Item Successfully Saved!', 'Success');
-        this.resetForm();
+        // this.resetForm();
         this.chequeForm.value['options']="";
         this.selectedval=new Array();
+        this.cDt=false;
+        this.bDt=false;
+        
+        this.srchForm.patchValue({'srch_term':''});
         // this.getList();
       
       }, error:err => {

@@ -4,6 +4,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ToastrService } from 'ngx-toastr';
+import { AppConfig } from '../app.config';
 import { AuthService } from '../auth/auth.service';
 import { ChequeEntryService } from '../cheque-entry/cheque-entry.service';
 import { ValidationService } from '../validation.service';
@@ -34,7 +35,7 @@ export class DayCloseComponent {
   daycloseForm!: FormGroup;
   formBuilder: any;
   selectedval=new Array();
-    constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private modalService: BsModalService, private r: Router,private auth:AuthService){
+    constructor(private appconfig:AppConfig,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private modalService: BsModalService, private r: Router,private auth:AuthService){
       const ud = this.auth.getUserDetails();
       
       this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
@@ -190,6 +191,10 @@ acs:any;
       }
       });
     }
+    }
+
+    viewdayclose(lgid:any,acno:any,bankid:any){
+      window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-dayclose?lgid="+ lgid + '&bankorgid=' + acno+'&bankid='+bankid, '_blank')
     }
 
     resetForm(){

@@ -169,8 +169,18 @@ getRevenue(){
 
 }
 
-getUpdateItem(id:any){
-
+getUpdateItem(id: any) {
+  this.bvs.getEdit(id).subscribe(
+    (result: any) => {
+      this.model = result;
+      this.voucherBankForm.patchValue(result);
+      this.changeFields();
+      this.getRevenue();
+    },
+    (error: any) => {
+      this.toastr.error(error.error, 'Error');
+    }
+  );
 }
 banks:any;
 getBank(){
