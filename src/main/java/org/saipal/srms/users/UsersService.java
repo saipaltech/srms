@@ -138,6 +138,11 @@ public class UsersService extends AutoService {
 		if ((!(res.get(0) + "").equals("0"))) {
 			return Messenger.getMessenger().setMessage("Username already exists.").error();
 		}
+		String esq = "select count(id) from users where email=?";
+		Tuple eres = db.getSingleResult(esq, Arrays.asList(model.email));
+		if ((!(eres.get(0) + "").equals("0"))) {
+			return Messenger.getMessenger().setMessage("Email already exists.").error();
+		}
 		String sq = "select count(id) from branches where bankid=? and ishead=1";
 		Tuple resp = db.getSingleResult(sq, Arrays.asList(model.bankid));
 		if ((!(resp.get(0) + "").equals("1"))) {

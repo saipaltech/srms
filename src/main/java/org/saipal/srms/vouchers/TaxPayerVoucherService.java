@@ -1337,4 +1337,33 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Such voucher exists.\"}");
 	}
+
+	public ResponseEntity<Map<String, Object>> getBranchForReport() {
+		String sql = "select name,code from branches where bankid=?";
+		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(auth.getBranchId()));
+		
+//		List<Map<String, Object>> branches = new ArrayList<>();
+//
+//        Map<String, Object> branch1 = new HashMap<>();
+//        branch1.put("code", 1);
+//        branch1.put("name", "Volvo");
+//        branches.add(branch1);
+//
+//        Map<String, Object> branch2 = new HashMap<>();
+//        branch2.put("code", 2);
+//        branch2.put("name", "Saab");
+//        branches.add(branch2);
+//
+//        Map<String, Object> branch3 = new HashMap<>();
+//        branch3.put("code", 3);
+//        branch3.put("name", "Opel");
+//        branches.add(branch3);
+//
+//        Map<String, Object> branch4 = new HashMap<>();
+//        branch4.put("code", 4);
+//        branch4.put("name", "Audi");
+//        branches.add(branch4);
+//        return branches;
+		return ResponseEntity.ok(data);
+	}
 }

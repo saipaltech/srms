@@ -6,6 +6,7 @@ import { DatePipe } from '@angular/common';
 import { ValidationService } from '../validation.service';
 import { ActivatedRoute } from '@angular/router';
 import { AppConfig } from '../app.config';
+import { ReportService } from './report.service';
 
 @Component({
   selector: 'app-report',
@@ -29,7 +30,7 @@ export class ReportComponent implements OnInit{
 
   myDate: any = new Date();
 
-  constructor(private fb: FormBuilder,private http: ApiService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute, private ap: AppConfig) {
+  constructor(private fb: FormBuilder,private http: ApiService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute, private ap: AppConfig, private bvs: ReportService) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
 
     this.formLayout = {
@@ -44,6 +45,7 @@ export class ReportComponent implements OnInit{
       this.type = params['type'];
       this.parameterChange();
     });
+    this.getBranches()
   }
   type:any;
 
@@ -101,13 +103,6 @@ export class ReportComponent implements OnInit{
    }
   }
 
-  i=1;
-
-  // this.route.queryParams.subscribe(params => {
-  //   this.voucherno = params['voucherno'];
-  //   this.palika = params['palika'];
-
-  // });
 
   reportFormSubmit(){
 
@@ -146,6 +141,32 @@ export class ReportComponent implements OnInit{
    this.chd = false;
    this.dc=false;
    this.vv=false;
+  }
+
+
+  branches = [
+    { code: 1, name: 'Volvo' },
+    { code: 2, name: 'Saab' },
+    { code: 3, name: 'Opel' },
+    { code: 4, name: 'Audi' },
+];
+
+  getBranches() {
+    // this.branches = undefined;
+    // const llgCode = this.reportForm.value['branch'];
+
+      this.bvs.getBranches().subscribe({
+        next: (d) => {
+          console.log(d)
+          // this.branches = d.data;
+          // if (d.data.length == 1) {
+          //   this.reportForm.patchValue({ "branch": d.data[0].id });
+          // }
+        }, error: err => {
+          // console.log(err);
+        }
+      });
+
   }
 
 }

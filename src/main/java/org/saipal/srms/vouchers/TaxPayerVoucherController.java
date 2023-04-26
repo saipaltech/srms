@@ -224,4 +224,9 @@ public class TaxPayerVoucherController {
 		Map<String,Object> data = Map.of("data",dt,"revd",revd.get("data"));
 		return new ModelAndView("voucher-bank-copy",data);
 	}
+	
+	@GetMapping("get-branch-report")
+	public ResponseEntity<Map<String, Object>> getBranchReport(HttpServletRequest request){
+		return objService.getBranchForReport();
+	}
 }
