@@ -757,27 +757,18 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		List<Map<String, Object>> list = new ArrayList<>();
 		if (!admlvl.isEmpty()) {
 			for (Tuple t : admlvl) {
-//				System.out.println(t.toString());
 				Map<String, Object> mapadmlvl = new HashMap<>();
 				mapadmlvl.put("sn", t.get("sn"));
 				mapadmlvl.put("revenuetitle", t.get("revenuetitle"));
-//				mapadmlvl.put("amountwords", t.get("amountwords"));
 				mapadmlvl.put("amount", t.get("amount"));
 				mapadmlvl.put("revenuecode", t.get("revenuecode"));
-//				mapadmlvl.put("total_amount", t.get("total_amount"));
-//				mapadmlvl.put("total_amount_no", t.get("total_amount_no"));
 				list.add(mapadmlvl);
 			}
-			System.out.println("aaaa");
 			return Messenger.getMessenger().setData(list).success();
 
 		} else {
 			return Messenger.getMessenger().setData(list).success();
-//			return Messenger.getMessenger().error();
 		}
-//		System.out.println(sql);
-//		List<Tuple> data = db.getResultList(sql, Arrays.asList(voucher, palika));
-//		return ResponseEntity.ok(data);
 	}
 
 	public ResponseEntity<Map<String, Object>> getEditDetails() {
@@ -811,7 +802,6 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			return Messenger.getMessenger().setData(t).success();
 		}
 		JSONObject sdata = api.getVoucherDetails(t.get("id")+"");
-//		System.out.println(sdata);
 		if(sdata!=null) {
 			try {
 				if(sdata.getInt("status")==1) {
@@ -857,31 +847,26 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 		if((t.get("approved")+"").equals("0")) {
 			if((t.get("today")+"").equals(t.get("dateint")+"")) {
-				if(!(t.get("lgid")+"").equals(lgid)) {
+				if(!((t.get("lgid")+"").equals(lgid) || (t.get("bankorgid")+"").equals(acno))) {
 					//same day palika change
 					db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
 					db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
 					db.execute("update "+table+" set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=? where id=?",Arrays.asList(amount,lgid,ccid,acno,id));
-					
-					db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,id));
-					db.execute("delete from taxvouchers_detail where mainid=?",Arrays.asList(id));
-					if (jarr.length() > 0) {
-						for (int i = 0; i < jarr.length(); i++) {
-							JSONObject objects = jarr.getJSONObject(i);
-							String sq1 = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
-							db.execute(sq1, Arrays.asList(db.newIdInt(), id, objects.get("rc"), objects.get("amt")));
-						}
-					}
-					return Messenger.getMessenger().setMessage("Voucher Updated").success();
-				}else {
-					return Messenger.getMessenger().setMessage("Cannot transfer to same local level.").success();
 				}
+				db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,id));
+				db.execute("delete from taxvouchers_detail where mainid=?",Arrays.asList(id));
+				if (jarr.length() > 0) {
+					for (int i = 0; i < jarr.length(); i++) {
+						JSONObject objects = jarr.getJSONObject(i);
+						String sq1 = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
+						db.execute(sq1, Arrays.asList(db.newIdInt(), id, objects.get("rc"), objects.get("amt")));
+					}
+				}
+				return Messenger.getMessenger().setMessage("Voucher Updated").success();
 			}else {
 				db.execute("update "+table+" set taxpayername=? ,taxpayerpan=? where id=?",Arrays.asList(taxpayername,taxpayerpan,id));
 				return Messenger.getMessenger().setMessage("Voucher Updated").success();
-				
 			}
-//			return Messenger.getMessenger().setMessage("Voucher Updated").success();
 		}
 		JSONObject sdata = api.getVoucherDetails(t.get("id")+"");
 		if(sdata!=null) {
@@ -893,31 +878,49 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 						return Messenger.getMessenger().setMessage("Already used voucher").error();
 					}else {
 						if((t.get("today")+"").equals(t.get("dateint")+"")) {
-							if(!(t.get("lgid")+"").equals(lgid)) {
+							if(!((t.get("lgid")+"").equals(lgid) || (t.get("bankorgid")+"").equals(acno))) {
 								//same day palika change
-								db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
-								db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
-								db.execute("update "+table+" set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=? where id=?",Arrays.asList(amount,lgid,ccid,acno,id));
-							}
-//							System.out.println("here i am ");
-							JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount,lgid,ccid,acno,voucher);
-							if(ups!=null) {
-								if(ups.getInt("status")==1) {
-									db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,id));
-									db.execute("delete from taxvouchers_detail where mainid=?",Arrays.asList(id));
-									if (jarr.length() > 0) {
-										for (int i = 0; i < jarr.length(); i++) {
-											JSONObject objects = jarr.getJSONObject(i);
-											String sq1 = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
-											db.execute(sq1, Arrays.asList(db.newIdInt(), id, objects.get("rc"), objects.get("amt")));
+								JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount,lgid,ccid,acno,voucher);
+								if(ups!=null) {
+									if(ups.getInt("status")==1) {
+										db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
+										db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
+										db.execute("update "+table+" set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=? where id=?",Arrays.asList(amount,lgid,ccid,acno,id));
+										db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,id));
+										db.execute("delete from taxvouchers_detail where mainid=?",Arrays.asList(id));
+										if (jarr.length() > 0) {
+											for (int i = 0; i < jarr.length(); i++) {
+												JSONObject objects = jarr.getJSONObject(i);
+												String sq1 = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
+												db.execute(sq1, Arrays.asList(db.newIdInt(), id, objects.get("rc"), objects.get("amt")));
+											}
 										}
+										return Messenger.getMessenger().setMessage("Voucher Updated").success();
+									}else {
+										return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
 									}
-									return Messenger.getMessenger().setMessage("Voucher Updated").success();
-								}else {
-									return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
+								}
+								return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
+								
+							}else {
+								JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount,lgid,ccid,acno,voucher);
+								if(ups!=null) {
+									if(ups.getInt("status")==1) {
+										db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,id));
+										db.execute("delete from taxvouchers_detail where mainid=?",Arrays.asList(id));
+										if (jarr.length() > 0) {
+											for (int i = 0; i < jarr.length(); i++) {
+												JSONObject objects = jarr.getJSONObject(i);
+												String sq1 = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
+												db.execute(sq1, Arrays.asList(db.newIdInt(), id, objects.get("rc"), objects.get("amt")));
+											}
+										}
+										return Messenger.getMessenger().setMessage("Voucher Updated").success();
+									}else {
+										return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
+									}
 								}
 							}
-							return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
 						}else {
 							JSONObject ups =  api.saveVoucherUpdates(id,taxpayername,taxpayerpan,"","","","","");
 							if(ups!=null) {
