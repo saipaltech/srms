@@ -259,9 +259,8 @@ export class VoucherBankComponent implements OnInit {
   }
 
   setStatus(val: any) {
-    this.approved = val;
+    this.approved = val.target.value;
     this.getList();
-
   }
 
 
