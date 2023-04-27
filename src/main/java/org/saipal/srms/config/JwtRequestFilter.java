@@ -39,17 +39,19 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		String requestURI = request.getRequestURI();
+		String contextPath = request.getContextPath();
+		String appUri = requestURI.replace(contextPath, "");
 		boolean staticMatcher = PathRequest.toStaticResources().atCommonLocations().matches(request);
 		if(staticMatcher) {
 			return true;
 		}
-		if(requestURI.startsWith("/auth/login")||
-				requestURI.startsWith("/auth/2fa") || 
-				requestURI.startsWith("/auth/api-login") ||
-				requestURI.startsWith("/web") ||
-				requestURI.startsWith("/users/change-password-login") ||
-				requestURI.startsWith("/taxpayer-voucher/get-report") ||
-				requestURI.startsWith("/taxpayer-voucher/dayclose-details")
+		if(appUri.startsWith("/auth/login")||
+				appUri.startsWith("/auth/2fa") || 
+				appUri.startsWith("/auth/api-login") ||
+				appUri.startsWith("/web") ||
+				appUri.startsWith("/users/change-password-login") ||
+				appUri.startsWith("/taxpayer-voucher/get-report") ||
+				appUri.startsWith("/taxpayer-voucher/dayclose-details")
 				) {
 			return true;
 		}
