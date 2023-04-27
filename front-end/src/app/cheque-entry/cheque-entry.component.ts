@@ -7,6 +7,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { Router, NavigationExtras, Route } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { ChequeEntryService } from './cheque-entry.service';
+import { ltLocale } from 'ngx-bootstrap/chronos';
 
 
 
@@ -289,12 +290,12 @@ voucherBankFormSubmit(){
     this.toastr.error('Please fill the पालिका field', 'Error');
     return;
   }
-  else if(!this.voucherBankForm.value['revenuecode']){
-    if(this.items.length<=0){
-      this.toastr.error('Please fill all the राजस्व शिर्षक field', 'Error');
-      return;
-     } 
-  }
+  // else if(!this.voucherBankForm.value['revenuecode']){
+  //   if(this.items.length<=0){
+  //     this.toastr.error('Please fill all the राजस्व शिर्षक field', 'Error');
+  //     return;
+  //    } 
+  // }
    
   if (window.confirm('Are  you sure you want to save this voucher?')) {
   this.addItem();
@@ -465,8 +466,15 @@ createItem(id = null) {
       this.resetForm();
       this.getList();  
       let ks=result.data.karobarsanket;
+      let ct=result.data.chequetype;
+      let formValue=false;
+      if(ct=="2"){
+        formValue=true;
+      }else{
+        formValue=false;
+      }
       // this.istab=1;
-      window.open("/#/cheque-report?voucherno="+ks+'&palika='+upd.lgid, '_blank');
+      window.open("/#/cheque-report?voucherno="+ks+'&palika='+upd.lgid+'&formvalue='+formValue, '_blank');
       // window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
 
     }, error:err => {
