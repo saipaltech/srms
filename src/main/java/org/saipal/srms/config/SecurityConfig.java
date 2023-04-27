@@ -1,5 +1,6 @@
 package org.saipal.srms.config;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,14 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
 
 	@Autowired
+	private ServletContext servletContext;
+
+	@Autowired
 	private JwtRequestFilter jwtRequestFilter;
-	
+
 	@Autowired
 	RequestParserFilter requestParserFilter;
-	
+
 	CorsConfigurationSource corsConfig = new CorsConfigurationSource() {
 		@Override
 		public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -36,32 +40,33 @@ public class SecurityConfig {
 			return configs;
 		}
 	};
-	
-	
+
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-        		.cors(crs-> crs.configurationSource(corsConfig))
-        		.csrf(csrf-> csrf.disable())
-        		//.sessionManagement(ses->ses.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
-        		.sessionManagement(ssn -> ssn.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        		.authorizeHttpRequests((reqs)->{
-        			reqs
-        			.requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-        			.permitAll()
-        			.antMatchers("/auth/login","/auth/2fa","/auth/api-login","/","/taxpayer-voucher/report-generate","/web/**","/users/change-password-login", "/taxpayer-voucher/get-report", "/taxpayer-voucher/dayclose-details")
-        			.permitAll()
-        			.anyRequest()
-        			.authenticated()
-        			.and()
-        			.addFilterBefore(requestParserFilter, UsernamePasswordAuthenticationFilter.class)
-    				.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-        		})
-                .formLogin(frm->frm.disable())
-                .logout(lo -> lo
-                		.logoutRequestMatcher(new AntPathRequestMatcher("/**/logout"))
-                		.logoutSuccessUrl("/logout-done"))
-                .httpBasic(htb->htb.disable())
-				.build();
+		String cp = servletContext.getContextPath();
+		return http.cors(crs -> crs.configurationSource(corsConfig)).csrf(csrf -> csrf.disable())
+				// .sessionManagement(ses->ses.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+				.sessionManagement(ssn -> ssn.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests((reqs) -> {
+					reqs.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+							.antMatchers(
+									cp + "/auth/login", 
+									cp + "/auth/2fa", 
+									cp + "/auth/api-login", 
+									cp + "/",
+									cp + "/taxpayer-voucher/report-generate",
+									cp + "/web/**",
+									cp + "/users/change-password-login", 
+									cp + "/taxpayer-voucher/get-report",
+									cp + "/taxpayer-voucher/dayclose-details")
+							.permitAll()
+							.anyRequest()
+							.authenticated()
+							.and()
+							.addFilterBefore(requestParserFilter, UsernamePasswordAuthenticationFilter.class)
+							.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+				}).formLogin(frm -> frm.disable()).logout(lo -> lo
+						.logoutRequestMatcher(new AntPathRequestMatcher("/**/logout")).logoutSuccessUrl("/logout-done"))
+				.httpBasic(htb -> htb.disable()).build();
 	}
 }
