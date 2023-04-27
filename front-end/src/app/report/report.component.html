@@ -12,8 +12,8 @@
               <div class="row">
                 <div class="col-md-4">
                   <label>Fiscal Year</label>
-                  <select class="form-select form-select-sm" >
-                    <option *ngFor="let l of fiscalYear" value="{{l.key}}">{{l.value}}</option>
+                  <select class="form-select form-select-sm" formControlName="fy">
+                    <option *ngFor="let l of fiscalYear" value="{{l.id}}">{{l.label}}</option>
                   </select>
                 </div>
                 <div class="col-md-4">
@@ -30,15 +30,17 @@
               <div class="row">
                 <div class="col-md-4">
                   <label> Select Palika </label>
-                  <ng-select (change)="getllgs()">
-                    <ng-option *ngFor="let l of llgs"  [value]="l.code">{{l.name}}</ng-option>
+                  <ng-select (change)="getllgs()" formControlName="palika">
+                    <ng-option value=""> All </ng-option>
+                    <ng-option *ngFor="let l of llgs"  [value]="l.id">{{l.namenp}}</ng-option>
                   </ng-select>
                 </div>
 
                 <div class="col-md-4">
                   <label> Select Branch </label>
-                  <ng-select (change)="getBranches()">
-                    <ng-option *ngFor="let i of branches" [value]="i.code"> {{i.name}} </ng-option>
+                  <ng-select (change)="getBranches()" formControlName="branches">
+                    <ng-option value=""> All </ng-option>
+                    <ng-option *ngFor="let i of branches" [value]="i.id"> {{i.name}} </ng-option>
                   </ng-select>
                 </div>
               </div>

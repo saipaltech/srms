@@ -35,6 +35,9 @@ export class ReportComponent implements OnInit{
     this.formLayout = {
       from:[this.myDate, Validators.required],
       to:[this.myDate, Validators.required],
+      palika: [''],
+      branches: [''],
+      fy:['']
     }
 
     this.reportForm = fb.group(this.formLayout)
@@ -59,18 +62,6 @@ export class ReportComponent implements OnInit{
       }
     });
   }
-
-  llgs:any;
-  getllgs(){
-    this.bvs.getllgs().subscribe({
-      next: (d) => {        
-        this.llgs = d.data;
-        console.log(d.data)
-      }, error: err => {
-      }
-    });
-  }
-
 
   type:any;
 
@@ -140,7 +131,7 @@ export class ReportComponent implements OnInit{
         this.type = params['type'];
       });
       console.log(this.type)
-      window.open(this.ap.baseUrl+'taxpayer-voucher/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type="+this.type, "_blank");
+      window.open(this.ap.baseUrl+'taxpayer-voucher/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type="+this.type+"&palika="+this.reportForm.value.palika+"&branch="+this.reportForm.value.branches+"&fy="+this.reportForm.value.fy, "_blank");
     //   this.http.get(this.url+'/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type='"+this.type+"'").subscribe({next: (data) =>{
     //     this.model = data;
     //     // console.log(this.model);
@@ -171,19 +162,36 @@ export class ReportComponent implements OnInit{
 
   branches:any;
   getBranches() {
-    // this.branches = undefined;
-    // const llgCode = this.reportForm.value['branch'];
+    this.branches = undefined;
+    // this.reportForm.value['branches'];
       this.bvs.getBranches().subscribe({
         next: (d) => {
-          console.log(d);
           this.branches = d.data;
-          // if (d.data.length == 1) {
-          //   this.reportForm.patchValue({ "branch": d.data[0].id });
-          // }
+          if (d.data.length == 1) {
+            this.reportForm.patchValue({ "branches": d.data[0].id });
+          }
         }, error: err => {
         }
       });
 
   }
+
+  llgs:any;
+  getllgs(){
+    this.llgs = undefined;
+    // const llgs = this.reportForm.value['llgs'];
+    this.bvs.getllgs().subscribe({
+      next: (d) => {        
+        this.llgs = d.data;
+        console.log(d.data[0].id)
+        if (d.data.length == 1) {
+          // console.log(d.data[0].id)
+          this.reportForm.patchValue({ "palika": d.data[0].id });
+        }
+      }, error: err => {
+      }
+    });
+  }
+
 
 }

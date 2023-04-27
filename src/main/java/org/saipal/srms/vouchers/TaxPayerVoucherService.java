@@ -68,6 +68,10 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 
 		Paginator p = new Paginator();
+		condition = condition+ " and tx.branchid="+auth.getBranchId()+" and tx.bankid="+auth.getBankId()+" ";
+		if (auth.canFromUserTable("3")) {
+			condition += " and tx.deposituserid='"+auth.getUserId()+"'";
+		}
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
 				.select("cast(tx.id as char) as id,cast(date as date) as date,tx.approved, voucherno,karobarsanket,taxpayername,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,ba.accountnumber as accountno,amountcr as amount")
 				.sqlBody("from taxvouchers tx join bankaccount ba on  ba.id = tx.bankorgid "+ condition).paginate();
@@ -106,6 +110,10 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 
 		Paginator p = new Paginator();
+		condition = condition+ " and tx.branchid="+auth.getBranchId()+" and tx.bankid="+auth.getBankId()+" ";
+		if (auth.canFromUserTable("3")) {
+			condition += " and tx.deposituserid='"+auth.getUserId()+"'";
+		}
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
 				.select("cast(tx.id as char) as id,cast(date as date) as date,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,chequeamount as amount,  ba.accountnumber as accountno")
 				.sqlBody("from " + table +  " tx join bankaccount ba on ba.id=tx.bankorgid " +condition).paginate();
