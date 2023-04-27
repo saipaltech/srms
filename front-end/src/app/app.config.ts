@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpBackend, HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
 
@@ -8,8 +8,11 @@ import { Injectable } from "@angular/core";
 export class AppConfig {
 
     public baseUrl: string = "";
+    private httpClient: HttpClient;
 
-    constructor(private httpClient: HttpClient) { }
+    constructor(private direct: HttpBackend) { 
+        this.httpClient = new HttpClient(direct);
+    }
 
     loadConfig() {
         return new Promise((resolve, reject) => {

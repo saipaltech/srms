@@ -1,16 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+    public jwtHelper = new JwtHelperService();
     constructor() { }
 
     getToken(): string | boolean {
         const userDetails = localStorage.getItem('currentUser');
         if(userDetails){
             const currentUser = JSON.parse(userDetails);
-            return currentUser && currentUser.token;
+            if(currentUser && currentUser.token){
+                if(!this.jwtHelper.isTokenExpired(currentUser.token)){
+                    return currentUser.token;
+                }
+            } 
         }
         return false;
     }
