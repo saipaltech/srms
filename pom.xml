@@ -12,6 +12,7 @@
 	<artifactId>srms</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>srms</name>
+	<packaging>war</packaging>
 	<description>Sutra Revenue Management for Banks</description>
 	<properties>
 		<java.version>11</java.version>
@@ -44,7 +45,16 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>4.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>4.1.2</version>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

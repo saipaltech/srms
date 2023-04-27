@@ -42,6 +42,7 @@ export class ReportComponent implements OnInit{
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.type = params['type'];
+      this.parameterChange();
     });
   }
   type:any;

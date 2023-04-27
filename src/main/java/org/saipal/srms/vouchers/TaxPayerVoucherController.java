@@ -1,12 +1,17 @@
 package org.saipal.srms.vouchers;
 
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.codehaus.jettison.json.JSONException;
+import org.saipal.srms.excel.Excel;
+import org.saipal.srms.report.ReportService;
 import org.saipal.srms.util.Messenger;
 import org.saipal.srms.util.ValidationService;
 import org.saipal.srms.util.Validator;
@@ -30,6 +35,9 @@ public class TaxPayerVoucherController {
 
 	@Autowired
 	ValidationService validationService;
+	
+	@Autowired
+	ReportService rs;
 	
 	@GetMapping("")
 	public ResponseEntity<Map<String, Object>> index(HttpServletRequest request) {
@@ -188,10 +196,38 @@ public class TaxPayerVoucherController {
 	}
 	
 	@GetMapping("get-report")
-	public ModelAndView getReport(HttpServletRequest request) {
-		Map<String,Object> data = objService.getReport().getBody();
+	public void getReport(HttpServletResponse resp) throws IOException {
+		String reporttype = "1";//rs.request("reporttype");
+		Excel report = rs.getReport();
+		if (report != null) {
+			if (reporttype.equals("1")) { // htmlreport
+				resp.setContentType("text/html; charset=UTF-8");
+				resp.setCharacterEncoding("UTF-8");
+				try {
+					resp.getWriter().print(report.getHtmlDocument());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else { // excel report
+				Workbook wb = report.getExcel();
+				String fileName = "report.xlsx";
+				resp.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+				resp.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+				try {
+					wb.write(resp.getOutputStream());
+					wb.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} else {
+			resp.getWriter().print("No Data Available.");
+		}
+		//Map<String,Object> data = objService.getReport().getBody();
 		
-		return new ModelAndView(data.get("view")+"",Map.of("rdata",data));
+		//return new ModelAndView(data.get("view")+"",Map.of("rdata",data));
 		
 	}
 	

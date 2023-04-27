@@ -1,0 +1,196 @@
+/* ------------------
+ styling for the tables 
+   ------------------   */
+
+
+#rounded-corner
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 11px;
+	/*margin: 45px;
+	width: 680px;*/
+	text-align: left;
+	border-collapse: collapse;
+}
+#rounded-corner thead th.rounded-f
+{
+	background: #b9c9fe url('table-images/left.png') left -1px no-repeat;
+}
+#rounded-corner thead th.rounded-l
+{
+	background: #b9c9fe url('table-images/right.png') right -1px no-repeat;
+}
+#rounded-corner th
+{
+	padding: 3px;
+	font-weight: normal;
+	font-size: 12px;
+	color: #039;
+	background: #b9c9fe;
+}
+#rounded-corner td
+{
+	padding: 2px;
+	background: #e8edff;
+	border-top: 1px solid #fff;
+	color: #669;
+	
+}
+#rounded-corner tfoot td.rounded-foot-left
+{
+	background: #e8edff url('table-images/botleft.png') left bottom no-repeat;
+}
+#rounded-corner tfoot td.rounded-foot-right
+{
+	background: #e8edff url('table-images/botright.png') right bottom no-repeat;
+}
+#rounded-corner tbody tr:hover td
+{
+	background: #d0dafd;
+}
+
+
+
+
+
+
+/* small*/
+
+
+
+
+
+.rounded-small
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 11px;
+	/*margin: 45px;
+	width: 680px;*/
+	text-align: left;
+	border-collapse: collapse;
+	background-color: red;
+}
+.rounded-small thead th.rounded-f
+{
+	background: #b9c9fe url('table-images/left.png') left -1px no-repeat;
+}
+.rounded-small thead th.rounded-l
+{
+	background: #b9c9fe url('table-images/right.png') right -1px no-repeat;
+}
+.rounded-small th
+{
+	padding: 2px;
+	font-weight: normal;
+	font-size: 12px;
+	color: #039;
+	background: #b9c9fe;
+	height:10px;
+	min-width:5px;
+	border-right: 1px solid #fff;
+}
+.rounded-small td
+{
+	padding: 2px;
+	background: #e8edff;
+	border-top: 1px solid #fff;
+	color: #669;
+	min-height:10px;
+	border-right: 1px solid #fff;
+	font-size: 12px;
+}
+.rounded-small tfoot tr
+{
+height:0px;
+overflow:hidden;
+	
+}
+
+.rounded-small tfoot td.rounded-foot-left
+{
+	background: #e8edff url('table-images/botleft.png') left bottom no-repeat;
+}
+.rounded-small tfoot td.rounded-foot-right
+{
+	background: #e8edff url('table-images/botright.png') right bottom no-repeat;
+}
+.rounded-small tbody tr:hover td
+{
+	background: #d0dafd;
+}
+
+/*========used for search criteria table ==========*/
+.tblsearch  tr{height:28px !important;}
+.tblsearch select{height:25px !important; width:180px;}
+
+.tblsearch td{height:27px !important;}
+
+.tblsearch td input[type="text"]  {
+/*	border: 1px solid white; 
+    -webkit-box-shadow: 
+      inset 0 0 1px  rgba(0,0,0,0.1),
+            0 0 1px rgba(0,0,0,0.1); 
+    -moz-box-shadow: 
+      inset 0 0 1px  rgba(0,0,0,0.1),
+            0 0 1px rgba(0,0,0,0.1); 
+    box-shadow: 
+      inset 0 0 1px  rgba(0,0,0,0.1),
+            0 0 1px rgba(0,0,0,0.1); 
+    padding: 1px;
+    background: rgba(255,255,255,0.5);*/
+    width:170px;height:25px ;}
+
+.tblsearch label{height:27px !important; }
+
+/*========used for search  criteria table ==========*/
+.tblsearch1  tr{height:26px !important;}
+.tblsearch1 select{height:25px !important; width:120px;}
+
+.tblsearch1 td{height:27px !important;}
+.tblsearch1 td input[type="text"]  {
+	/*border: 1px solid white; 
+    -webkit-box-shadow: 
+      inset 0 0 1px  rgba(0,0,0,0.1),
+            0 0 1px rgba(0,0,0,0.1); 
+    -moz-box-shadow: 
+      inset 0 0 1px  rgba(0,0,0,0.1),
+            0 0 1px rgba(0,0,0,0.1); 
+    box-shadow: 
+      inset 0 0 1px  rgba(0,0,0,0.1),
+            0 0 1px rgba(0,0,0,0.1); 
+    padding: 1px;
+    background: rgba(255,255,255,0.5);*/
+    width:120px;height:25px ;}
+
+.tblsearch1 label{height:27px !important;}
+
+
+
+/*========used for search criteria EX table ==========*/
+
+
+.tblsearchex  tr{height:28px !important;}
+.tblsearchex select{height:25px !important; width:250px;}
+
+.tblsearchex td{height:27px !important;}
+.tblsearchex td input[type="text"]  {
+/*	border: 1px solid white; 
+    -webkit-box-shadow: 
+      inset 0 0 1px  rgba(0,0,0,0.1),
+            0 0 1px rgba(0,0,0,0.1); 
+    -moz-box-shadow: 
+      inset 0 0 1px  rgba(0,0,0,0.1),
+            0 0 1px rgba(0,0,0,0.1); 
+    box-shadow: 
+      inset 0 0 1px  rgba(0,0,0,0.1),
+            0 0 1px rgba(0,0,0,0.1); 
+    padding: 1px;
+    background: rgba(255,255,255,0.5);*/
+    width:240px;height:25px ;}
+
+.tblsearchex label{height:27px !important; vertical-align:middle !important; padding:5px;}
+
+
+  
+	
+ 
