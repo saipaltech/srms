@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 public class ReportService extends AutoService{
 
 	public ResponseEntity<Map<String, Object>> getFys() {
-		return Messenger.getMessenger().setData(Map.of("id",18,"label","2078/79","id",19,"label","2079/80","id",20,"label","2080/81")).success();
+		return Messenger.getMessenger().setData(Map.of("id",18,"label","2078/79")).success();
+		//,"id",19,"label","2079/80","id",20,"label","2080/81" ->> Duplicate key id errors
 	}
 	
 	public ResponseEntity<Map<String, Object>> getLocalLevels() {

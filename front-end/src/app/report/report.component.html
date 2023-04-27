@@ -12,11 +12,8 @@
               <div class="row">
                 <div class="col-md-4">
                   <label>Fiscal Year</label>
-                  <select class="form-select form-select-sm">
-                    <option selected>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
+                  <select class="form-select form-select-sm" >
+                    <option *ngFor="let l of fiscalYear" value="{{l.key}}">{{l.value}}</option>
                   </select>
                 </div>
                 <div class="col-md-4">
@@ -32,20 +29,16 @@
               <br>
               <div class="row">
                 <div class="col-md-4">
-                  <label> Select Branch </label>
-                  <ng-select formControlName="lgid" (change)="getBranches()">
-                    <ng-option *ngFor="let l of branches" [value]="l.code">{{
-                      l.name
-                      }}</ng-option>
+                  <label> Select Palika </label>
+                  <ng-select (change)="getllgs()">
+                    <ng-option *ngFor="let l of llgs"  [value]="l.code">{{l.name}}</ng-option>
                   </ng-select>
                 </div>
 
                 <div class="col-md-4">
-                  <label> Select Palika </label>
-                  <ng-select formControlName="lgid" (change)="getBranches()">
-                    <ng-option *ngFor="let l of branches" [value]="l.code">{{
-                      l.name
-                      }}</ng-option>
+                  <label> Select Branch </label>
+                  <ng-select (change)="getBranches()">
+                    <ng-option *ngFor="let i of branches" [value]="i.code"> {{i.name}} </ng-option>
                   </ng-select>
                 </div>
               </div>
@@ -67,122 +60,6 @@
             <button class="btn btn-success btn-sm" type="submit">Show</button> &nbsp;
             <button class="btn btn-danger btn-sm" type="button" (click)="clearButton()">Clear</button>
           </form>  
-          
-          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="cad">
-            <!--table-borderless-->
-            <thead>
-              <tr>
-                <th scope="col">S.N</th>
-                <th scope="col">Palika</th>  
-                <th scope="col">Account Number</th>
-                <th scope="col">Account Name</th>
-                <th scope="col">Voucher No.</th>
-                <th scope="col">TaxPayer</th>
-                <th scope="col">Amount</th>  
-                              
-
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of model; let i = index">
-                <td>{{i+1}}</td>
-                <td>{{ item.palika }}</td>
-                <td>{{ item.accountno }}</td>
-                <td>{{ item.accountname }}</td>
-                <td>{{ item.voucherno }}</td>
-                <td>{{ item.taxpayername }}</td>
-                <td>{{ item.amount }}</td>
-              </tr>
-
-
-            </tbody>
-          </table>
-
-          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="chd">
-            <!--table-borderless-->
-            <thead>
-              <tr>
-                <th scope="col">S.N</th>
-                <th scope="col">Palika</th>  
-                <th scope="col">Account Number</th>
-                <th scope="col">Account Name</th>
-                <th scope="col">Voucher No.</th>
-                <th scope="col">TaxPayer</th>
-                <th scope="col">Amount</th>  
-                              
-
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of model; let i = index">
-                <td>{{i+1}}</td>
-                <td>{{ item.palika }}</td>
-                <td>{{ item.accountno }}</td>
-                <td>{{ item.accountname }}</td>
-                <td>{{ item.voucherno }}</td>
-                <td>{{ item.taxpayername }}</td>
-                <td>{{ item.amount }}</td>
-              </tr>
-
-            </tbody>
-          </table>
-
-          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="vv">
-            <!--table-borderless-->
-            <thead>
-              <tr>
-                <th>S.N</th>
-                <th scope="col">Office Name</th>
-                <th scope="col">Account No.</th>
-                <th scope="col">Transaction Id</th>             
-                <th scope="col">Voucher Date</th>
-                <th scope="col">Taxpayer</th>
-                <th scope="col">Amount</th>
-       
-
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of model; let i = index">
-                <td>{{i+1}}</td>
-                <td>{{ item.officename }}</td>
-                <td>{{ item.accountnumber }}</td>
-                <td>{{ item.transactionid }}</td>
-                <td>{{ item.voucherdate }}</td>
-                <td>{{item.taxpayername}}</td>
-                <td>{{ item.amount }}</td>
-              </tr>
-
-
-            </tbody>
-          </table>
-
-          <table class="display responsive-table w-100 table table-striped datatable" *ngIf="dc">
-            <!--table-borderless-->
-            <thead>
-              <tr>
-                <th>S.N</th>
-                <th scope="col">Palika</th>
-                <th scope="col">Account Number</th>
-                <th scope="col">Debit</th>
-                <th scope="col">Credit</th>
-                <th scope="col">Balance</th>
-
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of model; let i = index">
-                <td>{{i+1}}</td>
-                <td>{{ item.palika }}</td>
-                <td>{{ item.accountname }}[{{ item.accountno }}]</td>
-                <td>{{ item.amountdr }}</td>
-                <td>{{ item.amountcr }}</td>
-                <td>{{ item.balance }}</td>
-              </tr>
-
-
-            </tbody>
-          </table>
 
         </div>
       </div>

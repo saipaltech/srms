@@ -7,13 +7,19 @@ import { ApiService } from '../api.service';
 })
 export class ReportService {
 
-  url="taxpayer-voucher"; 
+  url="report"; 
 
   constructor(private http: ApiService) { 
   }
 
   getBranches() {
-    return this.http.get(this.url+"/get-branch-report");
+    return this.http.get(this.url+"/get-branches");
+  }
+  getFy(){
+    return this.http.get(this.url+"/get-fys")
+  }
+  getllgs(){
+    return this.http.get(this.url+"/get-llgs")
   }
 
 }

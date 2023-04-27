@@ -17,7 +17,6 @@ import { ReportService } from './report.service';
 export class ReportComponent implements OnInit{
 
   formLayout: any;
-
   reportForm!: FormGroup;
   vs = ValidationService;
 
@@ -45,8 +44,34 @@ export class ReportComponent implements OnInit{
       this.type = params['type'];
       this.parameterChange();
     });
-    this.getBranches()
+    this.getFiscalYears();
+    this.getllgs();
+    this.getBranches();
   }
+  
+  fiscalYear:any
+  getFiscalYears(){
+    this.bvs.getFy().subscribe({
+      next: (d) => {        
+        this.fiscalYear = d.data;
+        console.log(d.data)
+      }, error: err => {;
+      }
+    });
+  }
+
+  llgs:any;
+  getllgs(){
+    this.bvs.getllgs().subscribe({
+      next: (d) => {        
+        this.llgs = d.data;
+        console.log(d.data)
+      }, error: err => {
+      }
+    });
+  }
+
+
   type:any;
 
   reportType ="";
@@ -144,26 +169,18 @@ export class ReportComponent implements OnInit{
   }
 
 
-  branches = [
-    { code: 1, name: 'Volvo' },
-    { code: 2, name: 'Saab' },
-    { code: 3, name: 'Opel' },
-    { code: 4, name: 'Audi' },
-];
-
+  branches:any;
   getBranches() {
     // this.branches = undefined;
     // const llgCode = this.reportForm.value['branch'];
-
       this.bvs.getBranches().subscribe({
         next: (d) => {
-          console.log(d)
-          // this.branches = d.data;
+          console.log(d);
+          this.branches = d.data;
           // if (d.data.length == 1) {
           //   this.reportForm.patchValue({ "branch": d.data[0].id });
           // }
         }, error: err => {
-          // console.log(err);
         }
       });
 
