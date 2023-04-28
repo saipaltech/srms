@@ -82,6 +82,8 @@ public class ReportService extends AutoService {
 		
 		condition = condition+" and tx.bankid="+ auth.getBankId();
 		
+		System.out.println(auth.getBankId());
+		
 		if (type.equals("cad")) {
 			repTitle = "Cash Deposit, From:" + request("from") + " To:" + request("to");
 			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
