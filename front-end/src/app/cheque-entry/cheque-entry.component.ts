@@ -8,6 +8,7 @@ import { Router, NavigationExtras, Route } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { ChequeEntryService } from './cheque-entry.service';
 import { ltLocale } from 'ngx-bootstrap/chronos';
+import { AppConfig } from '../app.config';
 
 
 
@@ -51,7 +52,7 @@ export class ChequeEntryComponent implements OnInit {
   approved ="";
   items=new Array();
 
-constructor(private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private modalService: BsModalService, private r: Router,private auth:AuthService){
+constructor(private appconfig:AppConfig,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private modalService: BsModalService, private r: Router,private auth:AuthService){
   const ud = this.auth.getUserDetails();
   if(ud){
     this.dlgid = ud.dlgid;
@@ -473,8 +474,9 @@ createItem(id = null) {
       }else{
         formValue=false;
       }
+      window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-generate?voucherno="+ ks + '&palika=' + upd.lgid, '_blank');         
       // this.istab=1;
-      window.open("/#/cheque-report?voucherno="+ks+'&palika='+upd.lgid+'&formvalue='+formValue, '_blank');
+      // window.open("/#/cheque-report?voucherno="+ks+'&palika='+upd.lgid+'&formvalue='+formValue, '_blank');
       // window.open("/#/report-generate?voucherno="+upd.voucherno+'&palika='+upd.lgid, '_blank')
 
     }, error:err => {
