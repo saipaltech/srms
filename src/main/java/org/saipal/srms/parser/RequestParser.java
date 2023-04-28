@@ -86,10 +86,13 @@ public class RequestParser {
 								int len = ((JSONObject) o).length();
 								if (len == 0) {
 									v = "";
-								} else if (len == 1) {
-									v = (String) jsonBody.getJSONObject(k)
-											.get(jsonBody.getJSONObject(k).names().getString(0));
-								} else {
+								}
+//								else if (len == 1) {
+//									v = (String) jsonBody.getJSONObject(k)
+//											.get(jsonBody.getJSONObject(k).names().getString(0));
+//									System.out.println(jsonBody.getJSONObject(k).names().getString(0).toString());
+//								}
+								else {
 									v = o.toString();
 								}
 							} else {

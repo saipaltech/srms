@@ -90,7 +90,7 @@ public class DaycloseService extends AutoService {
 	public ResponseEntity<Map<String, Object>> submitdayclose() throws JSONException {
 		// TODO Auto-generated method stub
 		String date=request("date");
-		String cbid=request("corebankid");
+//		String cbid=request("corebankid");
 		String lgid=request("lgid");
 		String acno=request("acno");
 		String items=request("selection");
@@ -98,8 +98,9 @@ public class DaycloseService extends AutoService {
 			items = "[" + items + "]";
 		}
 		String corebank=request("corebank");
+		System.out.println(corebank);
 		JSONObject cb = new JSONObject(corebank);
-		System.out.println(cb);
+//		System.out.println(cb);
 		JSONArray jarr = new JSONArray(items);
 		
 		if (jarr.length() > 0) {
