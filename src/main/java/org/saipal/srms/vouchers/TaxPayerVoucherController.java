@@ -236,10 +236,35 @@ public class TaxPayerVoucherController {
 	}
 	
 	@GetMapping("dayclose-details")
-	public ModelAndView getReportDayClose(HttpServletRequest request) {
-		Map<String,Object> data = objService.getReportDetailsDayClose().getBody();
-		
-		return new ModelAndView(data.get("view")+"",Map.of("rdata",data));
+	public void getReportDayClose(HttpServletResponse resp) throws IOException{
+		String reporttype = "1";//rs.request("reporttype");
+		Excel report = rs.getDetails();
+		if (report != null) {
+			if (reporttype.equals("1")) { // htmlreport
+				resp.setContentType("text/html; charset=UTF-8");
+				resp.setCharacterEncoding("UTF-8");
+				try {
+					resp.getWriter().print(report.getHtmlDocument());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else { // excel report
+				Workbook wb = report.getExcel();
+				String fileName = "report.xlsx";
+				resp.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+				resp.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+				try {
+					wb.write(resp.getOutputStream());
+					wb.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} else {
+			resp.getWriter().print("No Data Available.");
+		}
 		
 	}
 	@GetMapping("get-reportf")
