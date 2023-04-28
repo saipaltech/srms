@@ -80,7 +80,7 @@ public class ReportService extends AutoService {
 		if (!branch.isBlank())
 			condition = condition + " and tx.branchid="+branch+" ";
 		
-//		condition = condition+" and tx.bankid="+ auth.getBankId()+" and tx.branchid="+auth.getBranchId()+" ";
+		condition = condition+" and tx.bankid="+ auth.getBankId();
 		
 		if (type.equals("cad")) {
 			repTitle = "Cash Deposit, From:" + request("from") + " To:" + request("to");
@@ -100,7 +100,7 @@ public class ReportService extends AutoService {
 		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Palika")))
 				.addColumn((new Excel().ExcelCell("Account Number")))
 				.addColumn((new Excel().ExcelCell("Account Name")))
-				.addColumn((new Excel().ExcelCell("Voucher No.")))
+				.addColumn((new Excel().ExcelCell("Karobar Sanket")))
 				.addColumn((new Excel().ExcelCell("TaxPayer")))
 				.addColumn((new Excel().ExcelCell("Amount")));
 		excl.addHeadRow(hrow);
@@ -158,6 +158,7 @@ public class ReportService extends AutoService {
 			condition = condition + " and lgid="+palika+" ";
 		if (!branch.isBlank())
 			condition = condition + " and depositbranchid="+branch+" ";
+		condition = condition+" and depositbankid="+ auth.getBankId();
 		condition += " order by officename";
 		String repTitle = "Verified Vouchers, From:" + request("from") + " To:" + request("to");
 		String sql = "select * from bank_deposits " + condition;
@@ -170,7 +171,7 @@ public class ReportService extends AutoService {
 		Excel.excelRow hrow = new Excel().ExcelRow();
 		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Office Name")))
 				.addColumn((new Excel().ExcelCell("Account Number")))
-				.addColumn((new Excel().ExcelCell("Transaction Id")))
+				.addColumn((new Excel().ExcelCell("Karobar Sanket")))
 				.addColumn((new Excel().ExcelCell("Voucher No.")))
 				.addColumn((new Excel().ExcelCell("Voucher Date")))
 				.addColumn((new Excel().ExcelCell("Amount")));
@@ -229,7 +230,7 @@ public class ReportService extends AutoService {
 			condition = condition + " and dc.lgid="+palika+" ";
 		if (!branch.isBlank())
 			condition = condition + " and dc.branchid="+branch+" ";
-		condition = condition+" and dc.bankid="+ auth.getBankId()+" and dc.branchid="+auth.getBranchId()+" ";
+		condition = condition+" and dc.bankid="+ auth.getBankId();
 		condition = condition+ " order by palika ";
 		String repTitle = "Day Close, From:" + request("from") + " To:" + request("to");
 		String sql = "select dc.*, lls.namenp as palika, dcd.karobarsanket, (dc.amountcr-dc.amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid join dayclose_details dcd on dc.id = dcd.dcid "
@@ -242,7 +243,7 @@ public class ReportService extends AutoService {
 		Excel.excelRow hrow = new Excel().ExcelRow();
 		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Palika")))
 		.addColumn((new Excel().ExcelCell("Account Number")))
-		.addColumn((new Excel().ExcelCell("Voucher Number")))
+		.addColumn((new Excel().ExcelCell("Karobar Sanket")))
 		.addColumn((new Excel().ExcelCell("Debit")))
 		.addColumn((new Excel().ExcelCell("Credit"))).addColumn((new Excel().ExcelCell("Balance")))
 		.addColumn((new Excel().ExcelCell("Details")));

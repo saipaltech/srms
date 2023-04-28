@@ -258,7 +258,7 @@ public class TaxPayerVoucherController {
 		Map<String,Object> revd = objService.getRevenueDetails().getBody();
 //		Map<String,Object> rev1= (Map)((List)revd.get("data")).get(0);
 		Map<String,Object> data = Map.of("data",dt,"revd",revd.get("data"));
-		if(dt.get("ttype").toString().equals("2")) {
+		if((dt.get("ttype")+"").equals("2")) {
 			return new ModelAndView("cheque-bank-copy",data);
 		}else {
 			return new ModelAndView("voucher-bank-copy",data);

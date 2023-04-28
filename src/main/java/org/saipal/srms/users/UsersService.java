@@ -263,7 +263,7 @@ public class UsersService extends AutoService {
 	        if (!matcher.matches()) {
 	        	return Messenger.getMessenger().setMessage("Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.").error();
 	        } 
-			String sql = "update users set password = ? where id=" + id;
+			String sql = "update users set password = ?, pwchangedate=NULL where id=" + id;
 			DbResponse rowEffect = db.execute(sql, Arrays.asList(pe.encode(password)));
 			if (rowEffect.getErrorNumber() == 0) {
 				return Messenger.getMessenger().setMessage("Password Changed Successfully").success();
