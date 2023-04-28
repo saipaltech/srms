@@ -80,7 +80,7 @@ public class ReportService extends AutoService {
 		if (!branch.isBlank())
 			condition = condition + " and tx.branchid="+branch+" ";
 		
-//		condition = condition+" and tx.bankid="+ auth.getBankId()+" and tx.branchid="+auth.getBranchId()+" ";
+		condition = condition+" and tx.bankid="+ auth.getBankId();
 		
 		if (type.equals("cad")) {
 			repTitle = "Cash Deposit, From:" + request("from") + " To:" + request("to");
@@ -158,6 +158,7 @@ public class ReportService extends AutoService {
 			condition = condition + " and lgid="+palika+" ";
 		if (!branch.isBlank())
 			condition = condition + " and depositbranchid="+branch+" ";
+		condition = condition+" and depositbankid="+ auth.getBankId();
 		condition += " order by officename";
 		String repTitle = "Verified Vouchers, From:" + request("from") + " To:" + request("to");
 		String sql = "select * from bank_deposits " + condition;

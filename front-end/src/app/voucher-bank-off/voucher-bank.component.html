@@ -382,7 +382,7 @@
     <br>
     प्रयोजन: {{details.purpose}}
     <br>
-    कारोबार संकेत : {{details.karobarsanket}}
+    कारोबार संकेत : {{ details.approved === 1 ? details.karobarsanket : 'To be Approved' }}
     <table class="table table-striped table-bordered"> 
       <thead>
         <tr>

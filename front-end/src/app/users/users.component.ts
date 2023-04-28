@@ -96,7 +96,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     let upd = this.model;
     if (id != "" && id != null) {
       // this.resetPawsswordForm.setValue({id: this.createResetItem,});
-      alert('here')
+      // alert('here')
       this.RS.resetPassword(id, upd).subscribe({
         next: (result: any) => {
           this.toastr.success(result.message, 'Success');
