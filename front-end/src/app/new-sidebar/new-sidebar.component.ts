@@ -17,35 +17,36 @@ export class NewSidebarComponent {
     this.http.get("users/get-front-menu").subscribe({
       next: (dt) => {
         this.navcontent = dt;
-        this.navcontent.push({
-          name: "Report",
-          link: '/report',
-          icon: "bi bi-newspaper ico stopClick",
-          childs:[
-            {
-              name: "Cash Deposit",
-              link: '/report',
-              queryparameter:{ type: 'cad' },
-              icon: "bi bi-circle",
-            }, {
-              name: "Cheque Deposit",
-              link: '/report',
-              queryparameter:{ type: 'chd' },
-              icon: "bi bi-circle",
-            },{
-              name: "Verified Voucher",
-              link: '/report',
-              queryparameter:{ type: 'vv' },
-              icon: "bi bi-circle",
+        if(this.navcontent){
+          this.navcontent.forEach((mnu:any) => {
+            if(mnu.link=='report'){
+              mnu.childs = [
+                {
+                  name: "Cash Deposit",
+                  link: '/report',
+                  queryparameter:{ type: 'cad' },
+                  icon: "bi bi-circle",
+                }, {
+                  name: "Cheque Deposit",
+                  link: '/report',
+                  queryparameter:{ type: 'chd' },
+                  icon: "bi bi-circle",
+                },{
+                  name: "Verified Voucher",
+                  link: '/report',
+                  queryparameter:{ type: 'vv' },
+                  icon: "bi bi-circle",
+                }
+                ,{
+                  name: "Day Close",
+                  link: '/report',
+                  queryparameter:{ type: 'dc' },
+                  icon: "bi bi-circle",
+                }
+              ]
             }
-            ,{
-              name: "Day Close",
-              link: '/report',
-              queryparameter:{ type: 'dc' },
-              icon: "bi bi-circle",
-            }
-          ]
-        });
+          });
+        }
       }, error: err => {
         console.log(err);
       }

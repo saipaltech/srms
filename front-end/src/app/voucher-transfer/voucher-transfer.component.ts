@@ -286,7 +286,7 @@ getRevenue(){
 
   resetForm() {
     this.bankForm = this.fb.group(this.formLayout);
-    this.showForm = !this.showForm;
+    this.srchForm.patchValue({"srch_term":""});
     this.transDetails = "";
   }
 

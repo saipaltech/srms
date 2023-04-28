@@ -197,7 +197,6 @@ ccs:any;
           this.toastr.success(result.message, 'Success');
           this.resetForm();
           //this.bankForm = this.fb.group(this.formLayout);
-          this.srchForm.patchValue({'srch_term':""});
           this.items=[];
         }, error: err => {
           this.toastr.error(err.error.message, 'Error');
@@ -226,6 +225,7 @@ ccs:any;
 
   resetForm() {
     this.bankForm = this.fb.group(this.formLayout);
+    this.srchForm.patchValue({'srch_term':""});
     this.bankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
       this.getPalikaDetails();
       this.getBankAccounts();

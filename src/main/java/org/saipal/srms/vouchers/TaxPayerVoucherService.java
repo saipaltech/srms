@@ -793,8 +793,8 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "join collectioncenter cc on cc.id = bd.collectioncenterid  "
 				+"join bankaccount ba on ba.id = bd.bankorgid "
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid " 
-				+ "where bd.karobarsanket=?";
-		Map<String, Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno));
+				+ "where bd.karobarsanket=? and bankid=?";
+		Map<String, Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno,auth.getBankId()));
 		if(t==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
 		}
@@ -961,8 +961,8 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid, "
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid  "
-				+ " join bankaccount on bankaccount.id=bd.bankorgid join admin_local_level_structure lls on lls.id = bd.lgid " + "where bd.karobarsanket=? ";
-		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(voucherno));
+				+ " join bankaccount on bankaccount.id=bd.bankorgid join admin_local_level_structure lls on lls.id = bd.lgid " + "where bd.karobarsanket=? and bankid=?";
+		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(voucherno,auth.getBankId()));
 		if(data==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
 		}

@@ -237,7 +237,7 @@ public class UsersService extends AutoService {
 		exclude.add("approve-voucher");
 		String sql = "";
 		if (auth.hasPermissionOnly("*")) {
-			sql = "select * from front_menu order by morder";
+			sql = "select * from front_menu where link in ('bank','users') order by morder";
 			return ResponseEntity.ok(db.getResultListMap(sql));
 		}
 		if (auth.hasPermissionOnly("bankhq")) {
