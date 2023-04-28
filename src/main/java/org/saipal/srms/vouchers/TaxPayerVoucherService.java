@@ -174,6 +174,26 @@ public class TaxPayerVoucherService extends AutoService {
 			model.chequeamount = "0";
 		}
 		
+		Tuple tb = db.getSingleResult("select accounttype from bankaccount where id=?",Arrays.asList(model.bankorgid));
+		int bact = Integer.parseInt(tb.get(0)+"");
+		if(jarr.length()>0) {
+			for (int i = 0; i < jarr.length(); i++) {
+				JSONObject objects = jarr.getJSONObject(i);
+				if(bact==10) {
+					if(!(objects.getInt("rc")>33300)) {
+						return Messenger.getMessenger().setMessage("Revenuecode and Bank Account are not compatible.").error();
+					}
+				}
+				if(bact==9) {
+					if(!(objects.getInt("rc")<=33300)) {
+						return Messenger.getMessenger().setMessage("Revenuecode and Bank Account are not compatible.").error();
+					}
+				}
+			}
+		}else {
+			return Messenger.getMessenger().setMessage("Amount not set.").success();
+		}
+		
 		String id = db.newIdInt();
 		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,amountcr,depositbankid,depositbranchid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),?,?,?)";
 		DbResponse rowEffect = db.execute(sql,

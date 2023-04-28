@@ -168,7 +168,11 @@ getRevenue(){
         next:(d)=>{
           this.acs = d.data;
           if(d.data.length==1){
-            this.bankForm.patchValue({"bankorgid":d.data[0].id});
+            // console.log(d.data[0]);
+            setTimeout(() => {
+              this.bankForm.patchValue({"bankorgid":d.data[0].id});
+            }, 0);
+           
           }
         },error:err=>{
           // console.log(err);
