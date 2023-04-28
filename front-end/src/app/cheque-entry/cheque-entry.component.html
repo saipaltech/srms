@@ -342,10 +342,12 @@
       <!--table-borderless-->
       <thead>
         <tr>
-          <th scope="col">Voucher No.</th>
+        
           <th scope="col">Date</th>
           <th scope="col">Tax Payer Name</th>
           <th scope="col">Account No</th>
+          <th scope="col">Deposit slip No.</th>
+          <th scope="col">Karobar Sanket</th>
           <th scope="col">Amount</th>
           <th scope="col">Status</th>
           <th scope="col">Action</th>
@@ -353,21 +355,26 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of lists; let i = index">
-          <td>{{ item.voucherno }}</td>
+        
           <td>{{ item.date }}</td>
           <td>{{ item.taxpayername }}</td>
           <td>{{ item.accountno }}</td>
+          <td>{{ item.voucherno }}</td>
+          <td >{{ item.cheque_text }}</td>
           <td>{{ item.amount }}</td>
           <td *ngIf="item.cstatus == 0"><span class="badge text-bg-danger">Not Cleared</span></td>
           <td *ngIf="item.cstatus == 1"><span class="badge text-bg-primary"> Cleared</span></td>       
-          <td *ngIf="item.cstatus == 1"><button class="btn btn-success btn-sm"  title="View" (click)="openModal(template, item.id,item.cstatus)"><i class="bi bi-eye-fill"></i></button></td>
-          <td style="width: 200px;" *ngIf="item.cstatus == 0">
-            <button class="btn btn-success btn-sm" (click)="openModal(template, item.id,item.cstatus)" title="View"><i class="bi bi-eye-fill"></i></button>
+          <td ><button  class="btn btn-success btn-sm"  title="View" (click)="openModal(template, item.id,item.cstatus)">
+            <i class="bi bi-eye-fill"></i></button>
+          &nbsp;  <button *ngIf="item.cstatus == 1 || item.chequetype==2" class="btn btn-success btn-sm" (click)="showSlip(item.lgid,item.karobarsanket)" title="View Deposit Slip"><i
+              class="bi bi-file-text"></i></button> &nbsp;
+          <!-- <td style="width: 160px;" > -->
+            <!-- <button *ngIf="item.cstatus == 0" class="btn btn-success btn-sm" (click)="openModal(template, item.id,item.cstatus)" title="View"><i class="bi bi-eye-fill"></i></button>
+            &nbsp; -->
+            <button *ngIf="item.cstatus == 0" class="btn btn-info btn-sm" (click)="clearCheque(item.id)" title="Cheque Cleared"><i class="bi bi-arrow-return-right"></i></button>
             &nbsp;
-            <button class="btn btn-info btn-sm" (click)="clearCheque(item.id)" title="Cheque Cleared"><i class="bi bi-arrow-return-right"></i></button>
-            &nbsp;
-            <button class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i></button>
-            &nbsp;  <button class="btn btn-success btn-sm" (click)="getUpdateItem(item.id)" title="Edit" href="javascript:void(0)"
+            <button *ngIf="item.cstatus == 0" class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i></button>
+            &nbsp;  <button *ngIf="item.cstatus == 0" class="btn btn-success btn-sm" (click)="getUpdateItem(item.id)" title="Edit" href="javascript:void(0)"
             ><i class="bi bi-pencil-square"></i
           ></button>
           </td>

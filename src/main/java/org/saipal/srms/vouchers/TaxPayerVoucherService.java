@@ -115,7 +115,7 @@ public class TaxPayerVoucherService extends AutoService {
 			condition += " and tx.deposituserid='"+auth.getUserId()+"'";
 		}
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(tx.id as char) as id,cast(date as date) as date,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,chequeamount as amount,  ba.accountnumber as accountno")
+				.select("cast(tx.id as char) as id,tx.chequetype,cast(date as date) as date,(case when tx.cstatus='1' OR tx.chequetype='2' then karobarsanket else 'To be Cleared' end) as cheque_text,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,chequeamount as amount,  ba.accountnumber as accountno")
 				.sqlBody("from " + table +  " tx join bankaccount ba on ba.id=tx.bankorgid " +condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -739,7 +739,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> generateReport() {
 		String voucher = request("voucherno");
 		String palika = request("palika");
-		String sql = "select  tv.approved,(case when tv.approved='1' then dbo.eng2nep(karobarsanket) else 'To be Approved' end) as approved_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amountcr as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amountcr) as amount,dbo.eng2nep(ba.accountnumber) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date from "
+		String sql = "select  tv.approved,tv.ttype,tv.chequetype,(case when tv.approved='1' then dbo.eng2nep(karobarsanket) else 'To be Approved' end) as approved_text,(case when tv.cstatus='1' OR tv.chequetype='2' then dbo.eng2nep(karobarsanket) else 'To be Cleared' end) as cheque_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amountcr as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amountcr) as amount,dbo.eng2nep(ba.accountnumber) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date from "
 				+ "taxvouchers tv " 
 				+ "left join bankaccount ba on ba.id=tv.bankorgid "
 				+ "left join bankinfo bi on bi.id=tv.bankid "

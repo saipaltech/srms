@@ -303,7 +303,8 @@
           <td *ngIf="item.approved == 1"><span class="badge text-bg-primary"> Approved</span></td>  
           <td *ngIf="item.approved == 1"><button class="btn btn-success btn-sm" (click)="openModal(template, item.id)"><i class="bi bi-eye-fill"></i></button>
             &nbsp; <button *ngIf="item.approved == 1" class="btn btn-success btn-sm" (click)="showSlip(item.lgid,item.karobarsanket)" title="View Deposit Slip"><i
-              class="bi bi-file-text"></i></button></td>
+              class="bi bi-file-text"></i></button>
+            </td>
           <td style="width: 120px;" *ngIf="item.approved == 0"><button class="btn btn-success btn-sm" (click)="openModal(template, item.id)"><i class="bi bi-eye-fill"></i></button>
             &nbsp;&nbsp;
             <button class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i></button></td>
