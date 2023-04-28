@@ -96,7 +96,7 @@ ccs:any;
         this.ccs = d.data;
         setTimeout(()=>{
           if(this.transDetails){
-            this.bankForm.patchValue({"collectioncenterid":this.transDetails.collectioncenterid});
+            // this.bankForm.patchValue({"collectioncenterid":this.transDetails.collectioncenterid});
           }
         });
         
@@ -263,7 +263,7 @@ ccs:any;
             this.istab = 2;
           }
          
-          // this.bankForm.patchValue({'collectioncenterid':this.transDetails.collectioncenterid,'accountno':this.transDetails.accountno});
+          this.bankForm.patchValue({'collectioncenterid':this.transDetails.collectioncenterid,'accountno':this.transDetails.accountno});
         }, error: error => {
           // console.log(error);
           // alert(5)
