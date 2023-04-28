@@ -54,6 +54,10 @@ public class BankVoucherService extends AutoService {
 				sort = request("sortKey") + " " + request("sortDir");
 			}
 		}
+		condition = condition+ " and depositbranchid="+auth.getBranchId()+" and depositbankid="+auth.getBankId()+" ";
+		if (!auth.canFromUserTable("4")) {
+			condition += " and deposituserid='"+auth.getUserId()+"'";
+		}
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
@@ -126,8 +130,8 @@ public class BankVoucherService extends AutoService {
 		if(Float.parseFloat(amount)!=Float.parseFloat(actualAmount)) {
 			return Messenger.getMessenger().setMessage("Deposited amount and Voucher amount does not match.").error();
 		}
-		 sql = "UPDATE " + table + " set depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,creatorid=?,approverid=?,approved=1 where transactionid=? and bankid=?";
-		 rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks,auth.getUserId(),auth.getUserId(),model.transactionid,auth.getBankId()));
+		 sql = "UPDATE " + table + " set depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,deposituserid=?,approverid=?,approved=1, depositbankid=?,depositbranchid=? where transactionid=? and bankid=?";
+		 rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks,auth.getUserId(),auth.getUserId(),auth.getBankId(), auth.getBranchId(),model.transactionid,auth.getBankId()));
 		//System.out.println(rowEffect.getErrorNumber());
 		if (rowEffect.getErrorNumber() == 0) {
 			try {

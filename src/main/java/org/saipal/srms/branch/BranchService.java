@@ -53,10 +53,10 @@ public class BranchService extends AutoService {
 			}
 		}
 		
-		condition = condition+ " and branchid="+auth.getBranchId()+" and bankid="+auth.getBankId()+" ";
-		if (auth.canFromUserTable("2")) {
-			condition += " and deposituserid='"+auth.getUserId()+"'";
-		}
+//		condition = condition+ " and depositbranchid="+auth.getBranchId()+" and depositbankid="+auth.getBankId()+" ";
+//		if (!auth.canFromUserTable("4")) {
+//			condition += " and deposituserid='"+auth.getUserId()+"'";
+//		}
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)

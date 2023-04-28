@@ -1080,7 +1080,11 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if (sort.isBlank()) {
 			sort = "date desc";
 		}
-
+		
+		condition = condition+ " and depositbranchid="+auth.getBranchId()+" and depositbankid="+auth.getBankId()+" ";
+		if (!auth.canFromUserTable("4")) {
+			condition += " and deposituserid='"+auth.getUserId()+"'";
+		}
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
 				.select("cast(bd.id as varchar) as id, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno, "

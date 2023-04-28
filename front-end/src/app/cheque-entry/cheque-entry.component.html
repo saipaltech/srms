@@ -361,7 +361,7 @@
           <td *ngIf="item.cstatus == 0"><span class="badge text-bg-danger">Not Cleared</span></td>
           <td *ngIf="item.cstatus == 1"><span class="badge text-bg-primary"> Cleared</span></td>       
           <td *ngIf="item.cstatus == 1"><button class="btn btn-success btn-sm"  title="View" (click)="openModal(template, item.id,item.cstatus)"><i class="bi bi-eye-fill"></i></button></td>
-          <td style="width: 160px;" *ngIf="item.cstatus == 0">
+          <td style="width: 200px;" *ngIf="item.cstatus == 0">
             <button class="btn btn-success btn-sm" (click)="openModal(template, item.id,item.cstatus)" title="View"><i class="bi bi-eye-fill"></i></button>
             &nbsp;
             <button class="btn btn-info btn-sm" (click)="clearCheque(item.id)" title="Cheque Cleared"><i class="bi bi-arrow-return-right"></i></button>
