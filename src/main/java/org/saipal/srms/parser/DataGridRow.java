@@ -2,9 +2,7 @@ package org.saipal.srms.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
-@Data
 public class DataGridRow {
 	List<String> values;
 	List<String> keys;
@@ -25,5 +23,8 @@ public class DataGridRow {
 
 	public String getValue(int colIndex) {
 		return values.get(colIndex);
+	}
+	public List<String> getKeys(){
+		return this.keys;
 	}
 }

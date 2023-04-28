@@ -265,4 +265,9 @@ public class TaxPayerVoucherController {
 		}
 		
 	}
+	
+	@GetMapping("get-branch-report")
+	public ResponseEntity<Map<String, Object>> getBranchReport(HttpServletRequest request){
+		return objService.getBranchForReport();
+	}
 }
