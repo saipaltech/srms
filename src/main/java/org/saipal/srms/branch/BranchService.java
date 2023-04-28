@@ -52,6 +52,11 @@ public class BranchService extends AutoService {
 				sort = request("sortKey") + " " + request("sortDir");
 			}
 		}
+		
+		condition = condition+ " and branchid="+auth.getBranchId()+" and bankid="+auth.getBankId()+" ";
+		if (auth.canFromUserTable("2")) {
+			condition += " and deposituserid='"+auth.getUserId()+"'";
+		}
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
