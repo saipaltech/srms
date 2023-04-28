@@ -53,7 +53,7 @@ getEdit(id: string) {
 }
 
 getBankAccounts(llgCode: any) {
-  return this.http.get(this.url+"/get-bank-accounts-off?llgcode="+llgCode);
+  return this.http.get(this.url+"/get-bank-accounts?llgcode="+llgCode);
 }
 
 getBankAccountsOff(llgCode: any,vid:any) {
