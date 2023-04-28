@@ -56,8 +56,7 @@ public class SecurityConfig {
 									cp + "/",
 									cp + "/taxpayer-voucher/report-generate",
 									cp + "/web/**",
-									cp + "/users/change-password-login", 
-									cp + "/taxpayer-voucher/get-report",
+									cp + "/users/change-password-login",
 									cp + "/taxpayer-voucher/dayclose-details")
 							.permitAll()
 							.anyRequest()

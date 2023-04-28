@@ -50,7 +50,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				appUri.startsWith("/auth/api-login") ||
 				appUri.startsWith("/web") ||
 				appUri.startsWith("/users/change-password-login") ||
-				appUri.startsWith("/taxpayer-voucher/get-report") ||
 				appUri.startsWith("/taxpayer-voucher/dayclose-details")
 				) {
 			return true;

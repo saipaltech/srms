@@ -873,9 +873,10 @@ public class Excel {
 
 		StringBuilder logoInfo = new StringBuilder();
 
-		logoInfo.append("<div class=\"logo\">").append("<img src=\"")
+		logoInfo.append("<div class=\"logo\">")
+		//.append("<img src=\"")
 				// .append(session.session("baseUrl"))
-				.append("/css/Emblem_of_Nepal.svg\"></div>").append("<div class=\"anusuchi\" contenteditable='true'>")
+				.append("</div>").append("<div class=\"anusuchi\" contenteditable='true'>")
 				// .append(lService.wds(mAnusuchi))
 				.append("</div>").append("<div class=\"orginfo\">").append(orgname).append("</div>");
 

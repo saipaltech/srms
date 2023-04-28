@@ -60,6 +60,12 @@ public class ReportService extends AutoService {
 		return excl;
 
 	}
+	private String getHeaderString(String title) {
+		String repTitle = "<span>SuTRA Revenue Module: Bank Interface</sapan> <br/>";
+		repTitle += "<span>"+db.getSingleResult("select namenp from bankinfo where id="+auth.getBankId()).get(0)+"</span><br/>";
+		repTitle += "<span>"+db.getSingleResult("select name from branches where id="+auth.getBranchId()).get(0)+"</span><br/>";
+		return repTitle+title;
+	}
 
 	private Excel getCadChd(Excel excl) {
 		String startDate = request("from").replace("-", "");
@@ -68,7 +74,7 @@ public class ReportService extends AutoService {
 		String fy= request("fy")+"";
 		String palika= request("palika")+"";
 		String branch= request("branch")+"";
-		String repTitle = "";
+		String repTitle="";
 		String sql = "";
 //		String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "' and tx.lgid="+palika+" and tx.fyid="+fy+ " and tx.branchid="+branch;
 		String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "'";
@@ -85,11 +91,11 @@ public class ReportService extends AutoService {
 		System.out.println(auth.getBankId());
 		
 		if (type.equals("cad")) {
-			repTitle = "Cash Deposit, From:" + request("from") + " To:" + request("to");
+			repTitle = getHeaderString("Cash Deposit, From:" + request("from") + " To:" + request("to"));
 			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 					+ condition + " and tx.approved=1 order by palika, ba.accountnumber";
 		} else if (type.equals("chd")) {
-			repTitle = "Cheque Deposit, From:" + request("from") + " To:" + request("to");
+			repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
 			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
 					+ condition + " and tx.cstatus=1 order by palika, accountno";
 		}
