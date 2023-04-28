@@ -127,7 +127,7 @@ public class TaxPayerVoucherService extends AutoService {
 	public ResponseEntity<Map<String, Object>> getSpecific(String id) {
 		String sql = "select cast(bd.id as varchar) as id,karobarsanket, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid,"
-				+ "amountcr as amount, ba.accountnumber as accountno ,bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
+				+ "amountcr as amount, ba.accountnumber as accountno ,bd.purpose, bd.approved ,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
 				+ "from taxvouchers as bd "
 				+ "join collectioncenter cc on cc.id = bd.collectioncenterid  "
 				+" join bankaccount ba on ba.id = bd.bankorgid "
