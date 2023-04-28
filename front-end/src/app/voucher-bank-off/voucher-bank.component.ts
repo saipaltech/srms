@@ -404,7 +404,8 @@ createItem(id = null) {
       this.getList();
       let ks=result.data.karobarsanket;
       upd.approved=result.data.approved;
-      window.open("/#/report-generate?voucherno="+ks+'&palika='+upd.lgid, '_blank')
+      window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-generate?voucherno="+ ks + '&palika=' + upd.lgid, '_blank')          
+      // window.open("/#/report-generate?voucherno="+ks+'&palika='+upd.lgid, '_blank')
     }, error:err => {
       this.toastr.error(err.error.message, 'Error');
     }
