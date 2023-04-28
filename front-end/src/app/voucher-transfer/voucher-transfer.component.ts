@@ -45,15 +45,11 @@ export class VoucherTransferComponent {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id: [],
-     
       remarks: ['', Validators.required],
       revenuecode: [''],
       lgid:[''],
       collectioncenterid:[''],
       bankorgid:['']
-
-
-
     }
     this.bankForm = fb.group(this.formLayout)
 
@@ -166,8 +162,9 @@ getRevenue(){
   getBankAccounts(){
     // this.acs  = undefined;
     const llgCode = this.bankForm.value['lgid'];
+    const id=this.transDetails.id;
     if(llgCode){
-      this.RS.getBankAccounts(llgCode).subscribe({
+      this.RS.getBankAccountsOff(llgCode,id).subscribe({
         next:(d)=>{
           this.acs = d.data;
           if(d.data.length==1){

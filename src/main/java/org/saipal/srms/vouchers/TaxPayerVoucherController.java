@@ -121,6 +121,10 @@ public class TaxPayerVoucherController {
 	public ResponseEntity<String> getBankAccounts() {
 		return objService.getBankAccounts();
 	}
+	@GetMapping("get-bank-accounts-off")
+	public ResponseEntity<String> getBankAccountsOff() {
+		return objService.getBankAccountsOff();
+	}
 	
 	
 	

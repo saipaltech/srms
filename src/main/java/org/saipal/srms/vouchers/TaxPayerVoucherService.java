@@ -793,7 +793,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "join collectioncenter cc on cc.id = bd.collectioncenterid  "
 				+"join bankaccount ba on ba.id = bd.bankorgid "
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid " 
-				+ "where bd.karobarsanket=? and bankid=?";
+				+ "where bd.karobarsanket=? and bd.bankid=?";
 		Map<String, Object> t = db.getSingleResultMap(sql,Arrays.asList(voucherno,auth.getBankId()));
 		if(t==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
@@ -845,6 +845,25 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			return Messenger.getMessenger().setMessage("Cannot update record.Already Day closed.").error();
 		}
 		JSONArray jarr = new JSONArray(voucher);
+		Tuple tb = db.getSingleResult("select accounttype from bankaccount where id=?",Arrays.asList(acno));
+		int bact = Integer.parseInt(tb.get(0)+"");
+		if(jarr.length()>0) {
+			for (int i = 0; i < jarr.length(); i++) {
+				JSONObject objects = jarr.getJSONObject(i);
+				if(bact==10) {
+					if(!(objects.getInt("rc")>33300)) {
+						return Messenger.getMessenger().setMessage("Revenuecode and Bank Account are not compatible.").error();
+					}
+				}
+				if(bact==9) {
+					if(!(objects.getInt("rc")<=33300)) {
+						return Messenger.getMessenger().setMessage("Revenuecode and Bank Account are not compatible.").error();
+					}
+				}
+			}
+		}else {
+			return Messenger.getMessenger().setMessage("Amount not set.").success();
+		}
 		String sql = "select  top 1 *,cast((format(getdate(),'yyyyMMdd')) as numeric) as today from "+table+" where id=? and bankid=? and branchid=?";
 		Map<String,Object> t = db.getSingleResultMap(sql,Arrays.asList(id,auth.getBankId(),auth.getBranchId()));
 		if(t==null) {
@@ -855,7 +874,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		}
 		if((t.get("approved")+"").equals("0")) {
 			if((t.get("today")+"").equals(t.get("dateint")+"")) {
-				if(!((t.get("lgid")+"").equals(lgid) || (t.get("bankorgid")+"").equals(acno))) {
+				if(!((t.get("lgid")+"").equals(lgid) && (t.get("bankorgid")+"").equals(acno))) {
 					//same day palika change
 					db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
 					db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
@@ -886,7 +905,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 						return Messenger.getMessenger().setMessage("Already used voucher").error();
 					}else {
 						if((t.get("today")+"").equals(t.get("dateint")+"")) {
-							if(!((t.get("lgid")+"").equals(lgid) || (t.get("bankorgid")+"").equals(acno))) {
+							if(!((t.get("lgid")+"").equals(lgid) && (t.get("bankorgid")+"").equals(acno))) {
 								//same day palika change
 								JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount,lgid,ccid,acno,voucher);
 								if(ups!=null) {
@@ -961,7 +980,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid, "
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
 				+ "from taxvouchers as bd  join collectioncenter cc on cc.id = bd.collectioncenterid  "
-				+ " join bankaccount on bankaccount.id=bd.bankorgid join admin_local_level_structure lls on lls.id = bd.lgid " + "where bd.karobarsanket=? and bankid=?";
+				+ " join bankaccount on bankaccount.id=bd.bankorgid join admin_local_level_structure lls on lls.id = bd.lgid " + "where bd.karobarsanket=? and bd.bankid=?";
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(voucherno,auth.getBankId()));
 		if(data==null) {
 			return Messenger.getMessenger().setMessage("No such voucher found.").error();
@@ -1380,5 +1399,34 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 //        branches.add(branch4);
 //        return branches;
 		return ResponseEntity.ok(data);
+	}
+
+	public ResponseEntity<String> getBankAccountsOff() {
+		String llgCode = request("llgcode");
+		String vdid = request("id");
+		if (llgCode.isBlank()) {
+			return ResponseEntity.ok("{\"status\":0,\"message\":\"Local Level & Revenuecode is required\"}");
+		}
+		List<Tuple> d = db.getResultList(
+				"select ba.accountname,ba.accountnumber,ba.id from bankaccount ba where ba.bankid=? and ba.lgid=? and ba.accounttype=(select b.accounttype from taxvouchers t join bankaccount b on b.id=t.bankorgid where t.id=?) order by accounttype ",
+				Arrays.asList(auth.getBankId(), llgCode,vdid));
+		if (d.size() > 0) {
+			try {
+				JSONObject j = new JSONObject();
+				JSONArray dt = new JSONArray();
+				for (Tuple t : d) {
+					dt.put(Map.of("acno", t.get("accountnumber") + "", "name", t.get("accountname"), "id",
+							t.get("id") + ""));
+				}
+				j.put("status", 1);
+				j.put("message", "Success");
+				j.put("data", dt);
+				return ResponseEntity.ok(j.toString());
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Bank A/C Found \"}");
 	}
 }
