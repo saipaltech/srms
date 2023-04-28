@@ -486,6 +486,9 @@ createItem(id = null) {
   }
 
 }
+showSlip(lgid:any,karobar:any){
+  window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-generate?voucherno="+karobar+"&palika="+lgid, "_blank");
+}
 
 }
 
