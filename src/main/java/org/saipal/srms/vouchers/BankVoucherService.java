@@ -257,6 +257,10 @@ public class BankVoucherService extends AutoService {
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
 		return Messenger.getMessenger().setData(data).success();
 	}
+
+	public ResponseEntity<Map<String, Object>> saveBankVoucher() {
+		return getTransDetails();
+	}
 	
 	
 
