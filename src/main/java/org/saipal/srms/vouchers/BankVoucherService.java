@@ -126,8 +126,11 @@ public class BankVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("Already submitted voucher").error();
 		}
 		String amount = model.amount;
-		String actualAmount = db.getSingleResult("select amount from "+table+" where transactionid=?",Arrays.asList(model.transactionid)).get(0)+"";
-		if(Float.parseFloat(amount)!=Float.parseFloat(actualAmount)) {
+		Tuple selData = db.getSingleResult("select amount,usestatus from "+table+" where transactionid=?",Arrays.asList(model.transactionid));
+		if(!(selData.get("usestatus")+"").equals("0")) {
+			return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
+		}
+		if(Float.parseFloat(amount)!=Float.parseFloat(t.get("amount")+"")) {
 			return Messenger.getMessenger().setMessage("Deposited amount and Voucher amount does not match.").error();
 		}
 		 sql = "UPDATE " + table + " set depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,deposituserid=?,approverid=?,approved=1, depositbankid=?,depositbranchid=? where transactionid=? and bankid=?";
