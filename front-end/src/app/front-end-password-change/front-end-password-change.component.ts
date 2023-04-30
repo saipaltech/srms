@@ -49,7 +49,7 @@ export class FrontEndPasswordChangeComponent {
               this.notify.success(data.message);
               this.router.navigate(['/login']);
         },error:err=>{
-          this.notify.error(err.message);
+          this.notify.error(err.error.message);
                   this.disabled = false;
         }});
   }

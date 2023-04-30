@@ -172,9 +172,6 @@ export class ReportComponent implements OnInit{
       this.bvs.getBranches().subscribe({
         next: (d) => {
           this.branches = d.data;
-          if (d.data.length == 1) {
-            this.reportForm.patchValue({ "branches": d.data[0].id });
-          }
         }, error: err => {
         }
       });
@@ -188,11 +185,6 @@ export class ReportComponent implements OnInit{
     this.bvs.getllgs().subscribe({
       next: (d) => {        
         this.llgs = d.data;
-        console.log(d.data[0].id)
-        if (d.data.length == 1) {
-          // console.log(d.data[0].id)
-          this.reportForm.patchValue({ "palika": d.data[0].id });
-        }
       }, error: err => {
       }
     });

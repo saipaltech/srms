@@ -126,8 +126,11 @@ public class BankVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("Already submitted voucher").error();
 		}
 		String amount = model.amount;
-		String actualAmount = db.getSingleResult("select amount from "+table+" where transactionid=?",Arrays.asList(model.transactionid)).get(0)+"";
-		if(Float.parseFloat(amount)!=Float.parseFloat(actualAmount)) {
+		Tuple selData = db.getSingleResult("select amount,usestatus from "+table+" where transactionid=?",Arrays.asList(model.transactionid));
+		if(!(selData.get("usestatus")+"").equals("0")) {
+			return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
+		}
+		if(Float.parseFloat(amount)!=Float.parseFloat(t.get("amount")+"")) {
 			return Messenger.getMessenger().setMessage("Deposited amount and Voucher amount does not match.").error();
 		}
 		 sql = "UPDATE " + table + " set depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,deposituserid=?,approverid=?,approved=1, depositbankid=?,depositbranchid=? where transactionid=? and bankid=?";
@@ -176,6 +179,9 @@ public class BankVoucherService extends AutoService {
 						db.execute("insert into "+table+" (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount) values (?,?,?,?,?,?,?,?,?,?,?)",Arrays.asList(d.get("id"),d.get("fyid"),d.get("transactionid"),d.get("officename"),d.get("collectioncenterid"),d.get("lgid"),d.get("voucherdate"),d.get("voucherdateint"),d.get("bankid"),d.get("accountnumber"),d.get("amount")));
 						sql = "select bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bankid=?";
 						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
+						if(!(fdata.get("usestatus")+"").equals("0")) {
+							return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
+						}
 						return Messenger.getMessenger().setData(fdata).success();
 					}else {
 						return Messenger.getMessenger().setMessage(dt.getString("message")).error();
@@ -187,7 +193,7 @@ public class BankVoucherService extends AutoService {
 			}
 			return Messenger.getMessenger().setMessage("No such transaction found.").error();
 		}
-		if((data.get("isUsed")+"").equals("1")) {
+		if(!(data.get("usestatus")+"").equals("0")) {
 			return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
 		}
 		return Messenger.getMessenger().setData(data).success();
@@ -253,6 +259,10 @@ public class BankVoucherService extends AutoService {
 		String sql = "select transactionid,bankvoucherno,depositdate,remarks,status from " + table + " where transactionid=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
 		return Messenger.getMessenger().setData(data).success();
+	}
+
+	public ResponseEntity<Map<String, Object>> saveBankVoucher() {
+		return getTransDetails();
 	}
 	
 	

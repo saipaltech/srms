@@ -114,6 +114,7 @@ public class DaycloseService extends AutoService {
 					String sql = "insert into dayclose(id,lgid,bankorgid,accountno,accountname,amountdr,amountcr,bankid,branchid,creatorid,corebankid,dateint) values (?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd')) ";
 					DbResponse rowEffect = db.execute(sql,
 							Arrays.asList(id,parts[0],parts[1],parts[2],parts[3],parts[4],parts[5],auth.getBankId(),auth.getBranchId(),auth.getUserId(),cb.get(parts[1])));
+					System.out.println(rowEffect.getMessage());
 					String sql1="select * from taxvouchers where lgid=? and bankorgid=? and dateint=format(getdate(),'yyyyMMdd')";
 					List<Tuple> admlvl = db.getResultList(sql1, Arrays.asList(parts[0],parts[1]));
 					if (!admlvl.isEmpty()) {
