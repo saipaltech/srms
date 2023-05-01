@@ -258,7 +258,7 @@ public class ApiManager {
 	 * Calls sutra API to send the status of bank voucher deposited, 
 	 * Voucher Number is used to communicate the information
 	 * */
-	public JSONObject updateToSutra(String transid,String bankVoucherid,String depositdate,String remarks) {
+	public JSONObject updateToSutra(String transid,String bankVoucherid,String depositdate,String remarks,String usestatus) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
@@ -269,6 +269,7 @@ public class ApiManager {
 					.setParam("depositdate",depositdate)
 					.setParam("bankvoucherno",bankVoucherid)
 					.setParam("remarks",remarks)
+					.setParam("usestatus",usestatus)
 					.setParam("status","1")
 					.post(url + "/srms/bankdeposit-voucher");
 			if (response.getInt("status_code") == 200) {
