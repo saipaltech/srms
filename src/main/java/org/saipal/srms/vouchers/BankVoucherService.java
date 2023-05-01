@@ -61,7 +61,7 @@ public class BankVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("transactionid,officename,voucherdate,accountnumber, amount").sqlBody("from " + table + condition).paginate();
+				.select("transactionid,officename,cast(depositdate as date) as depositdate ,accountnumber, amount").sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
