@@ -231,23 +231,21 @@ public class ReportService extends AutoService {
 		if (!branch.isBlank())
 			condition = condition + " and depositbranchid="+branch+" ";
 		condition = condition+" and depositbankid="+ auth.getBankId();
-		condition += " order by officename";
+		condition += " order by officename,accountnumber";
 		String repTitle = getHeaderString("Verified Vouchers, From:" + request("from") + " To:" + request("to"));
 		String sql = "select * from bank_deposits " + condition;
-		
-	  System.out.println(sql);
-
 		List<Tuple> lists = db.getResultList(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
 		float ptotal = 0;
 		int totalAmount = 0;
 		Excel.excelRow hrow = new Excel().ExcelRow();
-		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Office Name")))
+		hrow.addColumn((new Excel().ExcelCell("S.N.")))
+		.addColumn((new Excel().ExcelCell("Office Name")))
 				.addColumn((new Excel().ExcelCell("Account Number")))
 				.addColumn((new Excel().ExcelCell("Karobar Sanket")))
-				.addColumn((new Excel().ExcelCell("Voucher No.")))
-				.addColumn((new Excel().ExcelCell("Voucher Date")))
+				//.addColumn((new Excel().ExcelCell("Voucher No.")))
+				//.addColumn((new Excel().ExcelCell("Voucher Date")))
 				.addColumn((new Excel().ExcelCell("Amount")));
 		excl.addHeadRow(hrow);
 		if (!lists.isEmpty()) {
@@ -259,7 +257,7 @@ public class ReportService extends AutoService {
 				}
 				Excel.excelRow ptrow = null;
 				if (!OldPalika.equals(t.get("officename") + "")) {
-					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
+					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 4, 1)))
 							.addColumn((new Excel().ExcelCell(ptotal + "")));
 					OldPalika = t.get("officename") + "";
 					ptotal = Float.parseFloat(t.get("amount") + "");
@@ -273,14 +271,14 @@ public class ReportService extends AutoService {
 						.addColumn((new Excel().ExcelCell(t.get("officename") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("accountnumber") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("transactionid") + "")))
-						.addColumn((new Excel().ExcelCell(t.get("bankvoucherno") + "")))
-						.addColumn((new Excel().ExcelCell(t.get("voucherdate") + "")))
+						//.addColumn((new Excel().ExcelCell(t.get("bankvoucherno") + "")))
+						//.addColumn((new Excel().ExcelCell(t.get("voucherdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("amount") + "")));
 				excl.addRow(drow);
 				i++;
 			}
 			if (totalAmount > 0) {
-				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
+				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 4, 1)))
 						.addColumn((new Excel().ExcelCell(totalAmount + "")));
 				excl.addRow(trow);
 			}
