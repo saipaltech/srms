@@ -234,6 +234,8 @@ public class ReportService extends AutoService {
 		condition += " order by officename";
 		String repTitle = getHeaderString("Verified Vouchers, From:" + request("from") + " To:" + request("to"));
 		String sql = "select * from bank_deposits " + condition;
+		
+	  System.out.println(sql);
 
 		List<Tuple> lists = db.getResultList(sql);
 		excl.title = repTitle;

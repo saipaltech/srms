@@ -140,6 +140,8 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   getBranches() {
+    this.branches = undefined;
+    // const br = this.bankForm.value['branchid'];
     this.bs.getlist().subscribe({
       next: (d: any) => {
         this.branches = d;
