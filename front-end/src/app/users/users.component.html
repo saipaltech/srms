@@ -18,13 +18,13 @@
             <div class="col-6">
               <label class="form-label req">Branch</label>
               <div class="input-group has-validation">
-                <select class="form-select form-select-sm" formControlName="branchid"
-                  [ngClass]="vs.getControlClass(bankForm.controls['branchid'])">
-                  <option value="">Select Branch..</option>
-                  <option *ngFor="let op of branches" value="{{ op.id }}">
-                    {{ op.name }}
-                  </option>
-                </select>
+
+                <ng-select formControlName="branchid" (change)="getBranches()" class="w-100">
+                  <ng-option *ngFor="let op of branches" [value]="op.id">{{
+                    op.name
+                    }}</ng-option>
+                </ng-select>
+
                 <div [ngClass]="vs.getMessageClass(bankForm.controls['branchid'])">
                   {{ vs.getMessage(bankForm.controls["branchid"]) }}
                 </div>

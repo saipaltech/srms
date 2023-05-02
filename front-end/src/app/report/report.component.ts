@@ -29,13 +29,8 @@ export class ReportComponent implements OnInit{
   tableView = false;
 
   myDate: any = new Date();
-  token:any;
   constructor(private fb: FormBuilder,private http: ApiService, private auth:AuthService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute, private ap: AppConfig, private bvs: ReportService) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
-    const details = auth.getUserDetails();
-    if (details) {
-      this.token = details.token;
-    }
     this.formLayout = {
       from:[this.myDate, Validators.required],
       to:[this.myDate, Validators.required],
@@ -134,8 +129,8 @@ export class ReportComponent implements OnInit{
       this.route.queryParams.subscribe(params => {
         this.type = params['type'];
       });
-      console.log(this.type)
-      window.open(this.ap.baseUrl+'taxpayer-voucher/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type="+this.type+"&palika="+this.reportForm.value.palika+"&branch="+this.reportForm.value.branches+"&fy="+this.reportForm.value.fy+"&_token="+this.token, "_blank");
+      // console.log(this.type)
+      window.open(this.ap.baseUrl+'taxpayer-voucher/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type="+this.type+"&palika="+(this.reportForm.value.palika?this.reportForm.value.palika:'')+"&branch="+(this.reportForm.value.branches?this.reportForm.value.branches:'')+"&fy="+this.reportForm.value.fy+"&_token="+this.auth.getUserDetails()?.token, "_blank");
     //   this.http.get(this.url+'/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type='"+this.type+"'").subscribe({next: (data) =>{
     //     this.model = data;
     //     // console.log(this.model);
@@ -171,9 +166,6 @@ export class ReportComponent implements OnInit{
       this.bvs.getBranches().subscribe({
         next: (d) => {
           this.branches = d.data;
-          if (d.data.length == 1) {
-            this.reportForm.patchValue({ "branches": d.data[0].id });
-          }
         }, error: err => {
         }
       });
@@ -187,11 +179,6 @@ export class ReportComponent implements OnInit{
     this.bvs.getllgs().subscribe({
       next: (d) => {        
         this.llgs = d.data;
-        console.log(d.data[0].id)
-        if (d.data.length == 1) {
-          // console.log(d.data[0].id)
-          this.reportForm.patchValue({ "palika": d.data[0].id });
-        }
       }, error: err => {
       }
     });

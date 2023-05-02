@@ -61,7 +61,7 @@ public class BankVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("transactionid,officename,voucherdate,accountnumber, amount").sqlBody("from " + table + condition).paginate();
+				.select("transactionid,officename,cast(depositdate as date) as depositdate ,accountnumber, amount").sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -115,40 +115,35 @@ public class BankVoucherService extends AutoService {
 		DbResponse rowEffect;
 		BankVoucher model = new BankVoucher();
 		model.loadData(document);
-		String usq = "select count(bankvoucherno) from "+table+" where bankvoucherno=? and bankid=?";
-		Tuple res = db.getSingleResult(usq, Arrays.asList(model.bankvoucherno,auth.getBankId()));
-		if ((!(res.get(0) + "").equals("0"))) {
-			return Messenger.getMessenger().setMessage("This voucherno is already in use.").error();
-		}
-		String sql = "select count(id) from "+table+" where transactionid=? and (bankvoucherno is null or bankvoucherno=0)";
-		Tuple t = db.getSingleResult(sql,Arrays.asList(model.transactionid));
-		if((t.get(0)+"").equals("0")) {
-			return Messenger.getMessenger().setMessage("Already submitted voucher").error();
-		}
-		String amount = model.amount;
-		String actualAmount = db.getSingleResult("select amount from "+table+" where transactionid=?",Arrays.asList(model.transactionid)).get(0)+"";
-		if(Float.parseFloat(amount)!=Float.parseFloat(actualAmount)) {
-			return Messenger.getMessenger().setMessage("Deposited amount and Voucher amount does not match.").error();
-		}
-		 sql = "UPDATE " + table + " set depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,deposituserid=?,approverid=?,approved=1, depositbankid=?,depositbranchid=? where transactionid=? and bankid=?";
-		 rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks,auth.getUserId(),auth.getUserId(),auth.getBankId(), auth.getBranchId(),model.transactionid,auth.getBankId()));
-		//System.out.println(rowEffect.getErrorNumber());
-		if (rowEffect.getErrorNumber() == 0) {
-			try {
-				JSONObject resp =  api.updateToSutra(model.transactionid,model.bankvoucherno,model.depositdate,model.remarks);
-				if(resp!=null) {
-					if(resp.getInt("status")==1) {
-						db.execute("update "+table+" set syncstatus=2 where transactionid=? and bankid=?",Arrays.asList(model.transactionid,auth.getBankId()));
-					}
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		String usq = "select amount,usestatus from "+table+" where transactionid=? and bankid=?";
+		Tuple res = db.getSingleResult(usq, Arrays.asList(model.transactionid,auth.getBankId()));
+		if(res!=null) {
+			if(!(res.get("usestatus")+"").equals("0")) {
+				return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
 			}
-			return Messenger.getMessenger().success();
-		} else {
-			return Messenger.getMessenger().error();
+			if(Float.parseFloat(model.amount)!=Float.parseFloat(res.get("amount")+"")) {
+				return Messenger.getMessenger().setMessage("Deposited amount and Voucher amount does not match.").error();
+			}
+			String sql = "UPDATE " + table + " set depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,deposituserid=?,approverid=?,approved=1, depositbankid=?,depositbranchid=?,usestatus=1 where transactionid=? and bankid=?";
+			 rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks,auth.getUserId(),auth.getUserId(),auth.getBankId(), auth.getBranchId(),model.transactionid,auth.getBankId()));
+			if (rowEffect.getErrorNumber() == 0) {
+				try {
+					JSONObject resp =  api.updateToSutra(model.transactionid,model.bankvoucherno,model.depositdate,model.remarks,"1");
+					if(resp!=null) {
+						if(resp.getInt("status")==1) {
+							db.execute("update "+table+" set syncstatus=2 where transactionid=? and bankid=?",Arrays.asList(model.transactionid,auth.getBankId()));
+						}
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
+				return Messenger.getMessenger().success();
+			} else {
+				return Messenger.getMessenger().error();
+			}
 		}
+		return Messenger.getMessenger().setMessage("No such transaction found.").error();
 	}
 
 	public ResponseEntity<Map<String,Object>> getTransDetails() {
@@ -176,6 +171,9 @@ public class BankVoucherService extends AutoService {
 						db.execute("insert into "+table+" (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount) values (?,?,?,?,?,?,?,?,?,?,?)",Arrays.asList(d.get("id"),d.get("fyid"),d.get("transactionid"),d.get("officename"),d.get("collectioncenterid"),d.get("lgid"),d.get("voucherdate"),d.get("voucherdateint"),d.get("bankid"),d.get("accountnumber"),d.get("amount")));
 						sql = "select bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bankid=?";
 						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
+						if(!(fdata.get("usestatus")+"").equals("0")) {
+							return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
+						}
 						return Messenger.getMessenger().setData(fdata).success();
 					}else {
 						return Messenger.getMessenger().setMessage(dt.getString("message")).error();
@@ -187,7 +185,7 @@ public class BankVoucherService extends AutoService {
 			}
 			return Messenger.getMessenger().setMessage("No such transaction found.").error();
 		}
-		if((data.get("isUsed")+"").equals("1")) {
+		if(!(data.get("usestatus")+"").equals("0")) {
 			return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
 		}
 		return Messenger.getMessenger().setData(data).success();
@@ -253,6 +251,10 @@ public class BankVoucherService extends AutoService {
 		String sql = "select transactionid,bankvoucherno,depositdate,remarks,status from " + table + " where transactionid=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
 		return Messenger.getMessenger().setData(data).success();
+	}
+
+	public ResponseEntity<Map<String, Object>> saveBankVoucher() {
+		return getTransDetails();
 	}
 	
 	

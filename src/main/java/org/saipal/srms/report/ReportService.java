@@ -101,7 +101,6 @@ public class ReportService extends AutoService {
 					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,transactionid as karobarsanket,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint   where  dc.id is null and  t.depositdateint=format(getdate(),'yyyyMMdd') and  t.bankid=?  "+cond1
 					+" ) a ) b ";
 			data = db.getResultList(sql,Arrays.asList(bankid,bankid,bankid));
-			
 		}
 		repTitle = "Day Close Details";
 		excl.title = repTitle;
@@ -232,21 +231,21 @@ public class ReportService extends AutoService {
 		if (!branch.isBlank())
 			condition = condition + " and depositbranchid="+branch+" ";
 		condition = condition+" and depositbankid="+ auth.getBankId();
-		condition += " order by officename";
+		condition += " order by officename,accountnumber";
 		String repTitle = getHeaderString("Verified Vouchers, From:" + request("from") + " To:" + request("to"));
 		String sql = "select * from bank_deposits " + condition;
-
 		List<Tuple> lists = db.getResultList(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
 		float ptotal = 0;
 		int totalAmount = 0;
 		Excel.excelRow hrow = new Excel().ExcelRow();
-		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Office Name")))
+		hrow.addColumn((new Excel().ExcelCell("S.N.")))
+		.addColumn((new Excel().ExcelCell("Office Name")))
 				.addColumn((new Excel().ExcelCell("Account Number")))
 				.addColumn((new Excel().ExcelCell("Karobar Sanket")))
-				.addColumn((new Excel().ExcelCell("Voucher No.")))
-				.addColumn((new Excel().ExcelCell("Voucher Date")))
+				//.addColumn((new Excel().ExcelCell("Voucher No.")))
+				//.addColumn((new Excel().ExcelCell("Voucher Date")))
 				.addColumn((new Excel().ExcelCell("Amount")));
 		excl.addHeadRow(hrow);
 		if (!lists.isEmpty()) {
@@ -258,7 +257,7 @@ public class ReportService extends AutoService {
 				}
 				Excel.excelRow ptrow = null;
 				if (!OldPalika.equals(t.get("officename") + "")) {
-					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
+					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 4, 1)))
 							.addColumn((new Excel().ExcelCell(ptotal + "")));
 					OldPalika = t.get("officename") + "";
 					ptotal = Float.parseFloat(t.get("amount") + "");
@@ -272,14 +271,14 @@ public class ReportService extends AutoService {
 						.addColumn((new Excel().ExcelCell(t.get("officename") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("accountnumber") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("transactionid") + "")))
-						.addColumn((new Excel().ExcelCell(t.get("bankvoucherno") + "")))
-						.addColumn((new Excel().ExcelCell(t.get("voucherdate") + "")))
+						//.addColumn((new Excel().ExcelCell(t.get("bankvoucherno") + "")))
+						//.addColumn((new Excel().ExcelCell(t.get("voucherdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("amount") + "")));
 				excl.addRow(drow);
 				i++;
 			}
 			if (totalAmount > 0) {
-				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
+				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 4, 1)))
 						.addColumn((new Excel().ExcelCell(totalAmount + "")));
 				excl.addRow(trow);
 			}
@@ -304,10 +303,11 @@ public class ReportService extends AutoService {
 		if (!branch.isBlank())
 			condition = condition + " and dc.branchid="+branch+" ";
 		condition = condition+" and dc.bankid="+ auth.getBankId();
-		condition = condition+ " order by palika ";
 		String repTitle = getHeaderString("Day Close, From:" + request("from") + " To:" + request("to"));
-		String sql = "select dc.*, lls.namenp as palika, dcd.karobarsanket, (dc.amountcr-dc.amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid join dayclose_details dcd on dc.id = dcd.dcid "
-				+ condition;
+		String sql = "select dc.id,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp as palika,(dc.amountcr-dc.amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid join dayclose_details dcd on dc.id = dcd.dcid "
+				+condition
+				+" group by dc.id,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp"
+				+ " order by palika ";
 		List<Tuple> lists = db.getResultList(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
@@ -316,7 +316,6 @@ public class ReportService extends AutoService {
 		Excel.excelRow hrow = new Excel().ExcelRow();
 		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Palika")))
 		.addColumn((new Excel().ExcelCell("Account Number")))
-		.addColumn((new Excel().ExcelCell("Karobar Sanket")))
 		.addColumn((new Excel().ExcelCell("Debit")))
 		.addColumn((new Excel().ExcelCell("Credit"))).addColumn((new Excel().ExcelCell("Balance")))
 		.addColumn((new Excel().ExcelCell("Details")));
@@ -330,7 +329,7 @@ if (!lists.isEmpty()) {
 		}
 		Excel.excelRow ptrow = null;
 		if (!OldPalika.equals(t.get("palika") + "")) {
-			ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
+			ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
 					.addColumn((new Excel().ExcelCell(ptotal + "", 2,1)));
 			OldPalika = t.get("palika") + "";
 			ptotal = Float.parseFloat(t.get("balance") + "");
@@ -343,7 +342,6 @@ if (!lists.isEmpty()) {
 		Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell((i + ""))))
 				.addColumn((new Excel().ExcelCell(t.get("palika") + "")))
 				.addColumn((new Excel().ExcelCell(t.get("accountno") + "")))
-				.addColumn((new Excel().ExcelCell(t.get("karobarsanket") + "")))
 				.addColumn((new Excel().ExcelCell(t.get("amountdr") + "")))
 				.addColumn((new Excel().ExcelCell(t.get("amountcr") + "")))
 				.addColumn((new Excel().ExcelCell(t.get("balance") + "")))
@@ -352,7 +350,7 @@ if (!lists.isEmpty()) {
 		i++;
 	}
 	if (totalAmount > 0) {
-		Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
+		Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
 				.addColumn((new Excel().ExcelCell(totalAmount + "",2,1)));
 		excl.addRow(trow);
 	}

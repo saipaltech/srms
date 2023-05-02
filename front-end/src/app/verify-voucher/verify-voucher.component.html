@@ -251,10 +251,10 @@
             <!--table-borderless-->
             <thead>
               <tr>
-                <th scope="col">Voucher Date</th>
+                <th scope="col">Date</th>
+                <th scope="col">Office Name</th> 
                 <th scope="col">Account No.</th>
-                <th scope="col">Transaction Id</th>
-                <th scope="col">Office Name</th>                
+                <th scope="col">Transaction Id</th>                               
                 <th scope="col">Amount</th>
 
 
@@ -263,10 +263,10 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of lists; let i = index">
-                <td>{{ item.voucherdate }}</td>
-                <td>{{ item.accountnumber }}</td>
-                <td>{{ item.transactionid }}</td>
+                <td>{{ item.depositdate }}</td>
                 <td>{{ item.officename }}</td>
+                <td>{{ item.accountnumber }}</td>
+                <td>{{ item.transactionid }}</td>                
                 <td>{{ item.amount }}</td>
 
 
