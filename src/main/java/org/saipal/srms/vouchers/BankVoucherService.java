@@ -61,7 +61,7 @@ public class BankVoucherService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("transactionid,officename,voucherdate,accountnumber, amount").sqlBody("from " + table + condition).paginate();
+				.select("transactionid,officename,cast(depositdate as date) as depositdate ,accountnumber, amount").sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -153,7 +153,7 @@ public class BankVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("Transaction id is required").error();
 		}
 		transactionid = nep2EngNum(transactionid);
-		if(transactionid.length()< 4) {
+		if(transactionid.length()< 8) {
 			return Messenger.getMessenger().setMessage("Invalid Transaction id format.").error();
 		}
 		char forthChar = transactionid.charAt(3);

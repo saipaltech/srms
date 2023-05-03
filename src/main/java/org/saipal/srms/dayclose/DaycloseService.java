@@ -36,7 +36,7 @@ public class DaycloseService extends AutoService {
 		String date=request("date");
 		String lgid=request("lgid");
 		String acno=request("acno");
-		System.out.println(lgid);
+//		System.out.println(lgid);
 		String cond="";
 		if(!lgid.isBlank()) {
 			cond+=" and t.lgid='"+lgid+"'";
@@ -114,14 +114,30 @@ public class DaycloseService extends AutoService {
 					String sql = "insert into dayclose(id,lgid,bankorgid,accountno,accountname,amountdr,amountcr,bankid,branchid,creatorid,corebankid,dateint) values (?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd')) ";
 					DbResponse rowEffect = db.execute(sql,
 							Arrays.asList(id,parts[0],parts[1],parts[2],parts[3],parts[4],parts[5],auth.getBankId(),auth.getBranchId(),auth.getUserId(),cb.get(parts[1])));
-					System.out.println(rowEffect.getMessage());
+//					System.out.println(rowEffect.getMessage());
 					String sql1="select * from taxvouchers where lgid=? and bankorgid=? and dateint=format(getdate(),'yyyyMMdd')";
 					List<Tuple> admlvl = db.getResultList(sql1, Arrays.asList(parts[0],parts[1]));
+					
+					
+					
+					
 					if (!admlvl.isEmpty()) {
 						for (Tuple tt : admlvl) {
 							String sql2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,purpose,syncstatus,approved,approverid,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr) values (?,?,?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 							db.execute(sql2,
 									Arrays.asList(id,tt.get("id"),tt.get("karobarsanket"),tt.get("voucherno"),tt.get("date"),tt.get("taxpayername"),tt.get("taxpayerpan"),tt.get("depositedby"),tt.get("depcontact"),tt.get("lgid"),tt.get("collectioncenterid"),tt.get("bankid"),tt.get("branchid"),tt.get("bankorgid"),tt.get("purpose"),tt.get("syncstatus"),tt.get("approved"),tt.get("approverid"),tt.get("ttype"),tt.get("chequebank"),tt.get("chequeno"),tt.get("chequeamount"),tt.get("cstatus"),tt.get("chequetype"),tt.get("isused"),tt.get("hasChangeReqest"),tt.get("changeReqestDate"),tt.get("amountdr"),tt.get("amountcr")));
+						}
+				}
+//					System.out.println("i am here");
+					
+					String sql3="select * from bank_deposits where lgid=? and bankorgid=? and paymentmethod=? and voucherdateint=format(getdate(),'yyyyMMdd')";
+					List<Tuple> t3 = db.getResultList(sql3, Arrays.asList(parts[0],parts[1],2));
+					
+					if (!t3.isEmpty()) {
+						for (Tuple tt : t3) {
+							String sql4 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,purpose,syncstatus,approved,approverid,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr) values (?,?,?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+							db.execute(sql4,
+									Arrays.asList(id,tt.get("id"),tt.get("transactionid"),tt.get("bankvoucherno"),tt.get("voucherdate"),tt.get("taxpayername"),tt.get("vatpno"),tt.get("taxpayername"),tt.get("mobileno"),tt.get("lgid"),tt.get("collectioncenterid"),tt.get("bankid"),tt.get("depositbranchid"),tt.get("bankorgid"),"",tt.get("syncstatus"),tt.get("approved"),tt.get("approverid"),1,"","","",0,0,tt.get("usestatus"),0,"","",tt.get("amount")));
 						}
 				}
 					
