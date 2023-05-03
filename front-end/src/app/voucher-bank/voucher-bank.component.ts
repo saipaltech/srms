@@ -77,7 +77,8 @@ export class VoucherBankComponent implements OnInit {
       revenuecode: [''],
       purpose: [''],
       amount: ['', Validators.pattern('[0-9]+')],
-      ttype: ['1']
+      ttype: ['1'],
+      cb:['']
     }
     this.voucherBankForm = fb.group(this.formLayout)
     this.srchForm = new FormGroup({

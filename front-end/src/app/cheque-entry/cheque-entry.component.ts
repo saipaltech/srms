@@ -77,7 +77,8 @@ constructor(private appconfig:AppConfig,private datePipe: DatePipe, private toas
       chequeno:['',Validators.required],
       chequebank:['',Validators.required],
       ttype:['2'],
-      chequetype:['',Validators.required]
+      chequetype:['',Validators.required],
+      cb:['']
     }
     this.voucherBankForm =fb.group(this.formLayout)
     this.srchForm = new FormGroup({
@@ -100,10 +101,11 @@ formvalue=true;
 
 clearCheque(id:any){
   this.getDetails(id);
-  console.log(this.details);
+  // console.log(this.details);
   if (window.confirm('Are you sure this cheque is already cleared?')) {
+    this.getDetails(id);
   this.bvs.clearCheque(id).subscribe({next:(dt)=>{
-    console.log(this.details);
+    // console.log(this.details);
     window.open("/#/cheque-report?voucherno="+this.details.karobarsanket+'&palika='+this.details.lgid +'&formvalue='+this.formvalue, '_blank');
     this.getList();
     this.toastr.success("Cheque status changed to cleared.","Success")
@@ -119,7 +121,7 @@ details : any;
 getDetails(id:any){
   this.bvs.getDetails(id).subscribe({next:(dt)=>{
     this.details = dt;
-    console.log(this.details);
+    // console.log(this.details);
   },error:err=>{
     this.toastr.error("Unable to Fetch Data","Error")
   }});
