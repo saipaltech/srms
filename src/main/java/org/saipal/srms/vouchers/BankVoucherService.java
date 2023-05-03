@@ -160,7 +160,7 @@ public class BankVoucherService extends AutoService {
 		if(forthChar == '9') {
 			return getTransDetailsCheque();
 		}
-		String sql = "select bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname,(case when (bd.bankvoucherno=0 OR bd.bankvoucherno is null) then '0' else '1' end) as isUsed from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=?";
+		String sql = "select usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname,(case when (bd.bankvoucherno=0 OR bd.bankvoucherno is null) then '0' else '1' end) as isUsed from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 		if(data==null) {
 			JSONObject dt =  api.getTransDetails(transactionid);
