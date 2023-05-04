@@ -1,0 +1,117 @@
+<div class="row g-5 justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <p>Day Close Cheque</p>
+        </div>
+  
+        <div class="card-body mt-3">
+          <form class="needs-validation"
+          [formGroup]="voucherBankForm"
+          (ngSubmit)="voucherBankFormSubmit()">
+            <div class="row">
+              <div class="col-6">
+                <label for="username" class="form-label req"> मिति</label>
+                <div class="input-group has-validation">
+                  <input
+                    readonly
+                    formControlName="date"
+                    type="text"
+                    class="form-control form-control-sm"
+                    placeholder="{{ myDate | date : 'shortDate' }}"
+                    [ngClass]="vs.getControlClass(voucherBankForm.controls['date'])">
+                    <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['date'])">{{vs.getMessage(voucherBankForm.controls['date'])}}</div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <label for="firstName" class="form-label ">पालिका</label>
+                <ng-select formControlName="lgid" (change)="getBankAccounts()" >
+                  <ng-option *ngFor="let l of llgs" [value]="l.code">{{
+                    l.name
+                  }}</ng-option>
+                </ng-select>
+                <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['lgid'])">{{vs.getMessage(voucherBankForm.controls['lgid'])}}</div>
+              </div>
+              <div class="col-6">
+                <label for="username" class="form-label ">खाता नंबर</label>
+                <select
+                  class="form-select form-select-sm" 
+                  formControlName="acno"
+                  [ngClass]="vs.getControlClass(voucherBankForm.controls['acno'])"
+                >
+                  <option value="">Select Account Number</option>
+                  <option *ngFor="let ac of acs" value="{{ac.id}}">{{ac.acno}}[{{ac.name}}]</option>
+                </select>
+                <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['acno'])">{{vs.getMessage(voucherBankForm.controls['acno'])}}</div>
+              </div>
+             
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-success btn-sm" type="submit">View</button>
+                &nbsp; &nbsp;
+               
+              </div>
+            </div>
+          </form>
+          <form *ngIf="lists" class="needs-validation"
+          [formGroup]="daycloseForm"
+          (ngSubmit)="daycloseFormSubmit()">
+          <table *ngIf="lists" class="display responsive-table w-100 table table-striped datatable"> <!--table-borderless-->
+            <thead>
+              <tr>
+    
+                <th scope="col">Action</th>
+                <th scope="col">Palika</th>
+                <th scope="col">Account Number</th>
+                <th scope="col">Debit</th>
+                <th scope="col">Credit</th>
+                <th scope="col">Balance</th>
+                <th scope="col">Core Banking ID</th>
+                <th>View</th>
+              </tr>
+            </thead>
+            <tbody formGroupName="corebank">
+              <tr *ngFor="let item of lists; let i = index">
+                <!-- <td>{{ i+1 }}</td> -->
+                <td><input class="form-check-input" type="checkbox" (change)="onCheckboxChange($event)" value="{{item.lgid}}||{{item.accountno}}||{{item.accountnumber}}||{{item.accountname}}||{{item.amountdr}}||{{item.amountcr}}"   name="dayclose"></td>
+                <td>{{ item.palika }}</td>
+                <td>{{ item.accountname }}[{{ item.accountnumber }}]</td>
+                <td>{{ item.amountdr }}</td>
+                <td>{{ item.amountcr }}</td>
+                <td>{{ item.balance }}</td>
+                <td><input type="text" id="textbox{{i}}" formControlName="{{item.accountno}}"></td>
+                <td><button type="button" (click)="viewdayclose(item.lgid,item.accountno,item.bankid)">View</button></td>
+              
+              </tr>
+      
+            
+            </tbody>
+          </table>
+          
+          <div class="row">
+            <div class="col-4">
+          <input class="form-check-input" type="checkbox" #check value=""  (click)="checkvalue(check.checked)" id="flexCheckDefault">
+          <label class="form-check-label" for="flexCheckDefault">
+            &nbsp; &nbsp;माथिको बिबरण ठिक छ |
+          </label>
+          </div>
+         
+        </div>
+        <input type="hidden" formControlName="acno" value="{{model.acno}}">
+        <input type="hidden" formControlName="lgid" value="{{model.lgid}}">
+        <input type="hidden" formControlName="date" value="{{model.date}}">
+        <br>
+        <div class="row" style="margin-top: 10px;">
+          <div class="col-md-12">
+            <button class="btn btn-success btn-sm" type="submit">Save</button>
+            &nbsp; &nbsp;
+           
+          </div>
+        </div>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>

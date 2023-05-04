@@ -267,6 +267,39 @@ public class TaxPayerVoucherController {
 		}
 		
 	}
+	
+	@GetMapping("dayclosecheque-details")
+	public void getReportDayCloseCheque(HttpServletResponse resp) throws IOException{
+		String reporttype = "1";//rs.request("reporttype");
+		Excel report = rs.getDetailsCheque();
+		if (report != null) {
+			if (reporttype.equals("1")) { // htmlreport
+				resp.setContentType("text/html; charset=UTF-8");
+				resp.setCharacterEncoding("UTF-8");
+				try {
+					resp.getWriter().print(report.getHtmlDocument());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else { // excel report
+				Workbook wb = report.getExcel();
+				String fileName = "report.xlsx";
+				resp.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+				resp.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+				try {
+					wb.write(resp.getOutputStream());
+					wb.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} else {
+			resp.getWriter().print("No Data Available.");
+		}
+		
+	}
 	@GetMapping("get-reportf")
 	public ModelAndView getReportf(HttpServletRequest request) {
 		return  new ModelAndView("report-cad");

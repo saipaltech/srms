@@ -49,7 +49,7 @@ import { NewMainBodyComponent } from './new-main-body/new-main-body.component';
 import { HttpInterceptorService } from './http-interceptor.service';
 import { NiceAdminComponent } from './nice-admin/nice-admin.component';
 import { SidebaritemComponent, SidebaritemInnerComponent } from './nice-admin/sidebaritem.component';
-
+import { DayCloseChequeComponent } from './day-close-cheque/day-close-cheque.component';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { FrontEndPasswordChangeComponent } from './front-end-password-change/front-end-password-change.component';
@@ -89,7 +89,8 @@ import { FrontEndPasswordChangeComponent } from './front-end-password-change/fro
     NiceAdminComponent,
     SidebaritemComponent,
 SidebaritemInnerComponent,
-FrontEndPasswordChangeComponent
+FrontEndPasswordChangeComponent,
+DayCloseChequeComponent
   ],
   imports: [
     BrowserModule,
