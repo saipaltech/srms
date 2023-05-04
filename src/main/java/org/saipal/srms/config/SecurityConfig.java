@@ -40,7 +40,7 @@ public class SecurityConfig {
 			return configs;
 		}
 	};
-
+	
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		String cp = servletContext.getContextPath();
@@ -57,6 +57,7 @@ public class SecurityConfig {
 									cp + "/taxpayer-voucher/report-generate",
 									cp + "/web/**",
 									cp + "/users/change-password-login",
+									cp + "/taxpayer-voucher/dayclosecheque-details",
 									cp + "/taxpayer-voucher/dayclose-details")
 							.permitAll()
 							.anyRequest()
