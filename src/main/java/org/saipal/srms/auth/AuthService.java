@@ -44,9 +44,15 @@ public class AuthService {
 	public ResponseEntity<Map<String,Object>> login() {
 		String username = doc.getElementById("username").value;
 		String password = doc.getElementById("password").value;
-		String sql = "select u.id,username,password,u.name, b.namenp as baname, bs.name as branchname,bs.dlgid from users u join bankinfo b on b.id=u.bankid join branches bs on bs.id=u.branchid where username=?";
+		String sql = "select u.id,username,password,u.name,u.approved,u.disabled b.namenp as baname, bs.name as branchname,bs.dlgid from users u join bankinfo b on b.id=u.bankid join branches bs on bs.id=u.branchid where username=?";
 		Tuple t = db.getSingleResult(sql,Arrays.asList(username));
 		if(t!=null) {
+			if(!(t.get("approved")+"").equals("1")) {
+				return Messenger.getMessenger().setMessage("User not Approved.").error();
+			}
+			if(!(t.get("disabled")+"").equals("0")) {
+				return Messenger.getMessenger().setMessage("User not Enabled.").error();
+			}
 			if(pwdEncoder.matches(password, t.get("password")+"")) {
 				String token = jwtHelper.createToken(t.get("id")+"");
 				Map<String,String> data = new HashMap<>();
@@ -65,9 +71,15 @@ public class AuthService {
 	public ResponseEntity<Map<String,Object>> checkUser() {
 		String username = doc.getElementById("username").value;
 		String password = doc.getElementById("password").value;
-		String sql = "select id,username,password,mobile from users where username=?";
+		String sql = "select id,username,password,mobile,approved,disabled from users where username=?";
 		Tuple t = db.getSingleResult(sql,Arrays.asList(username));
 		if(t!=null) {
+			if(!(t.get("approved")+"").equals("1")) {
+				return Messenger.getMessenger().setMessage("User not Approved.").error();
+			}
+			if(!(t.get("disabled")+"").equals("0")) {
+				return Messenger.getMessenger().setMessage("User not Enabled.").error();
+			}
 			String mobile = t.get("mobile")+"";
 			if(mobile.isBlank()) {
 				return Messenger.getMessenger().setMessage("Please register your mobile number to login.").error();
@@ -150,7 +162,6 @@ public class AuthService {
 				Map<String,String> data = new HashMap<>();
 				data.put("token", token);
 				data.put("name", t.get("name")+"");
-				System.out.println(token+" granted");
 				return Messenger.getMessenger().setData(data).success();
 			}
 		}

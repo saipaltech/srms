@@ -92,12 +92,12 @@ public class UsersService extends AutoService {
 		model.loadData(document);
 		String usq = "select count(username) from users where username=?";
 		Tuple res = db.getSingleResult(usq, Arrays.asList(model.username));
-		if ((!(res.get(0) + "").equals("0"))) {
+		if (!(res.get(0) + "").equals("0")) {
 			return Messenger.getMessenger().setMessage("Username already exists.").error();
 		}
 		String mbl = "select count(mobile) from users where username=?";
 		Tuple resu = db.getSingleResult(mbl, Arrays.asList(model.mobile));
-		if ((!(resu.get(0) + "").equals("0"))) {
+		if (!(resu.get(0) + "").equals("0")) {
 			return Messenger.getMessenger().setMessage("Mobile already exists.").error();
 		}
 		model.password = pe.encode(model.password);
@@ -112,20 +112,23 @@ public class UsersService extends AutoService {
 						model.amountlimit.isBlank() ? 0 : model.amountlimit, model.mobile, bankId, model.branchid,
 						model.disabled, model.approved));
 		String permid = request("permid") + "";
-		String sqls = "";
-		DbResponse rowEffects;
-		if (permid.equals("4")) {
-			sqls = "insert into users_perms (userid,permid) values ((select top 1 id from users where username=?),?),((select top 1 id from users where username=?),3)";
-			rowEffects = db.execute(sqls, Arrays.asList(model.username, permid, model.username));
-		} else {
-			sqls = "insert into users_perms (userid,permid) values ((select top 1 id from users where username=?),?)";
-			rowEffects = db.execute(sqls, Arrays.asList(model.username, permid));
+		if(rowEffect.getErrorNumber()==0) {
+			String sqls = "";
+			DbResponse rowEffects;
+			if (permid.equals("4")) {
+				sqls = "insert into users_perms (userid,permid) values ((select top 1 id from users where username=?),?),((select top 1 id from users where username=?),3)";
+				rowEffects = db.execute(sqls, Arrays.asList(model.username, permid, model.username));
+			} else {
+				sqls = "insert into users_perms (userid,permid) values ((select top 1 id from users where username=?),?)";
+				rowEffects = db.execute(sqls, Arrays.asList(model.username, permid));
+			}
+			if (rowEffects.getErrorNumber() == 0) {
+				return Messenger.getMessenger().success();
+			} else {
+				return Messenger.getMessenger().error();
+			}
 		}
-		if (rowEffect.getErrorNumber() == 0 && rowEffects.getErrorNumber() == 0) {
-			return Messenger.getMessenger().success();
-		} else {
-			return Messenger.getMessenger().error();
-		}
+		return Messenger.getMessenger().error();
 	}
 
 	public ResponseEntity<Map<String, Object>> storeBankUser() {
