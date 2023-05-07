@@ -37,11 +37,38 @@
                 </div>
 
                 <div class="col-md-4">
+                  <label>Select Account Number </label>
+                  <ng-select formControlName="accno">
+                    <ng-option value=""> All </ng-option>
+                    <ng-option *ngFor="let ac of acs" [value]="ac.id"> {{ac.accountnumber}}[{{ac.accountname}}] </ng-option>
+                  </ng-select>
+                </div>
+
+                <div class="col-md-4">
                   <label> Select Branch </label>
                   <ng-select (change)="getBranches()" formControlName="branches">
                     <ng-option value=""> All </ng-option>
                     <ng-option *ngFor="let i of branches" [value]="i.id"> {{i.name}} </ng-option>
                   </ng-select>
+                </div>
+
+              </div>
+              <br>
+              <div class="row">
+                <div class="col-md-4">
+                  <label>Select User</label>
+                  <select class="form-select form-select-sm" formControlName="fy">
+                    <option *ngFor="let l of fiscalYear" value="{{l.id}}">{{l.label}}</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <ng-container  *ngIf="chkstatus">
+                  <label>Cheque status</label>
+                  <select class="form-select form-select-sm" formControlName="chkstatus">
+                    <option value="1">Cleared</option>
+                    <option value="0">Not Cleared</option>
+                  </select>
+                </ng-container>
                 </div>
               </div>
               <!-- <div class="row">

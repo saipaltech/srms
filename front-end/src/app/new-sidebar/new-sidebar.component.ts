@@ -43,6 +43,12 @@ export class NewSidebarComponent {
                   queryparameter:{ type: 'dc' },
                   icon: "bi bi-circle",
                 }
+                ,{
+                  name: "Summary Report",
+                  link: '/report',
+                  queryparameter:{ type: 'sr' },
+                  icon: "bi bi-circle",
+                }
               ]
             }
           });

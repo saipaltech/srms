@@ -33,6 +33,16 @@ public class ReportController {
 	public ResponseEntity<Map<String, Object>> getLocalLevels() {
 		return rs.getLocalLevels();
 	}
+	
+	@GetMapping("get-account-numbers")
+	public ResponseEntity<Map<String, Object>> getAccountNumber() {
+		return rs.getAccountNumbers();
+	}
+	
+	@GetMapping("get-user")
+	public ResponseEntity<Map<String, Object>> getUser() {
+		return rs.getUsers();
+	}
 
 	@GetMapping("get-report")
 	public void getReport(HttpServletResponse resp) throws IOException {

@@ -56,7 +56,10 @@ public class ReportService extends AutoService {
 			getVV(excl);
 		} else if (type.equals("dc")) {
 			getDc(excl);
+		} else if (type.equals("sr")) {
+			getSr(excl);
 		}
+		
 		return excl;
 
 	}
@@ -205,7 +208,8 @@ public class ReportService extends AutoService {
 		String branch= request("branch")+"";
 		String repTitle="";
 		String sql = "";
-//		String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "' and tx.lgid="+palika+" and tx.fyid="+fy+ " and tx.branchid="+branch;
+		String chkstatus= request("chkstatus")+"";
+		//		String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "' and tx.lgid="+palika+" and tx.fyid="+fy+ " and tx.branchid="+branch;
 		String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "'";
 		if (!fy.isBlank()) {
 			condition  = condition + " and tx.fyid="+fy+" ";
@@ -214,8 +218,10 @@ public class ReportService extends AutoService {
 			condition = condition + " and tx.lgid="+palika+" ";
 		if (!branch.isBlank())
 			condition = condition + " and tx.branchid="+branch+" ";
-		
-		condition = condition+" and tx.bankid="+ auth.getBankId();
+		if (!chkstatus.isEmpty()) {
+			condition = condition + " and tx.branchid="+chkstatus+" ";
+		}
+		condition = condition+" and tx.cstatus="+ auth.getBankId();
 		
 		System.out.println(auth.getBankId());
 		
@@ -421,5 +427,20 @@ if (!lists.isEmpty()) {
 	}
 }
 	return excl;
+	}
+
+	public ResponseEntity<Map<String, Object>> getAccountNumbers() {
+		String llgCode = request("llgcode");
+		List<Map<String, Object>> d = db.getResultListMap(
+				"select ba.accountname,cast(ba.accountnumber as varchar) as accountnumber,cast(ba.id as varchar) as id from bankaccount ba where ba.bankid=? and ba.lgid=? order by accounttype ",
+				Arrays.asList(auth.getBankId(), llgCode));
+		return Messenger.getMessenger().setData(d).success();
+	}
+
+	public ResponseEntity<Map<String, Object>> getUsers() {
+		return null;
+	}
+	public Excel getSr(Excel ecxl) {
+		return null;
 	}
 }
