@@ -26,4 +26,8 @@ export class ReportService {
     return this.http.get(this.url+"/get-account-numbers?llgcode="+llgCode)
   }
 
+  getUserList(){
+    return this.http.get(this.url+"/get-user")
+  }
+
 }

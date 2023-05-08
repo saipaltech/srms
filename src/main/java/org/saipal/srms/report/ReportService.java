@@ -218,10 +218,11 @@ public class ReportService extends AutoService {
 			condition = condition + " and tx.lgid="+palika+" ";
 		if (!branch.isBlank())
 			condition = condition + " and tx.branchid="+branch+" ";
-		if (!chkstatus.isEmpty()) {
-			condition = condition + " and tx.branchid="+chkstatus+" ";
-		}
-		condition = condition+" and tx.cstatus="+ auth.getBankId();
+		String username= request("users")+"";
+		if (!username.isBlank())
+			condition = condition + " and deposituserid="+username+" ";
+		
+		condition = condition+" and tx.bankid="+ auth.getBankId();
 		
 		System.out.println(auth.getBankId());
 		
@@ -230,9 +231,12 @@ public class ReportService extends AutoService {
 			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 					+ condition + " and tx.approved=1 order by palika, ba.accountnumber";
 		} else if (type.equals("chd")) {
+			if (!chkstatus.isEmpty()) {
+				condition = condition + " and tx.cstatus="+chkstatus+" ";
+			}
 			repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
 			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
-					+ condition + " and tx.cstatus=1 order by palika, accountno";
+					+ condition + " order by palika, accountno";
 		}
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);
@@ -293,6 +297,7 @@ public class ReportService extends AutoService {
 		String fy= request("fy")+"";
 		String palika= request("palika")+"";
 		String branch= request("branch")+"";
+		
 		String condition = " WHERE depositdateint >= '" + startDate + "' AND depositdateint <= '"
 				+ endDate +"'";
 		if (!fy.isBlank()) {
@@ -301,6 +306,9 @@ public class ReportService extends AutoService {
 			condition = condition + " and lgid="+palika+" ";
 		if (!branch.isBlank())
 			condition = condition + " and depositbranchid="+branch+" ";
+		String username= request("users")+"";
+		if (!username.isBlank())
+			condition = condition + " and deposituserid="+username+" ";
 		condition = condition+" and depositbankid="+ auth.getBankId();
 		condition += " order by officename,accountnumber";
 		String repTitle = getHeaderString("Verified Vouchers, From:" + request("from") + " To:" + request("to"));
@@ -373,6 +381,9 @@ public class ReportService extends AutoService {
 			condition = condition + " and dc.lgid="+palika+" ";
 		if (!branch.isBlank())
 			condition = condition + " and dc.branchid="+branch+" ";
+		String username= request("users")+"";
+		if (!username.isBlank())
+			condition = condition + " and deposituserid="+username+" ";
 		condition = condition+" and dc.bankid="+ auth.getBankId();
 		String repTitle = getHeaderString("Day Close, From:" + request("from") + " To:" + request("to"));
 		String sql = "select dc.id,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp as palika,(dc.amountcr-dc.amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid join dayclose_details dcd on dc.id = dcd.dcid "
@@ -436,9 +447,12 @@ if (!lists.isEmpty()) {
 				Arrays.asList(auth.getBankId(), llgCode));
 		return Messenger.getMessenger().setData(d).success();
 	}
-
+	
 	public ResponseEntity<Map<String, Object>> getUsers() {
-		return null;
+		List<Map<String, Object>> d = db.getResultListMap(
+				"select id,username from users where bankid=? and branchid=? ",
+				Arrays.asList(auth.getBankId(), auth.getBranchId()));
+		return Messenger.getMessenger().setData(d).success();
 	}
 	public Excel getSr(Excel ecxl) {
 		return null;
