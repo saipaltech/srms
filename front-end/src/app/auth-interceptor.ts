@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of, throwError } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     public jwtHelper = new JwtHelperService();
-    constructor() { }
+    constructor(private router:Router) { }
 
     getToken(): string | boolean {
         const userDetails = localStorage.getItem('currentUser');
@@ -29,6 +30,12 @@ export class AuthInterceptor implements HttpInterceptor {
                 }
             });
         }
-        return next.handle(req);
+        return next.handle(req).pipe(catchError((he:any)=>{
+            if (he.status === 401 || he.status === 403) {
+                this.router.navigate(['login']);
+                return of(he.message); // or EMPTY may be appropriate here
+            }
+            return throwError(()=>new Error(he));
+        }));
     }
 }
