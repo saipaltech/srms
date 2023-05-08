@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Observable, catchError, of, throwError } from 'rxjs';
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
+import { Observable, catchError, filter, of, tap, throwError } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
 
@@ -30,12 +30,25 @@ export class AuthInterceptor implements HttpInterceptor {
                 }
             });
         }
-        return next.handle(req).pipe(catchError((he:any)=>{
-            if (he.status === 401 || he.status === 403) {
+        // return next.handle(req).pipe(
+        //     filter((event: HttpEvent<any>) => event instanceof HttpErrorResponse && (event.status === 401 || event.status === 403)),
+        //     tap(() => {
+        //       this.router.navigate(['login']);
+        //     })
+        //   );
+        return next.handle(req).pipe(
+            catchError((error: HttpErrorResponse) => {
+              if (error.status === 401 || error.status === 403) {
                 this.router.navigate(['login']);
-                return of(he.message); // or EMPTY may be appropriate here
-            }
-            return throwError(()=>new Error(he));
-        }));
+                return of(new HttpResponse({
+                  status: error.status,
+                  statusText: error.statusText,
+                  body: null
+                }));
+              } else {
+                return throwError(() => error);
+              }
+            })
+          );
     }
 }
