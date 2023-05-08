@@ -38,7 +38,8 @@ export class ReportComponent implements OnInit{
       branches: [''],
       fy:[''],
       accno:[''],
-      chkstatus:['']
+      chkstatus:[''],
+      users:['']
     }
 
     this.reportForm = fb.group(this.formLayout)
@@ -51,7 +52,18 @@ export class ReportComponent implements OnInit{
     this.getFiscalYears();
     this.getllgs();
     this.getBranches();
+    this.getusers();
     // this.getAccountNumbers();
+  }
+
+  userList:any;
+  getusers(){
+    this.bvs.getUserList().subscribe({
+      next: (d) => {        
+        this.userList = d.data;
+      }, error: err => {;
+      }
+    });
   }
   
   fiscalYear:any
@@ -59,7 +71,7 @@ export class ReportComponent implements OnInit{
     this.bvs.getFy().subscribe({
       next: (d) => {        
         this.fiscalYear = d.data;
-        console.log(d.data)
+        // console.log(d.data)
       }, error: err => {;
       }
     });
@@ -158,7 +170,7 @@ export class ReportComponent implements OnInit{
       this.route.queryParams.subscribe(params => {
         this.type = params['type'];
       });
-      window.open(this.ap.baseUrl+'taxpayer-voucher/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type="+this.type+"&palika="+(this.reportForm.value.palika?this.reportForm.value.palika:'')+"&branch="+(this.reportForm.value.branches?this.reportForm.value.branches:'')+"&fy="+this.reportForm.value.fy+"&_token="+this.auth.getUserDetails()?.token+"&accno="+(this.reportForm.value.accno? this.reportForm.value.accno: ''+"&chkstatus="+(this.reportForm.value.chkstatus===''? '1': this.reportForm.value.chkstatus)), "_blank");
+      window.open(this.ap.baseUrl+'taxpayer-voucher/get-report'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type="+this.type+"&palika="+(this.reportForm.value.palika?this.reportForm.value.palika:'')+"&branch="+(this.reportForm.value.branches?this.reportForm.value.branches:'')+"&fy="+this.reportForm.value.fy+"&_token="+this.auth.getUserDetails()?.token+"&accno="+(this.reportForm.value.accno? this.reportForm.value.accno: ''+"&chkstatus="+(this.reportForm.value.chkstatus===''? '1': this.reportForm.value.chkstatus))+"&users="+(this.reportForm.value.users===''? '': this.reportForm.value.users), "_blank");
       this.acs = undefined;
     }
     else{
