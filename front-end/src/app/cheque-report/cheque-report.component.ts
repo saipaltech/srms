@@ -31,6 +31,7 @@ export class ChequeReportComponent {
   }
   reportData: any;
   rdetails:any;
+  
 
   getData(voucherno: any, palika: any){
     this.RS.getReport(voucherno, palika).subscribe({next:(dt)=>{
