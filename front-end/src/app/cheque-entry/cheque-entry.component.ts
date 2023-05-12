@@ -107,11 +107,11 @@ clearCheque(id:any){
   this.bvs.clearCheque(id).subscribe({next:(dt)=>{
     // this.getDetails(id);
     // console.log(dt);
-    // window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-generate?voucherno="+ this.details.karobarsanket + '&palika=' + this.details.lgid, '_blank'); 
+    window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-generate?voucherno="+ this.details.karobarsanket + '&palika=' + this.details.lgid, '_blank'); 
    
     this.getList();
     this.toastr.success("Cheque status changed to cleared.","Success")
-    window.open("/#/cheque-report?voucherno="+this.details.karobarsanket+'&palika='+this.details.lgid +'&formvalue='+this.formvalue, '_blank');
+    // window.open("/#/cheque-report?voucherno="+this.details.karobarsanket+'&palika='+this.details.lgid +'&formvalue='+this.formvalue, '_blank');
     this.modalRef?.hide();
   },error:err=>{
     console.log(err);
