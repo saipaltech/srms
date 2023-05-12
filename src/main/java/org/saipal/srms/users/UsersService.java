@@ -72,7 +72,7 @@ public class UsersService extends AutoService {
 		Paginator p = new Paginator();
 
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select(" u.id,u.name,u.username,u.post, u.mobile ,branches.name as bname, u.approved,u.disabled")
+				.select(" cast(u.id as varchar) as id,u.name,u.username,u.post, u.mobile ,branches.name as bname, u.approved,u.disabled")
 				.sqlBody("from " + table + " as u join branches on u.branchid = branches.id " + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
