@@ -260,10 +260,9 @@ checkvalue(isChecked: boolean){
     );
   }
 
-  setStatus(val: any){
-    this.approved = val;
+  setStatus(val: any) {
+    this.approved = val.target.value;
     this.getList();
-  
   }
 
 

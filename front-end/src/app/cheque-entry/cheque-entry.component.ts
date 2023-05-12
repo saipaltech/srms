@@ -102,15 +102,19 @@ formvalue=true;
 clearCheque(id:any){
   this.getDetails(id);
   // console.log(this.details);
-  if (window.confirm('Are you sure this cheque is already cleared?')) {
+  if (window.confirm('Are you sure this cheque is cleared?')) {
     this.getDetails(id);
   this.bvs.clearCheque(id).subscribe({next:(dt)=>{
-    // console.log(this.details);
-    window.open("/#/cheque-report?voucherno="+this.details.karobarsanket+'&palika='+this.details.lgid +'&formvalue='+this.formvalue, '_blank');
+    // this.getDetails(id);
+    // console.log(dt);
+    // window.open(this.appconfig.baseUrl+"taxpayer-voucher/report-generate?voucherno="+ this.details.karobarsanket + '&palika=' + this.details.lgid, '_blank'); 
+   
     this.getList();
     this.toastr.success("Cheque status changed to cleared.","Success")
+    window.open("/#/cheque-report?voucherno="+this.details.karobarsanket+'&palika='+this.details.lgid +'&formvalue='+this.formvalue, '_blank');
     this.modalRef?.hide();
   },error:err=>{
+    console.log(err);
     this.toastr.error("Unable to Fetch Data","Error")
   }});
 }

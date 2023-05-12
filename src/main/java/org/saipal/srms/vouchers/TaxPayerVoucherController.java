@@ -176,6 +176,11 @@ public class TaxPayerVoucherController {
 		return objService.getRevenueDetails();
 	}
 	
+	@GetMapping("get-usertype")
+	public ResponseEntity<Map<String, Object>> getusertype(HttpServletRequest request){
+		return objService.getusertype();
+	}
+	
 	@GetMapping("get-edit-detail")
 	public ResponseEntity<Map<String, Object>> getEditDetail(){
 		return objService.getEditDetails();

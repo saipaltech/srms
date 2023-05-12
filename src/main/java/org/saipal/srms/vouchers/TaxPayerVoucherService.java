@@ -36,6 +36,7 @@ public class TaxPayerVoucherService extends AutoService {
 	IrdPanSearchService pan;
 
 	private String table = "taxvouchers";
+	
 
 	public ResponseEntity<Map<String, Object>> index() {
 		if (!auth.hasPermission("bankuser")) {
@@ -129,14 +130,21 @@ public class TaxPayerVoucherService extends AutoService {
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid,"
 				+ "amountcr as amount, ba.accountnumber as accountno ,bd.purpose, bd.approved ,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
 				+ "from taxvouchers as bd "
-				+ "join collectioncenter cc on cc.id = bd.collectioncenterid  "
+				+ "left join collectioncenter cc on cc.id = bd.collectioncenterid  "
 				+" join bankaccount ba on ba.id = bd.bankorgid "
 				+ "join admin_local_level_structure lls on lls.id = bd.lgid where bd.id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql,Arrays.asList(id));
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
 				Arrays.asList(id));
-		data.put("revs", revs);
+		
+		if(revs.size()==0) {
+			System.out.println(revs.size());
+			data.put("revs", null);
+		}else {
+			data.put("revs", revs);
+		}
+		
 		return ResponseEntity.ok(data);
 	}
 
@@ -193,14 +201,20 @@ public class TaxPayerVoucherService extends AutoService {
 		}else {
 			return Messenger.getMessenger().setMessage("Amount not set.").success();
 		}
+		int ct=0;
+		if(model.chequetype.equals("2")) {
+			ct=1;
+		}else {
+			ct=0;
+		}
 		
 		String id = db.newIdInt();
-		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,amountcr,depositbankid,depositbranchid) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),?,?,?)";
+		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,amountcr,depositbankid,depositbranchid,cstatus) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
 				Arrays.asList(id, model.date, model.voucherno, model.taxpayername, model.taxpayerpan, model.depositedby,
 						model.depcontact, model.lgid, model.collectioncenterid, model.bankorgid,
 						model.purpose, auth.getUserId(), auth.getBankId(), auth.getBranchId(),
-						model.ttype, model.chequebank, model.chequeno, model.chequeamount,model.chequetype,model.amount,auth.getBankId(),auth.getBranchId()));
+						model.ttype, model.chequebank, model.chequeno, model.chequeamount,model.chequetype,model.amount,auth.getBankId(),auth.getBranchId(),ct));
 		if (rowEffect.getErrorNumber() == 0) {
 			if (jarr.length() > 0) {
 				for (int i = 0; i < jarr.length(); i++) {
@@ -286,7 +300,7 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 
 	}
-
+	@Transactional
 	public ResponseEntity<Map<String, Object>> chequeclear() {
 		String id = request("id");
 		Tuple c = db.getSingleResult("select id,cstatus from " + table + " where id=?", Arrays.asList(id));
@@ -755,19 +769,22 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			return Messenger.getMessenger().setMessage("Invalid Pan No.").error();
 		}
 	}
+	
 
 	public ResponseEntity<Map<String, Object>> generateReport() {
 		String voucher = request("voucherno");
 		String palika = request("palika");
-		String sql = "select  tv.approved,tv.ttype,tv.chequetype,(case when tv.approved='1' then dbo.eng2nep(karobarsanket) else 'To be Approved' end) as approved_text,(case when tv.cstatus='1' OR tv.chequetype='2' then dbo.eng2nep(karobarsanket) else 'To be Cleared' end) as cheque_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amountcr as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amountcr) as amount,dbo.eng2nep(ba.accountnumber) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date from "
+		String sql = "select  tv.approved,tv.ttype,tv.chequetype,b.name as branchname,(case when tv.chequetype='2' then 'Deposit Slip' else 'Cheque Receipt' end) as titletext,(case when tv.approved='1' then dbo.eng2nep(karobarsanket) else 'To be Approved' end) as approved_text,(case when tv.cstatus='1' OR tv.chequetype='2' then dbo.eng2nep(karobarsanket) else 'To be Cleared' end) as cheque_text, dbo.eng2nep(dbo.getfiscalyear(date)) as fy,dbo.getrs(cast(tv.amountcr as float)) as amountwords,lls.namenp as llgname, bi.namenp, ba.accountname,karobarsanket as voucherno,karobarsanket,taxpayername, dbo.eng2nep(amountcr) as amount,dbo.eng2nep(ba.accountnumber) as accountno,dbo.eng2nep(depcontact) as depcontact ,dbo.eng2nep(taxpayerpan) as taxpayerpan, dbo.eng2nep(dbo.getnepdate(cast(date as date))) as date from "
 				+ "taxvouchers tv " 
 				+ "left join bankaccount ba on ba.id=tv.bankorgid "
 				+ "left join bankinfo bi on bi.id=tv.bankid "
+				+ "left join branches b on b.id=tv.depositbranchid "
 				+ "left join admin_local_level_structure lls on lls.id=tv.lgid "
 				+ "where karobarsanket=? and tv.lgid=? ";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(voucher, palika));
 		return ResponseEntity.ok(data);
 	}
+	
 
 	public ResponseEntity<Map<String, Object>> getRevenueDetails() {
 		String voucher = request("voucherno");
@@ -1448,5 +1465,12 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			}
 		}
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"No Bank A/C Found \"}");
+	}
+
+	public ResponseEntity<Map<String, Object>> getusertype() {
+		String sql="select p.name as usertype from users left join permissions p on p.id=users.permid where users.id=?";
+		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(auth.getUserId()));
+		// TODO Auto-generated method stub
+		return ResponseEntity.ok(data);
 	}
 }

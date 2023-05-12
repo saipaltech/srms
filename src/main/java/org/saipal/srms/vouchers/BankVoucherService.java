@@ -68,7 +68,7 @@ public class BankVoucherService extends AutoService {
 			return Messenger.getMessenger().error();
 		}
 	}
-	
+	@Transactional
 	public ResponseEntity<Map<String, Object>> chequeDeposit() throws JSONException {
 		String items=request("selection");
 		if (!items.startsWith("[")) {
@@ -89,6 +89,10 @@ public class BankVoucherService extends AutoService {
 					String sql="insert into taxvouchers(cref,dateint,bankid,branchid,karobarsanket,chequeno,chequeamount,cstatus,chequebank,lgid,date,taxpayername,bankorgid,amountcr,ttype,depositbankid,depositbranchid,deposituserid,depositedby) values(?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 					DbResponse rf= db.execute(sql,Arrays.asList(res.get("did"),auth.getBankId(),auth.getBranchId(),res.get("ksno"),res.get("chequeno"),res.get("chequeamount"),0,res.get("bankid"),rs.get("orgid"),new Date(),res.get("taxpayername"),rs.get("bankorgid"),res.get("chequeamount"),2,auth.getBankId(),auth.getBranchId(),auth.getUserId(),res.get("taxpayername")));
 //					System.out.println(rf.getMessage());
+					String usqq="select * from taxvouchers where cref=?";	
+					Tuple resq = db.getSingleResult(usqq, Arrays.asList(res.get("did")));
+					String sqq = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
+					db.execute(sqq, Arrays.asList(db.newIdInt(), resq.get("id"), res.get("revid"), res.get("chequeamount")));
 					String squ="update chequeBankDakhilaDetail set isbankreceived=?,bankreceivedby=?,bankreceiveddate=? where did=?";
 					db.execute(squ,Arrays.asList(1,auth.getBankId(),new Date(),jarr.get(i)));
 				}
@@ -145,6 +149,7 @@ public class BankVoucherService extends AutoService {
 		}
 		return Messenger.getMessenger().setMessage("No such transaction found.").error();
 	}
+	
 
 	public ResponseEntity<Map<String,Object>> getTransDetails() {
 		
