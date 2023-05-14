@@ -223,6 +223,7 @@ export class ReportComponent implements OnInit{
 
   acs: any;
   getAccountNumbers(){
+    this.reportForm.patchValue({'accno':''});
     this.bvs.getAccountNumbers(this.reportForm.value.palika).subscribe({
       next: (d) => {
         this.acs = d.data;

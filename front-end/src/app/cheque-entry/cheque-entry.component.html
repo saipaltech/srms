@@ -58,6 +58,22 @@
           <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['voucherno'])">{{vs.getMessage(voucherBankForm.controls['voucherno'])}}</div>
       </div>
 
+      <div class="col-6">
+        <label class="form-label req">जिल्ला </label>
+        <div class="input-group has-validation">
+          <select #dists (change)="getPalika(dists.value)"
+          class="form-select form-select-sm"
+          formControlName="district"
+          [ngClass]="vs.getControlClass(voucherBankForm.controls['district'])"
+        > <option value="">Select One</option>
+          <option *ngFor="let lg of dist" [value]="lg.id">{{lg.namenp}}</option>
+        </select>
+          <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['district'])">
+            {{ vs.getMessage(voucherBankForm.controls["district"]) }}
+          </div>
+        </div>
+      </div>
+
       <div class="col-sm-6">
         <label for="firstName" class="form-label req">पालिका</label>
         <ng-select formControlName="lgid" (change)="getBankAccounts()">

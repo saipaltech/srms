@@ -98,6 +98,17 @@
             </div>
 
             <div class="col-6">
+              <label class="form-label req">Email</label>
+              <div class="input-group has-validation">
+                <input type="text" formControlName="email" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['email'])" />
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['email'])">
+                  {{ vs.getMessage(bankForm.controls["email"]) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
               <label class="form-label">Amount Limit</label>
               <div class="input-group has-validation">
                 <input formControlName="amountlimit" type="text" class="form-control form-control-sm"
@@ -179,8 +190,8 @@
                   <button class="btn btn-sm btn-success" (click)="getUpdateItem(item.id)" href="javascript:void(0)"><i
                       class="bi bi-pencil-square"></i></button>
                   &nbsp;&nbsp;
-                  <button class="btn btn-danger btn-sm" (click)="deleteItem(item.id)"><i class="bi bi-trash3" style="cursor: pointer"></i>
-                  </button>&nbsp;&nbsp;
+                  <!-- <button class="btn btn-danger btn-sm" (click)="deleteItem(item.id)"><i class="bi bi-trash3" style="cursor: pointer"></i>
+                  </button>&nbsp;&nbsp; -->
                   <button class="btn btn-info btn-sm mt-1" href="javascript:void(0)" (click)="openModal(template, item.id)"> <i class="bi bi-key"
                       style="cursor:pointer;"></i></button>
                   <!-- <app-user-limit [userid]="item.id"></app-user-limit> -->

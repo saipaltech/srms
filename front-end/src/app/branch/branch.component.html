@@ -72,7 +72,7 @@
           <div class="col-6">
             <label class="form-label req">District</label>
             <div class="input-group has-validation">
-              <select
+              <select #dists (change)="getPalika(dists.value)"
               class="form-select form-select-sm"
               formControlName="district"
               [ngClass]="vs.getControlClass(bankForm.controls['district'])"
@@ -109,7 +109,7 @@
               class="form-select form-select-sm"
               formControlName="dlgid"
               [ngClass]="vs.getControlClass(bankForm.controls['dlgid'])"
-            > <option value="">Select One</option>
+            > <option value="0">Select One</option>
               <option *ngFor="let lg of llgs" [value]="lg.code">{{lg.name}}</option>
             </select>
               <div [ngClass]="vs.getMessageClass(bankForm.controls['dlgid'])">
