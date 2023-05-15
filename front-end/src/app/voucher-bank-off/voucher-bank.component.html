@@ -33,7 +33,7 @@
   <input type="hidden" formControlName="id">
     <div class="row g-3">
       <div class="col-6">
-        <label for="username" class="form-label req">जम्मा गरेको मिति</label>
+        <label for="username" class="form-label req">{{"Deposite Date" | translate}}</label>
         <div class="input-group has-validation">
           <input
             readonly
@@ -46,7 +46,7 @@
         </div>
 
         <div class="col-6">
-          <label for="address" class="form-label">दाखिला फारम (Deposit Slip) नं.</label>
+          <label for="address" class="form-label">{{"Deposite Slip Number" | translate}}</label>
           <input
             formControlName="voucherno"
             type="text"
@@ -56,7 +56,7 @@
         </div>
 
         <div class="col-sm-6">
-          <label for="firstName" class="form-label req">पालिका</label>
+          <label for="firstName" class="form-label req">{{"Local Level" | translate}}</label>
           <ng-select formControlName="lgid" (change)="getBankAccounts()">
             <ng-option *ngFor="let l of llgs" [value]="l.code">{{
               l.name
@@ -66,7 +66,7 @@
         </div>
 
         <div class="col-sm-6">
-          <label for="lastName" class="form-label req">संकलन केन्द्र</label>
+          <label for="lastName" class="form-label req">{{"Collection Center" | translate}}</label>
           <ng-select formControlName="collectioncenterid" >
             <ng-option *ngFor="let cc of ccs" [value]="cc.code">{{
               cc.name
@@ -77,7 +77,7 @@
 
 
         <div class="col-6">
-          <label for="username" class="form-label req">खाता नंबर</label>
+          <label for="username" class="form-label req">{{"Account Number" | translate}}</label>
           <select
             class="form-select form-select-sm" (change)="getRevenue()"
             formControlName="bankorgid"
@@ -90,7 +90,7 @@
         </div>
 
         <div class="col-sm-6">
-          <label for="username" class="form-label">प्रयोजन</label>
+          <label for="username" class="form-label">{{"Purpose" | translate}}</label>
           <div class="input-group has-validation">
             <input
               formControlName="purpose"
@@ -104,7 +104,7 @@
         <input type="hidden" value="1" formControlName="ttype">
       
         <div class="col-sm-6">
-          <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
+          <label for="firstName" class="form-label req">{{"Revenue Title" | translate}}</label>
           <ng-select formControlName="revenuecode" [(ngModel)]="selectedRevenue"  >
             <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
           </ng-select>
@@ -112,7 +112,7 @@
         </div>
 
         <div class="col-5">
-          <label for="username" class="form-label req">रकम</label>
+          <label for="username" class="form-label req">{{"Amount" | translate}}</label>
           <div class="input-group has-validation">
             <input
               formControlName="amount" 
@@ -126,16 +126,16 @@
         <div class="col-1">
           <label>&nbsp;</label>
           <div class="input-group has-validation">
-          <button type="button" class="btn btn-success btn-sm" (click)="addItem()">Add </button>
+          <button type="button" class="btn btn-success btn-sm" (click)="addItem()">{{"Add" | translate}} </button>
           </div>
         </div>
         <div  *ngIf="items.length" class="col-12">
           <table class="layout display responsive-table">
             <thead>
               <tr>
-                <th>राजस्व शिर्षक</th>
-                <th>रकम</th>
-                <th>Action</th>
+                <th>{{"Revenue Title" | translate}}</th>
+                <th>{{"Amount" | translate}}</th>
+                <th>{{"Action" | translate}}</th>
               </tr>
             </thead>
             <tbody>
@@ -145,7 +145,7 @@
                 <td><button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)">Delete</button></td>
               </tr>
               <tr>
-                <th >Total</th><th colspan="2">{{totalAmt}}</th>
+                <th >{{"Total" | translate}}</th><th colspan="2">{{totalAmt}}</th>
               </tr>
             </tbody>
           </table>
@@ -157,12 +157,12 @@
 
         <div class="row">
           <div class="col-md-8 text-start">
-            <h5 class="mt-3 mb-0">करदाता:</h5>
+            <h5 class="mt-3 mb-0">{{"Taxpayer" | translate}}:</h5>
           </div>
         </div>
 
         <div class="col-sm-6">
-          <label for="username" class="form-label">पान नंबर</label>
+          <label for="username" class="form-label">{{"Pan No" | translate}}</label>
           <div class="input-group has-validation">
             <input
             (blur)="getAndSetPanDetails()"
@@ -175,7 +175,7 @@
         </div>
 
         <div class="col-sm-6">
-          <label for="username" class="form-label req">नाम</label>
+          <label for="username" class="form-label req">{{"Name" | translate}}</label>
           <div class="input-group has-validation">
             <input
               formControlName="taxpayername"
@@ -188,14 +188,14 @@
 
         <div class="row mt-3">
           <div class=" col-md-4 text-start">
-           <h6><b> जम्मा गर्नेको विवरण:</b></h6>
+           <h6><b> {{"Depositer Details" | translate}}:</b></h6>
             
           </div>
           <div class=" col-md-8 text-start">
             <div class="form-check"> 
               <input formControlName="cb" class="form-check-input" type="checkbox" #check value=""  (click)="checkvalue(check.checked)" id="flexCheckDefault">
               <label class="form-check-label" for="flexCheckDefault">
-                करदाता आफै
+                {{"Taxpayer themselves" | translate}}
               </label>
             </div>
           </div>
@@ -203,7 +203,7 @@
         </div>
 
         <div class="col-sm-6">
-          <label for="username" class="form-label req">नाम</label>
+          <label for="username" class="form-label req">{{"Name" | translate}}</label>
           <div class="input-group has-validation">
             <input
               formControlName="depositedby"
@@ -215,7 +215,7 @@
         </div>
 
         <div class="col-sm-6">
-          <label for="username" class="form-label req">सम्पर्क नंबर</label>
+          <label for="username" class="form-label req">{{"Contact Number" | translate}}</label>
           <div class="input-group has-validation">
             <input
               formControlName="depcontact"
@@ -233,14 +233,14 @@
     <br />
     <div class="row">
       <div class="col-md-12">
-        <button class="btn btn-success btn-sm" type="submit">Submit</button>
+        <button class="btn btn-success btn-sm" type="submit">{{"Submit" | translate}}</button>
         &nbsp; &nbsp;
         <button
           class="btn btn-danger btn-sm"
           type="button"
           (click)="resetForm()"
         >
-          Clear
+          {{"Clear" | translate}}
         </button>
       </div>
     </div>
@@ -281,14 +281,14 @@
       <!--table-borderless-->
       <thead>
         <tr>
-          <th scope="col">Date</th>
-          <th scope="col">Tax Payer Name</th>
-          <th scope="col">Account No</th>
-          <th scope="col">Deposit Slip No.</th>
-          <th scope="col">Karobar Sanket</th>
-          <th scope="col">Amount</th>
-          <th scope="col">Status</th>
-          <th scope="col">Action</th>
+          <th scope="col">{{"Date" | translate}}</th>
+          <th scope="col">{{"Tax Payer Name" | translate}}</th>
+          <th scope="col">{{"Account No" | translate}}</th>
+          <th scope="col">{{"Deposit Slip No." | translate}}</th>
+          <th scope="col">{{"Karobar Sanket" | translate}}</th>
+          <th scope="col">{{"Amount" | translate}}</th>
+          <th scope="col">{{"Status" | translate}}</th>
+          <th scope="col">{{"Action" | translate}}</th>
         </tr>
       </thead>
       <tbody>

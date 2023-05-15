@@ -3,6 +3,7 @@ import { AuthService } from '../auth/auth.service';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { ChequeEntryService } from '../cheque-entry/cheque-entry.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-new-header',
@@ -16,7 +17,7 @@ export class NewHeaderComponent implements OnInit{
   username="";
   name="";
 
-  constructor(private auth: AuthService, @Inject(DOCUMENT) private document: Document, private router: Router,private bvs:ChequeEntryService) {
+  constructor(private auth: AuthService, @Inject(DOCUMENT) private document: Document, private router: Router,private bvs:ChequeEntryService, private translateService: TranslateService) {
     const details = auth.getUserDetails();
     if (details) {
       this.bank = details.bank;
@@ -39,17 +40,21 @@ export class NewHeaderComponent implements OnInit{
 
   usertype:any
   ngOnInit(): void {
-    // alert("hh");
     this.bvs.getUsertype().subscribe({next:(dt)=>{
-      // console.log(dt.usertype);
       this.usertype = dt.usertype;
-      // console.log(this.usertype);
       // this.voucherBankForm.patchValue({"lgid":this.dlgid});
     },error:err=>{
 
     }});
+    // const lang = localStorage.getItem("lang") || "np-Np";
+    const lang = "en-EN";
+    this.changeLang(lang);
   }
 
+  changeLang(lan: string) {
+    localStorage.setItem("lang",lan);
+    this.translateService.use(lan);
+  }
   
   logout() {
     if (confirm("Are you sure you want to logout?")) {

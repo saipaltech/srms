@@ -1,0 +1,73 @@
+{
+    "hi" :"hi",
+
+    "Submit" :"Submit",
+    "Clear":"Clear",
+
+    "Yes": "Yes",
+    "No":"No",
+
+    "Action": "Action",
+
+    "Bank": "Bank",
+    "Code":"Code",
+    "Name":"Name",
+    "District": "District",
+    "Email": "Email",
+    "Default Local Level": "Default Local Level",
+    "Disabled" : "Disabled",
+
+    "Branch": "Branch",
+    "User Type": "User Type",
+    "Post":"Post",
+    "Username":"Username",
+    "Password":"Password",
+    "Mobile":"Mobile",
+    "Amount Limit":"Amount Limit",
+
+    "Deposite Date":"जम्मा गरेको मिति",
+    "Deposite Slip Number": "दाखिला फारम (Deposit Slip) नं.",
+    "Local Level":"पालिका",
+    "Collection Center":"संकलन केन्द्र",
+    "Account Number": "खाता नंबर",
+    "Purpose" : "प्रयोजन",
+    "Revenue Title":"राजस्व शिर्षक",
+    "Amount": "रकम",
+
+    "Add":"Add",
+    "Total":"Total",
+
+    "Taxpayer" : "करदाता",
+
+    "Pan No" :"पान नंबर",
+    "Depositer Details":"जम्मा गर्नेको विवरण",
+
+    "Taxpayer themselves": "करदाता आफै",
+
+    "Contact Number":"सम्पर्क नंबर",
+
+    "Date": "Date",
+    "Tax Payer Name": "Tax Payer Name",
+    "Account No" : "Account No",
+    "Deposit Slip No.": "Deposit Slip No.",
+    "Karobar Sanket": "Karobar Sanket",
+    "Status": "Status",
+
+    "Cheque Number": "चेक नंबर",
+    "Cheque Amount":"चेक रकम",
+    "Cheque Type":"चेक प्रकार",
+
+    "Transaction Id":"कारोबार संकेत नंबर",
+    "Office":"कार्यालय",
+    "Voucher Date":"भौचर मिति",
+    "Account Name":"Account Name",
+
+    "Taxpayer Name":"करदाताको नाम",
+    "Taxpayer Pan No.":"करदाताको पान नंबर",
+    "Taxpayer Address":"करदाताको ठेगाना",
+    "Deposit Amount":"जम्मा गरेको रकम",
+    "Description":"बिबरण"
+    
+
+
+}

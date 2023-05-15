@@ -54,6 +54,8 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { FrontEndPasswordChangeComponent } from './front-end-password-change/front-end-password-change.component';
 
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 @NgModule({
   declarations: [
@@ -108,6 +110,14 @@ DayCloseChequeComponent
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
     CollapseModule.forRoot(),
+    TranslateModule.forRoot({
+      // defaultLanguage: 'np-NP',
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
   ],
   providers: [
     AppConfig,
@@ -129,4 +139,11 @@ DayCloseChequeComponent
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {   
+}
+
+export function HttpLoaderFactory(http: HttpClient){
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json')
+  // return new TranslateHttpLoader(http)
+
+}

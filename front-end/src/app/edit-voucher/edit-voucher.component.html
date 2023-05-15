@@ -40,30 +40,30 @@
           <div class="modal-body" *ngIf="transDetails">
             <div class="row">
               <div class="col-6">
-                जम्मा गरेको मिति :  {{transDetails.date}}
+                {{"Deposite Date" | translate}} :  {{transDetails.date}}
               </div>
               <div class="col-6">
-                Deposit Slip No.: {{transDetails.voucherno}}
+                {{"Deposite Slip Number" | translate}}: {{transDetails.voucherno}}
               </div>
             </div>
             <div class="row">
               <div class="col-6">
-                पालिका: {{transDetails.llsname}}
+                {{"Local Level" | translate}}: {{transDetails.llsname}}
               </div>
               <div class="col-6">
-                संकलन केन्द्र: {{transDetails.collectioncentername}}
+                {{"Collection Center" | translate}}: {{transDetails.collectioncentername}}
               </div>
             </div>
            
-            खाता नंबर: {{transDetails.accountno}}
+            {{"Account Number" | translate}}: {{transDetails.accountno}}
             <br>
-            प्रयोजन: {{transDetails.purpose}}
+            {{"Purpose" | translate}}: {{transDetails.purpose}}
             <br>
             <table class="table table-striped table-bordered"> 
               <thead>
                 <tr>
-                  <th scope="col"> राजस्व शिर्षक</th>
-                  <th scope="col">रकम(रु.)</th>
+                  <th scope="col"> {{"Revenue Title" | translate}}</th>
+                  <th scope="col">{{"Amount" | translate}}</th>
                 </tr>
               </thead>
               <tbody>
@@ -71,23 +71,23 @@
                   <td>{{r.rv}}</td>
                   <td>{{r.amt}}</td>
                 </tr>
-                <tr><th>जम्मा रकम</th><th>{{transDetails.amount}}</th></tr>
+                <tr><th>{{"Deposit Amount" | translate}}</th><th>{{transDetails.amount}}</th></tr>
               </tbody>
             </table>
             <div class="row">
               <div class="col-6">
-                करदाताको पान नंबर: {{transDetails.taxpayerpan}}
+                {{"Taxpayer Pan No." | translate}}: {{transDetails.taxpayerpan}}
               </div>  
               <div class="col-6">
-                करदाताको नाम: {{transDetails.taxpayername}}
+                {{"Taxpayer Name" | translate}}: {{transDetails.taxpayername}}
               </div>
             </div>
             <div class="row">
               <div class="col-6">
-                जम्मा गर्नेको नाम:{{transDetails.depositedby}}
+                {{"Depositer Name" | translate}}:{{transDetails.depositedby}}
               </div>
               <div class="col-6">
-                जम्मा गर्नेको सम्पर्क नंबर: {{transDetails.depcontact}}
+                {{"Depositer Contact" | translate}}: {{transDetails.depcontact}}
               </div>
             </div>
 
@@ -96,7 +96,7 @@
           <div class="row g-3">
             <input type="hidden" formControlName="id" />
             <div class="col-6">
-              <label class="form-label req">पान नंबर</label>
+              <label class="form-label req">{{"Pan No" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="taxpayerpan" type="text" 
                   class="form-control form-control-sm" [ngClass]="
@@ -111,7 +111,7 @@
             </div>
 
             <div class="col-6">
-              <label class="form-label req">नाम</label>
+              <label class="form-label req">{{"Name" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="taxpayername" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['taxpayername'])" />
@@ -121,7 +121,7 @@
               </div>
             </div>
             <div class="col-sm-6" *ngIf="transDetails.today==transDetails.dateint">
-              <label for="firstName" class="form-label req"> पालिका</label>
+              <label for="firstName" class="form-label req"> {{"Local Level" | translate}}</label>
               <ng-select formControlName="lgid" (change)="getBankAccounts()">
                 <ng-option *ngFor="let l of llgs" [value]="l.code">{{
                   l.name
@@ -131,7 +131,7 @@
             </div>
     
             <div class="col-sm-6" *ngIf="transDetails.today==transDetails.dateint">
-              <label for="lastName" class="form-label req">संकलन केन्द्र</label>
+              <label for="lastName" class="form-label req">{{"Collection Center" | translate}}</label>
               <ng-select formControlName="collectioncenterid" >
                 <ng-option *ngFor="let cc of ccs" [value]="cc.code">{{
                   cc.name
@@ -142,7 +142,7 @@
     
     
             <div class="col-6" *ngIf="transDetails.today==transDetails.dateint">
-              <label for="username" class="form-label req">खाता नंबर</label>
+              <label for="username" class="form-label req">{{"Account Number" | translate}}</label>
               <select
                 class="form-select form-select-sm" #bnk (change)="getRevenue(bnk.value)"
                 formControlName="bankorgid"
@@ -176,7 +176,7 @@
             </div> -->
 
             <div  *ngIf="transDetails.today==transDetails.dateint" class="col-sm-6">
-              <label for="firstName" class="form-label req">राजस्व शिर्षक</label>
+              <label for="firstName" class="form-label req">{{"Revenue Title" | translate}}</label>
               <ng-select formControlName="revenuecode" [(ngModel)]="selectedRevenue"  >
                 <ng-option *ngFor="let rv of revs" [value]="rv.code">{{rv.code}}[{{rv.name}}]</ng-option>
               </ng-select>
@@ -184,7 +184,7 @@
             </div>
     
             <div class="col-5" *ngIf="transDetails.today==transDetails.dateint">
-              <label for="username" class="form-label req">रकम</label>
+              <label for="username" class="form-label req">{{"Amount" | translate}}</label>
               <div class="input-group has-validation">
                 <input
                   formControlName="amount" 
@@ -198,16 +198,16 @@
             <div class="col-1" *ngIf="transDetails.today==transDetails.dateint">
               <label>&nbsp;</label>
               <div class="input-group has-validation">
-              <button type="button" class="btn btn-success btn-sm" (click)="addItem()">Add </button>
+              <button type="button" class="btn btn-success btn-sm" (click)="addItem()">{{"Add" | translate}} </button>
               </div>
             </div>
             <div  *ngIf="transDetails.today==transDetails.dateint && items.length" class="col-12">
               <table class="layout display responsive-table">
                 <thead>
                   <tr>
-                    <th>राजस्व शिर्षक</th>
-                    <th>रकम</th>
-                    <th>Action</th>
+                    <th>{{"Revenue Title" | translate}}</th>
+                    <th>{{"Amount" | translate}}</th>
+                    <th>{{"Action" | translate}}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -217,7 +217,7 @@
                     <td><button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)">Delete</button></td>
                   </tr>
                   <tr>
-                    <th >Total</th><th colspan="2">{{totalAmt}}</th>
+                    <th >{{"Total" | translate}}</th><th colspan="2">{{totalAmt}}</th>
                   </tr>
                 </tbody>
               </table>
@@ -230,10 +230,10 @@
           <br />
           <div class="row">
             <div class="col-md-12">
-              <button class="btn btn-success btn-sm" type="submit">Submit</button>
+              <button class="btn btn-success btn-sm" type="submit">{{"Submit" | translate}}</button>
               &nbsp; &nbsp;
               <button class="btn btn-danger btn-sm" type="button" (click)="resetForm()">
-                Clear
+                {{"Clear" | translate}}
               </button>
             </div>
           </div>
@@ -253,11 +253,11 @@
             <!--table-borderless-->
             <thead>
               <tr>
-                <th scope="col">Transaction Id</th>
-                <th scope="col">Office Name</th>
-                <th scope="col">Voucher Date</th>
-                <th scope="col">Account No.</th>
-                <th scope="col">Amount</th>
+                <th scope="col">{{"Transaction Id" | translate}}</th>
+                <th scope="col">{{"Office Name" | translate}}</th>
+                <th scope="col">{{"Voucher Date" | translate}}</th>
+                <th scope="col">{{"Account Number" | translate}}</th>
+                <th scope="col">{{"Amount" | translate}}</th>
 
 
 

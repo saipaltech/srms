@@ -23,7 +23,7 @@
         <div class="row g-3">
           <input type="hidden" formControlName="id" />
           <div class="col-6">
-            <label class="form-label req">Bank</label>
+            <label class="form-label req">{{'Bank' | translate}}</label>
             <div class="input-group has-validation">
               <select
                 class="form-select form-select-sm"
@@ -40,7 +40,7 @@
           </div>
   
           <div class="col-6">
-            <label class="form-label req">Code</label>
+            <label class="form-label req">{{'Code' | translate}}</label>
             <div class="input-group has-validation">
               <input
                 formControlName="code"
@@ -55,7 +55,7 @@
           </div>
   
           <div class="col-6">
-            <label class="form-label req">Name</label>
+            <label class="form-label req">{{'Name' | translate}}</label>
             <div class="input-group has-validation">
               <input
                 formControlName="name"
@@ -70,7 +70,7 @@
           </div>
 
           <div class="col-6">
-            <label class="form-label req">District</label>
+            <label class="form-label req">{{"District" | translate}}</label>
             <div class="input-group has-validation">
               <select
               class="form-select form-select-sm"
@@ -86,7 +86,7 @@
           </div>
 
           <div class="col-6">
-            <label class="form-label">Email</label>
+            <label class="form-label">{{'Email' | translate}}</label>
             <div class="input-group has-validation">
               <input
                 formControlName="maddress"
@@ -103,7 +103,7 @@
         
   
           <div class="col-6">
-            <label class="form-label">Default Local Level</label>
+            <label class="form-label">{{"Default Local Level" | translate}}</label>
             <div class="input-group has-validation">
               <select
               class="form-select form-select-sm"
@@ -119,7 +119,7 @@
           </div>
   
           <div class="col-sm-6">
-            <label class="form-label req">Disabled</label>
+            <label class="form-label req">{{"Disabled" | translate}}</label>
             <div class="input-group has-validation">
               <select
                 class="form-select form-select-sm"
@@ -143,8 +143,8 @@
                 formControlName="approved"
                 [ngClass]="vs.getControlClass(bankForm.controls['approved'])"
               >
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+                <option value="1">{{"Yes" | translate}}</option>
+                <option value="0">{{"No" | translate}}</option>
               </select>
               <div [ngClass]="vs.getMessageClass(bankForm.controls['approved'])">
                 {{ vs.getMessage(bankForm.controls["approved"]) }}
@@ -156,14 +156,14 @@
         <br />
         <div class="row">
           <div class="col-md-12">
-            <button class="btn btn-success btn-sm" type="submit">Submit</button>
+            <button class="btn btn-success btn-sm" type="submit">{{"Submit" | translate}}</button>
             &nbsp; &nbsp;
             <button
               class="btn btn-danger btn-sm"
               type="button"
               (click)="resetForm()"
             >
-              Clear
+              {{"Clear" | translate}}
             </button>
           </div>
         </div>
@@ -194,9 +194,9 @@
           <!--table-borderless-->
           <thead>
             <tr>
-              <th scope="col">Name</th>
+              <th scope="col">{{"Name" | translate}}</th>
               <!--<th scope="col">Code</th>-->
-              <th scope="col">Action</th>
+              <th scope="col">{{"Action" | translate}}</th>
             </tr>
           </thead>
           <tbody>
