@@ -3,6 +3,7 @@ import { AuthService } from '../auth/auth.service';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { ChequeEntryService } from '../cheque-entry/cheque-entry.service';
+import { AppConfig } from '../app.config';
 
 @Component({
   selector: 'app-new-header',
@@ -16,7 +17,7 @@ export class NewHeaderComponent implements OnInit{
   username="";
   name="";
 
-  constructor(private auth: AuthService, @Inject(DOCUMENT) private document: Document, private router: Router,private bvs:ChequeEntryService) {
+  constructor(private auth: AuthService, @Inject(DOCUMENT) private document: Document, private router: Router,private bvs:ChequeEntryService,public appConfig:AppConfig) {
     const details = auth.getUserDetails();
     if (details) {
       this.bank = details.bank;

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../auth/auth.service';
 import { ValidationService } from '../validation.service';
+import { AppConfig } from '../app.config';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class ForgetPassComponent {
     vs = ValidationService;
     info:any={};
 
-    constructor(private router: Router,private AuthService: AuthService,
+    constructor(private router: Router,private AuthService: AuthService,public appConfig:AppConfig,
             private notify:ToastrService,private fb:FormBuilder ) {
               this.loginForm = this.fb.group({
                 username:['',[Validators.required]],
