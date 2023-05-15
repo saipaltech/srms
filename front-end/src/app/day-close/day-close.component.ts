@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, EventEmitter, QueryList, Renderer2, ViewChild, ViewChildren } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -16,6 +16,8 @@ import { ValidationService } from '../validation.service';
   providers: [DatePipe]
 })
 export class DayCloseComponent {
+  @ViewChildren('checkbox')
+  checkboxes!: QueryList<ElementRef>;
   formLayout: any;
   formLayout1: any;
   llgs:any;
@@ -28,14 +30,14 @@ export class DayCloseComponent {
         { id: 3, name: 'Opel' },
         { id: 4, name: 'Audi' },
     ];
-    
+    checkboxChangeEvent = new EventEmitter<any>();
   // textboxes: FormArray ;
-  
+  slctAll = false;
   voucherBankForm!: FormGroup;
   daycloseForm!: FormGroup;
   formBuilder: any;
   selectedval=new Array();
-    constructor(private appconfig:AppConfig,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private modalService: BsModalService, private r: Router,private auth:AuthService){
+    constructor(private renderer: Renderer2,private appconfig:AppConfig,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private modalService: BsModalService, private r: Router,private auth:AuthService){
       const ud = this.auth.getUserDetails();
       
       this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
@@ -79,9 +81,11 @@ export class DayCloseComponent {
         }});
     
     }
-
-    onCheckboxChange(e:any) {
-
+   
+    onCheckboxChange(e:any,item:any) {
+      // console.log(item);
+      const isChecked = e.target.checked;
+      // this.checkboxChangeEvent.emit({ isChecked, item });
       const options: FormArray = this.daycloseForm.get('options') as FormArray;
   
       if (e.target.checked) {
@@ -95,6 +99,7 @@ export class DayCloseComponent {
          options.removeAt(index);
   
       }
+     
       console.log(options.value);
       this.selectedval=options.value;
     }
@@ -168,7 +173,7 @@ acs:any;
       // this.textboxes.push(new FormControl(''));
       // console.log(this.check);
       if(this.check==false){
-        alert("Missing tick");
+        alert("Please confirm your submission!");
         return;
       }
       if (window.confirm('Are  you sure you want to save ?')) {
@@ -191,6 +196,44 @@ acs:any;
       }
       });
     }
+    }
+
+    selectAll(e:any){
+      this.daycloseForm.value['options']="";
+      this.selectedval=new Array();
+      if(e.target.checked==true){
+        this.checkboxes.forEach(checkbox => {
+          const checkboxElem = checkbox.nativeElement as HTMLInputElement;
+          checkboxElem.checked = true;
+          this.renderer.setProperty(checkboxElem, 'checked', false);
+          this.renderer
+            .selectRootElement(checkboxElem)
+            .dispatchEvent(new Event('change'));
+        });
+
+        this.checkboxes.forEach(checkbox => {
+          const checkboxElem = checkbox.nativeElement as HTMLInputElement;
+          checkboxElem.checked = true;
+          this.renderer.setProperty(checkboxElem, 'checked', true);
+          this.renderer
+            .selectRootElement(checkboxElem)
+            .dispatchEvent(new Event('change'));
+        });
+      }else{
+        this.checkboxes.forEach(checkbox => {
+          const checkboxElem = checkbox.nativeElement as HTMLInputElement;
+          checkboxElem.checked = true;
+          this.renderer.setProperty(checkboxElem, 'checked', false);
+          this.renderer
+            .selectRootElement(checkboxElem)
+            .dispatchEvent(new Event('change'));
+        });
+       
+      }
+      
+     
+      // this.slctAll = true;
+     
     }
 
     viewdayclose(lgid:any,acno:any,bankid:any){
