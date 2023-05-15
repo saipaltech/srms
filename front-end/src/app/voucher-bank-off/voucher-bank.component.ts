@@ -10,6 +10,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { Router, NavigationExtras, Route } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { AppConfig } from '../app.config';
+import { BankService } from '../bank/bank.service';
 
 
 
@@ -52,7 +53,7 @@ export class VoucherBankOffComponent implements OnInit {
   approved ="0";
   items=new Array();
 
-constructor(private appconfig:AppConfig ,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherServiceOff, private modalService: BsModalService, private r: Router,private auth:AuthService){
+constructor(private appconfig:AppConfig ,private datePipe: DatePipe,private bs:BankService, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherServiceOff, private modalService: BsModalService, private r: Router,private auth:AuthService){
   
   this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
@@ -71,7 +72,8 @@ constructor(private appconfig:AppConfig ,private datePipe: DatePipe, private toa
       purpose: [''],
       amount:['',Validators.pattern('[0-9]+')],
       ttype:['1'],
-      cb:['']
+      cb:[''],
+      district:['']
     }
     this.voucherBankForm =fb.group(this.formLayout)
     this.srchForm = new FormGroup({
@@ -112,6 +114,7 @@ ngOnInit(): void {
   // console.log(this.items);
   this.pagination.perPage = this.perPages[0];
   this.getList();
+  this.getDistrict();
   this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
     this.getPalikaDetails();
     this.getBankAccounts();
@@ -129,6 +132,25 @@ ngOnInit(): void {
 
     // }});
 }
+
+dist:any;
+  getDistrict(){
+    this.bs.getDistrict().subscribe({next:(d:any)=>{
+      this.dist = d;
+    },error:err=>{
+
+    }});
+  }
+
+  getPalika(id:any){
+    this.bs.getPalika(id).subscribe({next:(d:any)=>{
+      this.llgs = d;
+    },error:err=>{
+
+    }});
+  }
+
+
 getRevenue(){
   const bankorgid=this.voucherBankForm.value["bankorgid"];
    this.bvs.getRevenue(bankorgid).subscribe({next:(dt)=>{
@@ -260,10 +282,9 @@ checkvalue(isChecked: boolean){
     );
   }
 
-  setStatus(val: any){
-    this.approved = val;
+  setStatus(val: any) {
+    this.approved = val.target.value;
     this.getList();
-  
   }
 
 

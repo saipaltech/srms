@@ -72,7 +72,7 @@ public class UsersService extends AutoService {
 		Paginator p = new Paginator();
 
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select(" u.id,u.name,u.username,u.post, u.mobile ,branches.name as bname, u.approved,u.disabled")
+				.select(" cast(u.id as varchar) as id,u.name,u.username,u.post, u.mobile ,branches.name as bname, u.approved,u.disabled")
 				.sqlBody("from " + table + " as u join branches on u.branchid = branches.id " + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -106,10 +106,10 @@ public class UsersService extends AutoService {
 					+ "";
 		}
 
-		sql = "INSERT INTO users(name, post,permid, username, password,amountlimit, mobile ,bankid, branchid , disabled, approved) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+		sql = "INSERT INTO users(name, post,permid, username, password,amountlimit, mobile,email ,bankid, branchid , disabled, approved) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
 				Arrays.asList(model.name, model.post,model.permid, model.username, model.password,
-						model.amountlimit.isBlank() ? 0 : model.amountlimit, model.mobile, bankId, model.branchid,
+						model.amountlimit.isBlank() ? 0 : model.amountlimit, model.mobile,model.email, bankId, model.branchid,
 						model.disabled, model.approved));
 		String permid = request("permid") + "";
 		if(rowEffect.getErrorNumber()==0) {
@@ -172,7 +172,7 @@ public class UsersService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
 
-		String sql = "select id,name, username, post, amountlimit ,mobile, permid ,branchid,disabled, approved from "
+		String sql = "select id,name, username, post, amountlimit ,mobile,email, permid ,branchid,disabled, approved from "
 				+ table + " where id=?";
 
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
@@ -190,8 +190,8 @@ public class UsersService extends AutoService {
 		DbResponse rowEffect;
 		Users model = new Users();
 		model.loadData(document);
-		String sql = "UPDATE users set name=?, mobile=?,branchid=?,post=?,permid=?, amountlimit=? ,disabled=?, approved=? where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.name, model.mobile, model.branchid, model.post, model.permid,
+		String sql = "UPDATE users set name=?, mobile=?,email=?,branchid=?,post=?,permid=?, amountlimit=? ,disabled=?, approved=? where id=?";
+		rowEffect = db.execute(sql, Arrays.asList(model.name, model.mobile,model.email, model.branchid, model.post, model.permid,
 				model.amountlimit.isBlank() ? 0 : model.amountlimit, model.disabled, model.approved, model.id));
 		String permid = request("permid") + "";
 		String sqls = "";

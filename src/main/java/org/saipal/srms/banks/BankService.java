@@ -157,5 +157,11 @@ public class BankService extends AutoService {
 		String sql = "select districtid as id,namenp from admin_district ";
 		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList()));
 	}
+	
+	public ResponseEntity<List<Map<String, Object>>> getPalika() {
+		String did=request("did");
+		String sql = "select cast(id as varchar) as code, namenp as name from admin_local_level_structure where districtid=? ";
+		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList(did)));
+	}
 
 }

@@ -1,21 +1,22 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
+import { ChequeEntryService } from '../cheque-entry/cheque-entry.service';
 
 @Component({
   selector: 'app-new-header',
   templateUrl: './new-header.component.html',
   styleUrls: ['./new-header.component.scss']
 })
-export class NewHeaderComponent {
+export class NewHeaderComponent implements OnInit{
   
   branch = "";
   bank = "";
   username="";
   name="";
 
-  constructor(private auth: AuthService, @Inject(DOCUMENT) private document: Document, private router: Router) {
+  constructor(private auth: AuthService, @Inject(DOCUMENT) private document: Document, private router: Router,private bvs:ChequeEntryService) {
     const details = auth.getUserDetails();
     if (details) {
       this.bank = details.bank;
@@ -34,6 +35,19 @@ export class NewHeaderComponent {
     } else {
       this.document.body.classList.add(kl);
     }
+  }
+
+  usertype:any
+  ngOnInit(): void {
+    // alert("hh");
+    this.bvs.getUsertype().subscribe({next:(dt)=>{
+      // console.log(dt.usertype);
+      this.usertype = dt.usertype;
+      // console.log(this.usertype);
+      // this.voucherBankForm.patchValue({"lgid":this.dlgid});
+    },error:err=>{
+
+    }});
   }
 
   

@@ -12,6 +12,9 @@ export class BankService {
   getDistrict(){
     return this.api.get(this.url+'/getDistrict');
   }
+  getPalika(id:any){
+    return this.api.get(this.url+'/getPalika?did='+id);
+  }
   url="bank";
   create(data: any) {
     // console.log(data);
