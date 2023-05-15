@@ -36,11 +36,6 @@
                 <button type="button" class="btn btn-primary mt-2">Get Pin</button>
               </div>
               <div class="form-text text-danger">You will get pincode on your registered mobile or email.</div>
-              <div
-                [ngClass]="vs.getMessageClass(loginForm.controls['username'])"
-              >
-                {{ vs.getMessage(loginForm.controls["username"]) }}
-              </div>
             </div>
             <div class="mb-4">
               <label class="form-label">Pin Code</label>
