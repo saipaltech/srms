@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ValidationService } from '../validation.service';
 import { Location } from '@angular/common';
 import { UserProfileService } from '../user-profile/user-profile.service';
+import { AppConfig } from '../app.config';
 
 @Component({
   selector: 'app-front-end-password-change',
@@ -21,7 +22,7 @@ export class FrontEndPasswordChangeComponent {
   info:any={};
   bsModalRef?: BsModalRef;
   username="";
-  constructor(private router: Router,private l: Location,
+  constructor(private router: Router,private l: Location,public appConfig:AppConfig,
           private notify:ToastrService,private fb:FormBuilder, private RS: UserProfileService) {
       this.loginForm = this.fb.group({
         oldpassword:['',[Validators.required]],
