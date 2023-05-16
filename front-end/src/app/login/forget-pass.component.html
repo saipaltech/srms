@@ -33,24 +33,24 @@
                 [ngClass]="vs.getControlClass(loginForm.controls['username'])"
               />
               <div class="col-sm">
-                <button type="button" class="btn btn-primary mt-2">Get Pin</button>
+                <button type="button" class="btn btn-primary mt-2" (click)="getPincode()" [disabled]="!pinenable">Get Pin</button>
               </div>
               <div class="form-text text-danger">You will get pincode on your registered mobile or email.</div>
             </div>
             <div class="mb-4">
               <label class="form-label">Pin Code</label>
-              <input type="password" class="form-control" formControlName="oldpassword"
-                [ngClass]="vs.getControlClass(loginForm.controls['oldpassword'])"
+              <input type="password" class="form-control" formControlName="pincode"
+                [ngClass]="vs.getControlClass(loginForm.controls['pincode'])"
               />
               <div
-                [ngClass]="vs.getMessageClass(loginForm.controls['oldpassword'])"
+                [ngClass]="vs.getMessageClass(loginForm.controls['pincode'])"
               >
-                {{ vs.getMessage(loginForm.controls["oldpassword"]) }}
+                {{ vs.getMessage(loginForm.controls["pincode"]) }}
               </div>
             </div>
             <div class="mb-4">
               <label class="form-label">New Password</label>
-              <input type="password" class="form-control" formControlName="password"
+              <input type="password" class="form-control" formControlName="password" placeholder="8+ chars with 1 uppercase, 1 number, and 1 special char."
                 [ngClass]="vs.getControlClass(loginForm.controls['password'])"
               />
               <div

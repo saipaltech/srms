@@ -58,7 +58,10 @@ public class SecurityConfig {
 									cp + "/web/**",
 									cp + "/users/change-password-login",
 									cp + "/taxpayer-voucher/dayclosecheque-details",
-									cp + "/taxpayer-voucher/dayclose-details")
+									cp + "/taxpayer-voucher/dayclose-details",
+									cp + "/auth/get-pincode",
+									cp + "/users/reset-passbypin"
+									)
 							.permitAll()
 							.anyRequest()
 							.authenticated()

@@ -37,4 +37,9 @@ public class AuthController {
 	public ResponseEntity<Map<String, Object>> apiLogin() {
 		return authService.apiLogin();
 	}
+	
+	@PostMapping("get-pincode")
+	public ResponseEntity<Map<String, Object>> getPincode() {
+		return authService.getPincode();
+	}
 }

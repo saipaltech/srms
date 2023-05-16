@@ -112,5 +112,10 @@ public class UsersController {
 	public ResponseEntity<Map<String, Object>> changePasswordLogin(HttpServletRequest request) {
 			return objService.changePasswordLogin();
 	}
+	
+	@PostMapping("reset-passbypin")
+	public ResponseEntity<Map<String, Object>> resetPassByPin(HttpServletRequest request) {
+			return objService.resetPassByPin();
+	}
 
 }

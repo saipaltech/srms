@@ -358,4 +358,38 @@ public class UsersService extends AutoService {
 		return ResponseEntity.ok(Arrays.asList());
 	}
 
+	public ResponseEntity<Map<String, Object>> resetPassByPin() {
+		String password = request("password");
+		String cpassword = request("cpassword");
+		String pin = request("pincode");
+		String username = request("username");
+		if (!cpassword.equals(password))
+			return Messenger.getMessenger().setMessage("Password and Confirm Passowrds do not match").error();
+		
+		Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$");
+        Matcher matcher = pattern.matcher(password);
+        
+        if (!matcher.matches()) {
+        	return Messenger.getMessenger().setMessage("Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.").error();
+        } 
+		
+		Tuple t = db.getSingleResult("select id, password from users where username= ?", Arrays.asList(username));
+		if (t != null) {
+			String sql = "select top 1 otp from otp_log where userid=? and expiry>=GETDATE() and otp=? and type=1 order by createdat desc";
+			Tuple tt = db.getSingleResult(sql, Arrays.asList(t.get("id"), pin));
+			if (tt!=null) {
+				DbResponse rowEffect = db
+						.execute("update users set password='" + pe.encode(password) + "', pwchangedate=format(getdate(),'yyyyMMdd') where id=" + t.get("id"));
+				if (rowEffect.getErrorNumber() == 0) {
+					return Messenger.getMessenger().setMessage("Password Changed Successfully").success();
+				} else {
+					return Messenger.getMessenger().setMessage("Pasword change unsuccessful").error();
+				}
+			} else {
+				return Messenger.getMessenger().setMessage("Pin does not match.").error();
+			}
+		}
+		return Messenger.getMessenger().setMessage("User Does not Exist..").error();
+	}
+
 }
