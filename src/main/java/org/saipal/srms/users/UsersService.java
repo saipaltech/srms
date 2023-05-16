@@ -358,4 +358,9 @@ public class UsersService extends AutoService {
 		return ResponseEntity.ok(Arrays.asList());
 	}
 
+	public ResponseEntity<Map<String, Object>> changeOtpSettings() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

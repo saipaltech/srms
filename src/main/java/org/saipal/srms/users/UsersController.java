@@ -112,5 +112,9 @@ public class UsersController {
 	public ResponseEntity<Map<String, Object>> changePasswordLogin(HttpServletRequest request) {
 			return objService.changePasswordLogin();
 	}
-
+	
+	@PostMapping("otp-settings")
+	public ResponseEntity<Map<String, Object>> OtpSettings(HttpServletRequest request) {
+			return objService.changeOtpSettings();
+	}
 }
