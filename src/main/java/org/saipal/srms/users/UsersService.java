@@ -146,6 +146,11 @@ public class UsersService extends AutoService {
 		if ((!(eres.get(0) + "").equals("0"))) {
 			return Messenger.getMessenger().setMessage("Email already exists.").error();
 		}
+		String mbl = "select count(mobile) from users where mobile=?";
+		Tuple resu = db.getSingleResult(mbl, Arrays.asList(model.mobile));
+		if (!(resu.get(0) + "").equals("0")) {
+			return Messenger.getMessenger().setMessage("Mobile already exists.").error();
+		}
 		String sq = "select count(id) from branches where bankid=? and ishead=1";
 		Tuple resp = db.getSingleResult(sq, Arrays.asList(model.bankid));
 		if ((!(resp.get(0) + "").equals("1"))) {
@@ -166,7 +171,6 @@ public class UsersService extends AutoService {
 			String sqls = "Insert into users_perms (userid, permid) values((select top 1 id from users where username = ?), 2),((select top 1 id from users where username = ?), 3)";
 			db.execute(sqls, Arrays.asList(model.username, model.username));
 			return Messenger.getMessenger().success();
-
 		} else {
 			return Messenger.getMessenger().error();
 		}
@@ -192,6 +196,17 @@ public class UsersService extends AutoService {
 		DbResponse rowEffect;
 		Users model = new Users();
 		model.loadData(document);
+		
+		String mbl = "select count(mobile) from users where mobile=? and id<>?";
+		Tuple resu = db.getSingleResult(mbl, Arrays.asList(model.mobile,id));
+		if (!(resu.get(0) + "").equals("0")) {
+			return Messenger.getMessenger().setMessage("Mobile already exists.").error();
+		}
+		String eml = "select count(email) from users where email=? and id<>?";
+		Tuple rese = db.getSingleResult(eml, Arrays.asList(model.email,id));
+		if (!(rese.get(0) + "").equals("0")) {
+			return Messenger.getMessenger().setMessage("Email already exists.").error();
+		}
 		String sql = "UPDATE users set name=?, mobile=?,email=?,branchid=?,post=?,permid=?, amountlimit=? ,disabled=?, approved=? where id=?";
 		rowEffect = db.execute(sql,
 				Arrays.asList(model.name, model.mobile, model.email, model.branchid, model.post, model.permid,
