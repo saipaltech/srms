@@ -53,6 +53,7 @@ import { DayCloseChequeComponent } from './day-close-cheque/day-close-cheque.com
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { FrontEndPasswordChangeComponent } from './front-end-password-change/front-end-password-change.component';
+import { ForgetPassComponent } from './login/forget-pass.component';
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -90,9 +91,10 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
     NewMainBodyComponent,
     NiceAdminComponent,
     SidebaritemComponent,
-SidebaritemInnerComponent,
-FrontEndPasswordChangeComponent,
-DayCloseChequeComponent
+    SidebaritemInnerComponent,
+    FrontEndPasswordChangeComponent,
+    DayCloseChequeComponent,
+    ForgetPassComponent
   ],
   imports: [
     BrowserModule,

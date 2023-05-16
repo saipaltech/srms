@@ -3,7 +3,11 @@ import { AuthService } from '../auth/auth.service';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { ChequeEntryService } from '../cheque-entry/cheque-entry.service';
+<<<<<<< HEAD
 import { TranslateService } from '@ngx-translate/core';
+=======
+import { AppConfig } from '../app.config';
+>>>>>>> 24e5d818e88ee1853361ec1844b24bcc3239df17
 
 @Component({
   selector: 'app-new-header',
@@ -17,7 +21,11 @@ export class NewHeaderComponent implements OnInit{
   username="";
   name="";
 
+<<<<<<< HEAD
   constructor(private auth: AuthService, @Inject(DOCUMENT) private document: Document, private router: Router,private bvs:ChequeEntryService, private translateService: TranslateService) {
+=======
+  constructor(private auth: AuthService, @Inject(DOCUMENT) private document: Document, private router: Router,private bvs:ChequeEntryService,public appConfig:AppConfig) {
+>>>>>>> 24e5d818e88ee1853361ec1844b24bcc3239df17
     const details = auth.getUserDetails();
     if (details) {
       this.bank = details.bank;

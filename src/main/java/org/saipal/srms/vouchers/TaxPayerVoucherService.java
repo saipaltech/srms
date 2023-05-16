@@ -508,7 +508,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 //			cond= " where als.id <> "+tt.get(0);
 //		}
 		List<Tuple> d = db.getResultList(
-				"select distinct als.id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid=? "+cond+" order by als.namenp",
+				"select distinct cast(als.id as varchar) as id,als.nameen,als.namenp from admin_local_level_structure als join bankaccount ba on als.id=ba.lgid and bankid=? "+cond+" order by als.namenp",
 				Arrays.asList(auth.getBankId()));
 
 		if (d.size() > 0) {

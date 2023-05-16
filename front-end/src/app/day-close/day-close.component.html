@@ -62,27 +62,27 @@
             <thead>
               <tr>
     
-                <th scope="col">{{"Action" | translate}}</th>
-                <th scope="col">{{"Local Level" | translate}}</th>
-                <th scope="col">{{"Account Number" | translate}}</th>
-                <th scope="col">{{"Debit" | translate}}</th>
-                <th scope="col">{{"Credit" | translate}}</th>
-                <th scope="col">{{"Balance" | translate}}</th>
-                <th scope="col">{{"Core Banking ID" | translate}}</th>
+                <th scope="col"> <input type="checkbox" (change)="selectAll($event)" value="1"> Select all</th>
+                <th scope="col">Palika</th>
+                <th scope="col">Account Number</th>
+                <th scope="col">Debit</th>
+                <th scope="col">Credit</th>
+                <th scope="col">Balance</th>
+                <th scope="col">Core Banking ID</th>
                 <th>View</th>
               </tr>
             </thead>
             <tbody formGroupName="corebank">
               <tr *ngFor="let item of lists; let i = index">
                 <!-- <td>{{ i+1 }}</td> -->
-                <td><input class="form-check-input" type="checkbox" (change)="onCheckboxChange($event)" value="{{item.lgid}}||{{item.accountno}}||{{item.accountnumber}}||{{item.accountname}}||{{item.amountdr}}||{{item.amountcr}}"   name="dayclose"></td>
+                <td><input class="form-check-input" id="cb{{i}}" type="checkbox" class="my-checkbox" #checkbox  (change)="onCheckboxChange($event,item)" value="{{item.lgid}}||{{item.accountno}}||{{item.accountnumber}}||{{item.accountname}}||{{item.amountdr}}||{{item.amountcr}}"   name="dayclose"></td>
                 <td>{{ item.palika }}</td>
                 <td>{{ item.accountname }}[{{ item.accountnumber }}]</td>
                 <td>{{ item.amountdr }}</td>
                 <td>{{ item.amountcr }}</td>
                 <td>{{ item.balance }}</td>
                 <td><input type="text" id="textbox{{i}}" formControlName="{{item.accountno}}"></td>
-                <td><button type="button" (click)="viewdayclose(item.lgid,item.accountno,item.bankid)">View</button></td>
+                <td><button type="button" class="btn btn-info btn-sm" (click)="viewdayclose(item.lgid,item.accountno,item.bankid)">View</button></td>
               
               </tr>
       

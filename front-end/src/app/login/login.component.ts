@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../auth/auth.service';
 import { ValidationService } from '../validation.service';
 import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
+import { AppConfig } from '../app.config';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +21,7 @@ export class LoginComponent {
     info:any={};
     bsModalRef?: BsModalRef;
 
-    constructor(private router: Router,private AuthService: AuthService,
+    constructor(private router: Router,private AuthService: AuthService,public appConfig:AppConfig,
             private notify:ToastrService,private fb:FormBuilder,private modalService: BsModalService ) {
         this.loginForm = this.fb.group({
             username:['',[Validators.required]],

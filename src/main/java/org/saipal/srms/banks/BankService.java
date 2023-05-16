@@ -154,8 +154,21 @@ public class BankService extends AutoService {
 	}
 
 	public ResponseEntity<List<Map<String, Object>>> getDistrict() {
-		String sql = "select districtid as id,namenp from admin_district ";
-		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList()));
+		String sql = "select districtid as id,namenp from admin_district as a "
+				+ " inner join (select distinct a.districtid as did from admin_local_level_structure as a inner join bankaccount as b on a.id=b.lgid "
+				+ " where b.approved=1 and b.disabled=0 and b.bankid=? )  as b on a.districtid=b.did order by namenp ";
+
+		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList(auth.getBankId())));
+	}
+	
+	public ResponseEntity<List<Map<String, Object>>> getPalika() {
+		String did=request("did");
+		String sql = "select cast(a.id as varchar) as code, a.namenp as name from "
+				+ " admin_local_level_structure as a inner join "
+				+ " (select distinct lgid from  bankaccount  where  approved=1 and disabled=0 and  bankid=? ) as b "
+				+ " on a.id=b.lgid  where districtid=? order by name ";
+		System.out.println("\n\n"+sql+"\n\n");
+		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList(auth.getBankId(),did)));
 	}
 
 }
