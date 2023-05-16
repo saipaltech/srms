@@ -11,7 +11,7 @@
           (ngSubmit)="voucherBankFormSubmit()">
             <div class="row">
               <div class="col-6">
-                <label for="username" class="form-label req"> मिति</label>
+                <label for="username" class="form-label req"> {{"Date" | translate}}</label>
                 <div class="input-group has-validation">
                   <input
                     readonly
@@ -24,7 +24,7 @@
                 </div>
               </div>
               <div class="col-sm-6">
-                <label for="firstName" class="form-label ">पालिका</label>
+                <label for="firstName" class="form-label ">{{"Local Level" | translate}}</label>
                 <ng-select formControlName="lgid" (change)="getBankAccounts()" >
                   <ng-option *ngFor="let l of llgs" [value]="l.code">{{
                     l.name
@@ -33,7 +33,7 @@
                 <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['lgid'])">{{vs.getMessage(voucherBankForm.controls['lgid'])}}</div>
               </div>
               <div class="col-6">
-                <label for="username" class="form-label ">खाता नंबर</label>
+                <label for="username" class="form-label ">{{"Account Number" | translate}}</label>
                 <select
                   class="form-select form-select-sm" 
                   formControlName="acno"
@@ -62,7 +62,7 @@
             <thead>
               <tr>
     
-                <th scope="col">Action</th>
+                <th scope="col"><input type="checkbox" (change)="selectAll($event)" value="1"> Select all</th>
                 <th scope="col">Palika</th>
                 <th scope="col">Account Number</th>
                 <th scope="col">Debit</th>
@@ -75,14 +75,14 @@
             <tbody formGroupName="corebank">
               <tr *ngFor="let item of lists; let i = index">
                 <!-- <td>{{ i+1 }}</td> -->
-                <td><input class="form-check-input" type="checkbox" (change)="onCheckboxChange($event)" value="{{item.lgid}}||{{item.accountno}}||{{item.accountnumber}}||{{item.accountname}}||{{item.amountdr}}||{{item.amountcr}}"   name="dayclose"></td>
+                <td><input class="form-check-input" id="cb{{i}}" type="checkbox" class="my-checkbox" #checkbox (change)="onCheckboxChange($event)" value="{{item.lgid}}||{{item.accountno}}||{{item.accountnumber}}||{{item.accountname}}||{{item.amountdr}}||{{item.amountcr}}"   name="dayclose"></td>
                 <td>{{ item.palika }}</td>
                 <td>{{ item.accountname }}[{{ item.accountnumber }}]</td>
                 <td>{{ item.amountdr }}</td>
                 <td>{{ item.amountcr }}</td>
                 <td>{{ item.balance }}</td>
                 <td><input type="text" id="textbox{{i}}" formControlName="{{item.accountno}}"></td>
-                <td><button type="button" (click)="viewdayclose(item.lgid,item.accountno,item.bankid)">View</button></td>
+                <td><button type="button" class="btn btn-primary btn-sm" (click)="viewdayclose(item.lgid,item.accountno,item.bankid)">View</button></td>
               
               </tr>
       
@@ -105,7 +105,7 @@
         <br>
         <div class="row" style="margin-top: 10px;">
           <div class="col-md-12">
-            <button class="btn btn-success btn-sm" type="submit">Save</button>
+            <button class="btn btn-success btn-sm" type="submit">{{"Save" | translate}}</button>
             &nbsp; &nbsp;
            
           </div>

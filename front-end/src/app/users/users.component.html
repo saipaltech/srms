@@ -16,7 +16,7 @@
             <input type="hidden" formControlName="id" />
             <!--<input type="hidden" formControlName="bankid">-->
             <div class="col-6">
-              <label class="form-label req">Branch</label>
+              <label class="form-label req">{{"Branch" | translate}}</label>
               <div class="input-group has-validation">
 
                 <ng-select formControlName="branchid" (change)="getBranches()" class="w-100">
@@ -32,7 +32,7 @@
             </div>
 
             <div class="col-6">
-              <label class="form-label req">User Type</label>
+              <label class="form-label req">{{"User Type" | translate}}</label>
               <div class="input-group has-validation">
                 <select class="form-select form-select-sm" formControlName="permid"
                   [ngClass]="vs.getControlClass(bankForm.controls['permid'])">
@@ -43,7 +43,7 @@
             </div>
 
             <div class="col-6">
-              <label class="form-label req">Name</label>
+              <label class="form-label req">{{"Name" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="name" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['name'])" />
@@ -53,7 +53,7 @@
               </div>
             </div>
             <div class="col-6">
-              <label class="form-label req">Post</label>
+              <label class="form-label req">{{"Post" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="post" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['post'])" />
@@ -64,7 +64,7 @@
             </div>
 
             <div class="col-6">
-              <label class="form-label" [ngClass]="{'req' : fieldreq }">Username</label>
+              <label class="form-label" [ngClass]="{'req' : fieldreq }">{{"Username" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="username" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['username'])" />
@@ -75,7 +75,7 @@
             </div>
 
             <div class="col-6" [ngClass]="{'vis' : !pwdShowHide}">
-              <label class="form-label" [ngClass]="{'req' : fieldreq }">Password</label>
+              <label class="form-label" [ngClass]="{'req' : fieldreq }">{{"Password" | translate}}</label>
               <div class="input-group has-validation">
                 <input #password formControlName="password" type="password" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['password'])" placeholder="8+ chars with 1 uppercase, 1 number, and 1 special char." />
@@ -87,7 +87,7 @@
             </div>
 
             <div class="col-6">
-              <label class="form-label req">Mobile</label>
+              <label class="form-label req">{{"Mobile" | translate}}</label>
               <div class="input-group has-validation">
                 <input type="text" formControlName="mobile" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['mobile'])" />
@@ -98,6 +98,9 @@
             </div>
 
             <div class="col-6">
+<<<<<<< HEAD
+              <label class="form-label">{{"Amount Limit" | translate}}</label>
+=======
               <label class="form-label req">Email</label>
               <div class="input-group has-validation">
                 <input type="text" formControlName="email" class="form-control form-control-sm"
@@ -110,6 +113,7 @@
 
             <div class="col-6">
               <label class="form-label">Amount Limit</label>
+>>>>>>> 24e5d818e88ee1853361ec1844b24bcc3239df17
               <div class="input-group has-validation">
                 <input formControlName="amountlimit" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['amountlimit'])" />
@@ -121,7 +125,7 @@
             </div>
 
             <div class="col-sm-6">
-              <label class="form-label req">Disabled</label>
+              <label class="form-label req">{{"Disabled" | translate}}</label>
               <div class="input-group has-validation">
                 <select class="form-select form-select-sm" formControlName="disabled"
                   [ngClass]="vs.getControlClass(bankForm.controls['disabled'])">
@@ -151,10 +155,10 @@
           <br />
           <div class="row">
             <div class="col-md-12">
-              <button class="btn btn-success btn-sm" type="submit">Submit</button>
+              <button class="btn btn-success btn-sm" type="submit">{{"Submit" | translate}}</button>
               &nbsp; &nbsp;
               <button class="btn btn-danger btn-sm" type="button" (click)="resetForm()">
-                Clear
+                {{"Clear" | translate}}
               </button>
             </div>
           </div>
@@ -173,11 +177,11 @@
           <table class="display responsive-table w-100 table table-striped datatable">
             <thead>
               <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Post</th>
-                <th scope="col">Username</th>
-                <th scope="col">Branch</th>
-                <th scope="col">Action</th>
+                <th scope="col">{{"Name" | translate}}</th>
+                <th scope="col">{{"Post" | translate}}</th>
+                <th scope="col">{{"Username" | translate}}</th>
+                <th scope="col">{{"Branch" | translate}}</th>
+                <th scope="col">{{"Action" | translate}}</th>
               </tr>
             </thead>
             <tbody>

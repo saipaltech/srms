@@ -41,43 +41,43 @@
 
             <tbody>
               <tr>
-                <th scope="row">कारोबार संकेत नंबर</th>
+                <th scope="row">{{"Transaction Id" | translate}}</th>
                 <td>{{ transDetails.transactionid }}</td>
               </tr>
               <tr>
-                <th scope="row">कार्यालय</th>
+                <th scope="row">{{"Office" | translate}}</th>
                 <td>{{ transDetails.officename }}</td>
               </tr>
 
               <tr>
-                <th scope="row">भौचर मिति</th>
+                <th scope="row">{{"Voucher Date" | translate}}</th>
                 <td>{{ transDetails.voucherdate }}</td>
               </tr>
 
               <tr>
-                <th scope="row">खाता नाम</th>
+                <th scope="row">{{"Account Name" | translate}}</th>
                 <td>{{transDetails.accountname}}</td>
               </tr>
 
               <tr>
-                <th scope="row">खाता नंबर</th>
+                <th scope="row">{{"Account No" | translate}}</th>
                 <td>{{transDetails.accountnumber}}</td>
               </tr>
 
               <tr>
-                <th scope="row">रकम</th>
+                <th scope="row">{{"Amount" | translate}}</th>
                 <td>{{transDetails.amount}}</td>
               </tr>
               <tr *ngIf="istab==2">
-                <th scope="row">करदाताको नाम</th>
+                <th scope="row">{{"Taxpayer Name" | translate}}</th>
                 <td>{{transDetails.taxpayername}}</td>
               </tr>
               <tr *ngIf="istab==2">
-                <th scope="row">करदाताको पान नंबर</th>
+                <th scope="row">{{"axpayer Pan No." | translate}}</th>
                 <td>{{transDetails.vatpno}}</td>
               </tr>
               <tr *ngIf="istab==2">
-                <th scope="row">करदाताको ठेगाना </th>
+                <th scope="row">{{"Taxpayer Address" | translate}}</th>
                 <td>{{transDetails.address}}</td>
               </tr>
 
@@ -91,7 +91,7 @@
             <input type="hidden" formControlName="id" />
             <input type="hidden" formControlName="transactionid" />
             <div class="col-6">
-              <label class="form-label req">जम्मा गरेको मिति</label>
+              <label class="form-label req">{{"Deposite Date" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="depositdate" type="text" readonly placeholder="{{ myDate | date : 'Date' }}"
                   class="form-control form-control-sm" [ngClass]="
@@ -106,7 +106,7 @@
             </div>
 
             <div class="col-6">
-              <label class="form-label">Deposit Slip No.</label>
+              <label class="form-label">{{"Deposite Slip Number" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="bankvoucherno" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['bankvoucherno'])" />
@@ -116,7 +116,7 @@
               </div>
             </div>
             <div class="col-6">
-              <label class="form-label req">जम्मा गरेको रकम</label>
+              <label class="form-label req">{{"Deposit Amount" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="amount" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['amount'])" />
@@ -127,7 +127,7 @@
             </div>
 
             <div class="col-6">
-              <label class="form-label req">बिबरण</label>
+              <label class="form-label req">{{"Description" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="remarks" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['remarks'])" />
@@ -144,10 +144,10 @@
           <br />
           <div class="row">
             <div class="col-md-12">
-              <button class="btn btn-success btn-sm" type="submit">Submit</button>
+              <button class="btn btn-success btn-sm" type="submit">{{"Submit" | translate}}</button>
               &nbsp; &nbsp;
               <button class="btn btn-danger btn-sm" type="button" (click)="resetForm()">
-                Clear
+                {{"Clear" | translate}}
               </button>
             </div>
           </div>
@@ -228,10 +228,10 @@
           <br />
           <div class="row">
             <div class="col-md-12">
-              <button class="btn btn-success btn-sm" type="submit">Submit</button>
+              <button class="btn btn-success btn-sm" type="submit">{{"Submit" | translate}}</button>
               &nbsp; &nbsp;
               <button class="btn btn-danger btn-sm" type="button" (click)="resetForm()">
-                Clear
+                {{"Clear" | translate}}
               </button>
             </div>
           </div>
@@ -251,11 +251,11 @@
             <!--table-borderless-->
             <thead>
               <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Office Name</th> 
-                <th scope="col">Account No.</th>
-                <th scope="col">Transaction Id</th>                               
-                <th scope="col">Amount</th>
+                <th scope="col">{{"Date" | translate}}</th>
+                <th scope="col">{{"Office Name" | translate}}</th> 
+                <th scope="col">{{"Account No." | translate}}</th>
+                <th scope="col">{{"Transaction Id" | translate}}</th>                               
+                <th scope="col">{{"Amount" | translate}}</th>
 
 
 
