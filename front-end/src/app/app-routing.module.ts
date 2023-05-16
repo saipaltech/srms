@@ -25,6 +25,7 @@ import { NewMainBodyComponent } from './new-main-body/new-main-body.component';
 import { NiceAdminComponent } from './nice-admin/nice-admin.component';
 import { FrontEndPasswordChangeComponent } from './front-end-password-change/front-end-password-change.component';
 import { ForgetPassComponent } from './login/forget-pass.component';
+import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
 {
@@ -90,6 +91,10 @@ const routes: Routes = [
           {
             path: 'day-close-cheque',
             component: DayCloseChequeComponent
+          },
+          {
+            path: 'settings',
+            component: SettingsComponent
           }
           
         ]
