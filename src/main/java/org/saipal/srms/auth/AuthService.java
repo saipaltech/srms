@@ -47,6 +47,9 @@ public class AuthService {
 	
 	@Value("${sms.pinmessage}")
 	private String pinMsgFormat;
+	
+	@Value("${sms.dev:1}")
+	private String isDev;
 
 	public ResponseEntity<Map<String, Object>> login() {
 		String username = doc.getElementById("username").value;
@@ -99,11 +102,18 @@ public class AuthService {
 				Random rnd = new Random();
 				 int number = rnd.nextInt(999999);
 				 String otp = String.format("%06d", number);
-				//String otp = "123456";
+				 if(isDev.equals("1")) {
+					 otp = "123456";
+				 }
 				String sq = "insert into otp_log (reqid,userid,mobileno,expiry,otp) values (?,?,?,(select DATEADD(MINUTE, 2, GETDATE())),?)";
 				DbResponse resp = db.execute(sq, Arrays.asList(reqid, t.get("id"), mobile, otp));
 				if (resp.getErrorNumber() == 0) {
 					String message = msgFormat.replace("OTPCODE", otp);
+					if(isDev.equals("1")) {
+						return Messenger.getMessenger().setData(data).setMessage(
+								"Your OTP is "+otp+". Please insert the OTP below and submit.")
+								.success();
+					}
 					try {
 						JSONObject ob = sms.sendSms(t.get("mobile")+"", message, reqid);
 						if ( ob.getInt("status_code")==200) {
