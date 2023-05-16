@@ -57,6 +57,7 @@ import { ForgetPassComponent } from './login/forget-pass.component';
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
     SidebaritemInnerComponent,
     FrontEndPasswordChangeComponent,
     DayCloseChequeComponent,
-    ForgetPassComponent
+    ForgetPassComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
