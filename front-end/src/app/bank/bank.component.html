@@ -27,7 +27,7 @@
           <div class="row g-3">
             <input type="hidden" formControlName="id">
             <div class="col-sm-6">
-              <label class="form-label req">Bank</label>
+              <label class="form-label req">{{"Bank" | translate}}</label>
 
               <ng-select formControlName="bankid">
                 <ng-option *ngFor="let b of banks;let i=index;" [value]="b.id">
@@ -45,13 +45,13 @@
 
 
             <div class="col-sm-6">
-              <label class="form-label req">Disabled</label>
+              <label class="form-label req">{{"Disabled" | translate}}</label>
               <div class="input-group has-validation">
                 <select class="form-select form-select-sm" formControlName="disabled"
                   [ngClass]="vs.getControlClass(bankForm.controls['disabled'])">
 
-                  <option value="1">Yes</option>
-                  <option value="0">No</option>
+                  <option value="1">{{"Yes" | translate}}</option>
+                  <option value="0">{{"No" | translate}}</option>
                 </select>
                 <div [ngClass]="vs.getMessageClass(bankForm.controls['disabled'])">
                   {{vs.getMessage(bankForm.controls['disabled'])}}</div>
@@ -83,10 +83,10 @@
           <br />
           <div class="row">
             <div class="col-md-12">
-              <button class="btn btn-success btn-sm" type="submit">Submit</button>
+              <button class="btn btn-success btn-sm" type="submit">{{"Submit" | translate}}</button>
               &nbsp;
               &nbsp;
-              <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">Clear</button>
+              <button class="btn btn-danger btn-sm" type="reset" (click)="resetForm()">{{"Clear" | translate}}</button>
             </div>
           </div>
 
@@ -108,9 +108,9 @@
         <thead>
           <tr>
 
-            <th scope="col">Code</th>
-            <th scope="col">Name</th>
-            <th scope="col">Action</th>
+            <th scope="col">{{"Code" | translate}}</th>
+            <th scope="col">{{"Name" | translate}}</th>
+            <th scope="col">{{"Action" | translate}}</th>
           </tr>
         </thead>
         <tbody>

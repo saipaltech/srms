@@ -25,26 +25,26 @@
     "Mobile":"Mobile",
     "Amount Limit":"Amount Limit",
 
-    "Deposite Date":"जम्मा गरेको मिति",
+    "Deposite Date":"Deposite Date",
     "Deposite Slip Number": "दाखिला फारम (Deposit Slip) नं.",
-    "Local Level":"पालिका",
-    "Collection Center":"संकलन केन्द्र",
-    "Account Number": "खाता नंबर",
-    "Purpose" : "प्रयोजन",
-    "Revenue Title":"राजस्व शिर्षक",
-    "Amount": "रकम",
+    "Local Level":"Local Level",
+    "Collection Center":"Collection Center",
+    "Account Number": "Account Number",
+    "Purpose" : "Purpose",
+    "Revenue Title":"Revenue Title",
+    "Amount": "Amount",
 
     "Add":"Add",
     "Total":"Total",
 
-    "Taxpayer" : "करदाता",
+    "Taxpayer" : "Taxpayer",
 
-    "Pan No" :"पान नंबर",
-    "Depositer Details":"जम्मा गर्नेको विवरण",
+    "Pan No" :"Pan No",
+    "Depositer Details":"Depositer Details",
 
-    "Taxpayer themselves": "करदाता आफै",
+    "Taxpayer themselves": "Taxpayer themselves",
 
-    "Contact Number":"सम्पर्क नंबर",
+    "Contact Number":"Contact Number",
 
     "Date": "Date",
     "Tax Payer Name": "Tax Payer Name",
@@ -53,24 +53,49 @@
     "Karobar Sanket": "Karobar Sanket",
     "Status": "Status",
 
-    "Cheque Number": "चेक नंबर",
-    "Cheque Amount":"चेक रकम",
-    "Cheque Type":"चेक प्रकार",
+    "Cheque Number": "Cheque Number",
+    "Cheque Amount":"Cheque Amount",
+    "Cheque Type":"Cheque Type",
 
-    "Transaction Id":"कारोबार संकेत नंबर",
-    "Office":"कार्यालय",
-    "Voucher Date":"भौचर मिति",
+    "Transaction Id":"Transaction Id",
+    "Office":"Office",
+    "Voucher Date":"Voucher Date",
     "Account Name":"Account Name",
 
-    "Taxpayer Name":"करदाताको नाम",
-    "Taxpayer Pan No.":"करदाताको पान नंबर",
-    "Taxpayer Address":"करदाताको ठेगाना",
-    "Deposit Amount":"जम्मा गरेको रकम",
-    "Description":"बिबरण",
+    "Taxpayer Name":"Taxpayer Name",
+    "Taxpayer Pan No.":"Taxpayer Pan No.",
+    "Taxpayer Address":"Taxpayer Address",
+    "Deposit Amount":"Deposit Amount",
+    "Description":"Description",
 
-    "Depositer Name":"जम्मा गर्नेको नाम",
-    "Depositer Contact":"जम्मा गर्नेको सम्पर्क नंबर"
+    "Depositer Name":"Depositer Name",
+    "Depositer Contact":"Depositer Contact",
+
+    "जम्मा रकम":"Total Amount",
+    "Remarks":"Remarks",
+    "Voucher Number":"Voucher Number",
     
+    "To Ammend":"To Ammend",
+    "Former":"Former",
+    "After Ammendment":"After Ammendment",
 
+    "Settle Updates":"Settle Updates",
+    "Cancel Updates":"Cancel Updates",
+
+    "Debit":"Debit",
+    "Credit":"Credit",
+
+    "Balance": "Balance",
+
+    "Fiscal Year":"Fiscal Year",
+    "From":"From",
+    "To":"To",
+
+    "Select Palika":"Select Palika",
+    "Select Account Number":"Select Account Number",
+    "Select Branch":"Select Branch",
+    "Select User":"Select User",
+    "Cheque status":"Cheque status",
+    "Show":"Show"
 
 }

@@ -11,7 +11,7 @@
           (ngSubmit)="voucherBankFormSubmit()">
             <div class="row">
               <div class="col-6">
-                <label for="username" class="form-label req"> मिति</label>
+                <label for="username" class="form-label req"> {{"Date" | translate}}</label>
                 <div class="input-group has-validation">
                   <input
                     readonly
@@ -24,7 +24,7 @@
                 </div>
               </div>
               <div class="col-sm-6">
-                <label for="firstName" class="form-label ">पालिका</label>
+                <label for="firstName" class="form-label ">{{"Local Level" | translate}}</label>
                 <ng-select formControlName="lgid" (change)="getBankAccounts()" >
                   <ng-option *ngFor="let l of llgs" [value]="l.code">{{
                     l.name
@@ -33,7 +33,7 @@
                 <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['lgid'])">{{vs.getMessage(voucherBankForm.controls['lgid'])}}</div>
               </div>
               <div class="col-6">
-                <label for="username" class="form-label ">खाता नंबर</label>
+                <label for="username" class="form-label ">{{"Account Number" | translate}}</label>
                 <select
                   class="form-select form-select-sm" 
                   formControlName="acno"
@@ -62,13 +62,13 @@
             <thead>
               <tr>
     
-                <th scope="col">Action</th>
-                <th scope="col">Palika</th>
-                <th scope="col">Account Number</th>
-                <th scope="col">Debit</th>
-                <th scope="col">Credit</th>
-                <th scope="col">Balance</th>
-                <th scope="col">Core Banking ID</th>
+                <th scope="col">{{"Action" | translate}}</th>
+                <th scope="col">{{"Local Level" | translate}}</th>
+                <th scope="col">{{"Account Number" | translate}}</th>
+                <th scope="col">{{"Debit" | translate}}</th>
+                <th scope="col">{{"Credit" | translate}}</th>
+                <th scope="col">{{"Balance" | translate}}</th>
+                <th scope="col">{{"Core Banking ID" | translate}}</th>
                 <th>View</th>
               </tr>
             </thead>
@@ -105,7 +105,7 @@
         <br>
         <div class="row" style="margin-top: 10px;">
           <div class="col-md-12">
-            <button class="btn btn-success btn-sm" type="submit">Save</button>
+            <button class="btn btn-success btn-sm" type="submit">{{"Save" | translate}}</button>
             &nbsp; &nbsp;
            
           </div>

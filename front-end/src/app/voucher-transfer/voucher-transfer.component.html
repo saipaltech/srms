@@ -40,29 +40,29 @@
           <div class="modal-body" *ngIf="transDetails">
             <div class="row">
               <div class="col-md-6">
-                जम्मा गरेको मिति :  {{transDetails.date}}
+                {{"Deposite Date" | translate}} :  {{transDetails.date}}
               </div>
               <div class="col-md-6">
-                Deposit Slip No.: {{transDetails.voucherno}}
+                {{"Deposite Slip Number" | translate}}: {{transDetails.voucherno}}
               </div>
             </div>
             <div class="row">
               <div class="col-6">
-                पालिका: {{transDetails.llsname}}
+                {{"Local Level" | translate}}: {{transDetails.llsname}}
               </div>
               <div class="col-6">
-                संकलन केन्द्र: {{transDetails.collectioncentername}}
+                {{"Collection Center" | translate}}: {{transDetails.collectioncentername}}
               </div>
             </div>            
-            खाता नंबर: {{transDetails.bankorgid}}
+            {{"Account No" | translate}}: {{transDetails.bankorgid}}
             <br>
-            प्रयोजन: {{transDetails.purpose}}
+            {{"Purpose" | translate}}: {{transDetails.purpose}}
             <br>
             <table class="table table-striped table-bordered"> 
               <thead>
                 <tr>
-                  <th scope="col"> राजस्व शिर्षक</th>
-                  <th scope="col">रकम(रु.)</th>
+                  <th scope="col"> {{"Revenue Title" | translate}}</th>
+                  <th scope="col">{{"Amount" | translate}}(रु.)</th>
                 </tr>
               </thead>
               <tbody>
@@ -70,23 +70,23 @@
                   <td>{{r.namenp}}[{{r.revenueid}}]</td>
                   <td>{{r.amount}}</td>
                 </tr>
-                <tr><th>जम्मा रकम</th><th>{{transDetails.amount}}</th></tr>
+                <tr><th>{{"जम्मा रकम" | translate}}</th><th>{{transDetails.amount}}</th></tr>
               </tbody>
             </table>
             <div class="row"> 
               <div class="col-6">
-                करदाताको पान नंबर: {{transDetails.taxpayerpan}}
+                {{"Taxpayer Pan No." | translate}}: {{transDetails.taxpayerpan}}
               </div>
               <div class="col-6">
-                करदाताको नाम: {{transDetails.taxpayername}}
+                {{"Taxpayer Name" | translate}}: {{transDetails.taxpayername}}
               </div>
             </div>
             <div class="row">
               <div class="col-6">
-                जम्मा गर्नेको नाम:{{transDetails.depositedby}}
+                {{"Depositer Name" | translate}}:{{transDetails.depositedby}}
               </div>
               <div class="col-6">
-                जम्मा गर्नेको सम्पर्क नंबर: {{transDetails.depcontact}}
+                {{"Depositer Contact" | translate}}: {{transDetails.depcontact}}
               </div>
             </div>
             </div>
@@ -104,7 +104,7 @@
             </div>
     
             <div class="col-sm-6">
-              <label for="lastName" class="form-label req">संकलन केन्द्र</label>
+              <label for="lastName" class="form-label req">{{"Collection Center" | translate}}</label>
               <ng-select formControlName="collectioncenterid" >
                 <ng-option *ngFor="let cc of ccs" [value]="cc.code">{{
                   cc.name
@@ -115,7 +115,7 @@
     
     
             <div class="col-6">
-              <label for="username" class="form-label req">खाता नंबर</label>
+              <label for="username" class="form-label req">{{"Account No" | translate}}</label>
               <select
                 class="form-select form-select-sm" (change)="getRevenue()"
                 formControlName="bankorgid"
@@ -127,7 +127,7 @@
               <div [ngClass]="vs.getMessageClass(bankForm.controls['bankorgid'])">{{vs.getMessage(bankForm.controls['bankorgid'])}}</div>
             </div>
             <div class="col-6">
-              <label class="form-label">Remarks</label>
+              <label class="form-label">{{"Remarks" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="remarks" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['remarks'])" />
@@ -144,10 +144,10 @@
           <br />
           <div class="row">
             <div class="col-md-12">
-              <button class="btn btn-success btn-sm" type="submit">Submit</button>
+              <button class="btn btn-success btn-sm" type="submit">{{"Submit" | translate}}</button>
               &nbsp; &nbsp;
               <button class="btn btn-danger btn-sm" type="button" (click)="resetForm()">
-                Clear
+                {{"Clear" | translate}}
               </button>
             </div>
           </div>
@@ -167,11 +167,11 @@
             <!--table-borderless-->
             <thead>
               <tr>
-                <th scope="col">Voucher Number</th>
-                <th scope="col">Account Number</th>
-                <th scope="col">Date</th>
-                <th scope="col">Amount</th>
-                <th scope="col">Action</th>
+                <th scope="col">{{"Voucher Number" | translate}}</th>
+                <th scope="col">{{"Account Number" | translate}}</th>
+                <th scope="col">{{"Date" | translate}}</th>
+                <th scope="col">{{"Amount" | translate}}</th>
+                <th scope="col">{{"Action" | translate}}</th>
               </tr>
             </thead>
             <tbody>
@@ -232,15 +232,15 @@
   <div class="modal-body" *ngIf="details">
     <div class="row">
       <div class="col-6">
-        जम्मा गरेको मिति : {{details.date}}
+        {{"Deposite Date" | translate}} : {{details.date}}
       </div>
       <div class="col-6">
-        Deposit Slip No.: {{details.voucherno}}
+        {{"Deposite Slip Number" | translate}}: {{details.voucherno}}
       </div>
     </div>
     <div class="row">
       <div class="col-6">
-        रकम: {{details.amount}}
+        {{"Amount" | translate}}: {{details.amount}}
       </div>
       <div class="col-md-6">
         <!-- पालिका: {{details.llsname}} -->
@@ -261,13 +261,13 @@
     <!-- <br>
     राजस्व शिर्षक: {{details.revenuetitle}}
     <br> -->
-    प्रयोजन: {{details.purpose}}
+    {{"Purpose" | translate}}: {{details.purpose}}
     <br>
     <table class="table table-striped table-bordered">
       <thead>
         <tr>
-          <th scope="col"> राजस्व शिर्षक</th>
-          <th scope="col">रकम(रु.)</th>
+          <th scope="col"> {{"Revenue Title" | translate}}</th>
+          <th scope="col">{{"Amount" | translate}}(रु.)</th>
         </tr>
       </thead>
       <tbody>
@@ -276,25 +276,25 @@
           <td>{{r.amount}}</td>
         </tr>
         <tr>
-          <th>जम्मा रकम</th>
+          <th>{{"जम्मा रकम" | translate}}</th>
           <th>{{details.amount}}</th>
         </tr>
       </tbody>
     </table>
     <div class="row">
       <div class="col-md-6">
-        करदाताको पान नंबर: {{details.taxpayerpan}}
+        {{"Taxpayer Pan No." | translate}}: {{details.taxpayerpan}}
       </div>
       <div class="col-md-6">
-        करदाताको नाम: {{details.taxpayername}}
+        {{"Taxpayer Name" | translate}}: {{details.taxpayername}}
       </div>
     </div>
     <div class="row">
       <div class="col-md-6">
-        जम्मा गर्नेको नाम:{{details.depositedby}}
+        {{"Depositer Name" | translate}}:{{details.depositedby}}
       </div>
       <div class="col-md-6">
-        जम्मा गर्नेको सम्पर्क नंबर: {{details.depcontact}}
+        {{"Depositer Contact" | translate}}: {{details.depcontact}}
       </div>
     </div>
 
@@ -305,34 +305,34 @@
       <table class="table table-striped table-bordered">
         <thead>
           <tr>
-            <th scope="col" colspan="2">संसोधन गर्नु पर्ने</th>
+            <th scope="col" colspan="2">{{"To Ammend" | translate}}</th>
           </tr>
           <tr>
-            <th scope="col">साविक</th>
-            <th scope="col">संसोधन पछि</th>
+            <th scope="col">{{"Former" | translate}}</th>
+            <th scope="col">{{"After Ammendment" | translate}}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>पालिका: {{details.llsname}}</td>
-            <td>पालिका: {{details.tlnamenp}} </td>
+            <td>{{"पालिका" | translate}}: {{details.llsname}}</td>
+            <td>{{"पालिका" | translate}}: {{details.tlnamenp}} </td>
           </tr>
           <tr>
-            <td>संकलन केन्द्र: {{details.collectioncentername}}</td>
-            <td>संकलन केन्द्र: {{details.tcnamenp}}</td>
+            <td>{{"Collection Center" | translate}}: {{details.collectioncentername}}</td>
+            <td>{{"Collection Center" | translate}}: {{details.tcnamenp}}</td>
           </tr>
           <tr>
-            <td>खाता न. : {{details.accountnumber}}[{{details.accountname}}]</td>
-            <td>खाता न. : {{details.taccountnumber}}[{{details.taccountname}}]</td>
+            <td>{{"Account Number" | translate}} : {{details.accountnumber}}[{{details.accountname}}]</td>
+            <td>{{"Account Number" | translate}} : {{details.taccountnumber}}[{{details.taccountname}}]</td>
           </tr>
         </tbody>
       </table>
 
       <div class="row">
         <div class="d-flex">
-          <button class="btn btn-success btn-sm display-start" *ngIf="details.status?.palikaresponse==2" type="button" (click)="updateChanges(details.id,'1')">Settle Updates</button>
+          <button class="btn btn-success btn-sm display-start" *ngIf="details.status?.palikaresponse==2" type="button" (click)="updateChanges(details.id,'1')">{{"Settle Updates" | translate}}</button>
           &nbsp;&nbsp;&nbsp;
-          <button class="btn btn-danger btn-sm" *ngIf="details.status?.palikaresponse==2" type="button" (click)="updateChanges(details.id,'0')">Cancel Updates</button>
+          <button class="btn btn-danger btn-sm" *ngIf="details.status?.palikaresponse==2" type="button" (click)="updateChanges(details.id,'0')">{{"Cancel Updates" | translate}}</button>
         </div>
       </div>
     </div>
