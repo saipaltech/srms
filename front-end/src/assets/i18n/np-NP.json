@@ -1,0 +1,101 @@
+{
+    "hi" :"हि",
+
+    "Submit" :"Submit",
+    "Clear":"Clear",
+
+    "Yes": "हो",
+    "No":"होइन",
+
+    "Action": "कार्य",
+
+    "Bank": "बैंक",
+    "Code":"कोड",
+    "Name":"नाम",
+    "District": "जिल्ला",
+    "Email": "इमेल",
+    "Default Local Level": "पूर्वनिर्धारित पालिका",
+    "Disabled" : "Disabled",
+
+    "Branch": "ब्रान्च",
+    "User Type": "प्रयोगकर्ता प्रकार",
+    "Post":"पद",
+    "Username":"प्रयोगकर्ताको नाम",
+    "Password":"पस्वोर्ड",
+    "Mobile":"मोबाइल",
+    "Amount Limit":"रकम सीमा",
+
+    "Deposite Date":"जम्मा गरेको मिति",
+    "Deposite Slip Number": "दाखिला फारम (Deposit Slip) नं.",
+    "Local Level":"पालिका",
+    "Collection Center":"संकलन केन्द्र",
+    "Account Number": "खाता नंबर",
+    "Purpose" : "प्रयोजन",
+    "Revenue Title":"राजस्व शिर्षक",
+    "Amount": "रकम",
+
+    "Add":"Add",
+    "Total":"Total",
+
+    "Taxpayer" : "करदाता",
+
+    "Pan No" :"पान नंबर",
+    "Depositer Details":"जम्मा गर्नेको विवरण",
+
+    "Taxpayer themselves": "करदाता आफै",
+
+    "Contact Number":"सम्पर्क नंबर",
+
+    "Date": "मिति",
+    "Tax Payer Name": "करदाताको नाम",
+    "Account No" : "खाता नंबर",
+    "Deposit Slip No.": "Deposit Slip No.",
+    "Karobar Sanket": "कारोबार संकेत",
+    "Status": "Status",
+
+    "Cheque Number": "चेक नंबर",
+    "Cheque Amount":"चेक रकम",
+    "Cheque Type":"चेक प्रकार",
+
+    "Transaction Id":"कारोबार संकेत नंबर",
+    "Office":"कार्यालय",
+    "Voucher Date":"भौचर मिति",
+    "Account Name":"खाता नाम",
+
+    "Taxpayer Name":"करदाताको नाम",
+    "Taxpayer Pan No.":"करदाताको पान नंबर",
+    "Taxpayer Address":"करदाताको ठेगाना",
+    "Deposit Amount":"जम्मा गरेको रकम",
+    "Description":"बिबरण",
+
+    "Depositer Name":"जम्मा गर्नेको नाम",
+    "Depositer Contact":"जम्मा गर्नेको सम्पर्क नंबर",
+
+    "जम्मा रकम":"जम्मा रकम",
+    "Remarks":"टिप्पणीहरू",
+    "Voucher Number":"भाउचर नंबर",
+    
+    "To Ammend":"संसोधन गर्नु पर्ने",
+    "Former":"साविक",
+    "After Ammendment":"संसोधन पछि",
+
+    "Settle Updates":"Settle Updates",
+    "Cancel Updates":"Cancel Updates",
+
+    "Debit":"डेबिट",
+    "Credit":"क्रेडिट",
+
+    "Balance": "Balance",
+
+    "Fiscal Year":"आर्थिक बर्ष",
+    "From":"देखि",
+    "To":"सम्म",
+
+    "Select Palika":"पालिका छनोट गर्नुहोस",
+    "Select Account Number":"खाता नंबर छनोट गर्नुहोस",
+    "Select Branch":"ब्रान्च छनोट गर्नुहोस",
+    "Select User":"प्रयोगकर्ता छनोट गर्नुहोस",
+    "Cheque status":"Cheque status",
+    "Show":"हेर्नुहोस"
+
+}

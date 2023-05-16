@@ -53,7 +53,11 @@ import { DayCloseChequeComponent } from './day-close-cheque/day-close-cheque.com
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { FrontEndPasswordChangeComponent } from './front-end-password-change/front-end-password-change.component';
+import { ForgetPassComponent } from './login/forget-pass.component';
 
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -88,9 +92,11 @@ import { FrontEndPasswordChangeComponent } from './front-end-password-change/fro
     NewMainBodyComponent,
     NiceAdminComponent,
     SidebaritemComponent,
-SidebaritemInnerComponent,
-FrontEndPasswordChangeComponent,
-DayCloseChequeComponent
+    SidebaritemInnerComponent,
+    FrontEndPasswordChangeComponent,
+    DayCloseChequeComponent,
+    ForgetPassComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -108,6 +114,14 @@ DayCloseChequeComponent
     BsDatepickerModule.forRoot(),
     BsDropdownModule.forRoot(),
     CollapseModule.forRoot(),
+    TranslateModule.forRoot({
+      // defaultLanguage: 'np-NP',
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
   ],
   providers: [
     AppConfig,
@@ -129,4 +143,11 @@ DayCloseChequeComponent
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {   
+}
+
+export function HttpLoaderFactory(http: HttpClient){
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json')
+  // return new TranslateHttpLoader(http)
+
+}

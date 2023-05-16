@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, QueryList, ViewChildren } from '@angular/core';
+import { Component, ElementRef, EventEmitter, QueryList, Renderer2, ViewChildren } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -16,6 +16,9 @@ import { DayCloseChequeService } from './day-close-cheque.service';
   providers: [DatePipe]
 })
 export class DayCloseChequeComponent {
+  @ViewChildren('checkbox')
+  checkboxes!: QueryList<ElementRef>;
+  checkboxChangeEvent = new EventEmitter<any>();
   formLayout: any;
   formLayout1: any;
   llgs:any;
@@ -35,7 +38,7 @@ export class DayCloseChequeComponent {
   daycloseForm!: FormGroup;
   formBuilder: any;
   selectedval=new Array();
-    constructor(private appconfig:AppConfig,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:DayCloseChequeService, private modalService: BsModalService, private r: Router,private auth:AuthService){
+    constructor(private renderer: Renderer2,private appconfig:AppConfig,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:DayCloseChequeService, private modalService: BsModalService, private r: Router,private auth:AuthService){
       const ud = this.auth.getUserDetails();
       
       this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
@@ -97,6 +100,44 @@ export class DayCloseChequeComponent {
       }
       console.log(options.value);
       this.selectedval=options.value;
+    }
+
+    selectAll(e:any){
+      this.daycloseForm.value['options']="";
+      this.selectedval=new Array();
+      if(e.target.checked==true){
+        this.checkboxes.forEach(checkbox => {
+          const checkboxElem = checkbox.nativeElement as HTMLInputElement;
+          checkboxElem.checked = true;
+          this.renderer.setProperty(checkboxElem, 'checked', false);
+          this.renderer
+            .selectRootElement(checkboxElem)
+            .dispatchEvent(new Event('change'));
+        });
+
+        this.checkboxes.forEach(checkbox => {
+          const checkboxElem = checkbox.nativeElement as HTMLInputElement;
+          checkboxElem.checked = true;
+          this.renderer.setProperty(checkboxElem, 'checked', true);
+          this.renderer
+            .selectRootElement(checkboxElem)
+            .dispatchEvent(new Event('change'));
+        });
+      }else{
+        this.checkboxes.forEach(checkbox => {
+          const checkboxElem = checkbox.nativeElement as HTMLInputElement;
+          checkboxElem.checked = true;
+          this.renderer.setProperty(checkboxElem, 'checked', false);
+          this.renderer
+            .selectRootElement(checkboxElem)
+            .dispatchEvent(new Event('change'));
+        });
+       
+      }
+      
+     
+      // this.slctAll = true;
+     
     }
     
 acs:any;

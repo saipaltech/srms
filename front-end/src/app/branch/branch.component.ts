@@ -40,7 +40,7 @@ export class BranchComponent {
       id:[''],
       bankid: ['',Validators.required],
       name: ['',Validators.required],
-      dlgid:[''],
+      dlgid:['0'],
       code: ['',Validators.required],
       district:['',Validators.required],
       maddress:[''],
@@ -70,6 +70,14 @@ dist:any;
   getDistrict(){
     this.bs.getDistrict().subscribe({next:(d:any)=>{
       this.dist = d;
+    },error:err=>{
+
+    }});
+  }
+
+  getPalika(id:any){
+    this.bs.getPalika(id).subscribe({next:(d:any)=>{
+      this.llgs = d;
     },error:err=>{
 
     }});

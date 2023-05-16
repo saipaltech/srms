@@ -1,0 +1,37 @@
+<div class="row g-5 justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <p>Settings</p>
+        </div>
+  
+        <div class="card-body mt-3">
+          <form class="needs-validation" [formGroup]="otpSetupForm"
+          (ngSubmit)="otpSetupFormSubmit()">
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Select option for OTP</label>
+                    <div class="input-group has-validation">
+                        <select class="form-select form-select-sm" formControlName="otp">
+                            <option selected>Mobile+Email</option>
+                            <option value="1">Mobile</option>
+                            <option value="2">Email</option>
+                          </select>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-success btn-sm" type="submit">Set</button>
+                &nbsp; &nbsp;
+               
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>

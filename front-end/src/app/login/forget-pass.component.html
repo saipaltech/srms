@@ -19,42 +19,38 @@
           <h6 class="mb-2" style="font-size: 18px; color: #012970">
             <b>Revenue Module: Bank Interface </b>
           </h6>
-          <!--<h4 class="mb-1" style="font-size: 20px; color: #0563bb">
-            SuTRA Revenue Management System
-          </h4>
-          <h4 class="mb-2" style="font-size: 18px; color: #0563bb">
-            (Bank Module)
-          </h4>-->
         </div>
         <div class="card-body mt-3">
           <form
             class="row g-3 needs-validation"
             [formGroup]="loginForm"
-            (ngSubmit)="login()"
+            (ngSubmit)="resetPassword()"
             novalidate
           >
-            <div class="mb-4">
-              <label for="username" class="form-label">Username</label>
-              <input
-                type="text"
-                class="form-control"
-                id="username"
-                formControlName="username"
+          <div class="mb-4">
+              <label class="form-label">Username</label>
+              <input type="text" class="form-control" formControlName="username"
                 [ngClass]="vs.getControlClass(loginForm.controls['username'])"
               />
+              <div class="col-sm">
+                <button type="button" class="btn btn-primary mt-2">Get Pin</button>
+              </div>
+              <div class="form-text text-danger">You will get pincode on your registered mobile or email.</div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Pin Code</label>
+              <input type="password" class="form-control" formControlName="oldpassword"
+                [ngClass]="vs.getControlClass(loginForm.controls['oldpassword'])"
+              />
               <div
-                [ngClass]="vs.getMessageClass(loginForm.controls['username'])"
+                [ngClass]="vs.getMessageClass(loginForm.controls['oldpassword'])"
               >
-                {{ vs.getMessage(loginForm.controls["username"]) }}
+                {{ vs.getMessage(loginForm.controls["oldpassword"]) }}
               </div>
             </div>
             <div class="mb-4">
-              <label for="password" class="form-label">Password</label>
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                formControlName="password"
+              <label class="form-label">New Password</label>
+              <input type="password" class="form-control" formControlName="password"
                 [ngClass]="vs.getControlClass(loginForm.controls['password'])"
               />
               <div
@@ -63,15 +59,23 @@
                 {{ vs.getMessage(loginForm.controls["password"]) }}
               </div>
             </div>
+            <div class="mb-4">
+              <label class="form-label">Re-enter Password</label>
+              <input type="password" class="form-control" formControlName="cpassword"
+                [ngClass]="vs.getControlClass(loginForm.controls['cpassword'])"
+              />
+              <div
+                [ngClass]="vs.getMessageClass(loginForm.controls['cpassword'])"
+              >
+                {{ vs.getMessage(loginForm.controls["cpassword"]) }}
+              </div>
+            </div>
             <div class="d-grid">
               <button type="submit" class="btn text-light main-bg">
-                Login
+                Reset Password
               </button>
             </div>
           </form>
-          <div class="col-12 mt-3">
-            <p class="small mb-0">Forget password? <a routerLink="/forget-password">Click here</a></p>
-          </div>
         </div>
       </div>
     </div>

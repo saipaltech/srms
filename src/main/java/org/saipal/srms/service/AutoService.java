@@ -205,7 +205,7 @@ public class AutoService {
 	}
 	
 	public boolean isdayclosed(String lgid,String bankorgid) {
-		Tuple t=db.getSingleResult("select count(id) as c from dayclose where lgid=? and bankorgid=? and dateint=format(getdate(),'yyyyMMdd')", Arrays.asList(lgid,bankorgid));
+		Tuple t=db.getSingleResult("select count(id) as c from dayclose where lgid=? and bankorgid=? and branchid=? and dateint=format(getdate(),'yyyyMMdd')", Arrays.asList(lgid,bankorgid,auth.getBranchId()));
 		if(Integer.parseInt(t.get(0)+"")>0) {
 			return true;
 		}

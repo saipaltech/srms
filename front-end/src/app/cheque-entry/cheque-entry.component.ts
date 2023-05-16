@@ -9,6 +9,7 @@ import { AuthService } from '../auth/auth.service';
 import { ChequeEntryService } from './cheque-entry.service';
 import { ltLocale } from 'ngx-bootstrap/chronos';
 import { AppConfig } from '../app.config';
+import { BankService } from '../bank/bank.service';
 
 
 
@@ -52,7 +53,7 @@ export class ChequeEntryComponent implements OnInit {
   approved ="";
   items=new Array();
 
-constructor(private appconfig:AppConfig,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private modalService: BsModalService, private r: Router,private auth:AuthService){
+constructor(private appconfig:AppConfig,private datePipe: DatePipe,private bs:BankService, private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private modalService: BsModalService, private r: Router,private auth:AuthService){
   const ud = this.auth.getUserDetails();
   if(ud){
     this.dlgid = ud.dlgid;
@@ -78,7 +79,8 @@ constructor(private appconfig:AppConfig,private datePipe: DatePipe, private toas
       chequebank:['',Validators.required],
       ttype:['2'],
       chequetype:['',Validators.required],
-      cb:['']
+      cb:[''],
+      district:['']
     }
     this.voucherBankForm =fb.group(this.formLayout)
     this.srchForm = new FormGroup({
@@ -149,6 +151,7 @@ ngOnInit(): void {
   //console.log(this.items);
   this.pagination.perPage = this.perPages[0];
   this.getList();
+  this.getDistrict();
   this.voucherBankForm.get("lgid")?.valueChanges.subscribe({next:(d)=>{
     this.getPalikaDetails();
     this.getBankAccounts();
@@ -167,6 +170,24 @@ ngOnInit(): void {
     // }});
     this.getBank();
 }
+
+dist:any;
+  getDistrict(){
+    this.bs.getDistrict().subscribe({next:(d:any)=>{
+      this.dist = d;
+    },error:err=>{
+
+    }});
+  }
+
+  getPalika(id:any){
+    this.bs.getPalika(id).subscribe({next:(d:any)=>{
+      this.llgs = d;
+    },error:err=>{
+
+    }});
+  }
+
 getRevenue(){
   const bankorgid=this.voucherBankForm.value["bankorgid"];
    this.bvs.getRevenue(bankorgid).subscribe({next:(dt)=>{
