@@ -9,16 +9,19 @@
           <form class="needs-validation" [formGroup]="otpSetupForm"
           (ngSubmit)="otpSetupFormSubmit()">
             <div class="row">
-                <div class="col-md-4">
-                    <label>Select option for OTP</label>
-                    <div class="input-group has-validation">
+
+                    <div class="col-md-2">
+                        <label>Select option for OTP</label>
+                    </div>
+                    
+                    <div class="col-md-4">
                         <select class="form-select form-select-sm" formControlName="otp">
-                            <option selected>Mobile+Email</option>
+                            <option selected>Mobile and Email</option>
                             <option value="1">Mobile</option>
                             <option value="2">Email</option>
                           </select>
                     </div>
-                </div>
+
 
             </div>
             <br>
