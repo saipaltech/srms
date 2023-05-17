@@ -121,8 +121,10 @@ public class AuthService {
 									"An OTP has been Sent to your registered mobile. Please insert the OTP below and submit")
 									.success();
 						}
+						System.out.println(ob.toString());
 						return Messenger.getMessenger().setMessage(ob.getString("message")).error();
 					} catch ( JSONException e) {
+						e.printStackTrace();
 						return Messenger.getMessenger().setMessage("Unable to send sms for OTP").error();
 					}
 				}

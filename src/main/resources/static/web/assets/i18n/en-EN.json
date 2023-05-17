@@ -1,0 +1,101 @@
+{
+    "hi" :"hi",
+
+    "Submit" :"Submit",
+    "Clear":"Clear",
+
+    "Yes": "Yes",
+    "No":"No",
+
+    "Action": "Action",
+
+    "Bank": "Bank",
+    "Code":"Code",
+    "Name":"Name",
+    "District": "District",
+    "Email": "Email",
+    "Default Local Level": "Default Local Level",
+    "Disabled" : "Disabled",
+
+    "Branch": "Branch",
+    "User Type": "User Type",
+    "Post":"Post",
+    "Username":"Username",
+    "Password":"Password",
+    "Mobile":"Mobile",
+    "Amount Limit":"Amount Limit",
+
+    "Deposite Date":"Deposite Date",
+    "Deposite Slip Number": "दाखिला फारम (Deposit Slip) नं.",
+    "Local Level":"Local Level",
+    "Collection Center":"Collection Center",
+    "Account Number": "Account Number",
+    "Purpose" : "Purpose",
+    "Revenue Title":"Revenue Title",
+    "Amount": "Amount",
+
+    "Add":"Add",
+    "Total":"Total",
+
+    "Taxpayer" : "Taxpayer",
+
+    "Pan No" :"Pan No",
+    "Depositer Details":"Depositer Details",
+
+    "Taxpayer themselves": "Taxpayer themselves",
+
+    "Contact Number":"Contact Number",
+
+    "Date": "Date",
+    "Tax Payer Name": "Tax Payer Name",
+    "Account No" : "Account No",
+    "Deposit Slip No.": "Deposit Slip No.",
+    "Karobar Sanket": "Karobar Sanket",
+    "Status": "Status",
+
+    "Cheque Number": "Cheque Number",
+    "Cheque Amount":"Cheque Amount",
+    "Cheque Type":"Cheque Type",
+
+    "Transaction Id":"Transaction Id",
+    "Office":"Office",
+    "Voucher Date":"Voucher Date",
+    "Account Name":"Account Name",
+
+    "Taxpayer Name":"Taxpayer Name",
+    "Taxpayer Pan No.":"Taxpayer Pan No.",
+    "Taxpayer Address":"Taxpayer Address",
+    "Deposit Amount":"Deposit Amount",
+    "Description":"Description",
+
+    "Depositer Name":"Depositer Name",
+    "Depositer Contact":"Depositer Contact",
+
+    "जम्मा रकम":"Total Amount",
+    "Remarks":"Remarks",
+    "Voucher Number":"Voucher Number",
+    
+    "To Ammend":"To Ammend",
+    "Former":"Former",
+    "After Ammendment":"After Ammendment",
+
+    "Settle Updates":"Settle Updates",
+    "Cancel Updates":"Cancel Updates",
+
+    "Debit":"Debit",
+    "Credit":"Credit",
+
+    "Balance": "Balance",
+
+    "Fiscal Year":"Fiscal Year",
+    "From":"From",
+    "To":"To",
+
+    "Select Palika":"Select Palika",
+    "Select Account Number":"Select Account Number",
+    "Select Branch":"Select Branch",
+    "Select User":"Select User",
+    "Cheque status":"Cheque status",
+    "Show":"Show"
+
+}

@@ -2,9 +2,6 @@ package org.saipal.srms.settings;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +14,8 @@ public class SettingsController {
 	@Autowired
 	SettingsService objService;
 	
-	@PostMapping("otp-settings")
-	public ResponseEntity<Map<String, Object>> OtpSettings(HttpServletRequest request) {
-			return objService.changeOtpSettings();
+	@PostMapping("")
+	public ResponseEntity<Map<String, Object>> OtpSettings() {
+			return objService.updateSettings();
 	}
 }

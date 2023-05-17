@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { AppConfig } from '../app.config';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-settings',
@@ -11,14 +12,20 @@ import { AppConfig } from '../app.config';
 export class SettingsComponent {
   otpSetupForm: any;
   formLayout:any;
-  constructor(private appconfig:AppConfig,private toastr: ToastrService, private fb: FormBuilder){  
+  constructor(private http:ApiService,private toastr: ToastrService, private fb: FormBuilder){  
       this.formLayout = {
-        otp:[]
+        otpValue:[]
       }      
     this.otpSetupForm =fb.group(this.formLayout);
   }
 
   otpSetupFormSubmit(){
-    //update settings here at users Controller and settings 
+    this.http.post("settings",this.otpSetupForm.value).subscribe({
+      next:(dt)=>{
+        this.toastr.success(dt.message);
+      },error:err=>{
+        this.toastr.error(err.error.message);
+      }
+    });
   }
 }

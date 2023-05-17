@@ -44,6 +44,12 @@ SOFTWARE.
 @ng-select/ng-select
 MIT
 
+@ngx-translate/core
+MIT
+
+@ngx-translate/http-loader
+MIT
+
 bootstrap-icons
 MIT
 The MIT License (MIT)
