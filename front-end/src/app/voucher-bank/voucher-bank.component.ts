@@ -279,15 +279,23 @@ export class VoucherBankComponent implements OnInit {
     }
     return msg;
   }
-
+  checks=false;
   checkvalue(isChecked: boolean) {
 
     if (isChecked == true) {
+      this.checks=true;
       this.voucherBankForm.patchValue({ 'depositedby': this.voucherBankForm.value['taxpayername'] });
 
     } else {
+      this.checks=false;
       this.voucherBankForm.patchValue({ 'depositedby': "" });
 
+    }
+  }
+
+  setPayerName(){
+    if(this.checks==true){
+      this.voucherBankForm.patchValue({ 'depositedby': this.voucherBankForm.value['taxpayername'] });
     }
   }
 

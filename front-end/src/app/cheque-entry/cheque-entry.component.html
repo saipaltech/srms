@@ -5,16 +5,16 @@
       <div class="card-header">
         <div class="row">
           <div class="col-md-8 text-start">
-            चेक  संकलन  प्रविष्टि
+            {{"cheque collection entry" | translate}}
           </div>
     
           <div class="col-md-4 text-end"  *ngIf = !hideButton>
             <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
               <div *ngIf="isbtn;else other_content">
-                <i class="bi bi-list"></i>  List of Vouchers
+                <i class="bi bi-list"></i>  {{"List of Vouchers" | translate}}
             </div>
             
-            <ng-template #other_content><i class="bi bi-reply"></i>  Back To Form</ng-template>
+            <ng-template #other_content><i class="bi bi-reply"></i>  {{"Back To Form" | translate}}</ng-template>
               
             </button>
           </div>
@@ -258,7 +258,7 @@
           <input
             formControlName="taxpayername"
             type="text"
-            class="form-control form-control-sm"
+            class="form-control form-control-sm" (keyup)="setPayerName()"
             [ngClass]="vs.getControlClass(voucherBankForm.controls['taxpayername'])">
             <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['taxpayername'])">{{vs.getMessage(voucherBankForm.controls['taxpayername'])}}</div>
         </div>

@@ -96,6 +96,23 @@
     "Select Branch":"Select Branch",
     "Select User":"Select User",
     "Cheque status":"Cheque status",
-    "Show":"Show"
+    "Show":"Show",
+
+    "Back To Form":"Back To Form",
+
+    "Enroll Bank":"Enroll Bank",
+    "List of Bank":"List of Bank",
+
+    "Branch Setup":"Branch Setup",
+    "List of Branch":"List of Branch",
+
+    "Users Setup":"Users Setup",
+    "List of Users":"List of Users",
+
+    "List of Vouchers":"List of Vouchers",
+
+    "cheque collection entry": "Cheque Collection Entry",
+
+    "Search Voucher":"Search Voucher"
 
 }

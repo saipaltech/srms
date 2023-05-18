@@ -49,7 +49,7 @@
     "Date": "मिति",
     "Tax Payer Name": "करदाताको नाम",
     "Account No" : "खाता नंबर",
-    "Deposit Slip No.": "Deposit Slip No.",
+    "Deposit Slip No.": "दाखिला फारम नंबर",
     "Karobar Sanket": "कारोबार संकेत",
     "Status": "Status",
 
@@ -96,6 +96,23 @@
     "Select Branch":"साखा छनोट गर्नुहोस",
     "Select User":"प्रयोगकर्ता छनोट गर्नुहोस",
     "Cheque status":"Cheque status",
-    "Show":"हेर्नुहोस"
+    "Show":"हेर्नुहोस",
+
+    "Back To Form":"फारमतर्फ जानुहोस",
+    
+    "Enroll Bank":"बैंक दर्ता",
+    "List of Bank":"बैंक सूची",
+
+    "Branch Setup":"साखा दर्ता",
+    "List of Branch":"साखा सूची",
+
+    "Users Setup":"प्रयोगकर्ता दर्ता",
+    "List of Users":"प्रयोगकर्ता सूची",
+
+    "List of Vouchers":"भाउचर सूची",
+
+    "cheque collection entry": "चेक  संकलन  प्रविष्टि",
+
+    "Search Voucher":"भाउचर खोज"
 
 }

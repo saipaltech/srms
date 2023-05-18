@@ -224,16 +224,25 @@ mobile(msg:any){
   return msg;
 }
 
-checkvalue(isChecked: boolean){
+checks=false;
+  checkvalue(isChecked: boolean) {
 
-  if (isChecked==true) {
-    this.voucherBankForm.patchValue({'depositedby': this.voucherBankForm.value['taxpayername']});
- 
-  } else {
-    this.voucherBankForm.patchValue({'depositedby': ""});
-   
+    if (isChecked == true) {
+      this.checks=true;
+      this.voucherBankForm.patchValue({ 'depositedby': this.voucherBankForm.value['taxpayername'] });
+
+    } else {
+      this.checks=false;
+      this.voucherBankForm.patchValue({ 'depositedby': "" });
+
+    }
   }
-}
+
+  setPayerName(){
+    if(this.checks==true){
+      this.voucherBankForm.patchValue({ 'depositedby': this.voucherBankForm.value['taxpayername'] });
+    }
+  }
 
 
 
