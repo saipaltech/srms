@@ -169,7 +169,7 @@
             <div class="col-sm-6">
               <label for="username" class="form-label req">{{"Name" | translate}}</label>
               <div class="input-group has-validation">
-                <input formControlName="taxpayername" type="text" class="form-control form-control-sm"
+                <input formControlName="taxpayername" (keyup)="setPayerName()" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(voucherBankForm.controls['taxpayername'])">
                 <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['taxpayername'])">
                   {{vs.getMessage(voucherBankForm.controls['taxpayername'])}}</div>

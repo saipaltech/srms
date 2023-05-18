@@ -258,7 +258,7 @@
           <input
             formControlName="taxpayername"
             type="text"
-            class="form-control form-control-sm"
+            class="form-control form-control-sm" (keyup)="setPayerName()"
             [ngClass]="vs.getControlClass(voucherBankForm.controls['taxpayername'])">
             <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['taxpayername'])">{{vs.getMessage(voucherBankForm.controls['taxpayername'])}}</div>
         </div>
