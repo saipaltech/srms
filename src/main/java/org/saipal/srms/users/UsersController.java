@@ -33,6 +33,10 @@ public class UsersController {
 	public ResponseEntity<Map<String, Object>> index(HttpServletRequest request) {
 		return objService.index();
 	}
+	@GetMapping("all")
+	public ResponseEntity<Map<String, Object>> indexAll(HttpServletRequest request) {
+		return objService.indexAll();
+	}
 
 	@PostMapping("")
 	public ResponseEntity<Map<String, Object>> store(HttpServletRequest request) {
@@ -116,10 +120,5 @@ public class UsersController {
 	@PostMapping("reset-passbypin")
 	public ResponseEntity<Map<String, Object>> resetPassByPin(HttpServletRequest request) {
 			return objService.resetPassByPin();
-	}
-	
-	@PostMapping("otp-settings")
-	public ResponseEntity<Map<String, Object>> OtpSettings(HttpServletRequest request) {
-			return objService.changeOtpSettings();
 	}
 }

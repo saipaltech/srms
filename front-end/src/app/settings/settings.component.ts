@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { AppConfig } from '../app.config';
 import { ApiService } from '../api.service';
 
 @Component({
@@ -9,14 +8,29 @@ import { ApiService } from '../api.service';
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit{
   otpSetupForm: any;
   formLayout:any;
   constructor(private http:ApiService,private toastr: ToastrService, private fb: FormBuilder){  
       this.formLayout = {
-        otpValue:[]
-      }      
+        otpmedium:['1'],
+        supccu:['1']
+      }
     this.otpSetupForm =fb.group(this.formLayout);
+  }
+  ngOnInit(): void {
+    let pvalue:any={};
+    this.http.get("settings/values").subscribe({next:(dt)=>{
+      const data = dt.data;
+      if(data.length){
+        for(let it of data){
+          pvalue[it.skey] = it.svalue;
+        }
+        this.otpSetupForm.patchValue(pvalue);
+      }
+    },error:err=>{
+
+    }});
   }
 
   otpSetupFormSubmit(){

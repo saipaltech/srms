@@ -2,12 +2,12 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        Users Setup
+        {{"Users Setup" | translate}}
         <button type="button" class="btn btn-primary btn-sm float-end" (click)="changeFields()">
           <div *ngIf="isbtn;else other_content">
-            <i class="bi bi-list"></i> List of Users
+            <i class="bi bi-list"></i> {{"List of Users" | translate}}
           </div>
-          <ng-template #other_content><i class="bi bi-reply"></i> Back To Form</ng-template>
+          <ng-template #other_content><i class="bi bi-reply"></i> {{"Back To Form" | translate}}</ng-template>
         </button>
       </div>
       <div class="card-body mt-3">

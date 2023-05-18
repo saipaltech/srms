@@ -20,12 +20,18 @@ public class SettingsService extends AutoService{
 	Authenticated auth;
 	
 	public static String otpKey = "otpmedium";
+	public static String supccuKey = "supccu";
 	
 	
 	public ResponseEntity<Map<String, Object>> updateSettings() {
-		String otpValue = request("otpValue");
+		if(!auth.hasPermission("bankhq")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		String otpValue = request(otpKey);
+		String supccuValue = request(supccuKey);
 		db.execute("delete from settings where bankid=?",Arrays.asList(auth.getBankId()));
 		db.execute("insert into settings (skey,svalue,bankid) values(?,?,?)",Arrays.asList(otpKey,otpValue,auth.getBankId()));
+		db.execute("insert into settings (skey,svalue,bankid) values(?,?,?)",Arrays.asList(supccuKey,supccuValue,auth.getBankId()));
 		return Messenger.getMessenger().success();
 	}
 	

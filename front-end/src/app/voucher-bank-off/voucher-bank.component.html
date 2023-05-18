@@ -11,10 +11,10 @@
           <div class="col-md-4 text-end"  *ngIf = !hideButton>
             <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
               <div *ngIf="isbtn;else other_content">
-                <i class="bi bi-list"></i>   List of Vouchers
+                <i class="bi bi-list"></i>   {{"List of Vouchers" | translate}}
             </div>
             
-            <ng-template #other_content><i class="bi bi-reply"></i>Back To Form</ng-template>
+            <ng-template #other_content><i class="bi bi-reply"></i>{{"Back To Form" | translate}}</ng-template>
               
             </button>
           </div>
