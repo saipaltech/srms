@@ -26,6 +26,7 @@ import { NiceAdminComponent } from './nice-admin/nice-admin.component';
 import { FrontEndPasswordChangeComponent } from './front-end-password-change/front-end-password-change.component';
 import { ForgetPassComponent } from './login/forget-pass.component';
 import { SettingsComponent } from './settings/settings.component';
+import { AllUsersComponent } from './all-users/all-users.component';
 
 const routes: Routes = [
 {
@@ -95,6 +96,10 @@ const routes: Routes = [
           {
             path: 'settings',
             component: SettingsComponent
+          },
+          {
+            path: 'all-users',
+            component: AllUsersComponent
           }
           
         ]

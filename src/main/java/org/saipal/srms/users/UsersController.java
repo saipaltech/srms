@@ -33,6 +33,10 @@ public class UsersController {
 	public ResponseEntity<Map<String, Object>> index(HttpServletRequest request) {
 		return objService.index();
 	}
+	@GetMapping("all")
+	public ResponseEntity<Map<String, Object>> indexAll(HttpServletRequest request) {
+		return objService.indexAll();
+	}
 
 	@PostMapping("")
 	public ResponseEntity<Map<String, Object>> store(HttpServletRequest request) {

@@ -80,6 +80,38 @@ public class UsersService extends AutoService {
 			return Messenger.getMessenger().error();
 		}
 	}
+	public ResponseEntity<Map<String, Object>> indexAll() {
+		if(!auth.hasPermissionOnly("loginuser")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		String condition = "";
+		if (!request("searchTerm").isEmpty()) {
+			List<String> searchbles = Users.searchables();
+			condition += "and (";
+			for (String field : searchbles) {
+				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
+			}
+			condition = condition.substring(0, condition.length() - 3);
+			condition += ")";
+		}
+		String sort = "";
+		if (!request("sortKey").isBlank()) {
+			if (!request("sortDir").isBlank()) {
+				sort = request("sortKey") + " " + request("sortDir");
+			}
+		}
+
+		Paginator p = new Paginator();
+
+		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
+				.select(" cast(u.id as varchar) as id,u.name,u.username,u.post, u.mobile ,branches.name as bname, u.approved,u.disabled")
+				.sqlBody("from " + table + " as u join branches on u.branchid = branches.id " + condition).paginate();
+		if (result != null) {
+			return ResponseEntity.ok(result);
+		} else {
+			return Messenger.getMessenger().error();
+		}
+	}
 
 	@Transactional
 	public ResponseEntity<Map<String, Object>> store() {
@@ -422,5 +454,7 @@ public class UsersService extends AutoService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	
 
 }

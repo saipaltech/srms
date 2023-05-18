@@ -28,6 +28,11 @@ public class AuthController {
 		return authService.reLogin();
 	}
 	
+	@PostMapping("user-login")
+	public ResponseEntity<Map<String, Object>> loginUser() {
+		return authService.loginUser();
+	}
+	
 	@PostMapping("2fa")
 	public ResponseEntity<Map<String, Object>> twoFa() {
 		return authService.twoFa();
