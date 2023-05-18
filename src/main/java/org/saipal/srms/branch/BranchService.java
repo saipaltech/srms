@@ -26,7 +26,7 @@ public class BranchService extends AutoService {
 	private String table = "branches";
 
 	public ResponseEntity<Map<String, Object>> index() {
-		if(!auth.hasPermission("bankhq")) {
+		if(!(auth.hasPermission("bankhq") || auth.canFromUserTable("7"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String condition="";
@@ -69,7 +69,7 @@ public class BranchService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> store() {
-		if(!auth.hasPermission("bankhq")) {
+		if(!(auth.hasPermission("bankhq") || auth.canFromUserTable("7"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String sql = "";
@@ -97,7 +97,7 @@ public class BranchService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> update(String id) {
-		if(!auth.hasPermission("bankhq")) {
+		if(!(auth.hasPermission("bankhq") || auth.canFromUserTable("7"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		DbResponse rowEffect;
@@ -115,7 +115,7 @@ public class BranchService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> destroy(String id) {
-		if(!auth.hasPermission("bankhq")) {
+		if(!(auth.hasPermission("bankhq") || auth.canFromUserTable("7"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String sql = "delete from branches where id  = ?";

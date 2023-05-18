@@ -24,6 +24,9 @@ public class SettingsService extends AutoService{
 	
 	
 	public ResponseEntity<Map<String, Object>> updateSettings() {
+		if(!auth.hasPermission("bankhq")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
 		String otpValue = request(otpKey);
 		String supccuValue = request(supccuKey);
 		db.execute("delete from settings where bankid=?",Arrays.asList(auth.getBankId()));

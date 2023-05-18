@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
+import org.saipal.srms.settings.SettingsService;
 import org.saipal.srms.util.DB;
 import org.saipal.srms.util.DbResponse;
 import org.saipal.srms.util.Messenger;
@@ -33,11 +34,14 @@ public class UsersService extends AutoService {
 
 	@Autowired
 	PasswordEncoder pe;
+	
+	@Autowired
+	SettingsService ss;
 
 	private String table = "users";
 
 	public ResponseEntity<Map<String, Object>> index() {
-		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor"))) {
+		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor") || auth.canFromUserTable("7"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String condition = "";
@@ -115,7 +119,7 @@ public class UsersService extends AutoService {
 
 	@Transactional
 	public ResponseEntity<Map<String, Object>> store() {
-		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor"))) {
+		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor") || auth.canFromUserTable("7"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String bankId = auth.getBankId();
@@ -219,7 +223,7 @@ public class UsersService extends AutoService {
 
 	@Transactional
 	public ResponseEntity<Map<String, Object>> update(String id) {
-		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor"))) {
+		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor") || auth.canFromUserTable("7"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		if (id.equals("1") || id.equals("2")) {
@@ -264,7 +268,7 @@ public class UsersService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> destroy(String id) {
-		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor"))) {
+		if (!(auth.hasPermission("bankhq") || auth.hasPermissionOnly("banksupervisor") || auth.canFromUserTable("7"))) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String sql = "delete from users where id  = ?";
@@ -288,7 +292,17 @@ public class UsersService extends AutoService {
 		exclude.add("branch");
 		exclude.add("users");
 		exclude.add("approve-voucher");
+		exclude.add("settings");
 		String sql = "";
+		if(auth.canFromUserTable("8")) {
+			sql = "select * from front_menu where link in ('report') order by morder";
+			return ResponseEntity.ok(db.getResultListMap(sql));
+		}
+		if(auth.canFromUserTable("7")) {
+			sql = "select * from front_menu where link in ('branch','users') order by morder";
+			return ResponseEntity.ok(db.getResultListMap(sql));
+		}
+		
 		if (auth.hasPermissionOnly("*")) {
 			sql = "select * from front_menu where link in ('bank','users') order by morder";
 			return ResponseEntity.ok(db.getResultListMap(sql));
@@ -297,9 +311,13 @@ public class UsersService extends AutoService {
 			exclude.remove("branch");
 			exclude.remove("users");
 			exclude.remove("approve-voucher");
+			exclude.remove("settings");
 		}
 		if (auth.hasPermissionOnly("banksupervisor")) {
-			exclude.remove("users");
+			String ksetVal = ss.getSetting(SettingsService.supccuKey);
+			if(ksetVal.equals("1") || ksetVal.isBlank()) {
+				exclude.remove("users");
+			}
 			exclude.remove("approve-voucher");
 		}
 
@@ -405,12 +423,21 @@ public class UsersService extends AutoService {
 	public ResponseEntity<List<Map<String, Object>>> getUerTypes() {
 		if (auth.hasPermission("bankhq")) {
 			return ResponseEntity
-					.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User"), Map.of("id", 4, "name", "Supervisor")));
+					.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User"),
+							Map.of("id", 4, "name", "Supervisor"),
+							Map.of("id", 7, "name", "Technical User"),
+							Map.of("id", 8, "name", "Monitoring User")
+							));
 		}
 		if (auth.canFromUserTable("4")) {
+			String ksetVal = ss.getSetting(SettingsService.supccuKey);
+			if(ksetVal.equals("1") || ksetVal.isBlank()) {
+				return ResponseEntity.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User")));
+			}
+		}
+		if (auth.canFromUserTable("7")) {
 			return ResponseEntity.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User")));
 		}
-
 		return ResponseEntity.ok(Arrays.asList());
 	}
 
@@ -449,12 +476,4 @@ public class UsersService extends AutoService {
 		}
 		return Messenger.getMessenger().setMessage("User Does not Exist..").error();
 	}
-
-	public ResponseEntity<Map<String, Object>> changeOtpSettings() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-
 }

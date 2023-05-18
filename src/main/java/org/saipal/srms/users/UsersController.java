@@ -121,9 +121,4 @@ public class UsersController {
 	public ResponseEntity<Map<String, Object>> resetPassByPin(HttpServletRequest request) {
 			return objService.resetPassByPin();
 	}
-	
-	@PostMapping("otp-settings")
-	public ResponseEntity<Map<String, Object>> OtpSettings(HttpServletRequest request) {
-			return objService.changeOtpSettings();
-	}
 }
