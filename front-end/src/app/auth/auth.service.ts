@@ -51,6 +51,25 @@ export class AuthService {
         });
     }
 
+    public loginUser(username: string): Observable<any> {
+        return new Observable(subscriber => {
+            this.http.post(this.path + "/user-login", { username: username})
+                .subscribe({next:(response:any) => {
+                    const resp = JSON.parse(JSON.stringify(response));
+                    const isToken = resp && resp.data && resp.data.token;
+                    const data = resp.data;
+                    if (isToken) {
+                        this.token = data.token;
+                        localStorage.setItem('currentUser', JSON.stringify({ username: username, name: data.name, token: data.token, bank: data.bank, branch: data.branch,dlgid:data.dlgid }));
+                    }
+                    subscriber.next(data);
+                    subscriber.complete();
+                },error: (err) => {
+                    subscriber.error(err.error);
+                }});
+        });
+    }
+
     public geFrontPermissions() {
         this.http.get('/front-menu').subscribe({next:response => {
             this.permissions = response;

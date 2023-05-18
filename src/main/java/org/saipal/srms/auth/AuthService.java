@@ -10,9 +10,11 @@ import javax.persistence.Tuple;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.parser.RequestParser;
+import org.saipal.srms.settings.SettingsService;
 import org.saipal.srms.sms.F1SoftSmsGateway;
 import org.saipal.srms.util.DB;
 import org.saipal.srms.util.DbResponse;
+import org.saipal.srms.util.EmailSender;
 import org.saipal.srms.util.JwtHelper;
 import org.saipal.srms.util.Messenger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,12 @@ public class AuthService {
 
 	@Autowired
 	F1SoftSmsGateway sms;
+	
+	@Autowired
+	SettingsService ss;
+	
+	@Autowired
+	EmailSender es;
 
 	@Value("${sms.otpmessage}")
 	private String msgFormat;
@@ -54,7 +62,7 @@ public class AuthService {
 	public ResponseEntity<Map<String, Object>> login() {
 		String username = doc.getElementById("username").value;
 		String password = doc.getElementById("password").value;
-		String sql = "select u.id,username,password,u.name,u.approved,u.disabled b.namenp as baname, bs.name as branchname,bs.dlgid from users u join bankinfo b on b.id=u.bankid join branches bs on bs.id=u.branchid where username=?";
+		String sql = "select u.id,username,password,u.name,u.approved,u.disabled, b.namenp as baname, bs.name as branchname,bs.dlgid from users u join bankinfo b on b.id=u.bankid join branches bs on bs.id=u.branchid where username=?";
 		Tuple t = db.getSingleResult(sql, Arrays.asList(username));
 		if (t != null) {
 			if (!(t.get("approved") + "").equals("1")) {
@@ -81,7 +89,7 @@ public class AuthService {
 	public ResponseEntity<Map<String, Object>> checkUser() {
 		String username = doc.getElementById("username").value;
 		String password = doc.getElementById("password").value;
-		String sql = "select id,username,password,mobile,approved,disabled from users where username=?";
+		String sql = "select id,username,password,mobile,approved,disabled,email from users where username=?";
 		Tuple t = db.getSingleResult(sql, Arrays.asList(username));
 		if (t != null) {
 			if (!(t.get("approved") + "").equals("1")) {
@@ -115,14 +123,40 @@ public class AuthService {
 								.success();
 					}
 					try {
-						JSONObject ob = sms.sendSms(t.get("mobile")+"", message, reqid);
-						if ( ob.getInt("status_code")==200) {
+						String otpSetting = ss.getSetting(SettingsService.otpKey);
+						if(otpSetting.isBlank() || otpSetting.equals("1")) {
+							//only sms
+							JSONObject ob = sms.sendSms(t.get("mobile")+"", message, reqid);
+							if ( ob.getInt("status_code")==200) {
+								return Messenger.getMessenger().setData(data).setMessage(
+										"An OTP has been Sent to your registered mobile. Please insert the OTP below and submit")
+										.success();
+							}
+							return Messenger.getMessenger().setMessage(ob.getString("message")).error();
+						}else if(otpSetting.equals("2")) {
+							boolean isSent = es.sendOtpToEmail(t.get("email")+"", "Sutra Bank-Interface OTP for Login", message);
+							if(isSent) {
+								return Messenger.getMessenger().setData(data).setMessage(
+										"An OTP has been Sent to your registered mobile and Email. Please insert the OTP below and submit")
+										.success();
+							}
+							return Messenger.getMessenger().setData(data).setMessage("Cannot send OTP to email.").success();
+						}else {
+							//both email and sms
+							JSONObject ob = sms.sendSms(t.get("mobile")+"", message, reqid);
+							boolean isSent = es.sendOtpToEmail(t.get("email")+"", "Sutra Bank-Interface OTP for Login", message);
 							return Messenger.getMessenger().setData(data).setMessage(
-									"An OTP has been Sent to your registered mobile. Please insert the OTP below and submit")
+									"An OTP has been Sent to your registered mobile and Email. Please insert the OTP below and submit")
 									.success();
+							//							if (ob.getInt("status_code")==200 && isSent) {
+//								return Messenger.getMessenger().setData(data).setMessage(
+//										"An OTP has been Sent to your registered mobile and Email. Please insert the OTP below and submit")
+//										.success();
+//							}
+//							return Messenger.getMessenger().setMessage(ob.getString("message")).error();
 						}
-						return Messenger.getMessenger().setMessage(ob.getString("message")).error();
 					} catch ( JSONException e) {
+						//e.printStackTrace();
 						return Messenger.getMessenger().setMessage("Unable to send sms for OTP").error();
 					}
 				}
@@ -140,6 +174,35 @@ public class AuthService {
 	public ResponseEntity<Map<String, Object>> reLogin() {
 		String token = jwtHelper.createToken(auth.getUserId());
 		return Messenger.getMessenger().setData(Map.of("token", token)).success();
+	}
+	
+	public ResponseEntity<Map<String, Object>> loginUser() {
+		String username = doc.getElementById("username").value;
+		if(username.isBlank()) {
+			return Messenger.getMessenger().error();
+		}
+		if(auth.hasPermissionOnly("loginuser")) {
+			String sql = "select u.id,username,password,u.name,u.approved,u.disabled, b.namenp as baname, bs.name as branchname,bs.dlgid from users u join bankinfo b on b.id=u.bankid join branches bs on bs.id=u.branchid where username=?";
+			Tuple t = db.getSingleResult(sql, Arrays.asList(username));
+			if (t != null) {
+				if (!(t.get("approved") + "").equals("1")) {
+					return Messenger.getMessenger().setMessage("User not Approved.").error();
+				}
+				if (!(t.get("disabled") + "").equals("0")) {
+					return Messenger.getMessenger().setMessage("User not Enabled.").error();
+				}
+				String token = jwtHelper.createToken(t.get("id") + "");
+				Map<String, String> data = new HashMap<>();
+				data.put("token", token);
+				data.put("name", t.get("name") + "");
+				data.put("username", t.get("username") + "");
+				data.put("bank", t.get("baname") + "");
+				data.put("branch", t.get("branchname") + "");
+				data.put("dlgid", t.get("dlgid") + "");
+				return Messenger.getMessenger().setData(data).success();
+			}
+		}
+		return Messenger.getMessenger().error();
 	}
 
 	public ResponseEntity<Map<String, Object>> twoFa() {

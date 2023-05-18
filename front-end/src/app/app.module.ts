@@ -58,6 +58,7 @@ import { ForgetPassComponent } from './login/forget-pass.component';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { SettingsComponent } from './settings/settings.component';
+import { AllUsersComponent } from './all-users/all-users.component';
 
 @NgModule({
   declarations: [
@@ -96,7 +97,8 @@ import { SettingsComponent } from './settings/settings.component';
     FrontEndPasswordChangeComponent,
     DayCloseChequeComponent,
     ForgetPassComponent,
-    SettingsComponent
+    SettingsComponent,
+    AllUsersComponent
   ],
   imports: [
     BrowserModule,

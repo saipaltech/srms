@@ -8,28 +8,37 @@
         <div class="card-body mt-3">
           <form class="needs-validation" [formGroup]="otpSetupForm"
           (ngSubmit)="otpSetupFormSubmit()">
-            <div class="row">
+            <div class="row mb-2">
 
                     <div class="col-md-2">
-                        <label>Select option for OTP</label>
+                        <label>Select Medium for Login OTP</label>
                     </div>
                     
                     <div class="col-md-4">
-                        <select class="form-select form-select-sm" formControlName="otp">
-                            <option selected>Mobile and Email</option>
-                            <option value="1">Mobile</option>
+                        <select class="form-select form-select-sm" formControlName="otpmedium">
+                            <option value="1">SMS</option>
                             <option value="2">Email</option>
+                            <option value="0">SMS & Email</option>
                           </select>
                     </div>
-
-
             </div>
+            <div class="row mb-2">
+
+              <div class="col-md-2">
+                  <label>Allow Supervisor To Create User</label>
+              </div>
+              <div class="col-md-4">
+                  <select class="form-select form-select-sm" formControlName="supccu">
+                      <option value="1">Yes</option>
+                      <option value="0">NO</option>
+                    </select>
+              </div>
+      </div>
             <br>
             <div class="row">
               <div class="col-md-12">
-                <button class="btn btn-success btn-sm" type="submit">Set</button>
+                <input type="submit" class="btn btn-success btn-sm" value="Save">
                 &nbsp; &nbsp;
-               
               </div>
             </div>
           </form>
