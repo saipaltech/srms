@@ -16,14 +16,14 @@ import org.springframework.stereotype.Component;
 public class ReportService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> getFys() {
-		String sql = "select distinct fyid from (select distinct fyid from taxvouchers union select distinct fyid from bank_deposits) a";
+		String sql = " select fyid,(case when fyid=dbo.getfyid('') then 1 else 0 end) as isdef from (select distinct fyid from (select distinct fyid from taxvouchers union select distinct fyid from bank_deposits) a)b";
 		List<Tuple> lt = db.getResultList(sql);
 		List<Map<String, Object>> fys = new ArrayList<>();
 		for (Tuple t : lt) {
 			String fyid = t.get("fyid") + "";
 			int fyint = Integer.parseInt(fyid);
 			String fyText = (2060 + fyint) + "/" + ((2060 + fyint + 1) + "").substring(2);
-			fys.add(Map.of("id", fyid, "label", fyText));
+			fys.add(Map.of("id", fyid, "label", fyText,"isdef",t.get("isdef")+""));
 		}
 		return Messenger.getMessenger().setData(fys).success();
 	}

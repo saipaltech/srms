@@ -13,7 +13,7 @@
                 <div class="col-md-4">
                   <label>{{"Fiscal Year" | translate}}</label>
                   <select class="form-select form-select-sm" formControlName="fy">
-                    <option *ngFor="let l of fiscalYear" value="{{l.id}}">{{l.label}}</option>
+                    <option *ngFor="let l of fiscalYear" value="{{l.id}}" [selected]="l.isdef == 1">{{l.label}}</option>
                   </select>
                 </div>
                 <div class="col-md-4">
