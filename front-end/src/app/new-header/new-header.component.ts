@@ -49,12 +49,20 @@ export class NewHeaderComponent implements OnInit{
     }});
     // const lang = localStorage.getItem("lang") || "np-Np";
     const lang = "en-EN";
-    this.changeLang(lang);
+    this.changeLang(lang, null);
   }
 
-  changeLang(lan: string) {
+  changeLang(lan: string, e:any) {
     localStorage.setItem("lang",lan);
     this.translateService.use(lan);
+    var element = e.target;
+    var ele: any= this.document.getElementsByClassName("langHighlight")
+
+    for (const i of ele){
+      i.classList.remove('langHighlight');
+    }
+
+    element.classList.add("langHighlight");
   }
   
   logout() {
