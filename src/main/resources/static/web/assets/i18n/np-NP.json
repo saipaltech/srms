@@ -17,7 +17,7 @@
     "Default Local Level": "पूर्वनिर्धारित पालिका",
     "Disabled" : "Disabled",
 
-    "Branch": "साखा",
+    "Branch": "ब्रान्च",
     "User Type": "प्रयोगकर्ता प्रकार",
     "Post":"पद",
     "Username":"प्रयोगकर्ताको नाम",
@@ -93,7 +93,7 @@
 
     "Select Palika":"पालिका छनोट गर्नुहोस",
     "Select Account Number":"खाता नंबर छनोट गर्नुहोस",
-    "Select Branch":"साखा छनोट गर्नुहोस",
+    "Select Branch":"ब्रान्च छनोट गर्नुहोस",
     "Select User":"प्रयोगकर्ता छनोट गर्नुहोस",
     "Cheque status":"Cheque status",
     "Show":"हेर्नुहोस"

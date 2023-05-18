@@ -143,6 +143,7 @@ dist:any;
   }
 
   getPalika(id:any){
+    this.voucherBankForm.patchValue({lgid:''});
     this.bs.getPalika(id).subscribe({next:(d:any)=>{
       this.llgs = d;
     },error:err=>{

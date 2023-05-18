@@ -1,13 +1,10 @@
 Checklist for deploying SRMS static Site.(Please follow the order carefully)
 1. Commit all changes and pull latest
 2. change the path '/assets/config.json' to '/web/assets/config.json' in src/app/app.config.ts; Here the depoloyment folder is /web/
-3. change path of images on following files form /assets/.. to /web/assets/.. or any other path related to deployment(/web/ here)
-	- front-end/src/app/login/login.component.html
-      - front-end/src/app/new-header/new-header.component.html
-5. change the baseUrl on the file /assets/config.json as deployment baseurl, eg. https://sutratest.fcgo.gov.np:3443/, do not forget the trailing slash
-6. Now run the command ng build
-7. Now run the command git stash, to ignore all build level changes; this will make switching back to development mode easier
-8. On Spring boot part first empty the folder /resources/static/web and copy all new built files(form point 6) to the same folder
-9. Modify the <base href="/"> to <base href="/web/"> in /resources/static/web/index.html
-10. Copy all the content of /resources/static/web/index.html to /resources/templates/index.html, these files must be identical.
-11. Build the java project to war or jar
+3. change the baseUrl on the file /assets/config.json as deployment baseurl, eg. https://sutratest.fcgo.gov.np:3443/, do not forget the trailing slash
+4. Now run the command ng build
+5. Now run the command git stash, to ignore all build level changes; this will make switching back to development mode easier
+6. On Spring boot part first empty the folder /resources/static/web and copy all new built files(form point 4) to the same folder
+7. Modify the <base href="/"> to <base href="/web/"> in /resources/static/web/index.html
+8. Copy all the content of /resources/static/web/index.html to /resources/templates/index.html, these files must be identical.
+9. Build the java project to war or jar

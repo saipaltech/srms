@@ -47,12 +47,12 @@ public class UsersService extends AutoService {
 		} else {
 			condition = " where u.bankid='" + bankId + "' ";
 		}
-		if(!auth.hasPermissionOnly("bankhq")) {
-			if(auth.hasPermissionOnly("banksupervisor")) {
-				condition +=" and u.branchid='"+auth.getBranchId()+"' ";
+		if (!auth.hasPermissionOnly("bankhq")) {
+			if (auth.hasPermissionOnly("banksupervisor")) {
+				condition += " and u.branchid='" + auth.getBranchId() + "' ";
 			}
 		}
-		
+
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = Users.searchables();
 			condition += "and (";
@@ -108,11 +108,11 @@ public class UsersService extends AutoService {
 
 		sql = "INSERT INTO users(name, post,permid, username, password,amountlimit, mobile,email ,bankid, branchid , disabled, approved) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
-				Arrays.asList(model.name, model.post,model.permid, model.username, model.password,
-						model.amountlimit.isBlank() ? 0 : model.amountlimit, model.mobile,model.email, bankId, model.branchid,
-						model.disabled, model.approved));
+				Arrays.asList(model.name, model.post, model.permid, model.username, model.password,
+						model.amountlimit.isBlank() ? 0 : model.amountlimit, model.mobile, model.email, bankId,
+						model.branchid, model.disabled, model.approved));
 		String permid = request("permid") + "";
-		if(rowEffect.getErrorNumber()==0) {
+		if (rowEffect.getErrorNumber() == 0) {
 			String sqls = "";
 			DbResponse rowEffects;
 			if (permid.equals("4")) {
@@ -146,25 +146,31 @@ public class UsersService extends AutoService {
 		if ((!(eres.get(0) + "").equals("0"))) {
 			return Messenger.getMessenger().setMessage("Email already exists.").error();
 		}
+		String mbl = "select count(mobile) from users where mobile=?";
+		Tuple resu = db.getSingleResult(mbl, Arrays.asList(model.mobile));
+		if (!(resu.get(0) + "").equals("0")) {
+			return Messenger.getMessenger().setMessage("Mobile already exists.").error();
+		}
 		String sq = "select count(id) from branches where bankid=? and ishead=1";
 		Tuple resp = db.getSingleResult(sq, Arrays.asList(model.bankid));
 		if ((!(resp.get(0) + "").equals("1"))) {
 			return Messenger.getMessenger().setMessage("Headbranch does not exists.").error();
 		}
 		Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$");
-        Matcher matcher = pattern.matcher(model.password);
-        if (!matcher.matches()) {
-        	return Messenger.getMessenger().setMessage("Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.").error();
-        } 
+		Matcher matcher = pattern.matcher(model.password);
+		if (!matcher.matches()) {
+			return Messenger.getMessenger().setMessage(
+					"Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.")
+					.error();
+		}
 		model.password = pe.encode(model.password);
 		sql = "INSERT INTO users(name, post,username,permid, password, mobile ,bankid, branchid ,disabled, approved,email) VALUES (?,?,?,'4',?,?,?,(select top 1 id from branches where bankid=? and ishead=1),?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username,model.password
-				, model.mobile, model.bankid, model.bankid, model.disabled, model.approved,model.email));
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name, model.post, model.username, model.password,
+				model.mobile, model.bankid, model.bankid, 0, 1, model.email));
 		if (rowEffect.getErrorNumber() == 0) {
 			String sqls = "Insert into users_perms (userid, permid) values((select top 1 id from users where username = ?), 2),((select top 1 id from users where username = ?), 3)";
 			db.execute(sqls, Arrays.asList(model.username, model.username));
 			return Messenger.getMessenger().success();
-
 		} else {
 			return Messenger.getMessenger().error();
 		}
@@ -172,7 +178,7 @@ public class UsersService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
 
-		String sql = "select id,name, username, post, amountlimit ,mobile,email, permid ,branchid,disabled, approved from "
+		String sql = "select cast(id as varchar) as id,name, username, post, amountlimit ,mobile,email, permid ,branchid,disabled, approved from "
 				+ table + " where id=?";
 
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
@@ -190,18 +196,30 @@ public class UsersService extends AutoService {
 		DbResponse rowEffect;
 		Users model = new Users();
 		model.loadData(document);
+		
+		String mbl = "select count(mobile) from users where mobile=? and id<>?";
+		Tuple resu = db.getSingleResult(mbl, Arrays.asList(model.mobile,id));
+		if (!(resu.get(0) + "").equals("0")) {
+			return Messenger.getMessenger().setMessage("Mobile already exists.").error();
+		}
+		String eml = "select count(email) from users where email=? and id<>?";
+		Tuple rese = db.getSingleResult(eml, Arrays.asList(model.email,id));
+		if (!(rese.get(0) + "").equals("0")) {
+			return Messenger.getMessenger().setMessage("Email already exists.").error();
+		}
 		String sql = "UPDATE users set name=?, mobile=?,email=?,branchid=?,post=?,permid=?, amountlimit=? ,disabled=?, approved=? where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.name, model.mobile,model.email, model.branchid, model.post, model.permid,
-				model.amountlimit.isBlank() ? 0 : model.amountlimit, model.disabled, model.approved, model.id));
+		rowEffect = db.execute(sql,
+				Arrays.asList(model.name, model.mobile, model.email, model.branchid, model.post, model.permid,
+						model.amountlimit.isBlank() ? 0 : model.amountlimit, model.disabled, model.approved, model.id));
 		String permid = request("permid") + "";
 		String sqls = "";
 		DbResponse rowEffects;
 
-		db.execute("delete from users_perms where userid=? and permid<>2",Arrays.asList(id));
-		if(permid.equals("4")) {
-			sqls= "insert into users_perms (userid,permid) values (?,?),(?,3)";
-			rowEffects = db.execute(sqls,  Arrays.asList(model.id, permid,model.id));
-		}else {
+		db.execute("delete from users_perms where userid=? and permid<>2", Arrays.asList(id));
+		if (permid.equals("4")) {
+			sqls = "insert into users_perms (userid,permid) values (?,?),(?,3)";
+			rowEffects = db.execute(sqls, Arrays.asList(model.id, permid, model.id));
+		} else {
 			sqls = "insert into users_perms (userid,permid) values (?,?)";
 			rowEffects = db.execute(sqls, Arrays.asList(model.id, permid));
 		}
@@ -262,10 +280,12 @@ public class UsersService extends AutoService {
 		String cpassword = request("cpassword");
 		if (cpassword.equals(password)) {
 			Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$");
-	        Matcher matcher = pattern.matcher(password);
-	        if (!matcher.matches()) {
-	        	return Messenger.getMessenger().setMessage("Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.").error();
-	        } 
+			Matcher matcher = pattern.matcher(password);
+			if (!matcher.matches()) {
+				return Messenger.getMessenger().setMessage(
+						"Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.")
+						.error();
+			}
 			String sql = "update users set password = ?, pwchangedate=NULL where id=" + id;
 			DbResponse rowEffect = db.execute(sql, Arrays.asList(pe.encode(password)));
 			if (rowEffect.getErrorNumber() == 0) {
@@ -280,25 +300,27 @@ public class UsersService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> changePassword() {
-		//^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$
+		// ^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$
 		String password = request("password");
 		String cpassword = request("cpassword");
 		String oldpassword = request("oldpassword");
 		if (!cpassword.equals(password))
 			return Messenger.getMessenger().setMessage("Password and Confirm Passowrds do not match").error();
-		
+
 		Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$");
-        Matcher matcher = pattern.matcher(password);
-        
-        if (!matcher.matches()) {
-        	return Messenger.getMessenger().setMessage("Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.").error();
-        } 
-		
+		Matcher matcher = pattern.matcher(password);
+
+		if (!matcher.matches()) {
+			return Messenger.getMessenger().setMessage(
+					"Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.")
+					.error();
+		}
+
 		Tuple t = db.getSingleResult("select password from users where id=" + auth.getUserId());
 		if (t != null) {
 			if (pe.matches(oldpassword, t.get(0) + "")) {
-				DbResponse rowEffect = db
-						.execute("update users set password='" + pe.encode(password) + "' where id=" + auth.getUserId());
+				DbResponse rowEffect = db.execute(
+						"update users set password='" + pe.encode(password) + "' where id=" + auth.getUserId());
 				if (rowEffect.getErrorNumber() == 0) {
 					return Messenger.getMessenger().setMessage("Password Changed Successfully").success();
 				} else {
@@ -309,30 +331,32 @@ public class UsersService extends AutoService {
 			}
 		}
 		return Messenger.getMessenger().setMessage("User Does not Exist..").error();
-	
+
 	}
-	
+
 	public ResponseEntity<Map<String, Object>> changePasswordLogin() {
-		//^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$
+		// ^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$
 		String password = request("password");
 		String cpassword = request("cpassword");
 		String oldpassword = request("oldpassword");
-		String username= request("username");
+		String username = request("username");
 		if (!cpassword.equals(password))
 			return Messenger.getMessenger().setMessage("Password and Confirm Passowrds do not match").error();
-		
+
 		Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$");
-        Matcher matcher = pattern.matcher(password);
-        
-        if (!matcher.matches()) {
-        	return Messenger.getMessenger().setMessage("Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.").error();
-        } 
-		
+		Matcher matcher = pattern.matcher(password);
+
+		if (!matcher.matches()) {
+			return Messenger.getMessenger().setMessage(
+					"Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.")
+					.error();
+		}
+
 		Tuple t = db.getSingleResult("select id, password from users where username= ?", Arrays.asList(username));
 		if (t != null) {
 			if (pe.matches(oldpassword, t.get("password") + "")) {
-				DbResponse rowEffect = db
-						.execute("update users set password='" + pe.encode(password) + "', pwchangedate=format(getdate(),'yyyyMMdd') where id=" + t.get("id"));
+				DbResponse rowEffect = db.execute("update users set password='" + pe.encode(password)
+						+ "', pwchangedate=format(getdate(),'yyyyMMdd') where id=" + t.get("id"));
 				if (rowEffect.getErrorNumber() == 0) {
 					return Messenger.getMessenger().setMessage("Password Changed Successfully").success();
 				} else {
@@ -343,19 +367,60 @@ public class UsersService extends AutoService {
 			}
 		}
 		return Messenger.getMessenger().setMessage("User Does not Exist..").error();
-	
+
 	}
 
-
 	public ResponseEntity<List<Map<String, Object>>> getUerTypes() {
-		if(auth.hasPermission("bankhq")) {
-			return ResponseEntity.ok(Arrays.asList(Map.of("id",3,"name","Bank User"),Map.of("id",4,"name","Supervisor")));
+		if (auth.hasPermission("bankhq")) {
+			return ResponseEntity
+					.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User"), Map.of("id", 4, "name", "Supervisor")));
 		}
-		if(auth.canFromUserTable("4")) {
-			return ResponseEntity.ok(Arrays.asList(Map.of("id",3,"name","Bank User")));
+		if (auth.canFromUserTable("4")) {
+			return ResponseEntity.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User")));
 		}
-		
+
 		return ResponseEntity.ok(Arrays.asList());
+	}
+
+	public ResponseEntity<Map<String, Object>> resetPassByPin() {
+		String password = request("password");
+		String cpassword = request("cpassword");
+		String pin = request("pincode");
+		String username = request("username");
+		if (!cpassword.equals(password))
+			return Messenger.getMessenger().setMessage("Password and Confirm Passowrds do not match").error();
+
+		Pattern pattern = Pattern.compile("^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$");
+		Matcher matcher = pattern.matcher(password);
+
+		if (!matcher.matches()) {
+			return Messenger.getMessenger().setMessage(
+					"Password must have at least 8 characters with at least one special character, one Upper case charcater and one number.")
+					.error();
+		}
+
+		Tuple t = db.getSingleResult("select id, password from users where username= ?", Arrays.asList(username));
+		if (t != null) {
+			String sql = "select top 1 otp from otp_log where userid=? and expiry>=GETDATE() and otp=? and type=1 order by createdat desc";
+			Tuple tt = db.getSingleResult(sql, Arrays.asList(t.get("id"), pin));
+			if (tt != null) {
+				DbResponse rowEffect = db.execute("update users set password='" + pe.encode(password)
+						+ "', pwchangedate=format(getdate(),'yyyyMMdd') where id=" + t.get("id"));
+				if (rowEffect.getErrorNumber() == 0) {
+					return Messenger.getMessenger().setMessage("Password Changed Successfully").success();
+				} else {
+					return Messenger.getMessenger().setMessage("Pasword change unsuccessful").error();
+				}
+			} else {
+				return Messenger.getMessenger().setMessage("Pin does not match.").error();
+			}
+		}
+		return Messenger.getMessenger().setMessage("User Does not Exist..").error();
+	}
+
+	public ResponseEntity<Map<String, Object>> changeOtpSettings() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

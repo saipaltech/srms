@@ -219,8 +219,8 @@ public class TaxPayerVoucherService extends AutoService {
 			if (jarr.length() > 0) {
 				for (int i = 0; i < jarr.length(); i++) {
 					JSONObject objects = jarr.getJSONObject(i);
-					String sq1 = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
-					db.execute(sq1, Arrays.asList(db.newIdInt(), id, objects.get("rc"), objects.get("amt")));
+					String sq1 = "INSERT INTO taxvouchers_detail (mainid,revenueid,amount) values(?,?,?)";
+					db.execute(sq1, Arrays.asList(id, objects.get("rc"), objects.get("amt")));
 				}
 			}
 			boolean autoVerify = false;
@@ -1329,8 +1329,15 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 					JSONObject presp = api.settlePalikaChange(id,t.get("lgid")+"",t.get("collectioncenterid")+"",t.get("bankorgid")+"");
 					if(presp!=null) {
 						if(presp.getInt("status")==1) {
-							db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
-							db.execute("update "+table+" set hasChangeReqest=0,lgid=?,collectioncenterid=?,bankorgid=? where id=?",Arrays.asList(t.get("lgid"),t.get("collectioncenterid"),t.get("bankorgid"),id));
+							db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,format(getdate(),'yyyyMMdd') as dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
+							String newid = db.newIdInt();
+							//copy details from tabe; making a new entry
+							String sql = "INSERT INTO "+table+" (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,dateint,amountcr,depositbankid,depositbranchid,approved ,approverid) "
+									+ " select '"+newid+"',format(getdate(),'yyyy-MM-dd') as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,'"+t.get("lgid")+"', '"+t.get("collectioncenterid")+"' ,'"+t.get("bankorgid")+"',purpose,'"+auth.getUserId()+"', '"+auth.getBankId()+"', '"+auth.getBranchId()+"',format(getdate(),'yyyyMMdd') as dateint,amountcr,'"+auth.getBankId()+"', '"+auth.getBranchId()+"',approved ,approverid "
+									+ "	from "+table+" where id=?";
+							DbResponse rowEffect = db.execute(sql,Arrays.asList(id));
+							db.execute("insert into taxvouchers_detail (mainid,revenueid,amount) select '"+newid+"',revenueid,amount from taxvouchers_detail where mainid=?",Arrays.asList(id));
+							db.execute("update "+table+" set hasChangeReqest=0 where id=?",Arrays.asList(id));
 							db.execute("update taxvoucher_ll_change set caseterminated=1 ,terminationdate=getDate() where vrefid=? and caseterminated=0",Arrays.asList(id));
 							return Messenger.getMessenger().setMessage("Voucher Updated Successfully ").success();
 						}
