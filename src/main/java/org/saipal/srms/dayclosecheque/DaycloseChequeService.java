@@ -53,13 +53,13 @@ public class DaycloseChequeService extends AutoService {
 			cond1+=" and t.bankorgid='"+acno+"'";
 		}
 		
-		String sql = "select *,(amountcr-amountdr) as balance from (select accountno,bankid,accountname,accountnumber,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
-				+" select  cast(t.bankorgid as varchar) as accountno,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint   where  dc.id is null and t.dateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=2 and t.branchid=? and t.cstatus=1 "+cond 
+		String sql = "select *,(amountcr-amountdr) as balance from (select accountno,bankid,accountname,depositbranchid,accountnumber,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
+				+" select  cast(t.bankorgid as varchar) as accountno,t.bankid,t.depositbranchid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+ auth.getBranchId() +"  where  dc.id is null and t.dateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=2 and t.branchid=? and t.cstatus=1 "+cond 
 				+" union"
-				+" select  cast(t.bankorgid as varchar) as accountno,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint   where  dc.id is null and  t.dateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.ttype=2 and t.branchid=? and t.cstatus=1 "+cond 
+				+" select  cast(t.bankorgid as varchar) as accountno,t.bankid,t.depositbranchid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+ auth.getBranchId() +"  where  dc.id is null and  t.dateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.ttype=2 and t.branchid=? and t.cstatus=1 "+cond 
 //				+ " union"
 //				+" select  cast(t.bankorgid as varchar) as accountno,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint   where  dc.id is null and  t.depositdateint=format(getdate(),'yyyyMMdd') and  t.bankid=?  and t.depositbranchid=?"+cond1
-				+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid) b ";
+				+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid) b ";
 		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId()));
 		if(admlvl.isEmpty()) {
 			return Messenger.getMessenger().setMessage("No transaction found").error();
@@ -77,6 +77,7 @@ public class DaycloseChequeService extends AutoService {
 					mapadmlvl.put("palika", t.get("palika"));
 					mapadmlvl.put("balance", t.get("balance"));
 					mapadmlvl.put("bankid", t.get("bankid"));
+					mapadmlvl.put("branchid", t.get("depositbranchid"));
 					
 					list.add(mapadmlvl);
 				}
