@@ -293,6 +293,7 @@ public class UsersService extends AutoService {
 		exclude.add("users");
 		exclude.add("approve-voucher");
 		exclude.add("settings");
+		exclude.add("all-users");
 		String sql = "";
 		if(auth.canFromUserTable("8")) {
 			sql = "select * from front_menu where link in ('report') order by morder";
@@ -304,7 +305,11 @@ public class UsersService extends AutoService {
 		}
 		
 		if (auth.hasPermissionOnly("*")) {
-			sql = "select * from front_menu where link in ('bank','users') order by morder";
+			String c = "";
+			if(auth.hasPermissionOnly("loginuser")) {
+				c=",'all-users'";
+			}
+			sql = "select * from front_menu where link in ('bank','users'"+c+") order by morder";
 			return ResponseEntity.ok(db.getResultListMap(sql));
 		}
 		if (auth.hasPermissionOnly("bankhq")) {

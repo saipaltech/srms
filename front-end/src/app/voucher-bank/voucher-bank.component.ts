@@ -209,9 +209,9 @@ export class VoucherBankComponent implements OnInit {
       this.bvs.getBankAccounts(llgCode).subscribe({
         next: (d) => {
           this.acs = d.data;
-          if (d.data.length == 1) {
-            this.voucherBankForm.patchValue({ "bankorgid": d.data[0].id });
-          }
+          // if (d.data.length == 1) {
+          //   this.voucherBankForm.patchValue({ "bankorgid": d.data[0].id });
+          // }
         }, error: err => {
           // console.log(err);
         }
