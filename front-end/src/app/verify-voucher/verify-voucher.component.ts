@@ -42,7 +42,7 @@ export class VerifyVoucherComponent {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       id: [''],
-      amount: ['', [Validators.required, Validators.pattern('[0-9]+')]],
+      amount: ['', Validators.required],
       depositdate: [this.myDate],
       bankvoucherno: [Math.floor(10000000 + Math.random() * 90000000)],
       remarks: ['', Validators.required],
