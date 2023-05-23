@@ -525,20 +525,22 @@ public class UsersService extends AutoService {
                 args.add(importid);
                 int i=0;
                 while(itCell.hasNext()) {
-                	if(i==5) {
+                	if(i==4) {
                 		args.add(pe.encode(readCellValue(itCell.next())));
                 	}else {
                 		args.add(readCellValue(itCell.next()));
                 	}
                 	i++;
                 }
-                args.add(readCellValue(row.getCell(0)).substring(0,4));
+//                args.add(readCellValue(row.getCell(0)).substring(0,4));
                 String sql="insert into imported_users (importid,branchid,name,post,username,password,mobile,email,amountlimit) values (?,?,?,?,?,?,?,?,?)";
                 db.execute(sql,args);
             }
 			workbook.close();
 			String bankid=auth.getBankId();
-			db.execute("insert into users(bankid,branchid,name,post,username,password,mobile,email,amountlimit) select '"+bankid+"',branchid,name,post,username,password,mobile,email,amountlimit from imported_users where importid='"+importid+"'" );
+			
+			db.execute("insert into users(bankid,branchid,name,post,username,password,mobile,email,amountlimit,permid) select '"+bankid+"',branchid,name,post,username,password,mobile,email,amountlimit,'3' from imported_users where importid='"+importid+"'" );
+			db.execute("insert into users_perms(userid,permid) select u.id,'3' from imported_users iu join users u on iu.username=u.username where iu.importid='"+importid+"'");
 			return Messenger.getMessenger().success();
 		} catch (IOException el) {
 			el.printStackTrace();

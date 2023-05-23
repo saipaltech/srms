@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AppConfig } from '../app.config';
 
 
@@ -63,5 +63,12 @@ remove(id: string) {
 }
 getUserTypes(){
   return this.http.get(this.url+"/get-usertypes");
+}
+
+uploadFile(formData: FormData) {
+  let headers = new HttpHeaders();
+  headers.append('Content-Type', 'multipart/form-data');
+  headers.append('Accept', 'application/json');
+  return this.http.post(this.url + "/upload-users", formData, { headers: headers });
 }
 }
