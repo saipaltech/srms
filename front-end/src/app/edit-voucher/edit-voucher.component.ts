@@ -37,6 +37,7 @@ export class EditVoucherComponent {
   myDate: any = new Date();
   items=new Array();
   revs:any;
+  revvs:any;
 
   constructor(private toastr: ToastrService, private fb: FormBuilder,private rs:VoucherTransferService,private bvs:ChequeEntryService, private RS: EditVoucherService, private datePipe: DatePipe) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
@@ -169,8 +170,11 @@ ccs:any;
     
   
   removeItem(index:any) {
+    console.log(this.revvs);
     this.items.splice(index, 1);
     this.calctotal();
+    console.log(this.items);
+    console.log(this.revvs);
   }
   
   
@@ -244,6 +248,7 @@ ccs:any;
   }
 
   transDetails: any;
+ 
   istab = 1;
   search() {
     this.transDetails=undefined;
@@ -252,8 +257,9 @@ ccs:any;
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {
           this.transDetails = dt.data;
-       
-          this.items=this.transDetails.revs;
+           this.revvs=JSON.parse(JSON.stringify(dt.data.revs));
+           console.log(this.revvs);
+          this.items=dt.data.revs;
           this.calctotal();
           this.bankForm.patchValue({lgid:this.transDetails.lgid,'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount});
         

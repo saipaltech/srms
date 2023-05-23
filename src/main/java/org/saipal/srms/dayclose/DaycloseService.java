@@ -100,7 +100,7 @@ public class DaycloseService extends AutoService {
 			items = "[" + items + "]";
 		}
 		String corebank=request("corebank");
-		System.out.println(corebank);
+//		System.out.println(corebank);
 		JSONObject cb = new JSONObject(corebank);
 //		System.out.println(cb);
 		JSONArray jarr = new JSONArray(items);

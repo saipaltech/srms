@@ -67,9 +67,9 @@
                 </tr>
               </thead>
               <tbody>
-                <tr  *ngFor="let r of transDetails.revs; let i = index">
-                  <td>{{r.rv}}</td>
-                  <td>{{r.amt}}</td>
+                <tr *ngFor="let k of revvs;">
+                  <td>{{k.rv}}</td>
+                  <td>{{k.amt}}</td>
                 </tr>
                 <tr><th>{{"Deposit Amount" | translate}}</th><th>{{transDetails.amount}}</th></tr>
               </tbody>
