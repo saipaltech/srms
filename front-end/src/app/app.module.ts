@@ -59,6 +59,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { SettingsComponent } from './settings/settings.component';
 import { AllUsersComponent } from './all-users/all-users.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 
 @NgModule({
   declarations: [
@@ -98,7 +99,8 @@ import { AllUsersComponent } from './all-users/all-users.component';
     DayCloseChequeComponent,
     ForgetPassComponent,
     SettingsComponent,
-    AllUsersComponent
+    AllUsersComponent,
+    FileUploadComponent
   ],
   imports: [
     BrowserModule,

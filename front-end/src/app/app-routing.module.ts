@@ -27,6 +27,7 @@ import { FrontEndPasswordChangeComponent } from './front-end-password-change/fro
 import { ForgetPassComponent } from './login/forget-pass.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AllUsersComponent } from './all-users/all-users.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 
 const routes: Routes = [
 {
@@ -100,7 +101,11 @@ const routes: Routes = [
           {
             path: 'all-users',
             component: AllUsersComponent
-          }
+          },
+          {
+            path: 'user-import',
+            component: FileUploadComponent
+          },
           
         ]
       },
@@ -129,6 +134,7 @@ const routes: Routes = [
         path: 'forget-password',
         component: ForgetPassComponent
       },
+ 
     ]
   },
   {
