@@ -1,10 +1,29 @@
 package org.saipal.srms.users;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.nio.file.WatchEvent.Kind;
+import java.nio.file.WatchEvent.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.settings.SettingsService;
@@ -16,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Tuple;
 import javax.transaction.Transactional;
@@ -37,6 +57,8 @@ public class UsersService extends AutoService {
 	
 	@Autowired
 	SettingsService ss;
+	
+	DataFormatter formatter = new DataFormatter();
 
 	private String table = "users";
 
@@ -480,5 +502,51 @@ public class UsersService extends AutoService {
 			}
 		}
 		return Messenger.getMessenger().setMessage("User Does not Exist..").error();
+	}
+	
+	public ResponseEntity<Map<String, Object>> uploadUsers(MultipartFile mfile) {
+		try {
+			InputStream file = mfile.getInputStream();// FileInputStream(new File(fileAbspath.toString()));
+			XSSFWorkbook workbook = new XSSFWorkbook(file);
+			XSSFSheet sheet = workbook.getSheetAt(0);
+			Iterator<Row> rowIterator = sheet.iterator();
+			int count = 0;
+			String importid = db.newIdInt();
+            while (rowIterator.hasNext()) {
+            	//skipping the header row
+            	if(count==0) {
+            		count++;
+            		rowIterator.next();
+            		continue;
+            	}
+                Row row = rowIterator.next();
+                Iterator<Cell> itCell = row.cellIterator();
+                List<Object> args = new ArrayList<>();
+                args.add(importid);
+                int i=0;
+                while(itCell.hasNext()) {
+                	if(i==5) {
+                		args.add(pe.encode(readCellValue(itCell.next())));
+                	}else {
+                		args.add(readCellValue(itCell.next()));
+                	}
+                	i++;
+                }
+                args.add(readCellValue(row.getCell(0)).substring(0,4));
+                String sql="insert into imported_users (importid,branchid,name,post,username,password,mobile,email,amountlimit) values (?,?,?,?,?,?,?,?,?)";
+                db.execute(sql,args);
+            }
+			workbook.close();
+			String bankid=auth.getBankId();
+			db.execute("insert into users(bankid,branchid,name,post,username,password,mobile,email,amountlimit) select '"+bankid+"',branchid,name,post,username,password,mobile,email,amountlimit from imported_users where importid='"+importid+"'" );
+			return Messenger.getMessenger().success();
+		} catch (IOException el) {
+			el.printStackTrace();
+			return Messenger.getMessenger().error();
+		}
+	}
+	
+	private String readCellValue(Cell c) {
+		return formatter.formatCellValue(c);
 	}
 }
