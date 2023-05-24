@@ -27,6 +27,9 @@ export class FileUploadComponent implements OnInit{
   
   if (fileInput && fileInput.files && fileInput.files.length > 0) {
     const file: File = fileInput.files[0];
+    const fileName: string = file.name;
+    const fileExtension: string = fileName.substring(fileName.lastIndexOf('.') + 1);
+    if(fileExtension=="xlsx"){
     let formData: FormData = new FormData();
     formData.append('file', file, file.name);
     this.RS.uploadFile(formData).subscribe({
@@ -37,9 +40,12 @@ export class FileUploadComponent implements OnInit{
         // console.log(error);
       }
     });
+  }else{
+    this.toastr.error("Invalid file format. Please upload xlsx file type.",'Error');
+  }
     
   } else {
-    console.log('No file selected.');
+    this.toastr.error("No file Selected",'Error');
   }
   }
 }
