@@ -84,4 +84,9 @@ public class BankController {
 	public ResponseEntity<List<Map<String, Object>>> getPalika() {
 		return objService.getPalika();
 	}
+	
+	@GetMapping("/getPalikaAll")
+	public ResponseEntity<List<Map<String, Object>>> getPalikaAll() {
+		return objService.getPalikaAll();
+	}
 }

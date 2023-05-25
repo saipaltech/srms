@@ -67,6 +67,23 @@ public class ReportService extends AutoService {
 
 	}
 	
+	public Excel getReportDefaultBranch(){
+		Excel excl = new Excel();
+		String type = request("type") + "";
+		if (type.equals("cad") || type.equals("chd")) {
+			return getCadChd(excl);
+		}
+		else if (type.equals("vv")) {
+			getVV(excl);
+		} else if (type.equals("dc")) {
+			getDc(excl);
+		} else if (type.equals("sr")) {
+			getSr(excl);
+		}
+		
+		return excl;	
+	}
+	
 	public Excel getDetails() {
 		Excel excl = new Excel();
 		String id = request("id");

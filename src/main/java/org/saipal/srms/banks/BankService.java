@@ -162,13 +162,31 @@ public class BankService extends AutoService {
 	}
 	
 	public ResponseEntity<List<Map<String, Object>>> getPalika() {
+		String cond="";
+		String sql1="select top 1 dlgid from branches where bankid=? and id=?";
+		Tuple tt=db.getSingleResult(sql1,Arrays.asList(auth.getBankId(),auth.getBranchId()));
+		if(tt.get(0)!=null) {
+			cond= " and a.id <> "+tt.get(0);
+		}
 		String did=request("did");
 		String sql = "select cast(a.id as varchar) as code, a.namenp as name from "
 				+ " admin_local_level_structure as a inner join "
 				+ " (select distinct lgid from  bankaccount  where  approved=1 and disabled=0 and  bankid=? ) as b "
-				+ " on a.id=b.lgid  where districtid=? order by name ";
+				+ " on a.id=b.lgid  where districtid=? "+ cond +" order by name ";
 		System.out.println("\n\n"+sql+"\n\n");
 		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList(auth.getBankId(),did)));
 	}
+	
+	public ResponseEntity<List<Map<String, Object>>> getPalikaAll() {
+		
+		String did=request("did");
+		String sql = "select cast(a.id as varchar) as code, a.namenp as name from "
+				+ " admin_local_level_structure as a inner join "
+				+ " (select distinct lgid from  bankaccount  where  approved=1 and disabled=0 and  bankid=? ) as b "
+				+ " on a.id=b.lgid  where districtid=?  order by name ";
+		System.out.println("\n\n"+sql+"\n\n");
+		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList(auth.getBankId(),did)));
+	}
+
 
 }

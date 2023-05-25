@@ -14,7 +14,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit, OnDestroy {
-
+  UserImportForm: any;
   vs = ValidationService;
   model: any = {};
   disabled = false;
@@ -34,6 +34,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   bankForm!: FormGroup;
 
   formLayout: any;
+  formLayout1: any;
   branches: any;
 
   modalRef?: BsModalRef;
@@ -41,6 +42,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   resetPawsswordForm!: FormGroup;
   resetPawsswordFormLayout: any;
   userTypes:any;
+  baseUrl:any;
 
   constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService, private bs: BranchService, private modalService: BsModalService) {
     this.formLayout = {
@@ -58,6 +60,11 @@ export class UsersComponent implements OnInit, OnDestroy {
       permid: ['', Validators.required]
 
     }
+    this.baseUrl = RS.baseurl;
+    this.formLayout1 = {
+      userImport:[''],
+    }
+  this.UserImportForm =fb.group(this.formLayout1);
 
     this.resetPawsswordFormLayout = {
       id: [],
@@ -91,6 +98,33 @@ export class UsersComponent implements OnInit, OnDestroy {
       });
     }
 
+  }
+
+  UserImportFormSubmit(){
+    const fileInput = document.getElementById('formFileSm') as HTMLInputElement;
+  
+  if (fileInput && fileInput.files && fileInput.files.length > 0) {
+    const file: File = fileInput.files[0];
+    const fileName: string = file.name;
+    const fileExtension: string = fileName.substring(fileName.lastIndexOf('.') + 1);
+    if(fileExtension=="xlsx"){
+    let formData: FormData = new FormData();
+    formData.append('file', file, file.name);
+    this.RS.uploadFile(formData).subscribe({
+      next: (data:any) => {
+        this.toastr.success(data.message, 'Success');
+      }, error: error => {
+        this.toastr.error(error.error.message, 'Error');
+        // console.log(error);
+      }
+    });
+  }else{
+    this.toastr.error("Invalid file format. Please upload xlsx file type.",'Error');
+  }
+    
+  } else {
+    this.toastr.error("No file Selected",'Error');
+  }
   }
 
   createResetItem(id:any) {

@@ -540,6 +540,7 @@ public class UsersService extends AutoService {
 			db.execute("insert into users_perms(userid,permid) select u.id,'3' from imported_users iu join users u on iu.username=u.username where iu.importid='"+importid+"'");
 			return Messenger.getMessenger().success();
 		} catch (IOException el) {
+		System.out.println(el.getStackTrace());
 			el.printStackTrace();
 			return Messenger.getMessenger().error();
 		}

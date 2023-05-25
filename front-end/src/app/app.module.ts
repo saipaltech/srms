@@ -60,6 +60,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { SettingsComponent } from './settings/settings.component';
 import { AllUsersComponent } from './all-users/all-users.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
+import { RevenueReportComponent } from './revenue-report/revenue-report.component';
 
 @NgModule({
   declarations: [
@@ -100,7 +101,8 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
     ForgetPassComponent,
     SettingsComponent,
     AllUsersComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    RevenueReportComponent
   ],
   imports: [
     BrowserModule,
