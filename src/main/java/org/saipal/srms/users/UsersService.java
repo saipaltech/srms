@@ -54,10 +54,10 @@ public class UsersService extends AutoService {
 
 	@Autowired
 	PasswordEncoder pe;
-	
+
 	@Autowired
 	SettingsService ss;
-	
+
 	DataFormatter formatter = new DataFormatter();
 
 	private String table = "users";
@@ -106,8 +106,9 @@ public class UsersService extends AutoService {
 			return Messenger.getMessenger().error();
 		}
 	}
+
 	public ResponseEntity<Map<String, Object>> indexAll() {
-		if(!auth.hasPermissionOnly("loginuser")) {
+		if (!auth.hasPermissionOnly("loginuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		String condition = "";
@@ -254,14 +255,14 @@ public class UsersService extends AutoService {
 		DbResponse rowEffect;
 		Users model = new Users();
 		model.loadData(document);
-		
+
 		String mbl = "select count(mobile) from users where mobile=? and id<>?";
-		Tuple resu = db.getSingleResult(mbl, Arrays.asList(model.mobile,id));
+		Tuple resu = db.getSingleResult(mbl, Arrays.asList(model.mobile, id));
 		if (!(resu.get(0) + "").equals("0")) {
 			return Messenger.getMessenger().setMessage("Mobile already exists.").error();
 		}
 		String eml = "select count(email) from users where email=? and id<>?";
-		Tuple rese = db.getSingleResult(eml, Arrays.asList(model.email,id));
+		Tuple rese = db.getSingleResult(eml, Arrays.asList(model.email, id));
 		if (!(rese.get(0) + "").equals("0")) {
 			return Messenger.getMessenger().setMessage("Email already exists.").error();
 		}
@@ -317,21 +318,21 @@ public class UsersService extends AutoService {
 		exclude.add("settings");
 		exclude.add("all-users");
 		String sql = "";
-		if(auth.canFromUserTable("8")) {
+		if (auth.canFromUserTable("8")) {
 			sql = "select * from front_menu where link in ('report') order by morder";
 			return ResponseEntity.ok(db.getResultListMap(sql));
 		}
-		if(auth.canFromUserTable("7")) {
+		if (auth.canFromUserTable("7")) {
 			sql = "select * from front_menu where link in ('branch','users') order by morder";
 			return ResponseEntity.ok(db.getResultListMap(sql));
 		}
-		
+
 		if (auth.hasPermissionOnly("*")) {
 			String c = "";
-			if(auth.hasPermissionOnly("loginuser")) {
-				c=",'all-users'";
+			if (auth.hasPermissionOnly("loginuser")) {
+				c = ",'all-users'";
 			}
-			sql = "select * from front_menu where link in ('bank','users'"+c+") order by morder";
+			sql = "select * from front_menu where link in ('bank','users'" + c + ") order by morder";
 			return ResponseEntity.ok(db.getResultListMap(sql));
 		}
 		if (auth.hasPermissionOnly("bankhq")) {
@@ -342,7 +343,7 @@ public class UsersService extends AutoService {
 		}
 		if (auth.hasPermissionOnly("banksupervisor")) {
 			String ksetVal = ss.getSetting(SettingsService.supccuKey);
-			if(ksetVal.equals("1") || ksetVal.isBlank()) {
+			if (ksetVal.equals("1") || ksetVal.isBlank()) {
 				exclude.remove("users");
 			}
 			exclude.remove("approve-voucher");
@@ -450,15 +451,12 @@ public class UsersService extends AutoService {
 	public ResponseEntity<List<Map<String, Object>>> getUerTypes() {
 		if (auth.hasPermission("bankhq")) {
 			return ResponseEntity
-					.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User"),
-							Map.of("id", 4, "name", "Supervisor"),
-							Map.of("id", 7, "name", "Technical User"),
-							Map.of("id", 8, "name", "Monitoring User")
-							));
+					.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User"), Map.of("id", 4, "name", "Supervisor"),
+							Map.of("id", 7, "name", "Technical User"), Map.of("id", 8, "name", "Monitoring User")));
 		}
 		if (auth.canFromUserTable("4")) {
 			String ksetVal = ss.getSetting(SettingsService.supccuKey);
-			if(ksetVal.equals("1") || ksetVal.isBlank()) {
+			if (ksetVal.equals("1") || ksetVal.isBlank()) {
 				return ResponseEntity.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User")));
 			}
 		}
@@ -503,7 +501,7 @@ public class UsersService extends AutoService {
 		}
 		return Messenger.getMessenger().setMessage("User Does not Exist..").error();
 	}
-	
+
 	public ResponseEntity<Map<String, Object>> uploadUsers(MultipartFile mfile) {
 		try {
 			InputStream file = mfile.getInputStream();// FileInputStream(new File(fileAbspath.toString()));
@@ -512,68 +510,76 @@ public class UsersService extends AutoService {
 			Iterator<Row> rowIterator = sheet.iterator();
 			int count = 0;
 			String importid = db.newIdInt();
-            while (rowIterator.hasNext()) {
-            	//skipping the header row
-            	if(count==0) {
-            		count++;
-            		rowIterator.next();
-            		continue;
-            	}
-                Row row = rowIterator.next();
-                Iterator<Cell> itCell = row.cellIterator();
-                List<Object> args = new ArrayList<>();
-                args.add(importid);
-                int i=0;
-                while(itCell.hasNext()) {
-                	if(i==0) {
-                		String cv = readCellValue(itCell.next());
-                		String[] cvs = cv.split("|");
-                		args.add(cvs[0]);
-                	}else if(i==4) {
-                		args.add(pe.encode(readCellValue(itCell.next())));
-                	}else {
-                		args.add(readCellValue(itCell.next()));
-                	}
-                	i++;
-                }
+			while (rowIterator.hasNext()) {
+				// skipping the header row
+				if (count == 0) {
+					count++;
+					rowIterator.next();
+					continue;
+				}
+				Row row = rowIterator.next();
+				Iterator<Cell> itCell = row.cellIterator();
+				List<Object> args = new ArrayList<>();
+				args.add(importid);
+				int i = 0;
+				while (itCell.hasNext()) {
+					if (i == 0) {
+						String cv = readCellValue(itCell.next());
+						String[] cvs = cv.split("|");
+						args.add(cvs[0]);
+					} else if (i == 4) {
+						args.add(pe.encode(readCellValue(itCell.next())));
+					} else {
+						args.add(readCellValue(itCell.next()));
+					}
+					i++;
+				}
 //                args.add(readCellValue(row.getCell(0)).substring(0,4));
-                String sql="insert into imported_users (importid,branchid,name,post,username,password,mobile,email,amountlimit) values (?,?,?,?,?,?,?,?,?)";
-                db.execute(sql,args);
-            }
+				String sql = "insert into imported_users (importid,branchid,name,post,username,password,mobile,email,amountlimit) values (?,?,?,?,?,?,?,?,?)";
+				db.execute(sql, args);
+			}
 			workbook.close();
-			String bankid=auth.getBankId();
-			
-			db.execute("insert into users(bankid,branchid,name,post,username,password,mobile,email,amountlimit,permid) select '"+bankid+"',branchid,name,post,username,password,mobile,email,amountlimit,'3' from imported_users where importid='"+importid+"'" );
-			db.execute("insert into users_perms(userid,permid) select u.id,'3' from imported_users iu join users u on iu.username=u.username where iu.importid='"+importid+"'");
+			String bankid = auth.getBankId();
+
+			db.execute(
+					"insert into users(bankid,branchid,name,post,username,password,mobile,email,amountlimit,permid) select '"
+							+ bankid
+							+ "',branchid,name,post,username,password,mobile,email,amountlimit,'3' from imported_users where importid='"
+							+ importid + "'");
+			db.execute(
+					"insert into users_perms(userid,permid) select u.id,'3' from imported_users iu join users u on iu.username=u.username where iu.importid='"
+							+ importid + "'");
 			return Messenger.getMessenger().success();
 		} catch (IOException el) {
 			el.printStackTrace();
 			return Messenger.getMessenger().error();
 		}
 	}
-	
+
 	private String readCellValue(Cell c) {
 		return formatter.formatCellValue(c);
 	}
+
 	public XSSFWorkbook downloadImportFile() {
-		List<Tuple> lt = db.getResultList("select id,name from branches where bankid=?",Arrays.asList(auth.getBankId()));
+		List<Tuple> lt = db.getResultList("select id,name from branches where bankid=?",
+				Arrays.asList(auth.getBankId()));
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFSheet usheet = wb.createSheet("Users");
 		XSSFSheet rfsheet = wb.createSheet("Branches");
-		int r=0;
-		if(lt.size() > 0) {
-			for(Tuple t: lt) {
+		int r = 0;
+		if (lt.size() > 0) {
+			for (Tuple t : lt) {
 				Row ro = rfsheet.createRow(r);
-				ro.createCell(0).setCellValue(t.get("id")+"|"+t.get("name"));
+				ro.createCell(0).setCellValue(t.get("id") + "|" + t.get("name"));
 				r++;
 			}
 		}
-		//create name for Categories list constraint
-		   XSSFName namedRange = wb.createName();
-		   namedRange.setNameName("listbranches");
-		   String reference = "Branches!$A$1:$A$"+lt.size();
-		   namedRange.setRefersToFormula(reference);
-		
+		// create name for Categories list constraint
+		XSSFName namedRange = wb.createName();
+		namedRange.setNameName("listbranches");
+		String reference = "Branches!$A$1:$A$" + lt.size();
+		namedRange.setRefersToFormula(reference);
+
 		Row hr = usheet.createRow(0);
 		hr.createCell(0).setCellValue("Branch");
 		hr.createCell(1).setCellValue("Name");
@@ -583,15 +589,15 @@ public class UsersService extends AutoService {
 		hr.createCell(5).setCellValue("Mobile");
 		hr.createCell(6).setCellValue("Email");
 		hr.createCell(7).setCellValue("Amount Limit");
+		
 		usheet.setActiveCell(new CellAddress("A1"));
-		//data validations
-		   DataValidationHelper dvHelper = usheet.getDataValidationHelper();
-		   //data validation for categories in A2:
-		   DataValidationConstraint dvConstraint = dvHelper.createFormulaListConstraint("listbranches");
-		   CellRangeAddressList addressList = new CellRangeAddressList(1, 50, 0, 0);            
-		   DataValidation validation = dvHelper.createValidation(dvConstraint, addressList);
-		   usheet.addValidationData(validation);
-		   wb.setSheetHidden(1, true);
+		
+		DataValidationHelper dvHelper = usheet.getDataValidationHelper();
+		DataValidationConstraint dvConstraint = dvHelper.createFormulaListConstraint("listbranches");
+		CellRangeAddressList addressList = new CellRangeAddressList(1, 50, 0, 0);
+		DataValidation validation = dvHelper.createValidation(dvConstraint, addressList);
+		usheet.addValidationData(validation);
+		wb.setSheetHidden(1, true);
 		return wb;
 	}
 }
