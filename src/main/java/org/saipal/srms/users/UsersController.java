@@ -1,9 +1,11 @@
 package org.saipal.srms.users;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-
+import org.apache.poi.ss.usermodel.Workbook;
+import org.saipal.srms.excel.Excel;
 import org.saipal.srms.util.Messenger;
 import org.saipal.srms.util.ValidationService;
 import org.saipal.srms.util.Validator;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/users")
@@ -127,5 +130,20 @@ public class UsersController {
 	@PostMapping("upload-users")
 	public ResponseEntity<Map<String, Object>> uploadUsers(@RequestParam("file") MultipartFile file) {
 			return objService.uploadUsers(file);
+	}
+	
+	@GetMapping("download-excel")
+	public void downloadExcel(HttpServletResponse resp) {
+		Workbook wb = objService.downloadImportFile();
+		String fileName = "users_import.xlsx";
+		resp.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		resp.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+		try {
+			wb.write(resp.getOutputStream());
+			wb.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

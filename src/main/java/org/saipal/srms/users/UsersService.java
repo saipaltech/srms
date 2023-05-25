@@ -10,10 +10,18 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DataValidation;
+import org.apache.poi.ss.usermodel.DataValidationConstraint;
+import org.apache.poi.ss.usermodel.DataValidationHelper;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellAddress;
+import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFName;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.saipal.srms.auth.Authenticated;
+import org.saipal.srms.excel.Excel;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.settings.SettingsService;
 import org.saipal.srms.util.DB;
@@ -539,5 +547,44 @@ public class UsersService extends AutoService {
 	
 	private String readCellValue(Cell c) {
 		return formatter.formatCellValue(c);
+	}
+	public XSSFWorkbook downloadImportFile() {
+		List<Tuple> lt = db.getResultList("select id,name from branches where bankid=?",Arrays.asList(auth.getBankId()));
+		XSSFWorkbook wb = new XSSFWorkbook();
+		XSSFSheet usheet = wb.createSheet("Users");
+		XSSFSheet rfsheet = wb.createSheet("Branches");
+		int r=0;
+		if(lt.size() > 0) {
+			for(Tuple t: lt) {
+				Row ro = rfsheet.createRow(r);
+				ro.createCell(0).setCellValue(t.get("id")+"|"+t.get("name"));
+				r++;
+			}
+		}
+		//create name for Categories list constraint
+		   XSSFName namedRange = wb.createName();
+		   namedRange.setNameName("Branches");
+		   String reference = "Branches!$A$1";
+		   namedRange.setRefersToFormula(reference);
+		
+		Row hr = usheet.createRow(0);
+		hr.createCell(0).setCellValue("Branch");
+		hr.createCell(1).setCellValue("Name");
+		hr.createCell(2).setCellValue("Post");
+		hr.createCell(3).setCellValue("Username");
+		hr.createCell(4).setCellValue("Password");
+		hr.createCell(5).setCellValue("Mobile");
+		hr.createCell(6).setCellValue("Email");
+		hr.createCell(7).setCellValue("Amount Limit");
+		usheet.setActiveCell(new CellAddress("A1"));
+		usheet.autoSizeColumn(0);
+		//data validations
+		   DataValidationHelper dvHelper = usheet.getDataValidationHelper();
+		   //data validation for categories in A2:
+		   DataValidationConstraint dvConstraint = dvHelper.createFormulaListConstraint("Branches");
+		   CellRangeAddressList addressList = new CellRangeAddressList(1, 1, 0, 0);            
+		   DataValidation validation = dvHelper.createValidation(dvConstraint, addressList);
+		   usheet.addValidationData(validation);
+		return wb;
 	}
 }
