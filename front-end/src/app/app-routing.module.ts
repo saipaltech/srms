@@ -28,6 +28,7 @@ import { ForgetPassComponent } from './login/forget-pass.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AllUsersComponent } from './all-users/all-users.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
+import { RevenueReportComponent } from './revenue-report/revenue-report.component';
 
 const routes: Routes = [
 {
@@ -85,6 +86,10 @@ const routes: Routes = [
           {
             path: 'report',
             component: ReportComponent
+          },
+          {
+            path: 'revenue-report',
+            component: RevenueReportComponent
           },
           {
             path: 'day-close',

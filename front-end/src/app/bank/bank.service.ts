@@ -15,6 +15,9 @@ export class BankService {
   getPalika(id:any){
     return this.api.get(this.url+'/getPalika?did='+id);
   }
+  getPalikaAll(id:any){
+    return this.api.get(this.url+'/getPalikaAll?did='+id);
+  }
   url="bank";
   create(data: any) {
     // console.log(data);
