@@ -44,6 +44,9 @@ export class ReportComponent implements OnInit{
 
     this.reportForm = fb.group(this.formLayout)
   }
+  token(){
+    return this.auth.getUserDetails()?.token;
+  }
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.type = params['type'];

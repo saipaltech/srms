@@ -7,6 +7,7 @@ import { BranchService } from '../branch/branch.service';
 
 
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-users',
@@ -44,7 +45,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   userTypes:any;
   baseUrl:any;
 
-  constructor(private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService, private bs: BranchService, private modalService: BsModalService) {
+  constructor(private auth:AuthService,private toastr: ToastrService, private fb: FormBuilder, private RS: UsersService, private bs: BranchService, private modalService: BsModalService) {
     this.formLayout = {
       id: [],
       branchid: ['', Validators.required],
@@ -79,6 +80,9 @@ export class UsersComponent implements OnInit, OnDestroy {
       entries: new FormControl('10'),
       srch_term: new FormControl('')
     })
+  }
+  token(){
+    return this.auth.getUserDetails()?.token;
   }
   ngOnDestroy(): void {
   //  console.log(this.toastr.currentlyActive);

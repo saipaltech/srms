@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DataValidation;
@@ -17,6 +18,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFDataValidation;
+import org.apache.poi.xssf.usermodel.XSSFDataValidationConstraint;
 import org.apache.poi.xssf.usermodel.XSSFName;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -522,7 +525,11 @@ public class UsersService extends AutoService {
                 args.add(importid);
                 int i=0;
                 while(itCell.hasNext()) {
-                	if(i==4) {
+                	if(i==0) {
+                		String cv = readCellValue(itCell.next());
+                		String[] cvs = cv.split("|");
+                		args.add(cvs[0]);
+                	}else if(i==4) {
                 		args.add(pe.encode(readCellValue(itCell.next())));
                 	}else {
                 		args.add(readCellValue(itCell.next()));
@@ -540,7 +547,6 @@ public class UsersService extends AutoService {
 			db.execute("insert into users_perms(userid,permid) select u.id,'3' from imported_users iu join users u on iu.username=u.username where iu.importid='"+importid+"'");
 			return Messenger.getMessenger().success();
 		} catch (IOException el) {
-		System.out.println(el.getStackTrace());
 			el.printStackTrace();
 			return Messenger.getMessenger().error();
 		}
@@ -564,8 +570,8 @@ public class UsersService extends AutoService {
 		}
 		//create name for Categories list constraint
 		   XSSFName namedRange = wb.createName();
-		   namedRange.setNameName("Branches");
-		   String reference = "Branches!$A$1";
+		   namedRange.setNameName("listbranches");
+		   String reference = "Branches!$A$1:$A$"+lt.size();
 		   namedRange.setRefersToFormula(reference);
 		
 		Row hr = usheet.createRow(0);
@@ -578,14 +584,14 @@ public class UsersService extends AutoService {
 		hr.createCell(6).setCellValue("Email");
 		hr.createCell(7).setCellValue("Amount Limit");
 		usheet.setActiveCell(new CellAddress("A1"));
-		usheet.autoSizeColumn(0);
 		//data validations
 		   DataValidationHelper dvHelper = usheet.getDataValidationHelper();
 		   //data validation for categories in A2:
-		   DataValidationConstraint dvConstraint = dvHelper.createFormulaListConstraint("Branches");
-		   CellRangeAddressList addressList = new CellRangeAddressList(1, 1, 0, 0);            
+		   DataValidationConstraint dvConstraint = dvHelper.createFormulaListConstraint("listbranches");
+		   CellRangeAddressList addressList = new CellRangeAddressList(1, 50, 0, 0);            
 		   DataValidation validation = dvHelper.createValidation(dvConstraint, addressList);
 		   usheet.addValidationData(validation);
+		   wb.setSheetHidden(1, true);
 		return wb;
 	}
 }
