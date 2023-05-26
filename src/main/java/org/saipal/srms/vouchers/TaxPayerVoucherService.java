@@ -153,11 +153,25 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
+		String notes=request("noteinfo");
 		String voucher = request("voucherinfo");
 		if (voucher.startsWith("{")) {
 			voucher = "[" + voucher + "]";
 		}
+		
 		JSONArray jarr = new JSONArray(voucher);
+		JSONArray jarr1 = new JSONArray();
+		System.out.println(notes.length());
+		if(notes.length()==0) {
+//			JSONArray jarr1 = new JSONArray();
+		}else {
+			if (notes.startsWith("{")) {
+				notes = "[" + notes + "]";
+			}
+			 jarr1 = new JSONArray(notes);
+		}
+//		System.out.println(jarr);
+//		System.out.println(jarr1);
 		String sql = "";
 		TaxPayerVoucher model = new TaxPayerVoucher();
 		model.loadData(document);
@@ -221,6 +235,13 @@ public class TaxPayerVoucherService extends AutoService {
 					JSONObject objects = jarr.getJSONObject(i);
 					String sq1 = "INSERT INTO taxvouchers_detail (mainid,revenueid,amount) values(?,?,?)";
 					db.execute(sq1, Arrays.asList(id, objects.get("rc"), objects.get("amt")));
+				}
+			}
+			if (jarr1.length() > 0) {
+				for (int i = 0; i < jarr1.length(); i++) {
+					JSONObject objects = jarr1.getJSONObject(i);
+					String sq1 = "INSERT INTO taxvoucher_note_details (mainid,note,no,returned) values(?,?,?,?)";
+					db.execute(sq1, Arrays.asList(id, objects.get("nt"), objects.get("no"),request("return")));
 				}
 			}
 			boolean autoVerify = false;

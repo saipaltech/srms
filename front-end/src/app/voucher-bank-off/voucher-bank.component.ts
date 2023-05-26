@@ -51,7 +51,10 @@ export class VoucherBankOffComponent implements OnInit {
   srchForm!: FormGroup;
   model: any = {};
   approved ="0";
+  isNote:boolean=false;
   items=new Array();
+  items1=new Array();
+
 
 constructor(private appconfig:AppConfig ,private datePipe: DatePipe,private bs:BankService, private toastr: ToastrService, private fb: FormBuilder,private bvs:VoucherServiceOff, private modalService: BsModalService, private r: Router,private auth:AuthService){
   
@@ -73,7 +76,11 @@ constructor(private appconfig:AppConfig ,private datePipe: DatePipe,private bs:B
       amount:['',Validators.pattern('[0-9]+')],
       ttype:['1'],
       cb:[''],
-      district:['']
+      district:[''],
+      cb1:[''],
+      note:[''],
+      totalno:['',Validators.pattern('[0-9]+')],
+      return:['0',Validators.pattern('[0-9]+')]
     }
     this.voucherBankForm =fb.group(this.formLayout)
     this.srchForm = new FormGroup({
@@ -224,6 +231,16 @@ mobile(msg:any){
   return msg;
 }
 
+checkvalue1(isChecked1: boolean){
+  if (isChecked1 == true) {
+    this.isNote=true;
+
+  }else{
+    this.isNote=false;
+    this.items1=new Array();
+  }
+}
+
 checks=false;
   checkvalue(isChecked: boolean) {
 
@@ -316,13 +333,23 @@ voucherBankFormSubmit(){
       return;
      } 
   }
+
+  this.addItem();
+    this.addItem1();
+    if(this.isNote==true){
+      if(this.totalAmt!=this.totalAmt1){
+        this.toastr.error('Total amount and notes collection mismatched', 'Error');
+        return;
+      }
+    }
    
   if (window.confirm('Are  you sure you want to save this voucher?')) {
-  this.addItem();
+ 
   this.voucherBankForm.patchValue({amount:this.totalAmt});
   if (this.voucherBankForm.valid) {   
     this.model = this.voucherBankForm.value;
     this.model.voucherinfo=this.items;
+    this.model.noteinfo=this.items1;
     this.createItem(this.voucherBankForm.value.id);
     // alert('submit but not create')
     // console.log(this.voucherBankForm.value)
@@ -395,7 +422,45 @@ addItem(){
    
   
   }
+
+  addItem1() {
+    //  console.log(this.rv);
+
+    let rc = this.voucherBankForm.value['note'];
+    //  console.log(rc)
+    let amt = this.voucherBankForm.value['totalno'];
+
+    //  if(amt)
+    if (amt && rc && this.voucherBankForm.get('totalno')?.valid) {
+      let val =rc*amt;
+      // for (const item of this.revs1) {
+      //   if (item.code === rc) {
+      //     val = item.code + '[' + item.name + ']';
+      //     // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
+      //     break;
+      //   }
+      // }
+
+      var newItem = {
+        nt: rc,
+        no: amt,
+        rv: val
+      };
+
+      // Add the new item to the items array
+      this.items1.push(newItem);
+      this.calctotal1();
+
+      this.voucherBankForm.patchValue({ "note": '' });
+      this.voucherBankForm.patchValue({ "totalno": '' });
+
+
+    }
+
+
+  }
   totalAmt=0;
+  totalAmt1=0;
   calctotal(){
     this.totalAmt=0;
     for(const item of this.items){
@@ -409,6 +474,26 @@ removeItem(index:any) {
  
   this.items.splice(index, 1);
   this.calctotal();
+}
+
+removeItem1(index: any) {
+  this.items1.splice(index, 1);
+  this.calctotal1();
+}
+
+getTotalAmt(){
+  let amt = this.voucherBankForm.value['return'];
+  this.totalAmt1=this.totalAmt1-amt;
+}
+
+calctotal1() {
+  this.totalAmt1 = 0;
+  for (const item of this.items1) {
+    this.totalAmt1 += parseInt(item.rv);
+
+  }
+  let amt = this.voucherBankForm.value['return'];
+  this.totalAmt1=this.totalAmt1-amt;
 }
 
 

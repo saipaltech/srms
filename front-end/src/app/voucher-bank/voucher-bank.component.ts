@@ -37,6 +37,7 @@ export class VoucherBankComponent implements OnInit {
   ccs: any;
   acs: any;
   revs: any;
+  revs1= new Array();
 
   lists: any;
   perPages = [10, 20, 50, 100];
@@ -54,7 +55,9 @@ export class VoucherBankComponent implements OnInit {
 
   approved = "0";
   items = new Array();
+  items1 = new Array();
   isChecked: boolean = false;
+  isNote:boolean=false;
 
   constructor(private appconfig:AppConfig ,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder, private bvs: VoucherService, private modalService: BsModalService, private r: Router, private auth: AuthService) {
     const ud = this.auth.getUserDetails();
@@ -78,7 +81,11 @@ export class VoucherBankComponent implements OnInit {
       purpose: [''],
       amount: ['', Validators.pattern('[0-9]+')],
       ttype: ['1'],
-      cb:['']
+      cb:[''],
+      cb1:[''],
+      note:[''],
+      totalno:['',Validators.pattern('[0-9]+')],
+      return:['0',Validators.pattern('[0-9]+')]
     }
     this.voucherBankForm = fb.group(this.formLayout)
     this.srchForm = new FormGroup({
@@ -98,6 +105,11 @@ export class VoucherBankComponent implements OnInit {
   }
 
   details: any;
+
+  getTotalAmt(){
+    let amt = this.voucherBankForm.value['return'];
+    this.totalAmt1=this.totalAmt1-amt;
+  }
 
   getDetails(id: any) {
     this.bvs.getDetails(id).subscribe({
@@ -239,6 +251,7 @@ export class VoucherBankComponent implements OnInit {
     });
     this.voucherBankForm.patchValue({ 'lgid': this.dlgid });
     this.items = new Array();
+    this.items1 = new Array();
 
   }
 
@@ -292,6 +305,15 @@ export class VoucherBankComponent implements OnInit {
 
     }
   }
+  checkvalue1(isChecked1: boolean){
+    if (isChecked1 == true) {
+      this.isNote=true;
+
+    }else{
+      this.isNote=false;
+      this.items1=new Array();
+    }
+  }
 
   setPayerName(){
     if(this.checks==true){
@@ -323,9 +345,18 @@ export class VoucherBankComponent implements OnInit {
         return;
        }   
     }
+    this.addItem();
+    this.addItem1();
+    if(this.isNote==true){
+      if(this.totalAmt!=this.totalAmt1){
+        this.toastr.error('Total amount and notes collection mismatched', 'Error');
+        return;
+      }
+    }
+    
      
     if (window.confirm('Are  you sure you want to save this voucher?')) {
-      this.addItem();
+    
       this.voucherBankForm.patchValue({ amount: this.totalAmt });
       if (this.voucherBankForm.valid) {
         const llgCode = this.voucherBankForm.value['lgid'];
@@ -336,6 +367,8 @@ export class VoucherBankComponent implements OnInit {
         }
         this.model = this.voucherBankForm.value;
         this.model.voucherinfo = this.items;
+        this.model.noteinfo=this.items1;
+      
 
         this.createItem(this.voucherBankForm.value.id);
         // alert('submit but not create')
@@ -380,6 +413,7 @@ export class VoucherBankComponent implements OnInit {
 
   selectedRevenue: any;
   totalAmt = 0;
+  totalAmt1 = 0;
   addItem() {
     //  console.log(this.rv);
 
@@ -417,6 +451,43 @@ export class VoucherBankComponent implements OnInit {
 
   }
 
+  addItem1() {
+    //  console.log(this.rv);
+
+    let rc = this.voucherBankForm.value['note'];
+    //  console.log(rc)
+    let amt = this.voucherBankForm.value['totalno'];
+
+    //  if(amt)
+    if (amt && rc && this.voucherBankForm.get('totalno')?.valid) {
+      let val =rc*amt;
+      // for (const item of this.revs1) {
+      //   if (item.code === rc) {
+      //     val = item.code + '[' + item.name + ']';
+      //     // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
+      //     break;
+      //   }
+      // }
+
+      var newItem = {
+        nt: rc,
+        no: amt,
+        rv: val
+      };
+
+      // Add the new item to the items array
+      this.items1.push(newItem);
+      this.calctotal1();
+
+      this.voucherBankForm.patchValue({ "note": '' });
+      this.voucherBankForm.patchValue({ "totalno": '' });
+
+
+    }
+
+
+  }
+
   delete(id: any) {
     if (window.confirm('Are sure you want to delete this item?')) {
       this.bvs.remove(id).subscribe({
@@ -438,9 +509,24 @@ export class VoucherBankComponent implements OnInit {
     }
   }
 
+  calctotal1() {
+    this.totalAmt1 = 0;
+    for (const item of this.items1) {
+      this.totalAmt1 += parseInt(item.rv);
+
+    }
+    let amt = this.voucherBankForm.value['return'];
+    this.totalAmt1=this.totalAmt1-amt;
+  }
+
   removeItem(index: any) {
     this.items.splice(index, 1);
     this.calctotal();
+  }
+
+  removeItem1(index: any) {
+    this.items1.splice(index, 1);
+    this.calctotal1();
   }
 
   removeItems(index: any) {

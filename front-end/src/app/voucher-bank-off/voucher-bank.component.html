@@ -168,6 +168,81 @@
 
         </div>
 
+        <div class=" col-md-8 text-start">
+          <div class="form-check">
+            <input formControlName="cb1" class="form-check-input" type="checkbox" #check1 value="" (click)="checkvalue1(check1.checked)"
+             >
+            <label class="form-check-label" for="flexCheckDefault">
+              {{"Note Details" | translate}}
+            </label>
+          </div>
+        </div>
+
+        <div *ngIf="isNote" class="row col-sm-12">
+        <div class="col-sm-6">
+          <label for="firstName" class="form-label">{{"Amount Note" | translate}}</label>
+          <select class="form-control form-control-sm" formControlName="note">
+            <option value="">Select one</option>
+            <option value="1000">1000</option>
+            <option value="500">500</option>
+            <option value="100">100</option>
+            <option value="50">50</option>
+            <option value="20">20</option>
+            <option value="10">10</option>
+            <option value="5">5</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+          </select>
+         
+        </div>
+
+        <div class="col-5">
+          <label for="username" class="form-label">{{"Total No." | translate}}</label>
+          <div class="input-group has-validation">
+            <input formControlName="totalno" type="text" class="form-control form-control-sm"
+              [ngClass]="vs.getControlClass(voucherBankForm.controls['totalno'])" />
+            <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['totalno'])">
+              {{altmsg(vs.getMessage(voucherBankForm.controls['totalno']))}}</div>
+          </div>
+        </div>
+        <div class="col-1">
+          <label>&nbsp;</label>
+          <div class="input-group has-validation">
+            <button type="button" class="btn btn-success btn-sm" (click)="addItem1();calctotal1()">{{"Add" | translate}} </button>
+          </div>
+        </div>
+        <div *ngIf="items1.length" class="col-12">
+          <table class="layout display responsive-table">
+            <!-- style="word-wrap: anywhere;" -->
+            <thead>
+              <tr>
+                <th>{{"Note" | translate}}</th>
+                <th>{{"Total No" | translate}}</th>
+                <th>{{"Total Amount" | translate}}</th>
+                <th>{{"Action" | translate}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let l of items1;let i = index">
+                <td> {{l.nt}} </td>
+                <td>{{l.no}}</td>
+                <td>{{l.rv}}</td>
+                <td><button type="button" class="btn btn-danger btn-sm" (click)="removeItem1(i);calctotal1()">Delete</button></td>
+              </tr>
+              <tr><td>Return Amount</td><td><input type="text" #rtn (blur)="calctotal1()" [ngClass]="vs.getControlClass(voucherBankForm.controls['return'])" class="form-control form-control-sm" value="0" formControlName="return">
+                <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['return'])">
+                  {{altmsg(vs.getMessage(voucherBankForm.controls['return']))}}</div>
+              </td></tr>
+              <tr>
+                <th>{{"Total Amount" | translate}}</th>
+                <th colspan="3">{{totalAmt1}}</th>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
     
        
 
