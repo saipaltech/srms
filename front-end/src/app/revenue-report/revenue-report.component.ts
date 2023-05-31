@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ApiService } from '../api.service';
 import { ToastrService } from 'ngx-toastr';
-import { DatePipe } from '@angular/common';
+import { DOCUMENT, DatePipe } from '@angular/common';
 import { ValidationService } from '../validation.service';
 import { ActivatedRoute } from '@angular/router';
 import { AppConfig } from '../app.config';
@@ -29,7 +29,7 @@ export class RevenueReportComponent implements OnInit{
   tableView = false;
 
   myDate: any = new Date();
-  constructor(private fb: FormBuilder, private auth:AuthService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute, private ap: AppConfig, private bvs: RevenueReportService) {
+  constructor(@Inject(DOCUMENT) document: Document,private fb: FormBuilder, public auth:AuthService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute, public ap: AppConfig, private bvs: RevenueReportService) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       from:[this.myDate, Validators.required],
@@ -42,7 +42,7 @@ export class RevenueReportComponent implements OnInit{
       users:['']
     }
 
-    this.reportForm = fb.group(this.formLayout)
+   // this.reportForm = fb.group(this.formLayout)
   }
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -50,11 +50,17 @@ export class RevenueReportComponent implements OnInit{
       this.parameterChange();
     });
     this.getFiscalYears();
-    this.getllgs();
+    //this.getllgs();
     this.getBranches();
     this.getusers();
     // this.getAccountNumbers();
+    const frm = document.getElementById("revFrom");
+    frm?.addEventListener('onsumbit',(e)=>{
+     this.tok.value = this.auth.getUserDetails()?.token;
+      return true;
+    });
   }
+  
 
   userList:any;
   getusers(){
@@ -159,7 +165,6 @@ export class RevenueReportComponent implements OnInit{
    }
   }
 
-
   reportFormSubmit(){
     if(this.reportForm.valid){
       this.model = this.reportForm;
@@ -178,7 +183,12 @@ export class RevenueReportComponent implements OnInit{
 
     }
   }
-
+  @ViewChild('token') tok:any;
+  setToken(){
+    this.tok.value = this.auth.getUserDetails()?.token;
+    console.log(this.tok.value);
+    return true;
+  }
   clearButton(){
    this.reportForm = this.fb.group(this.formLayout);
    this.model =  undefined;

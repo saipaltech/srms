@@ -51,6 +51,54 @@ export class NewSidebarComponent {
                 }
               ]
             }
+
+            if(mnu.link=='revenue-report'){
+              mnu.childs = [
+                {
+                  name: "Default Branch revenue account collection detail report",
+                  link: '/revenue-report',
+                  queryparameter:{ type: 'dbracdr' },
+                  icon: "bi bi-circle",
+                }, {
+                  name: "Default Branch revenue account collection report",
+                  link: '/revenue-report',
+                  queryparameter:{ type: 'dbracr' },
+                  icon: "bi bi-circle",
+                },{
+                  name: "Off branch Collection report",
+                  link: '/revenue-report',
+                  queryparameter:{ type: 'obcr' },
+                  icon: "bi bi-circle",
+                }
+                ,{
+                  name: "Off branch Collection report Summary",
+                  link: '/revenue-report',
+                  queryparameter:{ type: 'obcrs' },
+                  icon: "bi bi-circle",
+                }
+                ,{
+                  name: "Day close report",
+                  link: '/revenue-report',
+                  queryparameter:{ type: 'dcr' },
+                  icon: "bi bi-circle",
+                },{
+                  name: "Outside branch Collection for own branch",
+                  link: '/revenue-report',
+                  queryparameter:{ type: 'obcfob' },
+                  icon: "bi bi-circle",
+                },{
+                  name: "Outside branch Collection for own branch",
+                  link: '/revenue-report',
+                  queryparameter:{ type: 'obcfob' },
+                  icon: "bi bi-circle",
+                },{
+                  name: "Local Level Revenue Collection Report",
+                  link: '/revenue-report',
+                  queryparameter:{ type: 'llrcr' },
+                  icon: "bi bi-circle",
+                }
+              ]
+            }
           });
         }
       }, error: err => {
