@@ -204,7 +204,7 @@ public class TaxPayerVoucherController {
 		return objService.getVoucherTransfer();
 	}
 	
-	@GetMapping("get-report")
+	@PostMapping("get-report")
 	public void getReport(HttpServletResponse resp) throws IOException {
 		String reporttype = "1";//rs.request("reporttype");
 		Excel report = rs.getReport();

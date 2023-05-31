@@ -7,7 +7,7 @@
 
       <div class="card-body mt-3">
         <div class="row">
-         
+
           <form class="needs-validation" [formGroup]="reportForm" (ngSubmit)="reportFormSubmit()">
               <div class="row">
                 <div class="col-md-4">
@@ -24,7 +24,7 @@
                   <label>{{"To"| translate}}</label>
                   <input class="form form-control form-control-sm" type="date" formControlName="to">
                 </div>
-                
+
               </div>
               <br>
               <div class="row">
@@ -89,7 +89,7 @@
               <br>
             <button class="btn btn-success btn-sm" type="submit">{{"Show" | translate}}</button> &nbsp;
             <button class="btn btn-danger btn-sm" type="button" (click)="clearButton()">{{"Clear" | translate}}</button>
-          </form>  
+          </form>
 
         </div>
       </div>
