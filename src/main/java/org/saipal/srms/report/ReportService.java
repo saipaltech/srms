@@ -69,19 +69,9 @@ public class ReportService extends AutoService {
 	
 	public Excel getReportDefaultBranch(){
 		Excel excl = new Excel();
-		String type = request("type") + "";
-		if (type.equals("cad") || type.equals("chd")) {
-			return getCadChd(excl);
-		}
-		else if (type.equals("vv")) {
-			getVV(excl);
-		} else if (type.equals("dc")) {
-			getDc(excl);
-		} else if (type.equals("sr")) {
-			getSr(excl);
-		}
+	
+			return getDefaultBranchReport(excl);
 		
-		return excl;	
 	}
 	
 	public Excel getDetails() {
@@ -316,6 +306,125 @@ public class ReportService extends AutoService {
 
 		return excl;
 	}
+	
+	private Excel getDefaultBranchReport(Excel excl) {
+		String startDate = request("from").replace("-", "");
+		String endDate = request("to").replace("-", "");
+		String type = request("type") + "";
+		String fy= request("fy")+"";
+		String palika= request("palika")+"";
+		String branch= request("branch")+"";
+		String repTitle="";
+		String sql = "";
+		String chkstatus= request("chkstatus")+"";
+		//		String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "' and tx.lgid="+palika+" and tx.fyid="+fy+ " and tx.branchid="+branch;
+		String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "'";
+		String condition1 = " WHERE depositdateint >= '" + startDate + "' AND depositdateint <= '" + endDate + "'";
+		
+		if (!fy.isBlank()) {
+			condition  = condition + " and tx.fyid="+fy+" ";
+		}
+		if (!palika.isBlank())
+			condition = condition + " and tx.lgid="+palika+" ";
+		if (!branch.isBlank())
+			condition = condition + " and tx.branchid="+branch+" ";
+		String username= request("users")+"";
+		if (!username.isBlank())
+			condition = condition + " and deposituserid="+username+" ";
+		
+		condition = condition+" and tx.bankid="+ auth.getBankId();
+		
+		
+		if (!fy.isBlank()) {
+			condition1  = condition1 + " and tx.fyid="+fy+" ";
+		}
+		if (!palika.isBlank())
+			condition1 = condition1 + " and tx.lgid="+palika+" ";
+		if (!branch.isBlank())
+			condition1 = condition1 + " and tx.branchid="+branch+" ";
+//		String username= request("users")+"";
+		if (!username.isBlank())
+			condition1 = condition1 + " and deposituserid="+username+" ";
+		
+		condition1 = condition1+" and tx.bankid="+ auth.getBankId();
+
+		sql = "select * from (select accountno,accountname,palika,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from ("
+				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
+				+" union"
+				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
+				+ " union"
+				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
+				+" ) a ) b ";
+
+	
+			repTitle = getHeaderString("Default Branch revenue account collection detail report, From:" + request("from") + " To:" + request("to"));
+//			sql = "SELECT tx.*,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) order by palika, ba.accountnumber";
+		
+		excl.title = repTitle;
+		List<Tuple> lists = db.getResultList(sql);
+		String OldPalika = "";
+		float ptotal = 0;
+		float totalAmount = 0;
+		Excel.excelRow hrow = new Excel().ExcelRow();
+		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Palika")))
+				.addColumn((new Excel().ExcelCell("Date")))
+				.addColumn((new Excel().ExcelCell("Account Number")))
+				.addColumn((new Excel().ExcelCell("Account Name")))
+				.addColumn((new Excel().ExcelCell("Karobar Sanket")))
+				.addColumn((new Excel().ExcelCell("Collection Media")))
+				.addColumn((new Excel().ExcelCell("TaxPayer")))
+				.addColumn((new Excel().ExcelCell("Branch")))
+				.addColumn((new Excel().ExcelCell("Debit")))
+				.addColumn((new Excel().ExcelCell("Credit")))
+				.addColumn((new Excel().ExcelCell("Balance")));
+				
+		excl.addHeadRow(hrow);
+		if (!lists.isEmpty()) {
+			int i = 1;
+			for (Tuple t : lists) {
+				totalAmount += (Float.parseFloat(t.get("balance") + ""));
+				if (OldPalika.isBlank()) {
+					OldPalika = t.get("palika") + "";
+				}
+//				Excel.excelRow ptrow = null;
+//				if (!OldPalika.equals(t.get("palika") + "")) {
+//					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
+//							.addColumn((new Excel().ExcelCell(ptotal + "")));
+//					OldPalika = t.get("palika") + "";
+//					ptotal = Float.parseFloat(t.get("amount") + "");
+//				} else {
+//					ptotal += Float.parseFloat(t.get("amount") + "");
+//				}
+//				if (ptrow != null) {
+//					excl.addRow(ptrow);
+//				}
+				Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell((i + ""))))
+						
+						.addColumn((new Excel().ExcelCell(t.get("palika") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("tdate") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("accountno") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("accountname") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("karobarsanket") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("medium") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("taxpayername") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("branch") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("debit") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("credit") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("balance") + "")));
+						
+				excl.addRow(drow);
+				i++;
+			}
+			if (totalAmount > 0) {
+				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 11, 1)))
+						.addColumn((new Excel().ExcelCell(totalAmount + "")));
+				excl.addRow(trow);
+			}
+		}
+
+		return excl;
+	}
+
 
 	private Excel getVV(Excel excl) {
 		excl.subtitle = "";
