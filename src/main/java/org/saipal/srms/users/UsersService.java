@@ -525,7 +525,7 @@ public class UsersService extends AutoService {
 				while (itCell.hasNext()) {
 					if (i == 0) {
 						String cv = readCellValue(itCell.next());
-						String[] cvs = cv.split("|");
+						String[] cvs = cv.split("\\|");
 						args.add(cvs[0]);
 					} else if (i == 4) {
 						args.add(pe.encode(readCellValue(itCell.next())));
