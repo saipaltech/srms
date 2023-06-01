@@ -734,7 +734,7 @@ if (!lists.isEmpty()) {
 				+" ) a ) b ";
 
 
-			repTitle = getHeaderString("Default Branch revenue account collection detail report, From:" + request("from") + " To:" + request("to"));
+			repTitle = getHeaderString("Off branch Collection Report, From:" + request("from") + " To:" + request("to"));
 		
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);
@@ -815,7 +815,7 @@ if (!lists.isEmpty()) {
 				+" ) a ) b ";
 
 
-			repTitle = getHeaderString("Default Branch revenue account collection detail report, From:" + request("from") + " To:" + request("to"));
+			repTitle = getHeaderString("Off branch Collection Summary Report, From:" + request("from") + " To:" + request("to"));
 		
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);
@@ -895,7 +895,7 @@ if (!lists.isEmpty()) {
 				+" ) a ) b ";
 
 
-			repTitle = getHeaderString("Default Branch revenue account collection detail report, From:" + request("from") + " To:" + request("to"));
+			repTitle = getHeaderString("Outside branch Collection for own branch, From:" + request("from") + " To:" + request("to"));
 		
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);
@@ -973,7 +973,7 @@ if (!lists.isEmpty()) {
 				+" ) a ) b ";
 
 
-			repTitle = getHeaderString("Default Branch revenue account collection detail report, From:" + request("from") + " To:" + request("to"));
+			repTitle = getHeaderString("Outside branch Collection for own branch Summary, From:" + request("from") + " To:" + request("to"));
 		
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);
@@ -1050,7 +1050,7 @@ if (!lists.isEmpty()) {
 				+" ) a ) b ";
 
 
-			repTitle = getHeaderString("Default Branch revenue account collection detail report, From:" + request("from") + " To:" + request("to"));
+			repTitle = getHeaderString("Local Level Revenue Collection Report, From:" + request("from") + " To:" + request("to"));
 		
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);
@@ -1130,7 +1130,7 @@ if (!lists.isEmpty()) {
 				+" ) a ) b ";
 
 
-			repTitle = getHeaderString("Default Branch revenue account collection detail report, From:" + request("from") + " To:" + request("to"));
+			repTitle = getHeaderString("Day Close Report, From:" + request("from") + " To:" + request("to"));
 		
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);

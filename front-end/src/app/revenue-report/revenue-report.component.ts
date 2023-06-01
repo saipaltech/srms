@@ -82,7 +82,7 @@ export class RevenueReportComponent implements OnInit{
   parameterChange(){
 
       if (this.type == 'dbracdr'){
-        this.reportType = "Default Branch revenue account collection Report";
+        this.reportType = "Default Branch revenue account collection Detailed Report";
       }
       else if (this.type == 'dbracr'){
         this.reportType = "Default Branch revenue account collection Report";
