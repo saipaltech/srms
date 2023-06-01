@@ -87,9 +87,9 @@ export class NewSidebarComponent {
                   queryparameter:{ type: 'obcfob' },
                   icon: "bi bi-circle",
                 },{
-                  name: "Outside branch Collection for own branch",
+                  name: "Outside branch Collection for own branch Summary",
                   link: '/revenue-report',
-                  queryparameter:{ type: 'obcfob' },
+                  queryparameter:{ type: 'obcfobs' },
                   icon: "bi bi-circle",
                 },{
                   name: "Local Level Revenue Collection Report",

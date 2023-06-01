@@ -38,8 +38,6 @@ export class RevenueReportComponent implements OnInit{
       branches: [''],
       fy:[''],
       accno:[''],
-      chkstatus:[''],
-      users:['']
     }
 
     this.reportForm = fb.group(this.formLayout)
@@ -83,26 +81,29 @@ export class RevenueReportComponent implements OnInit{
 
   parameterChange(){
 
-      if (this.type == 'vv'){
-        this.reportType = "Verified Voucher ";
-        this.chkstatus=false;
+      if (this.type == 'dbracdr'){
+        this.reportType = "Default Branch revenue account collection Report";
       }
-      else if (this.type == 'cad'){
-        this.reportType = "Cash Deposit ";
-        this.chkstatus=false;
+      else if (this.type == 'dbracr'){
+        this.reportType = "Default Branch revenue account collection Report";
       }
-      else if (this.type == 'chd'){
-        this.reportType = "Cheque Deposit ";
-        this.chkstatus=true;
+      else if (this.type == 'obcr'){
+        this.reportType = "Off branch Collection Report";
       }
-      else if (this.type == 'dc'){
-        this.reportType = "Day Close ";
-        this.chkstatus=false;
+      else if (this.type == 'obcrs'){
+        this.reportType = "Off branch Collection Report Summary";
       }
-      else if (this.type == 'sr'){
-        this.reportType = "Total Cash Collection ";
-        this.chkstatus=false;
-
+      else if (this.type == 'dcr'){
+        this.reportType = "Day Close Report";
+      }
+      else if (this.type == 'obcfob'){
+        this.reportType = "Outside branch Collection for own branch";
+      }
+      else if (this.type == 'obcfobs'){
+        this.reportType = "Outside branch Collection for own branch Summary";
+      }
+      else if (this.type == 'llrcr'){
+        this.reportType = "Local Level Revenue Collection Report";
       }
   }
 
