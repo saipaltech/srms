@@ -1,8 +1,8 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from '../api.service';
 import { ToastrService } from 'ngx-toastr';
-import { DOCUMENT, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { ValidationService } from '../validation.service';
 import { ActivatedRoute } from '@angular/router';
 import { AppConfig } from '../app.config';
@@ -29,7 +29,7 @@ export class RevenueReportComponent implements OnInit{
   tableView = false;
 
   myDate: any = new Date();
-  constructor(@Inject(DOCUMENT) document: Document,private fb: FormBuilder, public auth:AuthService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute, public ap: AppConfig, private bvs: RevenueReportService) {
+  constructor(private fb: FormBuilder, private auth:AuthService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute, private ap: AppConfig, private bvs: RevenueReportService) {
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       from:[this.myDate, Validators.required],
@@ -42,7 +42,7 @@ export class RevenueReportComponent implements OnInit{
       users:['']
     }
 
-   // this.reportForm = fb.group(this.formLayout)
+    this.reportForm = fb.group(this.formLayout)
   }
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -50,32 +50,26 @@ export class RevenueReportComponent implements OnInit{
       this.parameterChange();
     });
     this.getFiscalYears();
-    //this.getllgs();
+    this.getllgs();
     this.getBranches();
     this.getusers();
     // this.getAccountNumbers();
-    const frm = document.getElementById("revFrom");
-    frm?.addEventListener('onsumbit',(e)=>{
-     this.tok.value = this.auth.getUserDetails()?.token;
-      return true;
-    });
   }
-  
 
   userList:any;
   getusers(){
     this.bvs.getUserList().subscribe({
-      next: (d) => {        
+      next: (d) => {
         this.userList = d.data;
       }, error: err => {;
       }
     });
   }
-  
+
   fiscalYear:any
   getFiscalYears(){
     this.bvs.getFy().subscribe({
-      next: (d) => {        
+      next: (d) => {
         this.fiscalYear = d.data;
         // console.log(d.data)
       }, error: err => {;
@@ -113,7 +107,7 @@ export class RevenueReportComponent implements OnInit{
   }
 
 
-  url="taxpayer-voucher"; 
+  url="taxpayer-voucher";
   cad=false;
   chd=false;
   vv=false;
@@ -124,9 +118,9 @@ export class RevenueReportComponent implements OnInit{
 
   setType(){
    var svalue = this.reportForm.value['type'];
-   if(svalue=="cad"){    
+   if(svalue=="cad"){
     this.chd = false;
-    this.vv = false; 
+    this.vv = false;
     this.cad = true;
     this.dc=false;
     this.chkstatus=false;
@@ -165,13 +159,40 @@ export class RevenueReportComponent implements OnInit{
    }
   }
 
+
   reportFormSubmit(){
+    this.route.queryParams.subscribe(params => {
+      this.type = params['type'];
+    });
     if(this.reportForm.valid){
-      this.model = this.reportForm;
-      this.route.queryParams.subscribe(params => {
-        this.type = params['type'];
+      const formElement = document.createElement('form');
+      formElement.id = "repform"
+      formElement.method = 'POST';
+      formElement.action = this.ap.baseUrl + 'taxpayer-voucher/get-report-default-branch'; // replace with your actual form submission URL
+      formElement.target = "_blank";
+      Object.keys(this.reportForm.value).forEach(key => {
+        var newField = document.createElement('input');
+        newField.setAttribute('type', 'hidden');
+        newField.setAttribute('name', key);
+        newField.value = this.reportForm.value[key];
+        formElement.appendChild(newField);
       });
-      window.open(this.ap.baseUrl+'taxpayer-voucher/get-report-default-branch'+"?from="+this.reportForm.value.from+"&to="+this.reportForm.value.to+"&type="+this.type+"&palika="+(this.reportForm.value.palika?this.reportForm.value.palika:'')+"&branch="+(this.reportForm.value.branches?this.reportForm.value.branches:'')+"&fy="+this.reportForm.value.fy+"&_token="+this.auth.getUserDetails()?.token+"&accno="+(this.reportForm.value.accno? this.reportForm.value.accno: ''+"&chkstatus="+(this.reportForm.value.chkstatus===''? '1': this.reportForm.value.chkstatus))+"&users="+(this.reportForm.value.users===''? '': this.reportForm.value.users), "_blank");
+      var newField = document.createElement('input');
+      newField.setAttribute('type', 'hidden');
+      newField.setAttribute('name', "_token");
+      newField.value = this.auth.getUserDetails()?.token;
+      formElement.appendChild(newField);
+
+      var type = document.createElement('input');
+      type.setAttribute('type', 'hidden');
+      type.setAttribute('name', "type");
+      type.value = this.type;
+      formElement.appendChild(type);
+      document.body.appendChild(formElement);
+      formElement.submit();
+      setTimeout(()=>{
+        document.getElementById('repform')?.remove();
+      });
       this.acs = undefined;
     }
     else{
@@ -183,12 +204,7 @@ export class RevenueReportComponent implements OnInit{
 
     }
   }
-  @ViewChild('token') tok:any;
-  setToken(){
-    this.tok.value = this.auth.getUserDetails()?.token;
-    console.log(this.tok.value);
-    return true;
-  }
+
   clearButton(){
    this.reportForm = this.fb.group(this.formLayout);
    this.model =  undefined;
@@ -219,7 +235,7 @@ export class RevenueReportComponent implements OnInit{
     this.llgs = undefined;
     // const llgs = this.reportForm.value['llgs'];
     this.bvs.getllgs().subscribe({
-      next: (d) => {        
+      next: (d) => {
         this.llgs = d.data;
         this.getAccountNumbers()
       }, error: err => {

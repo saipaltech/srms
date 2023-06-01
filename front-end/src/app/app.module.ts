@@ -149,7 +149,7 @@ import { RevenueReportComponent } from './revenue-report/revenue-report.componen
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {   
+export class AppModule {
 }
 
 export function HttpLoaderFactory(http: HttpClient){

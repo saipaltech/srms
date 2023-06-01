@@ -8,22 +8,21 @@
       <div class="card-body mt-3">
         <div class="row">
          
-          <form id="revFrom" class="needs-validation" ngNoForm target="_blank" method="POST" action="{{ap.baseUrl}}taxpayer-voucher/get-report-default-branch?type">
-            <input type="hidden" name="_token" id="_token" value="" #token>
+          <form class="needs-validation" [formGroup]="reportForm" (ngSubmit)="reportFormSubmit()">
               <div class="row">
                 <div class="col-md-4">
                   <label>{{"Fiscal Year" | translate}}</label>
-                  <select class="form-select form-select-sm" name="fy">
+                  <select class="form-select form-select-sm" formControlName="fy">
                     <option *ngFor="let l of fiscalYear" value="{{l.id}}" [selected]="l.isdef == 1">{{l.label}}</option>
                   </select>
                 </div>
                 <div class="col-md-4">
                   <label>{{"From" | translate}}</label>
-                  <input class="form form-control form-control-sm" type="date" name="from">
+                  <input class="form form-control form-control-sm" type="date" formControlName="from">
                 </div>
                 <div class="col-md-4">
                   <label>{{"To"| translate}}</label>
-                  <input class="form form-control form-control-sm" type="date" name="to">
+                  <input class="form form-control form-control-sm" type="date" formControlName="to">
                 </div>
                 
               </div>
@@ -31,7 +30,7 @@
               <div class="row">
                 <div class="col-md-4">
                   <label> {{"Select Palika" | translate}} </label>
-                  <ng-select (change)="getllgs()" name="palika">
+                  <ng-select (change)="getllgs()" formControlName="palika">
                     <ng-option value=""> All </ng-option>
                     <ng-option *ngFor="let l of llgs"  [value]="l.id">{{l.namenp}}</ng-option>
                   </ng-select>
@@ -39,7 +38,7 @@
 
                 <div class="col-md-4">
                   <label>{{"Select Account Number" | translate}} </label>
-                  <ng-select name="accno">
+                  <ng-select formControlName="accno">
                     <ng-option value=""> All </ng-option>
                     <ng-option *ngFor="let ac of acs" [value]="ac.id"> {{ac.accountnumber}}[{{ac.accountname}}] </ng-option>
                   </ng-select>
@@ -47,7 +46,7 @@
 <!-- 
                 <div class="col-md-4">
                   <label> {{"Select Branch" | translate}} </label>
-                  <ng-select (change)="getBranches()" name="branches">
+                  <ng-select (change)="getBranches()" formControlName="branches">
                     <ng-option value=""> All </ng-option>
                     <ng-option *ngFor="let i of branches" [value]="i.id"> {{i.name}} </ng-option>
                   </ng-select>
@@ -58,7 +57,7 @@
               <!-- <div class="row">
                 <div class="col-md-4">
                   <label>{{"Select User" | translate}}</label>
-                  <ng-select name="users">
+                  <ng-select formControlName="users">
                     <ng-option value=""> All </ng-option>
                     <ng-option *ngFor="let i of userList" [value]="i.id"> {{i.username}} </ng-option>
                   </ng-select>
@@ -66,7 +65,7 @@
                 <div class="col-md-4">
                   <ng-container  *ngIf="chkstatus">
                   <label>{{"Cheque status" | translate}}</label>
-                  <select class="form-select form-select-sm" name="chkstatus">
+                  <select class="form-select form-select-sm" formControlName="chkstatus">
                     <option value="1">Cleared</option>
                     <option value="0">Not Cleared</option>
                   </select>
@@ -76,7 +75,7 @@
               <!-- <div class="row">
                 <div class="col-md-6">
                   <label>Select Report Type</label>
-                  <select class="form-select form-select-sm" name="type">
+                  <select class="form-select form-select-sm" formControlName="type">
                     <option selected>Select One...</option>
                     <option value="cad">Cash Deposit</option>
                     <option value="chd">Cheque Deposit</option>
@@ -88,9 +87,9 @@
                 </div>
               </div> -->
               <br>
-            <button class="btn btn-success btn-sm" type="submit" >{{"Show" | translate}}</button> &nbsp;
+            <button class="btn btn-success btn-sm" type="submit">{{"Show" | translate}}</button> &nbsp;
             <button class="btn btn-danger btn-sm" type="button" (click)="clearButton()">{{"Clear" | translate}}</button>
-          </form>
+          </form>  
 
         </div>
       </div>

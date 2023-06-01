@@ -240,7 +240,7 @@ public class TaxPayerVoucherController {
 		
 	}
 	
-	@GetMapping("get-report-default-branch")
+	@PostMapping("get-report-default-branch")
 	public void getReportDefaultBranch(HttpServletResponse resp) throws IOException {
 		String reporttype = "1";//rs.request("reporttype");
 		Excel report = rs.getReportDefaultBranch();
