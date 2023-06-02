@@ -113,11 +113,11 @@ export class RevenueReportComponent implements OnInit{
       }
       else if (this.type == 'dbracr'){
         this.reportType = "Default Branch revenue account collection Report";
-        this.makeAccountNumberNotRequired();
+        this.makeAccountNumberRequired();
       }
       else if (this.type == 'obcr'){
         this.reportType = "Off branch Collection Report";
-        this.makeAccountNumberNotRequired();
+        this.makeAccountNumberRequired();
       }
       else if (this.type == 'obcrs'){
         this.reportType = "Off branch Collection Report Summary";
@@ -225,7 +225,7 @@ export class RevenueReportComponent implements OnInit{
       formElement.appendChild(type);
       document.body.appendChild(formElement);
 
-      if (this.type=="dbracdr"){
+      if (this.type=="dbracdr" || this.type=="dbracr" || this.type=="obcr"){
         if(this.reportForm.get('accno')?.value == null || this.reportForm.get('accno')?.value == ""){
           this.toastr.error("Account Number Cannot be empty");
           return;
