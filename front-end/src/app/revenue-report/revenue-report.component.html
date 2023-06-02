@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label>{{"Select Account Number" | translate}} </label>
+                  <label [ngClass]="{'req': accreq == true}">{{"Select Account Number" | translate}} </label>
                   <ng-select formControlName="accno">
                     <ng-option value=""> All </ng-option>
                     <ng-option *ngFor="let ac of acs" [value]="ac.id"> {{ac.accountnumber}}[{{ac.accountname}}] </ng-option>

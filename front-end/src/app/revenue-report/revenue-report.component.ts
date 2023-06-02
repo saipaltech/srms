@@ -27,9 +27,16 @@ export class RevenueReportComponent implements OnInit{
   model: any = {};
 
   tableView = false;
+  dlgid : any;
 
   myDate: any = new Date();
   constructor(private fb: FormBuilder, private auth:AuthService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute, private ap: AppConfig, private bvs: RevenueReportService) {
+    
+    const ud = this.auth.getUserDetails();
+    if (ud) {
+      this.dlgid = ud.dlgid;
+    }
+    
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       from:[this.myDate, Validators.required],
@@ -52,7 +59,11 @@ export class RevenueReportComponent implements OnInit{
     this.getBranches();
     this.getusers();
     // this.getAccountNumbers();
+
+   
   }
+
+  lg : any
 
   userList:any;
   getusers(){
@@ -77,33 +88,56 @@ export class RevenueReportComponent implements OnInit{
 
   type:any;
 
+  accreq : boolean | undefined
+  makeAccountNumberRequired(){
+    // const acc = this.reportForm.get('accno');
+    // acc?.setValidators([Validators.required]);
+    // acc?.updateValueAndValidity;
+    this.accreq = true;
+  }
+
+  makeAccountNumberNotRequired(){
+    // const acc = this.reportForm.get('accno');
+    // acc?.clearValidators();
+    // acc?.updateValueAndValidity;
+    this.accreq = false;
+  }
+
   reportType ="";
 
   parameterChange(){
 
       if (this.type == 'dbracdr'){
         this.reportType = "Default Branch revenue account collection Detailed Report";
+        this.makeAccountNumberRequired();
       }
       else if (this.type == 'dbracr'){
         this.reportType = "Default Branch revenue account collection Report";
+        this.makeAccountNumberNotRequired();
       }
       else if (this.type == 'obcr'){
         this.reportType = "Off branch Collection Report";
+        this.makeAccountNumberNotRequired();
       }
       else if (this.type == 'obcrs'){
         this.reportType = "Off branch Collection Report Summary";
+        this.makeAccountNumberNotRequired();
       }
       else if (this.type == 'dcr'){
         this.reportType = "Day Close Report";
+        this.makeAccountNumberNotRequired();
       }
       else if (this.type == 'obcfob'){
         this.reportType = "Outside branch Collection for own branch";
+        this.makeAccountNumberNotRequired();
       }
       else if (this.type == 'obcfobs'){
         this.reportType = "Outside branch Collection for own branch Summary";
+        this.makeAccountNumberNotRequired();
       }
       else if (this.type == 'llrcr'){
         this.reportType = "Local Level Revenue Collection Report";
+        this.makeAccountNumberNotRequired();
       }
   }
 
@@ -190,6 +224,14 @@ export class RevenueReportComponent implements OnInit{
       type.value = this.type;
       formElement.appendChild(type);
       document.body.appendChild(formElement);
+
+      if (this.type=="dbracdr"){
+        if(this.reportForm.get('accno')?.value == null || this.reportForm.get('accno')?.value == ""){
+          this.toastr.error("Account Number Cannot be empty");
+          return;
+        }
+      }
+
       formElement.submit();
       setTimeout(()=>{
         document.getElementById('repform')?.remove();
@@ -234,10 +276,11 @@ export class RevenueReportComponent implements OnInit{
   llgs:any;
   getllgs(){
     this.llgs = undefined;
-    // const llgs = this.reportForm.value['llgs'];
+    const llgs = this.reportForm.value['llgs'];
     this.bvs.getllgs().subscribe({
       next: (d) => {
         this.llgs = d.data;
+        this.reportForm.patchValue({ "palika": this.dlgid });
         this.getAccountNumbers()
       }, error: err => {
       }

@@ -30,4 +30,8 @@ export class RevenueReportService {
     return this.http.get(this.url+"/get-user")
   }
 
+  getLocalLevels(){
+    return this.http.get(this.url+"/get-local-levels");
+  }
+
 }
