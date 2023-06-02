@@ -194,7 +194,7 @@ export class RevenueReportComponent implements OnInit{
       setTimeout(()=>{
         document.getElementById('repform')?.remove();
       });
-      this.acs = undefined;
+      //this.acs = undefined;
     }
     else{
       Object.keys(this.reportForm.controls).forEach(field => {
