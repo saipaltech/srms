@@ -31,12 +31,12 @@ export class RevenueReportComponent implements OnInit{
 
   myDate: any = new Date();
   constructor(private fb: FormBuilder, private auth:AuthService, private toastr: ToastrService, private datePipe: DatePipe, private route: ActivatedRoute, private ap: AppConfig, private bvs: RevenueReportService) {
-    
+
     const ud = this.auth.getUserDetails();
     if (ud) {
       this.dlgid = ud.dlgid;
     }
-    
+
     this.myDate = this.datePipe.transform(this.myDate, 'yyyy-MM-dd');
     this.formLayout = {
       from:[this.myDate, Validators.required],
@@ -60,7 +60,7 @@ export class RevenueReportComponent implements OnInit{
     this.getusers();
     // this.getAccountNumbers();
 
-   
+
   }
 
   lg : any
@@ -121,7 +121,7 @@ export class RevenueReportComponent implements OnInit{
       }
       else if (this.type == 'obcrs'){
         this.reportType = "Off branch Collection Report Summary";
-        this.makeAccountNumberNotRequired();
+        this.makeAccountNumberRequired();
       }
       else if (this.type == 'dcr'){
         this.reportType = "Day Close Report";
@@ -225,7 +225,7 @@ export class RevenueReportComponent implements OnInit{
       formElement.appendChild(type);
       document.body.appendChild(formElement);
 
-      if (this.type=="dbracdr" || this.type=="dbracr" || this.type=="obcr"){
+      if (this.type=="dbracdr" || this.type=="dbracr" || this.type=="obcr" || this.type=="obcrs"){
         if(this.reportForm.get('accno')?.value == null || this.reportForm.get('accno')?.value == ""){
           this.toastr.error("Account Number Cannot be empty");
           return;
