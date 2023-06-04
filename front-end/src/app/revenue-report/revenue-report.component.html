@@ -43,14 +43,14 @@
                     <ng-option *ngFor="let ac of acs" [value]="ac.id"> {{ac.accountnumber}}[{{ac.accountname}}] </ng-option>
                   </ng-select>
                 </div>
-<!-- 
-                <div class="col-md-4">
+
+                <div class="col-md-4" *ngIf="br">
                   <label> {{"Select Branch" | translate}} </label>
                   <ng-select (change)="getBranches()" formControlName="branches">
                     <ng-option value=""> All </ng-option>
                     <ng-option *ngFor="let i of branches" [value]="i.id"> {{i.name}} </ng-option>
                   </ng-select>
-                </div> -->
+                </div>
 
               </div>
               <br>

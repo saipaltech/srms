@@ -104,40 +104,49 @@ export class RevenueReportComponent implements OnInit{
   }
 
   reportType ="";
+  br = false;
 
   parameterChange(){
 
       if (this.type == 'dbracdr'){
         this.reportType = "Default Branch revenue account collection Detailed Report";
         this.makeAccountNumberRequired();
+        this.br = false;
       }
       else if (this.type == 'dbracr'){
         this.reportType = "Default Branch revenue account collection Report";
         this.makeAccountNumberRequired();
+        this.br = false;
       }
       else if (this.type == 'obcr'){
         this.reportType = "Off branch Collection Report";
         this.makeAccountNumberRequired();
+        this.br = false;
       }
       else if (this.type == 'obcrs'){
         this.reportType = "Off branch Collection Report Summary";
         this.makeAccountNumberRequired();
+        this.br = false;
       }
       else if (this.type == 'dcr'){
         this.reportType = "Day Close Report";
         this.makeAccountNumberNotRequired();
+        this.br = false;
       }
       else if (this.type == 'obcfob'){
         this.reportType = "Outside branch Collection for own branch";
         this.makeAccountNumberNotRequired();
+        this.br = false;
       }
       else if (this.type == 'obcfobs'){
         this.reportType = "Outside branch Collection for own branch Summary";
         this.makeAccountNumberNotRequired();
+        this.br = false;
       }
       else if (this.type == 'llrcr'){
         this.reportType = "Local Level Revenue Collection Report";
         this.makeAccountNumberNotRequired();
+        this.br = true;
       }
   }
 
