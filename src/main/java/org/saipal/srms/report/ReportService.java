@@ -1129,38 +1129,43 @@ if (!lists.isEmpty()) {
 		String palika= request("palika")+"";
 		String repTitle="";
 		String sql = "";
-		String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "'";
-		String condition1 = " WHERE depositdateint >= '" + startDate + "' AND depositdateint <= '" + endDate + "'";
-		
+		String condition = " WHERE tx.dateint >= '" + startDate + "' AND tx.dateint <= '" + endDate + "'";
+//		String condition1 = " WHERE depositdateint >= '" + startDate + "' AND depositdateint <= '" + endDate + "'";
+		float dtotal=0,ctotal=0,total=0;
 		if (!fy.isBlank()) {
 			condition  = condition + " and tx.fyid="+fy+" ";
 		}
 		if (!palika.isBlank())
 			condition = condition + " and tx.lgid="+palika+" ";
 		String username= request("users")+"";
-		if (!username.isBlank())
-			condition = condition + " and deposituserid="+username+" ";
+		String accno=request("accno")+"";
+		if (!accno.isBlank())
+			condition = condition + " and dc.bankorgid="+accno+" ";
+//		if (!username.isBlank())
+//			condition = condition + " and deposituserid="+username+" ";
 		
 		condition = condition+" and tx.bankid="+ auth.getBankId();
 		
 		
-		if (!fy.isBlank()) {
-			condition1  = condition1 + " and tx.fyid="+fy+" ";
-		}
-		if (!palika.isBlank())
-			condition1 = condition1 + " and tx.lgid="+palika+" ";
-		if (!username.isBlank())
-			condition1 = condition1 + " and deposituserid="+username+" ";
+//		if (!fy.isBlank()) {
+//			condition1  = condition1 + " and tx.fyid="+fy+" ";
+//		}
+//		if (!palika.isBlank())
+//			condition1 = condition1 + " and tx.lgid="+palika+" ";
+//		if (!username.isBlank())
+//			condition1 = condition1 + " and deposituserid="+username+" ";
+//		
+//		condition1 = condition1+" and tx.bankid="+ auth.getBankId();
 		
-		condition1 = condition1+" and tx.bankid="+ auth.getBankId();
+		sql="SELECT lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate ,sum (tx.amountcr) as credit,sum(tx.amountdr) as debit,sum(tx.amountcr)-sum(tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM dayclose_details tx join dayclose dc on dc.id=tx.dcid  join bankaccount ba on ba.id= dc.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.branchid "+ condition + " and (tx.approved=1 or tx.cstatus=1) group by lls.namenp,tx.date,ba.accountnumber,ba.accountname,tx.ttype";
 
-		sql = "select * from (select accountno,accountname,palika,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from ("
-				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+" union"
-				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+ " union"
-				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
-				+" ) a ) b ";
+//		sql = "select * from (select accountno,accountname,palika,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from ("
+//				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
+//				+" union"
+//				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
+//				+ " union"
+//				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
+//				+" ) a ) b ";
 
 
 			repTitle = getHeaderString("Day Close Report, From:" + request("from") + " To:" + request("to"));
@@ -1169,7 +1174,8 @@ if (!lists.isEmpty()) {
 		List<Tuple> lists = db.getResultList(sql);
 
 		Excel.excelRow hrow = new Excel().ExcelRow();
-		hrow	.addColumn((new Excel().ExcelCell("Date")))
+		hrow	.addColumn((new Excel().ExcelCell("SN")))
+		.addColumn((new Excel().ExcelCell("Date")))
 				.addColumn((new Excel().ExcelCell("Palika")))
 				.addColumn((new Excel().ExcelCell("AccountNumber")))
 				.addColumn((new Excel().ExcelCell("AccNumDesc")))
@@ -1180,24 +1186,35 @@ if (!lists.isEmpty()) {
 				
 		excl.addHeadRow(hrow);
 		if (!lists.isEmpty()) {
+			
 			int i = 1;
 			for (Tuple t : lists) {
+				dtotal +=Float.parseFloat(t.get("debit")+"");
+				ctotal +=Float.parseFloat(t.get("credit")+"");
+				total +=Float.parseFloat(t.get("balance")+"");
 				Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell((i + ""))))
 						.addColumn((new Excel().ExcelCell(t.get("tdate") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("palika") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("accountno") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("accountname") + "")))
-						.addColumn((new Excel().ExcelCell(t.get("karobarsanket") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("medium") + "")))
-						.addColumn((new Excel().ExcelCell(t.get("taxpayername") + "")))
-						.addColumn((new Excel().ExcelCell(t.get("branch") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("debit") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("credit") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("balance") + "")));
+				
+				
+				
 						
 				excl.addRow(drow);
+				
 				i++;
 			}
 		}
+		Excel.excelRow crow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",6)))
+				.addColumn((new Excel().ExcelCell(dtotal + "")))
+				.addColumn((new Excel().ExcelCell(ctotal + "")))
+				.addColumn((new Excel().ExcelCell(total + "",2)));
+		excl.addRow(crow);
 		return excl;
 	}
 

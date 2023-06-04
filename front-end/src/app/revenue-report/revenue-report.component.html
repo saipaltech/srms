@@ -30,7 +30,7 @@
               <div class="row">
                 <div class="col-md-4">
                   <label> {{"Select Palika" | translate}} </label>
-                  <ng-select (change)="getllgs()" formControlName="palika">
+                  <ng-select (change)="getAccountNumbers()" formControlName="palika">
                     <ng-option value=""> All </ng-option>
                     <ng-option *ngFor="let l of llgs"  [value]="l.id">{{l.namenp}}</ng-option>
                   </ng-select>
