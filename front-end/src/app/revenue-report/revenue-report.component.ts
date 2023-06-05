@@ -110,22 +110,22 @@ export class RevenueReportComponent implements OnInit{
 
       if (this.type == 'dbracdr'){
         this.reportType = "Default Branch revenue account collection Detailed Report";
-        this.makeAccountNumberRequired();
+        this.makeAccountNumberNotRequired();
         this.br = false;
       }
       else if (this.type == 'dbracr'){
         this.reportType = "Default Branch revenue account collection Report";
-        this.makeAccountNumberRequired();
+        this.makeAccountNumberNotRequired();
         this.br = false;
       }
       else if (this.type == 'obcr'){
         this.reportType = "Off branch Collection Report";
-        this.makeAccountNumberRequired();
+        this.makeAccountNumberNotRequired();
         this.br = false;
       }
       else if (this.type == 'obcrs'){
         this.reportType = "Off branch Collection Report Summary";
-        this.makeAccountNumberRequired();
+        this.makeAccountNumberNotRequired();
         this.br = false;
       }
       else if (this.type == 'dcr'){
@@ -234,12 +234,12 @@ export class RevenueReportComponent implements OnInit{
       formElement.appendChild(type);
       document.body.appendChild(formElement);
 
-      if (this.type=="dbracdr" || this.type=="dbracr" || this.type=="obcr" || this.type=="obcrs"){
-        if(this.reportForm.get('accno')?.value == null || this.reportForm.get('accno')?.value == ""){
-          this.toastr.error("Account Number Cannot be empty");
-          return;
-        }
-      }
+      // if ( this.type=="obcr" || this.type=="obcrs"){
+      //   if(this.reportForm.get('accno')?.value == null || this.reportForm.get('accno')?.value == ""){
+      //     this.toastr.error("Account Number Cannot be empty");
+      //     return;
+      //   }
+      // }
 
       formElement.submit();
       setTimeout(()=>{

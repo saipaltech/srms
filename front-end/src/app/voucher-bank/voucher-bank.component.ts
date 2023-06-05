@@ -79,7 +79,7 @@ export class VoucherBankComponent implements OnInit {
       bankorgid: ['', Validators.required],
       revenuecode: [''],
       purpose: [''],
-      amount: ['', Validators.pattern('[0-9]+')],
+      amount: ['', Validators.required],
       ttype: ['1'],
       cb:[''],
       cb1:[''],
@@ -504,7 +504,7 @@ export class VoucherBankComponent implements OnInit {
   calctotal() {
     this.totalAmt = 0;
     for (const item of this.items) {
-      this.totalAmt += parseInt(item.amt);
+      this.totalAmt += parseFloat(item.amt);
 
     }
   }

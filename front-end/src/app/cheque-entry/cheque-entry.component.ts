@@ -73,7 +73,7 @@ constructor(private appconfig:AppConfig,private datePipe: DatePipe,private bs:Ba
       bankorgid:['',Validators.required],
       revenuecode: [''],
       purpose: [''],
-      amount:['',Validators.pattern('[0-9]+')],
+      amount:[''],
       chequeamount:['',[Validators.required,Validators.pattern('[0-9]+')]],
       chequeno:['',Validators.required],
       chequebank:['',Validators.required],
@@ -420,7 +420,7 @@ addItem(){
     // console.log(this.items.length);
     for(const item of this.items){
       // console.log(item);
-      this.totalAmt+=parseInt(item.amt);
+      this.totalAmt+=parseFloat(item.amt);
    
     }
   }

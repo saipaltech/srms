@@ -73,7 +73,7 @@ constructor(private appconfig:AppConfig ,private datePipe: DatePipe,private bs:B
       bankorgid:['',Validators.required],
       revenuecode: [''],
       purpose: [''],
-      amount:['',Validators.pattern('[0-9]+')],
+      amount:[''],
       ttype:['1'],
       cb:[''],
       district:[''],
@@ -464,7 +464,7 @@ addItem(){
   calctotal(){
     this.totalAmt=0;
     for(const item of this.items){
-      this.totalAmt+=parseInt(item.amt);
+      this.totalAmt+=parseFloat(item.amt);
    
     }
   }
