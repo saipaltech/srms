@@ -74,7 +74,7 @@ constructor(private appconfig:AppConfig,private datePipe: DatePipe,private bs:Ba
       revenuecode: [''],
       purpose: [''],
       amount:[''],
-      chequeamount:['',[Validators.required,Validators.pattern('[0-9]+')]],
+      chequeamount:['',[Validators.required]],
       chequeno:['',Validators.required],
       chequebank:['',Validators.required],
       ttype:['2'],
