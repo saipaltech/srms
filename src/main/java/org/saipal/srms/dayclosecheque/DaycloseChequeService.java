@@ -54,7 +54,7 @@ public class DaycloseChequeService extends AutoService {
 		}
 		
 		String sql = "select *,(amountcr-amountdr) as balance from (select accountno,bankid,accountname,depositbranchid,accountnumber,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
-				+" select  cast(t.bankorgid as varchar) as accountno,t.bankid,t.depositbranchid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+ auth.getBranchId() +"  where  dc.id is null and t.dateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=2 and t.branchid=? and t.cstatus=1 "+cond 
+				+" select  cast(t.bankorgid as varchar) as accountno,t.bankid,t.depositbranchid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+ auth.getBranchId() +"  where  dc.id is null and t.cleardateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=2 and t.branchid=? and t.cstatus=1 "+cond 
 				+" union"
 				+" select  cast(t.bankorgid as varchar) as accountno,t.bankid,t.depositbranchid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+ auth.getBranchId() +"  where  dc.id is null and  t.dateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.ttype=2 and t.branchid=? and t.cstatus=1 "+cond 
 //				+ " union"
@@ -99,7 +99,7 @@ public class DaycloseChequeService extends AutoService {
 			items = "[" + items + "]";
 		}
 		String corebank=request("corebank");
-		System.out.println(corebank);
+//		System.out.println(corebank);
 		JSONObject cb = new JSONObject(corebank);
 //		System.out.println(cb);
 		JSONArray jarr = new JSONArray(items);
@@ -116,7 +116,7 @@ public class DaycloseChequeService extends AutoService {
 					DbResponse rowEffect = db.execute(sql,
 							Arrays.asList(id,parts[0],parts[1],parts[2],parts[3],parts[4],parts[5],auth.getBankId(),auth.getBranchId(),auth.getUserId(),cb.get(parts[1]),2));
 //					System.out.println(rowEffect.getMessage());
-					String sql1="select * from taxvouchers where lgid=? and bankorgid=? and branchid=? and ttype=2 and cstatus=1 and dateint=format(getdate(),'yyyyMMdd')";
+					String sql1="select * from taxvouchers where lgid=? and bankorgid=? and branchid=? and ttype=2 and cstatus=1 and cleardateint=format(getdate(),'yyyyMMdd')";
 					List<Tuple> admlvl = db.getResultList(sql1, Arrays.asList(parts[0],parts[1],auth.getBranchId()));
 					
 					

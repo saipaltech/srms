@@ -223,7 +223,7 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 		
 		String id = db.newIdInt();
-		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,amountcr,depositbankid,depositbranchid,cstatus) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),?,?,?,?)";
+		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,cleardateint,amountcr,depositbankid,depositbranchid,cstatus) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),format(getdate(),'yyyyMMdd'),?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
 				Arrays.asList(id, model.date, model.voucherno, model.taxpayername, model.taxpayerpan, model.depositedby,
 						model.depcontact, model.lgid, model.collectioncenterid, model.bankorgid,
@@ -328,7 +328,7 @@ public class TaxPayerVoucherService extends AutoService {
 		if ((c.get("cstatus") + "").equals("1")) {
 			return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
 		}
-		db.execute("update " + table + " set cstatus=1,updatedon=getdate(),approverid=? where id=?",
+		db.execute("update " + table + " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd') where id=?",
 				Arrays.asList(auth.getUserId(), id));
 		Tuple t = db.getSingleResult("select * from " + table + " where id=? and cstatus=1", Arrays.asList(id));
 		if (t != null) {
