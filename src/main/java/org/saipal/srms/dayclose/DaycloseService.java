@@ -162,33 +162,7 @@ public class DaycloseService extends AutoService {
 		}else {
 			return Messenger.getMessenger().error();
 		}
-//		String sq="select count(id) as cid from dayclose where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
-//		Map<String,Object> t = db.getSingleResultMap(sq,Arrays.asList(lgid,acno));
-////		System.out.println(t.get("cid"));
-//		if(t.get("cid").toString().equals("1")) {
-//			return Messenger.getMessenger().setMessage("Day close has been done already").error();
-//		}
-//		if(date.isBlank() ||lgid.isBlank() || acno.isBlank()) {
-//			return Messenger.getMessenger().setMessage("Required field is not supplied.").error();
-//		}
-//		String sql = "insert into dayclose(id,lgid,accountno,creatorid,corebankid,dateint) values (?,?,?,?,?,format(getdate(),'yyyyMMdd')) ";
-//		DbResponse rowEffect = db.execute(sql,
-//				Arrays.asList(id,lgid,acno,auth.getUserId(),cbid));
-//		if (rowEffect.getErrorNumber() == 0) {
-//			String sql1="select id, karobarsanket,taxpayername,amount from taxvouchers where lgid=? and accountno=? and dateint=format(getdate(),'yyyyMMdd')";
-//			List<Tuple> admlvl = db.getResultList(sql1, Arrays.asList(lgid, acno));
-//			System.out.println(admlvl);
-//			if (!admlvl.isEmpty()) {
-//				for (Tuple tt : admlvl) {
-//					String sql2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint) values (?,?,?,format(getdate(),'yyyyMMdd')) ";
-//					db.execute(sql2,
-//							Arrays.asList(id,tt.get("id"),tt.get("karobarsanket")));
-//				}
-//		}
-//			return Messenger.getMessenger().success();
-//		}else {
-//			return Messenger.getMessenger().error();
-//		}
+
 	}
 	
 	@Transactional
@@ -258,64 +232,7 @@ public class DaycloseService extends AutoService {
 			return Messenger.getMessenger().setMessage("No transaction Found").error();
 		}
 		
-//		if (jarr.length() > 0) {
-//			for (int i = 0; i < jarr.length(); i++) {
-//				String[] parts = jarr.get(i).toString().split("\\|\\|");
-//				String sq="select count(id) as cid from dayclose where lgid=? and accountno=? and branchid=? and dateint=format(getdate(),'yyyyMMdd')";
-//				Map<String,Object> t = db.getSingleResultMap(sq,Arrays.asList(parts[0],parts[1],auth.getBranchId()));
-//				if(t.get("cid").toString().equals("0")) {
-//					String id=db.newIdInt();
-////					System.out.println(cb.get(parts[1]));
-//					String sql = "insert into dayclose(id,lgid,bankorgid,accountno,accountname,amountdr,amountcr,bankid,branchid,creatorid,corebankid,dateint) values (?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd')) ";
-//					DbResponse rowEffect = db.execute(sql,
-//							Arrays.asList(id,parts[0],parts[1],parts[2],parts[3],parts[4],parts[5],auth.getBankId(),auth.getBranchId(),auth.getUserId(),cb.get(parts[1])));
-////					System.out.println(rowEffect.getMessage());
-//					String sql1="select * from taxvouchers where lgid=? and bankorgid=? and branchid=? and ttype=1 and approved=1 and dateint=format(getdate(),'yyyyMMdd')";
-//					List<Tuple> admlvl = db.getResultList(sql1, Arrays.asList(parts[0],parts[1],auth.getBranchId()));
-//					
-//					
-//					
-//					
-//					if (!admlvl.isEmpty()) {
-//						for (Tuple tt : admlvl) {
-//							String sql2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,purpose,syncstatus,approved,approverid,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr) values (?,?,?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?) ";
-//							db.execute(sql2,
-//									Arrays.asList(id,tt.get("id"),tt.get("karobarsanket"),tt.get("voucherno"),tt.get("date"),tt.get("taxpayername"),tt.get("taxpayerpan"),tt.get("depositedby"),tt.get("depcontact"),tt.get("lgid"),tt.get("collectioncenterid"),tt.get("bankid"),tt.get("branchid"),tt.get("bankorgid"),tt.get("purpose"),tt.get("syncstatus"),tt.get("approved"),tt.get("approverid"),tt.get("ttype"),tt.get("chequebank"),tt.get("chequeno"),tt.get("chequeamount"),tt.get("cstatus"),tt.get("chequetype"),tt.get("isused"),tt.get("hasChangeReqest"),tt.get("amountdr"),tt.get("amountcr")));
-//						}
-//				}
-//					
-//					
-//					String sq1="select * from taxvouchers_log where lgid=? and bankorgid=? and branchid=? and ttype=1 and approved=1 and dateint=format(getdate(),'yyyyMMdd')";
-//					List<Tuple> t1 = db.getResultList(sq1, Arrays.asList(parts[0],parts[1],auth.getBranchId()));
-//					
-//					if (!t1.isEmpty()) {
-//						for (Tuple tt : t1) {
-//							String sq2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,purpose,syncstatus,approved,approverid,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr) values (?,?,?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?) ";
-//							db.execute(sq2,
-//									Arrays.asList(id,tt.get("id"),tt.get("karobarsanket"),tt.get("voucherno"),tt.get("date"),tt.get("taxpayername"),tt.get("taxpayerpan"),tt.get("depositedby"),tt.get("depcontact"),tt.get("lgid"),tt.get("collectioncenterid"),tt.get("bankid"),tt.get("branchid"),tt.get("bankorgid"),tt.get("purpose"),tt.get("syncstatus"),tt.get("approved"),tt.get("approverid"),tt.get("ttype"),tt.get("chequebank"),tt.get("chequeno"),tt.get("chequeamount"),tt.get("cstatus"),tt.get("chequetype"),tt.get("isused"),tt.get("hasChangeReqest"),tt.get("amountdr"),tt.get("amountcr")));
-//						}
-//				}
-////					System.out.println("i am here");
-//					
-//					String sql3="select * from bank_deposits where lgid=? and bankorgid=? and paymentmethod=? and depositbranchid=? and approved=1 and depositdateint=format(getdate(),'yyyyMMdd')";
-//					List<Tuple> t3 = db.getResultList(sql3, Arrays.asList(parts[0],parts[1],2,auth.getBranchId()));
-//					
-//					if (!t3.isEmpty()) {
-//						for (Tuple tt : t3) {
-//							String sql4 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,purpose,syncstatus,approved,approverid,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr) values (?,?,?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?) ";
-//							db.execute(sql4,
-//									Arrays.asList(id,tt.get("id"),tt.get("transactionid"),tt.get("bankvoucherno"),tt.get("voucherdate"),tt.get("taxpayername"),0,tt.get("taxpayername"),tt.get("mobileno"),tt.get("lgid"),tt.get("collectioncenterid"),tt.get("bankid"),tt.get("depositbranchid"),tt.get("bankorgid"),"",tt.get("syncstatus"),tt.get("approved"),tt.get("approverid"),1,0,"",0,0,0,tt.get("usestatus"),0,0,tt.get("amount")));
-//						}
-//				}
-//					
-//				}
-//
-//			}
-//			return Messenger.getMessenger().success();
-//		}else {
-//			return Messenger.getMessenger().error();
-//		}
-//		return null;
+
 	}
 
 	public ResponseEntity<Map<String, Object>> daycloseCustom() {
