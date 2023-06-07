@@ -8,6 +8,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.saipal.srms.util.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,20 @@ public class DayCloseController {
 	public ResponseEntity<Map<String, Object>> submitdayclose(HttpServletRequest request) throws JSONException {
 		
 			return objService.submitdayclose();
+		
+	}
+	
+	@GetMapping("scheduler")
+	public ResponseEntity<Map<String, Object>> daycloseScheduler(HttpServletRequest request) throws JSONException {
+		
+			return objService.daycloseScheduler();
+		
+	}
+	
+	@GetMapping("custom")
+	public ResponseEntity<Map<String, Object>> daycloseCustom(HttpServletRequest request) throws JSONException {
+		
+			return objService.daycloseCustom();
 		
 	}
 }
