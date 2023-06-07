@@ -79,7 +79,7 @@ export class VoucherBankComponent implements OnInit {
       bankorgid: ['', Validators.required],
       revenuecode: [''],
       purpose: [''],
-      amount: ['', Validators.required],
+      amount: [''],
       ttype: ['1'],
       cb:[''],
       cb1:[''],
