@@ -32,6 +32,7 @@ public class DaycloseService extends AutoService {
 
 	@Autowired
 	IrdPanSearchService pan;
+	
 	public ResponseEntity<Map<String, Object>> getdayclose() {
 		String date=request("date");
 		String lgid=request("lgid");
