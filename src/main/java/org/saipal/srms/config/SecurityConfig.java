@@ -60,7 +60,9 @@ public class SecurityConfig {
 									cp + "/taxpayer-voucher/dayclosecheque-details",
 									cp + "/taxpayer-voucher/dayclose-details",
 									cp + "/auth/get-pincode",
-									cp + "/users/reset-passbypin"
+									cp + "/users/reset-passbypin",
+									cp + "/dayclose/scheduler",
+									cp + "/dayclose/custom"
 									)
 							.permitAll()
 							.anyRequest()

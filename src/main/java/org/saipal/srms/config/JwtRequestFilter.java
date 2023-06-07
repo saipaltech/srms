@@ -52,7 +52,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				appUri.startsWith("/users/change-password-login") ||
 				appUri.startsWith("/taxpayer-voucher/dayclose-details")||
 				appUri.startsWith("/auth/get-pincode") ||
-				appUri.startsWith("/users/reset-passbypin")
+				appUri.startsWith("/users/reset-passbypin") ||
+				appUri.startsWith("/dayclose/scheduler")
 				) {
 			return true;
 		}
