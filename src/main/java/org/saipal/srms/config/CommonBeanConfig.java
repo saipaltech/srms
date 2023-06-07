@@ -18,9 +18,4 @@ public class CommonBeanConfig {
 	AuthenticationManager authenticationManagerBean() {
 	    return null;
 	}
-	
-//	@Bean
-//	Extension fmisPebbleExtension() {
-//		return new PebbleExtension();
-//	}
 }

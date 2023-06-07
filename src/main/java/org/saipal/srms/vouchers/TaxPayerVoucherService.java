@@ -12,11 +12,13 @@ import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.service.IrdPanSearchService;
+import org.saipal.srms.sms.F1SoftSmsGateway;
 import org.saipal.srms.util.ApiManager;
 import org.saipal.srms.util.DbResponse;
 import org.saipal.srms.util.Messenger;
 import org.saipal.srms.util.Paginator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +36,15 @@ public class TaxPayerVoucherService extends AutoService {
 
 	@Autowired
 	IrdPanSearchService pan;
+	
+	@Autowired
+	F1SoftSmsGateway sms;
+	
+	@Value("${sms.chequecleared}")
+	private String chequeClearedSms;
+	
+	@Value("${sms.dev:1}")
+	private String isDev;
 
 	private String table = "taxvouchers";
 	
@@ -349,11 +360,20 @@ public class TaxPayerVoucherService extends AutoService {
 						db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
 					}
 				}
+				String message = chequeClearedSms.replace("SANKET", t.get("karobarsanket")+"");
+				if(!isDev.equals("1")) {
+					JSONObject ob = sms.sendSms(t.get("depcontact")+"", message, db.newIdInt());
+					if (ob.getInt("status_code")==200) {
+						return Messenger.getMessenger().setMessage(
+								"Cheque cleared, SMS sent to depositor.")
+								.success();
+					}
+				}
+				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 			return Messenger.getMessenger().setMessage("Cheque cleared.").success();
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
