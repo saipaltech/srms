@@ -235,7 +235,7 @@ public class DaycloseService extends AutoService {
 		
 
 	}
-
+	@Transactional
 	public ResponseEntity<Map<String, Object>> daycloseCustom() {
 		// TODO Auto-generated method stub
 		String dateint=request("date").replace("-","");
