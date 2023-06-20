@@ -89,7 +89,7 @@ public class AuthService {
 	public ResponseEntity<Map<String, Object>> checkUser() {
 		String username = doc.getElementById("username").value;
 		String password = doc.getElementById("password").value;
-		String sql = "select id,username,password,mobile,approved,disabled,email from users where username=?";
+		String sql = "select id,username,password,mobile,approved,disabled,email,bankid from users where username=?";
 		Tuple t = db.getSingleResult(sql, Arrays.asList(username));
 		if (t != null) {
 			if (!(t.get("approved") + "").equals("1")) {
@@ -123,7 +123,7 @@ public class AuthService {
 								.success();
 					}
 					try {
-						String otpSetting = ss.getSetting(SettingsService.otpKey);
+						String otpSetting = ss.getSetting(SettingsService.otpKey,t.get("bankid")+"");
 						if(otpSetting.isBlank() || otpSetting.equals("1")) {
 							//only sms
 							JSONObject ob = sms.sendSms(t.get("mobile")+"", message, reqid);
@@ -137,7 +137,7 @@ public class AuthService {
 							boolean isSent = es.sendOtpToEmail(t.get("email")+"", "Sutra Bank-Interface OTP for Login", message);
 							if(isSent) {
 								return Messenger.getMessenger().setData(data).setMessage(
-										"An OTP has been Sent to your registered mobile and Email. Please insert the OTP below and submit")
+										"An OTP has been Sent to your registered Email. Please insert the OTP below and submit")
 										.success();
 							}
 							return Messenger.getMessenger().setData(data).setMessage("Cannot send OTP to email.").success();
