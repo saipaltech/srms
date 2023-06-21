@@ -274,7 +274,7 @@ public class ReportService extends AutoService {
 			}
 			repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
 			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
-					+ condition + " order by palika, accountno";
+					+ condition + " and tx.ttype=2 and tx.cstatus=1 order by palika, accountno";
 		}
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);
