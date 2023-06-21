@@ -39,9 +39,16 @@ public class SettingsService extends AutoService{
 		List<Map<String, Object>> dta = db.getResultListMap("select skey,svalue from settings where bankid=?",Arrays.asList(auth.getBankId()));
 		return Messenger.getMessenger().setData(dta).success();
 	}
-	
 	public String getSetting(String key) {
 		Tuple dta = db.getSingleResult("select svalue from settings where skey=? and bankid=?",Arrays.asList(key,auth.getBankId()));
+		if(dta!=null) {
+			return dta.get("svalue")+"";
+		}
+		return "";
+	}
+	
+	public String getSetting(String key,String bankid) {
+		Tuple dta = db.getSingleResult("select svalue from settings where skey=? and bankid=?",Arrays.asList(key,bankid));
 		if(dta!=null) {
 			return dta.get("svalue")+"";
 		}

@@ -1,19 +1,7 @@
 package org.saipal.srms.config;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.persistence.Tuple;
-
-import org.saipal.srms.util.DB;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 //@Configuration
 public class JavaMailBean {
@@ -45,5 +33,10 @@ public class JavaMailBean {
 //	    //props.put("mail.debug", "true");
 //	    return mailSender;
 //	}
+	
+	@Bean
+	public JavaMailSender getJavaMailSender() {
+		return null;
+	}
 
 }

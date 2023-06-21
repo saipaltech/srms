@@ -1,10 +1,12 @@
 package org.saipal.srms.util;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
@@ -122,22 +124,19 @@ public class HttpRequest {
 			if(!stringParam.isBlank()) {
 				http.setEntity(new StringEntity(stringParam));
 			}else if (params.size() > 0) {
-				if (header.get("Content-Type") == "application/json") {
-					// System.out.println(new JSONObject(params).toString());
+				if (header.get("Content-Type").contains("application/json")) {
 					http.setEntity(new StringEntity((new JSONObject(params)).toString(), ContentType.APPLICATION_JSON));
 				} else {
 					List<NameValuePair> listOfParams = new ArrayList<>();
 					for (String key : params.keySet()) {
 						listOfParams.add(new BasicNameValuePair(key, params.get(key)));
 					}
-					// System.out.println(listOfParams.toString());
-					http.setEntity(new UrlEncodedFormEntity(listOfParams));
+					http.setEntity(new UrlEncodedFormEntity(listOfParams,StandardCharsets.UTF_8));
 				}
 			}
 			CloseableHttpClient httpclient = HttpClients.createDefault();
 			CloseableHttpResponse response = httpclient.execute(http);
 			String resp = EntityUtils.toString(response.getEntity()).trim();
-			//System.out.println("rsp: "+resp);
 			JSONObject data = new JSONObject();
 			if(resp.startsWith("{")) {
 				data.put("data",new JSONObject(resp));

@@ -10,7 +10,7 @@ export class AppConfig {
     public baseUrl: string = "";
     private httpClient: HttpClient;
 
-    constructor(private direct: HttpBackend) { 
+    constructor(private direct: HttpBackend) {
         this.httpClient = new HttpClient(direct);
     }
 

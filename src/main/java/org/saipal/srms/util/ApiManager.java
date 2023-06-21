@@ -190,7 +190,8 @@ public class ApiManager {
 		try {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
-					.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+
+					.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 					.setParam("id",tpv.get("id")+"")
 					.setParam("date",tpv.get("date")+"")
 					.setParam("karobarsanket",tpv.get("karobarsanket")+"")
