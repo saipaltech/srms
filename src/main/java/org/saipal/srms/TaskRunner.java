@@ -21,12 +21,12 @@ public class TaskRunner {
 	@Autowired
 	DaycloseService ds;
 	
-	@Scheduled(cron="0 5 0 * * *")
-	public void deleteAllUnVerifiedVouchers() {
-		log.info("Auto Delete Unverified Vouchers Strted");
-		db.execute("delete from taxvouchers where dateint < (cast(format(getdate(),'yyyyMMdd') as int)) and ttype=1 and approved=0");
-		log.info("Auto Delete Unverified Vouchers End");
-	}
+//	@Scheduled(cron="0 5 0 * * *")
+//	public void deleteAllUnVerifiedVouchers() {
+//		log.info("Auto Delete Unverified Vouchers Strted");
+//		db.execute("delete from taxvouchers where dateint < (cast(format(getdate(),'yyyyMMdd') as int)) and ttype=1 and approved=0");
+//		log.info("Auto Delete Unverified Vouchers End");
+//	}
 	
 	@Scheduled(cron="0 55 23 * * *")
 	public void automaticDayClose() {
