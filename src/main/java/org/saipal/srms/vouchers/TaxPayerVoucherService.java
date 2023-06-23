@@ -497,7 +497,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for (Tuple t : d) {
-					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp")));
+					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"),"nameen",t.get("nameen")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
@@ -527,7 +527,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for (Tuple t : d) {
-					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"), "id", t.get("id") + ""));
+					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"), "id", t.get("id") + "","nameen",t.get("nameen")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
@@ -557,7 +557,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for (Tuple t : d) {
-					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"), "id", t.get("id") + ""));
+					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"), "id", t.get("id") + "","nameen",t.get("nameen")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");
@@ -581,7 +581,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for (Tuple t : d) {
-					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"), "id", t.get("id") + ""));
+					dt.put(Map.of("code", t.get("id") + "", "name", t.get("namenp"), "id", t.get("id") + "","nameen",t.get("nameen")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");

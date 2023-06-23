@@ -601,9 +601,75 @@ if (!lists.isEmpty()) {
 				Arrays.asList(auth.getBankId(), auth.getBranchId()));
 		return Messenger.getMessenger().setData(d).success();
 	}
-	public Excel getSr(Excel ecxl) {
-		return null;
+	private Excel getSr(Excel excl) {
+		excl.subtitle = "";
+		String startDate = request("from").replace("-", "");
+		String endDate = request("to").replace("-", "");
+		String fy= request("fy")+"";
+		String palika= request("palika")+"";
+		String branch= request("branch")+"";
+		String condition = " and t.dateint >= '" + startDate + "' AND t.dateint <= '" + endDate + "'";
+		String condition1 = " and t.depositdateint >= '" + startDate + "' AND t.depositdateint <= '" + endDate + "'";
+		if (!fy.isBlank()) {
+			condition  = condition + " and t.fyid="+fy+" ";
+			condition1  = condition1 + " and t.fyid="+fy+" ";
+		}
+		if (!palika.isBlank()) {
+			condition = condition + " and t.lgid="+palika+" ";
+		 condition1 = condition1 + " and t.lgid="+palika+" ";
+		}
+		if (!branch.isBlank()) {
+			condition = condition + " and t.branchid="+branch+" ";
+		condition1 = condition1 + " and t.depositbranchid="+branch+" ";
+		}
+		String username= request("users")+"";
+		if (!username.isBlank()) {
+			condition = condition + " and deposituserid="+username+" ";
+		condition1 = condition1 + " and deposituserid="+username+" ";
+		}
+		condition = condition+" and t.bankid="+ auth.getBankId();
+		condition1 = condition1+" and t.bankid="+ auth.getBankId();
+		String repTitle = getHeaderString("Summary Report, From:" + request("from") + " To:" + request("to"));
+//		repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
+		String sql = " select sum(cash) as cash,sum(cheque) as cheque from (select (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
+				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.branchid=? and (t.approved=1 or t.cstatus=1) "+condition 
+				+" union"
+				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1 and t.branchid=? and t.approved=1 "+condition 
+				+ " union"
+				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?  and t.depositbranchid=? and t.approved=1 "+condition1
+				+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype) c group by ttype) d";
+		List<Tuple> lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId()));
+		excl.title = repTitle;
+		String OldPalika = "";
+		float ptotal = 0;
+		float totalAmount = 0;
+		Excel.excelRow hrow = new Excel().ExcelRow();
+		hrow.addColumn((new Excel().ExcelCell("Cash"))).addColumn((new Excel().ExcelCell("Cheque")))
+				.addColumn((new Excel().ExcelCell("Total")));
+				
+		excl.addHeadRow(hrow);
+		if (!lists.isEmpty()) {
+			int i = 1;
+			for (Tuple t : lists) {
+				totalAmount = (Float.parseFloat(t.get("cash") + ""))+(Float.parseFloat(t.get("cheque") + ""));
+				
+				
+				
+				Excel.excelRow drow = (new Excel().ExcelRow())
+						
+						.addColumn((new Excel().ExcelCell(t.get("cash") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("cheque") + "")))
+						.addColumn((new Excel().ExcelCell(totalAmount+"")));
+						
+				excl.addRow(drow);
+				i++;
+			}
+			
+		}
+
+		return excl;
 	}
+
 	
 	private Excel getDefaultBranchReport(Excel excl) {
 

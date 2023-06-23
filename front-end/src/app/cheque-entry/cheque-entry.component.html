@@ -79,7 +79,7 @@
         <ng-select formControlName="lgid" (change)="getBankAccounts()">
           <ng-option *ngFor="let l of llgs" [value]="l.code">{{
             l.name
-          }}</ng-option>
+          }}({{l.nameen}})</ng-option>
         </ng-select>
         <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['lgid'])">{{vs.getMessage(voucherBankForm.controls['lgid'])}}</div>
       </div>

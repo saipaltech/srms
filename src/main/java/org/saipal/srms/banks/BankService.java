@@ -169,7 +169,7 @@ public class BankService extends AutoService {
 			cond= " and a.id <> "+tt.get(0);
 		}
 		String did=request("did");
-		String sql = "select cast(a.id as varchar) as code, a.namenp as name from "
+		String sql = "select cast(a.id as varchar) as code, a.namenp as name,a.nameen as nameen from "
 				+ " admin_local_level_structure as a inner join "
 				+ " (select distinct lgid from  bankaccount  where  approved=1 and disabled=0 and  bankid=? ) as b "
 				+ " on a.id=b.lgid  where districtid=? "+ cond +" order by name ";
@@ -180,7 +180,7 @@ public class BankService extends AutoService {
 	public ResponseEntity<List<Map<String, Object>>> getPalikaAll() {
 		
 		String did=request("did");
-		String sql = "select cast(a.id as varchar) as code, a.namenp as name from "
+		String sql = "select cast(a.id as varchar) as code, a.namenp as name,a.nameen as nameen from "
 				+ " admin_local_level_structure as a inner join "
 				+ " (select distinct lgid from  bankaccount  where  approved=1 and disabled=0 and  bankid=? ) as b "
 				+ " on a.id=b.lgid  where districtid=?  order by name ";
