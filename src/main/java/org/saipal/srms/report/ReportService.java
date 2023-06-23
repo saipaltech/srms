@@ -601,9 +601,73 @@ if (!lists.isEmpty()) {
 				Arrays.asList(auth.getBankId(), auth.getBranchId()));
 		return Messenger.getMessenger().setData(d).success();
 	}
-	public Excel getSr(Excel ecxl) {
-		return null;
+	private Excel getSr(Excel excl) {
+		excl.subtitle = "";
+		String startDate = request("from").replace("-", "");
+		String endDate = request("to").replace("-", "");
+		String fy= request("fy")+"";
+		String palika= request("palika")+"";
+		String branch= request("branch")+"";
+		String condition = " WHERE dc.dateint >= '" + startDate + "' AND dc.dateint <= '" + endDate + "'";
+		if (!fy.isBlank()) {
+			condition  = condition + " and dc.fyid="+fy+" ";
+		}
+		if (!palika.isBlank())
+			condition = condition + " and dc.lgid="+palika+" ";
+		if (!branch.isBlank())
+			condition = condition + " and dc.branchid="+branch+" ";
+		String username= request("users")+"";
+		if (!username.isBlank())
+			condition = condition + " and deposituserid="+username+" ";
+		condition = condition+" and dc.bankid="+ auth.getBankId();
+		String repTitle = getHeaderString("Summary Report, From:" + request("from") + " To:" + request("to"));
+		String sql = "";
+		List<Tuple> lists = db.getResultList(sql);
+		excl.title = repTitle;
+		String OldPalika = "";
+		float ptotal = 0;
+		float totalAmount = 0;
+		Excel.excelRow hrow = new Excel().ExcelRow();
+		hrow.addColumn((new Excel().ExcelCell("S.N.")))
+		.addColumn((new Excel().ExcelCell("Cash")))
+		.addColumn((new Excel().ExcelCell("Cheque")))
+		.addColumn((new Excel().ExcelCell("Total")));
+excl.addHeadRow(hrow);
+if (!lists.isEmpty()) {
+	int i = 1;
+	for (Tuple t : lists) {
+		totalAmount += (Float.parseFloat(t.get("balance") + ""));
+		if (OldPalika.isBlank()) {
+			OldPalika = t.get("palika") + "";
+		}
+		Excel.excelRow ptrow = null;
+		if (!OldPalika.equals(t.get("palika") + "")) {
+			ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
+					.addColumn((new Excel().ExcelCell(ptotal + "", 2,1)));
+			OldPalika = t.get("palika") + "";
+			ptotal = Float.parseFloat(t.get("balance") + "");
+		} else {
+			ptotal += Float.parseFloat(t.get("balance") + "");
+		}
+		if (ptrow != null) {
+			excl.addRow(ptrow);
+		}
+		Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell((i + ""))))
+				.addColumn((new Excel().ExcelCell(t.get("palika") + "")))
+				.addColumn((new Excel().ExcelCell(t.get("accountno") + "")))
+				.addColumn((new Excel().ExcelCell(t.get("balance") + "")));
+		excl.addRow(drow);
+		i++;
 	}
+	if (totalAmount > 0) {
+		Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
+				.addColumn((new Excel().ExcelCell(totalAmount + "",2,1)));
+		excl.addRow(trow);
+	}
+}
+	return excl;
+	}
+
 	
 	private Excel getDefaultBranchReport(Excel excl) {
 
