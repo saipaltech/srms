@@ -461,7 +461,7 @@ public class UsersService extends AutoService {
 			}
 		}
 		if (auth.canFromUserTable("7")) {
-			return ResponseEntity.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User")));
+			return ResponseEntity.ok(Arrays.asList(Map.of("id", 3, "name", "Bank User"),Map.of("id", 4, "name", "Supervisor")));
 		}
 		return ResponseEntity.ok(Arrays.asList());
 	}
