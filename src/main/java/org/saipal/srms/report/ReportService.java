@@ -262,7 +262,7 @@ public class ReportService extends AutoService {
 		
 		condition = condition+" and tx.bankid="+ auth.getBankId();
 		
-		System.out.println(auth.getBankId());
+//		System.out.println(auth.getBankId());
 		
 		if (type.equals("cad")) {
 			repTitle = getHeaderString("Cash Deposit, From:" + request("from") + " To:" + request("to"));
