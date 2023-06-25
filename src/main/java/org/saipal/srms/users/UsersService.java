@@ -529,13 +529,17 @@ public class UsersService extends AutoService {
 						args.add(cvs[0]);
 					} else if (i == 4) {
 						args.add(pe.encode(readCellValue(itCell.next())));
-					} else {
+					}else if (i == 7) {
+						String cv = readCellValue(itCell.next());
+						String[] cvs = cv.split("\\|");
+						args.add(cvs[0]);
+					}else {
 						args.add(readCellValue(itCell.next()));
 					}
 					i++;
 				}
 //                args.add(readCellValue(row.getCell(0)).substring(0,4));
-				String sql = "insert into imported_users (importid,branchid,name,post,username,password,mobile,email,amountlimit) values (?,?,?,?,?,?,?,?,?)";
+				String sql = "insert into imported_users (importid,branchid,name,post,username,password,mobile,email,amountlimit,role) values (?,?,?,?,?,?,?,?,?,?)";
 				db.execute(sql, args);
 			}
 			workbook.close();
@@ -589,14 +593,22 @@ public class UsersService extends AutoService {
 		hr.createCell(5).setCellValue("Mobile");
 		hr.createCell(6).setCellValue("Email");
 		hr.createCell(7).setCellValue("Amount Limit");
+		hr.createCell(7).setCellValue("Role");
 		
 		usheet.setActiveCell(new CellAddress("A1"));
 		
 		DataValidationHelper dvHelper = usheet.getDataValidationHelper();
 		DataValidationConstraint dvConstraint = dvHelper.createFormulaListConstraint("listbranches");
-		CellRangeAddressList addressList = new CellRangeAddressList(1, 50, 0, 0);
+		CellRangeAddressList addressList = new CellRangeAddressList(1, 1000, 0, 0);
 		DataValidation validation = dvHelper.createValidation(dvConstraint, addressList);
+		
+		String[] list = new String[] {"3|Bank User","4|Supervisor","7|Technical User","8|Monitoring User"};
+		DataValidationConstraint dvConstraintr = dvHelper.createExplicitListConstraint(list);
+		CellRangeAddressList addressListr = new CellRangeAddressList(1, 1000, 7, 7);
+		DataValidation validationr = dvHelper.createValidation(dvConstraintr, addressListr);
+		
 		usheet.addValidationData(validation);
+		usheet.addValidationData(validationr);
 		wb.setSheetHidden(1, true);
 		return wb;
 	}
