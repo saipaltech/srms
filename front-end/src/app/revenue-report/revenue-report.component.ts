@@ -45,6 +45,7 @@ export class RevenueReportComponent implements OnInit{
       branches: [''],
       fy:[''],
       accno:[''],
+      reporttype:['1']
     }
 
     this.reportForm = fb.group(this.formLayout)

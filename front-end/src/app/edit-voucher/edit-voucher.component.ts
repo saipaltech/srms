@@ -46,7 +46,7 @@ export class EditVoucherComponent {
       taxpayername: ['', [Validators.required]],
       taxpayerpan: [''],
       // remarks: ['', Validators.required],
-      amount:['',Validators.pattern('[0-9]+')],
+      amount:[''],
       revenuecode: [''],
       lgid:['',Validators.required],
       bankorgid:['',Validators.required],

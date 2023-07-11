@@ -63,6 +63,13 @@
                   </ng-select>
                 </div>
                 <div class="col-md-4">
+                  <label> {{"Report Type" | translate}} </label>
+                  <select class="form-control"  formControlName="reporttype">
+                    <option value="1"> View </option>
+                    <option value="2"> Download </option>
+                  </select>
+                </div>
+                <div class="col-md-4">
                   <ng-container  *ngIf="chkstatus">
                   <label>{{"Cheque status" | translate}}</label>
                   <select class="form-select form-select-sm" formControlName="chkstatus">
@@ -72,6 +79,8 @@
                 </ng-container>
                 </div>
               </div>
+
+            
               <!-- <div class="row">
                 <div class="col-md-6">
                   <label>Select Report Type</label>

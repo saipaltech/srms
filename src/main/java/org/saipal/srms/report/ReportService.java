@@ -231,7 +231,7 @@ public class ReportService extends AutoService {
 
 	}
 	private String getHeaderString(String title) {
-		String repTitle = "<span>SuTRA Revenue Module: Bank Interface</sapan> <br/>";
+		String repTitle = "<span>SuTRA Revenue Module: Bank Interface</span> <br/>";
 		repTitle += "<span>"+db.getSingleResult("select namenp from bankinfo where id="+auth.getBankId()).get(0)+"</span><br/>";
 		repTitle += "<span>"+db.getSingleResult("select name from branches where id="+auth.getBranchId()).get(0)+"</span><br/>";
 		return repTitle+title;
