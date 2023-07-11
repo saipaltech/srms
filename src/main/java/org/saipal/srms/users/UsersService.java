@@ -510,6 +510,7 @@ public class UsersService extends AutoService {
 			Iterator<Row> rowIterator = sheet.iterator();
 			int count = 0;
 			String importid = db.newIdInt();
+			System.out.println("import id: "+importid);
 			while (rowIterator.hasNext()) {
 				// skipping the header row
 				if (count == 0) {
@@ -532,7 +533,11 @@ public class UsersService extends AutoService {
 					}else if (i == 7) {
 						String cv = readCellValue(itCell.next());
 						String[] cvs = cv.split("\\|");
-						args.add(cvs[0]);
+						if(cvs[0].equals("SUPERVISOR")) {
+							args.add("4");
+						}else {
+							args.add(cvs[0]);
+						}
 					}else {
 						args.add(readCellValue(itCell.next()));
 					}
@@ -548,11 +553,14 @@ public class UsersService extends AutoService {
 			db.execute(
 					"insert into users(bankid,branchid,name,post,username,password,mobile,email,amountlimit,permid) select '"
 							+ bankid
-							+ "',branchid,name,post,username,password,mobile,email,amountlimit,'3' from imported_users where importid='"
+							+ "',branchid,name,post,username,password,mobile,email,amountlimit,role from imported_users where importid='"
 							+ importid + "'");
 			db.execute(
 					"insert into users_perms(userid,permid) select u.id,'3' from imported_users iu join users u on iu.username=u.username where iu.importid='"
 							+ importid + "'");
+			db.execute(
+					"insert into users_perms(userid,permid) select u.id,'4' from imported_users iu join users u on iu.username=u.username where iu.importid='"
+							+ importid + "' and iu.role=4");
 			return Messenger.getMessenger().success();
 		} catch (IOException el) {
 			el.printStackTrace();
@@ -602,7 +610,7 @@ public class UsersService extends AutoService {
 		CellRangeAddressList addressList = new CellRangeAddressList(1, 1000, 0, 0);
 		DataValidation validation = dvHelper.createValidation(dvConstraint, addressList);
 		
-		String[] list = new String[] {"3|Bank User","4|Supervisor","7|Technical User","8|Monitoring User"};
+		String[] list = new String[] {"3|Normal","4|Supervisor"};
 		DataValidationConstraint dvConstraintr = dvHelper.createExplicitListConstraint(list);
 		CellRangeAddressList addressListr = new CellRangeAddressList(1, 1000, 7, 7);
 		DataValidation validationr = dvHelper.createValidation(dvConstraintr, addressListr);

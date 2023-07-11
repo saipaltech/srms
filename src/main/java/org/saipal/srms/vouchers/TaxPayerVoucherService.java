@@ -286,8 +286,10 @@ public class TaxPayerVoucherService extends AutoService {
 					try {
 						JSONObject obj = api.sendDataToSutra(t, revs);
 						if (obj != null) {
-							if (obj.getInt("status") == 1) {
-								db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
+							if(obj.has("status")) {
+								if (obj.getInt("status") == 1) {
+									db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
+								}
 							}
 						}
 					} catch (JSONException e) {
@@ -356,8 +358,10 @@ public class TaxPayerVoucherService extends AutoService {
 			try {
 				JSONObject obj = api.sendDataToSutra(t, revs);
 				if (obj != null) {
-					if (obj.getInt("status") == 1) {
-						db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
+					if(obj.has("status")) {
+						if (obj.getInt("status") == 1) {
+							db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
+						}
 					}
 				}
 				String message = chequeClearedSms.replace("SANKET", t.get("karobarsanket")+"");
@@ -432,8 +436,10 @@ public class TaxPayerVoucherService extends AutoService {
 			try {
 				JSONObject obj = api.sendDataToSutra(t, revs);
 				if (obj != null) {
-					if (obj.getInt("status") == 1) {
-						db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
+					if(obj.has("status")) {
+						if (obj.getInt("status") == 1) {
+							db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
+						}
 					}
 				}
 			} catch (JSONException e) {
