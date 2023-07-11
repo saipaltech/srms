@@ -40,7 +40,8 @@ export class ReportComponent implements OnInit {
       fy: [''],
       accno: [''],
       chkstatus: [''],
-      users: ['']
+      users: [''],
+      reporttype:['1']
     }
 
     this.reportForm = fb.group(this.formLayout)

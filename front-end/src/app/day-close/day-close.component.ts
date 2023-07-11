@@ -61,7 +61,6 @@ export class DayCloseComponent {
           
         }
         this.voucherBankForm =fb.group(this.formLayout);
-
         this.daycloseForm =fb.group(this.formLayout1);
         // this.textboxes = this.daycloseForm.get('textboxes') as FormArray;
        

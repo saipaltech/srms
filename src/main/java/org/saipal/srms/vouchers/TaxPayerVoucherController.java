@@ -206,7 +206,7 @@ public class TaxPayerVoucherController {
 	
 	@PostMapping("get-report")
 	public void getReport(HttpServletResponse resp) throws IOException {
-		String reporttype = "1";//rs.request("reporttype");
+		String reporttype = rs.request("reporttype");
 		Excel report = rs.getReport();
 		if (report != null) {
 			if (reporttype.equals("1")) { // htmlreport
@@ -242,7 +242,7 @@ public class TaxPayerVoucherController {
 	
 	@PostMapping("get-report-default-branch")
 	public void getReportDefaultBranch(HttpServletResponse resp) throws IOException {
-		String reporttype = "1";//rs.request("reporttype");
+		String reporttype = rs.request("reporttype");
 		Excel report = rs.getReportDefaultBranch();
 		if (report != null) {
 			if (reporttype.equals("1")) { // htmlreport
