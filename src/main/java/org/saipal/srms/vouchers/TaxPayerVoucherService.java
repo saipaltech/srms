@@ -992,7 +992,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 						if((t.get("today")+"").equals(t.get("dateint")+"")) {
 							if(!((t.get("lgid")+"").equals(lgid) && (t.get("bankorgid")+"").equals(acno))) {
 								//same day palika change
-								JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount,lgid,ccid,acno,voucher);
+								JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount,lgid,ccid,acno,request("voucherinfo"),"SDPAC");
 								if(ups!=null) {
 									if(ups.getInt("status")==1) {
 										db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
@@ -1015,7 +1015,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 								return Messenger.getMessenger().setMessage("Unable to update, Try again later").error();
 								
 							}else {
-								JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount,lgid,ccid,acno,voucher);
+								JSONObject ups = api.saveVoucherUpdates(id,taxpayername,taxpayerpan,amount,lgid,ccid,acno,request("voucherinfo"),"SDC");
 								if(ups!=null) {
 									if(ups.getInt("status")==1) {
 										db.execute("update "+table+" set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",Arrays.asList(taxpayername,taxpayerpan,amount,id));
@@ -1034,7 +1034,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 								}
 							}
 						}else {
-							JSONObject ups =  api.saveVoucherUpdates(id,taxpayername,taxpayerpan,"","","","","");
+							JSONObject ups =  api.saveVoucherUpdates(id,taxpayername,taxpayerpan,"","","","","","AC");
 							if(ups!=null) {
 								if(ups.getInt("status")==1) {
 									db.execute("update "+table+" set taxpayername=? ,taxpayerpan=? where id=?",Arrays.asList(taxpayername,taxpayerpan,id));
@@ -1326,29 +1326,6 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			if((t.get("palikaresponse")+"").equals("2")) {
 				msg.put("palikaresponse", t.get("palikaresponse"));
 				msg.put("responsereason", t.get("responsereason"));
-				//JSONObject presp = api.getPalikaResponse(id,t.get("id")+"");
-//				System.out.println(presp.toString());
-//				if(presp!=null) {
-//					try {
-//						if(presp.getInt("status")==1) {
-//							JSONObject sdata = presp.getJSONObject("data");
-//							int repStatus = sdata.getInt("palikaresponse");
-//							String reason = sdata.getString("responsereason");
-//							String llcid = sdata.getString("id");
-//							if(repStatus==0) {
-//								msg.put("palikaresponse", "0");
-//								msg.put("responsereason", "");
-//							}else {
-//								db.execute("update taxvoucher_ll_change set palikaresponse=? ,responsereason=? where id=?",Arrays.asList(repStatus,reason,llcid));
-//								msg.put("palikaresponse", repStatus);
-//								msg.put("responsereason", reason);
-//							}
-//						}
-//					} catch (JSONException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
 			}else {
 				msg.put("palikaresponse", t.get("palikaresponse"));
 				msg.put("responsereason", t.get("responsereason"));
@@ -1457,7 +1434,6 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				j.put("data", data);
 				return ResponseEntity.ok(j.toString());
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				// e.printStackTrace();
 			}
 		}
@@ -1467,29 +1443,6 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> getBranchForReport() {
 		String sql = "select name,code from branches where bankid=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(auth.getBranchId()));
-		
-//		List<Map<String, Object>> branches = new ArrayList<>();
-//
-//        Map<String, Object> branch1 = new HashMap<>();
-//        branch1.put("code", 1);
-//        branch1.put("name", "Volvo");
-//        branches.add(branch1);
-//
-//        Map<String, Object> branch2 = new HashMap<>();
-//        branch2.put("code", 2);
-//        branch2.put("name", "Saab");
-//        branches.add(branch2);
-//
-//        Map<String, Object> branch3 = new HashMap<>();
-//        branch3.put("code", 3);
-//        branch3.put("name", "Opel");
-//        branches.add(branch3);
-//
-//        Map<String, Object> branch4 = new HashMap<>();
-//        branch4.put("code", 4);
-//        branch4.put("name", "Audi");
-//        branches.add(branch4);
-//        return branches;
 		return ResponseEntity.ok(data);
 	}
 
@@ -1515,7 +1468,6 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				j.put("data", dt);
 				return ResponseEntity.ok(j.toString());
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				// e.printStackTrace();
 			}
 		}
@@ -1525,7 +1477,6 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 	public ResponseEntity<Map<String, Object>> getusertype() {
 		String sql="select p.name as usertype from users left join permissions p on p.id=users.permid where users.id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(auth.getUserId()));
-		// TODO Auto-generated method stub
 		return ResponseEntity.ok(data);
 	}
 }

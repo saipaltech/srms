@@ -340,11 +340,10 @@ public class ApiManager {
 		return null;
 	}
 
-	public JSONObject saveVoucherUpdates(String id, String taxpayername, String taxpayerpan, String amount,String lgid,String ccid,String acno,String voucher) {
+	public JSONObject saveVoucherUpdates(String id, String taxpayername, String taxpayerpan, String amount,String lgid,String ccid,String acno,String voucher,String cs) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
-			
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
 					.setHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -356,6 +355,7 @@ public class ApiManager {
 					.setParam("lgid",lgid)
 					.setParam("collectioncenterid",ccid)
 					.setParam("bankorgid",acno)
+					.setParam("cs",cs)
 					.post(url + "/srms/taxpayer-voucher-update-namechange");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
@@ -396,6 +396,9 @@ public class ApiManager {
 					.setParam("lgid",lgid)
 					.setParam("collectioncenterid",ccid)
 					.setParam("bankorgid",bankorgid)
+					.setParam("user",auth.getUserId())
+					.setParam("bank",auth.getBankId())
+					.setParam("branch",auth.getBranchId())
 					.post(url + "/srms/taxpayer-voucher-settle-update");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
