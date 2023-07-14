@@ -870,7 +870,11 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			return Messenger.getMessenger().setMessage("Karobarsanket not provided.").error();
 		}
 		voucherno = nep2EngNum(voucherno);
-		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.approved,bd.isused,bd.dateint,cast(bd.collectioncenterid as varchar) as collectioncenterid,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amountcr as amount,cast (bd.date as date) as date, bd.voucherno, "
+		Tuple tk = db.getSingleResult("select count(*) as c from karobarsanketRef where fromkarobarsanket=?",Arrays.asList(voucherno));
+		if(Integer.parseInt(tk.get("c")+"")>0) {
+			return Messenger.getMessenger().setMessage("This karobarsanket is not updateable, Already updated once.").error();
+		}
+		String sql = "select bd.syncstatus,cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.approved,bd.isused,bd.dateint,cast(bd.collectioncenterid as varchar) as collectioncenterid,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amountcr as amount,cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, ba.accountnumber as accountno, " 
 				+ "bd.bankorgid,"
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
@@ -898,6 +902,9 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		if(sdata!=null) {
 			try {
 				if(sdata.getInt("status")==1) {
+					if(!(t.get("syncstatus")+"").equals("2")) {
+						db.execute("update "+table+" set syncstatus=2 where id=?",Arrays.asList(t.get("id")));
+					}
 					JSONObject d = sdata.getJSONObject("data");
 					if(d.getInt("isused")==1) {
 						db.execute("update "+table+" set isused=1 where id=?",Arrays.asList(t.get("id")));
@@ -1061,6 +1068,10 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			return Messenger.getMessenger().setMessage("Karobarsanketno not provided.").error();
 		}
 		voucherno = nep2EngNum(voucherno);
+		Tuple tk = db.getSingleResult("select count(*) as c from karobarsanketRef where fromkarobarsanket=?",Arrays.asList(voucherno));
+		if(Integer.parseInt(tk.get("c")+"")>0) {
+			return Messenger.getMessenger().setMessage("This karobarsanket is not updateable, Already updated once.").error();
+		}
 		String sql = "select cast((format(getdate(),'yyyyMMdd')) as numeric) as today,bd.approved,cast(bankaccount.accountname as varchar) as accountname,bd.hasChangeReqest,bd.dateint,cast(bd.lgid as varchar) as lgid,cast(bd.id as varchar) as id,bd.amountcr as amount,cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid, "
 				+ " bd.purpose, bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
@@ -1351,14 +1362,20 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 			}
 			if(type.equals("1")) {
 				try {
-					JSONObject presp = api.settlePalikaChange(id,t.get("lgid")+"",t.get("collectioncenterid")+"",t.get("bankorgid")+"");
+					String newid = db.newIdInt();
+					String sq = "declare @sanket varchar(20)\r\n"
+							+ "declare @fyid int = dbo.getfyid(DEFAULT)\r\n"
+							+ "exec [dbo].[revCreateKarobarSanketNo] "+newid+","+t.get("lgid")+",@fyid,2,@sanket out\r\n"
+							+ "select @sanket as sanket";
+					String nkarobarsanket = db.getSingleResult(sq).get("sanket")+"";
+					JSONObject presp = api.settlePalikaChange(id,newid,nkarobarsanket,t.get("lgid")+"",t.get("collectioncenterid")+"",t.get("bankorgid")+"");
 					if(presp!=null) {
 						if(presp.getInt("status")==1) {
 							db.execute("insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,format(getdate(),'yyyyMMdd') as dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid ,depositbranchid ,deposituserid from "+table+" where id=?",Arrays.asList(id));
-							String newid = db.newIdInt();
+							db.execute("insert into karobarsanketRef (fromkarobarsanket,tokarobarsanket) values((select karobarsanket from "+table+" where id='"+id+"'),'"+nkarobarsanket+"')");
 							//copy details from tabe; making a new entry
-							String sql = "INSERT INTO "+table+" (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,dateint,amountcr,depositbankid,depositbranchid,approved ,approverid) "
-									+ " select '"+newid+"',format(getdate(),'yyyy-MM-dd') as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,'"+t.get("lgid")+"', '"+t.get("collectioncenterid")+"' ,'"+t.get("bankorgid")+"',purpose,'"+auth.getUserId()+"', '"+auth.getBankId()+"', '"+auth.getBranchId()+"',format(getdate(),'yyyyMMdd') as dateint,amountcr,'"+auth.getBankId()+"', '"+auth.getBranchId()+"',approved ,approverid "
+							String sql = "INSERT INTO "+table+" (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,dateint,amountcr,depositbankid,depositbranchid,approved ,approverid,karobarsanket,syncstatus) "
+									+ " select '"+newid+"',format(getdate(),'yyyy-MM-dd') as date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,'"+t.get("lgid")+"', '"+t.get("collectioncenterid")+"' ,'"+t.get("bankorgid")+"',purpose,'"+auth.getUserId()+"', '"+auth.getBankId()+"', '"+auth.getBranchId()+"',format(getdate(),'yyyyMMdd') as dateint,amountcr,'"+auth.getBankId()+"', '"+auth.getBranchId()+"',approved ,approverid,'"+nkarobarsanket+"','2' "
 									+ "	from "+table+" where id=?";
 							DbResponse rowEffect = db.execute(sql,Arrays.asList(id));
 							db.execute("insert into taxvouchers_detail (mainid,revenueid,amount) select '"+newid+"',revenueid,amount from taxvouchers_detail where mainid=?",Arrays.asList(id));

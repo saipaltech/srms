@@ -5,7 +5,7 @@
       <div class="card-header">
         <div class="row">
           <div class="col-md-8 text-start">
-            Verify Voucher
+            Verify Cash/Cheque Deposit Slip Prepared from Palika
           </div>
           <div class="col-md-4 text-end listdiv">
             <button type="button" class="btn btn-primary btn-sm" (click)="changeFields()">
@@ -166,7 +166,7 @@
                 <th scope="row">कार्यालय</th>
                 <td>{{ transDetails.palika }}</td>
               </tr>
-             
+
 
               <tr>
                 <th scope="row"> मिति</th>
@@ -189,7 +189,7 @@
           <table  class="display responsive-table w-100 table table-striped datatable"> <!--table-borderless-->
             <thead>
               <tr>
-    
+
                 <th scope="col">Action</th>
                 <th scope="col">Karobar Sanket</th>
                 <th scope="col">Bank</th>
@@ -207,18 +207,18 @@
                 <td>{{r.taxpayername}}</td>
                 <td>{{r.chequeno}}</td>
                 <td>{{r.chequeamount}}</td>
-              
+
               </tr>
-             
-      
-            
+
+
+
             </tbody>
           </table>
 
           <div class="row g-3">
             <input type="hidden" formControlName="id" />
             <input type="hidden" formControlName="transactionid" />
-           
+
 
 
 
@@ -252,9 +252,9 @@
             <thead>
               <tr>
                 <th scope="col">{{"Date" | translate}}</th>
-                <th scope="col">{{"Office Name" | translate}}</th> 
+                <th scope="col">{{"Office Name" | translate}}</th>
                 <th scope="col">{{"Account No." | translate}}</th>
-                <th scope="col">{{"Transaction Id" | translate}}</th>                               
+                <th scope="col">{{"Transaction Id" | translate}}</th>
                 <th scope="col">{{"Amount" | translate}}</th>
 
 
@@ -266,7 +266,7 @@
                 <td>{{ item.depositdate }}</td>
                 <td>{{ item.officename }}</td>
                 <td>{{ item.accountnumber }}</td>
-                <td>{{ item.transactionid }}</td>                
+                <td>{{ item.transactionid }}</td>
                 <td>{{ item.amount }}</td>
 
 

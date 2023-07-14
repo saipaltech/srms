@@ -385,7 +385,7 @@ public class ApiManager {
 		return null;
 	}
 
-	public JSONObject settlePalikaChange(String id,String lgid,String ccid,String bankorgid) {
+	public JSONObject settlePalikaChange(String id,String newid,String karobarsanket,String lgid,String ccid,String bankorgid) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
@@ -393,8 +393,10 @@ public class ApiManager {
 					.setHeader("Authorization", "Bearer "+tok)
 					.setHeader("Content-Type", "application/x-www-form-urlencoded")
 					.setParam("id",id)
+					.setParam("newid",newid)
 					.setParam("lgid",lgid)
 					.setParam("collectioncenterid",ccid)
+					.setParam("karobarsanket",karobarsanket)
 					.setParam("bankorgid",bankorgid)
 					.setParam("user",auth.getUserId())
 					.setParam("bank",auth.getBankId())
