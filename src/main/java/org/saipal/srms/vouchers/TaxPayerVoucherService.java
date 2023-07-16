@@ -771,7 +771,7 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 				data.put("purpose", t.get("purpose") + "");
 				data.put("bankid", t.get("bankid") + "");
 				data.put("branchid", t.get("branchid") + "");
-				data.put("deposituserid", t.get("creatorid") + "");
+				data.put("deposituserid", t.get("deposituserid") + "");
 				data.put("approved", t.get("approved") + "");
 				data.put("approverid", t.get("approverid") + "");
 				data.put("updatedon", t.get("updatedon") + "");
@@ -1495,5 +1495,25 @@ public ResponseEntity<Map<String,Object>> searchVoucher() {
 		String sql="select p.name as usertype from users left join permissions p on p.id=users.permid where users.id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(auth.getUserId()));
 		return ResponseEntity.ok(data);
+	}
+
+	public ResponseEntity<String> setStatusByid() {
+		String id = request("id");
+		String status = request("fv");
+		if(id.isBlank() || status.isBlank() || !status.contains(":")) {
+			return ResponseEntity.ok("{\"status\":0,\"message\":\"Invalid Data\"}");
+		}
+		String[] st = status.split(",");
+		String sq = "update taxvouchers set ";
+		for(String s:st) {
+			String[] ss= s.split(":");
+			sq +=ss[0]+"='"+ss[1]+"',";
+		}
+		sq = sq.substring(0,sq.length()-1)+" where id='"+id+"'";
+		DbResponse rsp = db.execute(sq);
+		if(rsp.getErrorNumber()==0) {
+			return ResponseEntity.ok("{\"status\":1,\"message\":\"Success\"}");
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\""+rsp.getMessage()+"\"}");
 	}
 }

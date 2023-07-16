@@ -45,6 +45,14 @@ public class ApiController {
 		return ResponseEntity.ok("{\"status\":0,\"message\":\"Invalid Request\"}");
 	}
 	
+	@PostMapping("set-status")
+	public ResponseEntity<String> setStatusByid() {
+		if(auth.canSystemApi()) {
+			return  tp.setStatusByid();
+		}
+		return ResponseEntity.ok("{\"status\":0,\"message\":\"Invalid Request\"}");
+	}
+	
 	/*
 	 * To Be Called by SuTRA application, to get the deposit voucher details 
 	 * using the payment reference number
