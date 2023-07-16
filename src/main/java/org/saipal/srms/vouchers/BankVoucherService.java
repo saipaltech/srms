@@ -243,7 +243,11 @@ public class BankVoucherService extends AutoService {
 		String sqld="select cast(cb.did as varchar) as did ,cb.mainid ,cb.rcid ,cb.ksno ,cb.bankid ,cb.chequeno ,cb.chequeamount ,cb.taxpayername ,cb.isbankreceived ,cb.bankreceivedby ,cb.bankreceiveddate,bi.namenp as bankname from chequeBankDakhilaDetail cb join bankinfo bi on bi.id=cb.bankid where mainid=? and isbankreceived=?";
 		List <Map<String, Object>> dtl = db.getResultListMap(sqld, Arrays.asList(data.get("cdid"),0));
 		data.put("details", dtl);
-		return Messenger.getMessenger().setData(data).success();
+		if(dtl.size()>0) {
+			return Messenger.getMessenger().setData(data).success();
+		}else {
+			return Messenger.getMessenger().setMessage("Already Received Checque, Please check list of checque deposits.").error();
+		}
 	}
 
 	/*
