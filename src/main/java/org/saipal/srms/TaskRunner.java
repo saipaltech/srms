@@ -29,7 +29,7 @@ public class TaskRunner {
 //		log.info("Auto Delete Unverified Vouchers End");
 //	}
 	
-	@Scheduled(cron="0 55 11 * * *")
+	@Scheduled(cron="0 55 23 * * *")
 	public void automaticDayClose() {
 		log.info("Automatic DayClose Started");
 		try {
