@@ -530,7 +530,7 @@ public class UsersService extends AutoService {
 						args.add(cvs[0]);
 					} else if (i == 4) {
 						args.add(pe.encode(readCellValue(itCell.next())));
-					}else if (i == 7) {
+					}else if (i == 8) {
 						String cv = readCellValue(itCell.next());
 						String[] cvs = cv.split("\\|");
 						if(cvs[0].equals("SUPERVISOR")) {
@@ -601,7 +601,7 @@ public class UsersService extends AutoService {
 		hr.createCell(5).setCellValue("Mobile");
 		hr.createCell(6).setCellValue("Email");
 		hr.createCell(7).setCellValue("Amount Limit");
-		hr.createCell(7).setCellValue("Role");
+		hr.createCell(8).setCellValue("Role");
 		
 		usheet.setActiveCell(new CellAddress("A1"));
 		
@@ -612,7 +612,7 @@ public class UsersService extends AutoService {
 		
 		String[] list = new String[] {"3|Normal","4|Supervisor"};
 		DataValidationConstraint dvConstraintr = dvHelper.createExplicitListConstraint(list);
-		CellRangeAddressList addressListr = new CellRangeAddressList(1, 1000, 7, 7);
+		CellRangeAddressList addressListr = new CellRangeAddressList(1, 1000, 8, 8);
 		DataValidation validationr = dvHelper.createValidation(dvConstraintr, addressListr);
 		
 		usheet.addValidationData(validation);
