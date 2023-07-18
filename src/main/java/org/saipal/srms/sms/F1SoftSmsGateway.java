@@ -22,6 +22,7 @@ public class F1SoftSmsGateway {
 	@Value("${sms.f1soft.url}")
 	private String url;
 	private String ntcRegex = "[9][8][4-6]{1}[0-9]{7}";
+	private String ntcRegex1 = "[9][7][4-6]{1}[0-9]{7}";
 	private String ncellRegex = "[9][8][0-2]{1}[0-9]{7}";
 	
 	@Value("${sms.f1soft.ntc.username}")
@@ -96,7 +97,7 @@ public class F1SoftSmsGateway {
 
 	private String[] getCredentials(String number) {
 		String[] credentials = new String[2];
-		if (Pattern.matches(ntcRegex, number)) {
+		if (Pattern.matches(ntcRegex, number) || Pattern.matches(ntcRegex1, number)) {
 			credentials[0] = f1NtcUsername;
 			credentials[1] = f1NtcPass;
 			return credentials;
@@ -109,7 +110,7 @@ public class F1SoftSmsGateway {
 	}
 	
 	private boolean isNumberValid(String number) {
-		if (Pattern.matches(ntcRegex, number) || Pattern.matches(ncellRegex, number)) {
+		if (Pattern.matches(ntcRegex, number) || Pattern.matches(ntcRegex1, number) || Pattern.matches(ncellRegex, number)) {
 			return true;
 		}
 		return false;
