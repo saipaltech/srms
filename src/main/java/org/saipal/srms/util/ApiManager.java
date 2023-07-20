@@ -190,7 +190,6 @@ public class ApiManager {
 		try {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
-
 					.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 					.setParam("id",tpv.get("id")+"")
 					.setParam("date",tpv.get("date")+"")
@@ -402,6 +401,25 @@ public class ApiManager {
 					.setParam("bank",auth.getBankId())
 					.setParam("branch",auth.getBranchId())
 					.post(url + "/srms/taxpayer-voucher-settle-update");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+
+	public JSONObject chequeReceived(String karobarsanket, String bankId) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
+					.setParam("karobarsankets",karobarsanket)
+					.setParam("bankid",bankId)
+					.post(url + "/srms/cheque-revceived");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
 			}

@@ -77,30 +77,37 @@ public class BankVoucherService extends AutoService {
 		JSONArray jarr = new JSONArray(items);
 		try {
 			if (jarr.length() > 0) {
-				for (int i = 0; i < jarr.length(); i++) {
-				String usq="select * from chequeBankDakhilaDetail where did=?";	
-				Tuple res = db.getSingleResult(usq, Arrays.asList(jarr.get(i)));
-				String sq="select * from chequeBankDakhilaMain where cdid=?";
-				Tuple rs = db.getSingleResult(sq, Arrays.asList(res.get("mainid")));
-				
-				String sq1="select count(id) as cid from taxvouchers where cref=?";
-				Tuple rs1 = db.getSingleResult(sq1, Arrays.asList(res.get("did")));
-				if(!rs1.get("cid").toString().equals("1")) {
-					String sql="insert into taxvouchers(cref,dateint,bankid,branchid,karobarsanket,chequeno,chequeamount,cstatus,chequebank,lgid,date,taxpayername,bankorgid,amountcr,ttype,depositbankid,depositbranchid,deposituserid,depositedby) values(?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-					DbResponse rf= db.execute(sql,Arrays.asList(res.get("did"),auth.getBankId(),auth.getBranchId(),res.get("ksno"),res.get("chequeno"),res.get("chequeamount"),0,res.get("bankid"),rs.get("orgid"),new Date(),res.get("taxpayername"),rs.get("bankorgid"),res.get("chequeamount"),2,auth.getBankId(),auth.getBranchId(),auth.getUserId(),res.get("taxpayername")));
-//					System.out.println(rf.getMessage());
-					String usqq="select * from taxvouchers where cref=?";	
-					Tuple resq = db.getSingleResult(usqq, Arrays.asList(res.get("did")));
-					String sqq = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
-					db.execute(sqq, Arrays.asList(db.newIdInt(), resq.get("id"), res.get("revid"), res.get("chequeamount")));
-					String squ="update chequeBankDakhilaDetail set isbankreceived=?,bankreceivedby=?,bankreceiveddate=? where did=?";
-					db.execute(squ,Arrays.asList(1,auth.getBankId(),new Date(),jarr.get(i)));
+				String qry = "select STRING_AGG(ksno,',') as karobarsankets from chequeBankDakhilaDetail whre did in ("+items.replaceAll("[","").replaceAll("]", ")");
+				Tuple t = db.getSingleResult(qry);
+				String karobarsanket = t.get("karobarsankets")+"";
+				JSONObject resp = api.chequeReceived(karobarsanket.substring(0,karobarsanket.length()-1),auth.getBankId());
+				if(resp!=null) {
+					if(resp.getInt("status")==1){
+						for (int i = 0; i < jarr.length(); i++) {
+							String usq="select * from chequeBankDakhilaDetail where did=?";
+							Tuple res = db.getSingleResult(usq, Arrays.asList(jarr.get(i)));
+							String sq="select * from chequeBankDakhilaMain where cdid=?";
+							Tuple rs = db.getSingleResult(sq, Arrays.asList(res.get("mainid")));
+							
+							String sq1="select count(id) as cid from taxvouchers where cref=?";
+							Tuple rs1 = db.getSingleResult(sq1, Arrays.asList(res.get("did")));
+							if(!rs1.get("cid").toString().equals("1")) {
+								karobarsanket +=res.get("ksno")+",";
+								String sql="insert into taxvouchers(cref,dateint,bankid,branchid,karobarsanket,chequeno,chequeamount,cstatus,chequebank,lgid,date,taxpayername,bankorgid,amountcr,ttype,depositbankid,depositbranchid,deposituserid,depositedby) values(?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+								DbResponse rf= db.execute(sql,Arrays.asList(res.get("did"),auth.getBankId(),auth.getBranchId(),res.get("ksno"),res.get("chequeno"),res.get("chequeamount"),0,res.get("bankid"),rs.get("orgid"),new Date(),res.get("taxpayername"),rs.get("bankorgid"),res.get("chequeamount"),2,auth.getBankId(),auth.getBranchId(),auth.getUserId(),res.get("taxpayername")));
+			//					System.out.println(rf.getMessage());
+								String usqq="select * from taxvouchers where cref=?";	
+								Tuple resq = db.getSingleResult(usqq, Arrays.asList(res.get("did")));
+								String sqq = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
+								db.execute(sqq, Arrays.asList(db.newIdInt(), resq.get("id"), res.get("revid"), res.get("chequeamount")));
+								String squ="update chequeBankDakhilaDetail set isbankreceived=?,bankreceivedby=?,bankreceiveddate=? where did=?";
+								db.execute(squ,Arrays.asList(1,auth.getBankId(),new Date(),jarr.get(i)));
+							}
+						}
+						return Messenger.getMessenger().success();
+					}
 				}
-				
-				
-				
-				}
-				return Messenger.getMessenger().success();
+				return Messenger.getMessenger().setMessage("Unable to update to sutra").error();
 			}else {
 				return Messenger.getMessenger().setMessage("No Data to save").error();
 			}
@@ -112,13 +119,16 @@ public class BankVoucherService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> update() {
-		
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		DbResponse rowEffect;
 		BankVoucher model = new BankVoucher();
 		model.loadData(document);
+		char forthChar = model.transactionid.charAt(3);
+		if(forthChar=='2') {
+			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
+		}
 		String usq = "select amount,usestatus from "+table+" where transactionid=? and bankid=? and paymentmethod=2";
 		Tuple res = db.getSingleResult(usq, Arrays.asList(model.transactionid,auth.getBankId()));
 		if(res!=null) {
@@ -128,79 +138,79 @@ public class BankVoucherService extends AutoService {
 			if(Float.parseFloat(model.amount)!=Float.parseFloat(res.get("amount")+"")) {
 				return Messenger.getMessenger().setMessage("Deposited amount and Voucher amount does not match.").error();
 			}
-			String sql = "UPDATE " + table + " set depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,deposituserid=?,approverid=?,approved=1, depositbankid=?,depositbranchid=?,usestatus=1 where transactionid=? and bankid=?";
-			 rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks,auth.getUserId(),auth.getUserId(),auth.getBankId(), auth.getBranchId(),model.transactionid,auth.getBankId()));
-			if (rowEffect.getErrorNumber() == 0) {
-				try {
-					JSONObject resp =  api.updateToSutra(model.transactionid,model.bankvoucherno,model.depositdate,model.remarks,"1");
-					if(resp!=null) {
-						if(resp.getInt("status")==1) {
-							db.execute("update "+table+" set syncstatus=2 where transactionid=? and bankid=?",Arrays.asList(model.transactionid,auth.getBankId()));
-						}
+			try {
+				JSONObject resp =  api.updateToSutra(model.transactionid,model.bankvoucherno,model.depositdate,model.remarks,"1");
+				if(resp!=null) {
+					if(resp.getInt("status")==1) {
+						String sql = "UPDATE " + table + " set syncstatus=2 depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,deposituserid=?,approverid=?,approved=1, depositbankid=?,depositbranchid=?,usestatus=1 where transactionid=? and bankid=?";
+						 rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks,auth.getUserId(),auth.getUserId(),auth.getBankId(), auth.getBranchId(),model.transactionid,auth.getBankId()));
+						 if (rowEffect.getErrorNumber() == 0) {
+								return Messenger.getMessenger().success();
+							} else {
+								return Messenger.getMessenger().setMessage("Internal Error").error();
+							}
 					}
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
 				}
-				return Messenger.getMessenger().success();
-			} else {
-				return Messenger.getMessenger().error();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
 			}
+			
 		}
 		return Messenger.getMessenger().setMessage("No such transaction found.").error();
 	}
 	
 
 	public ResponseEntity<Map<String,Object>> getTransDetails() {
-		
 		String transactionid = request("transactionid");
 		if(transactionid.isBlank()) {
-			return Messenger.getMessenger().setMessage("Transaction id is required").error();
+			return Messenger.getMessenger().setMessage("Karobarsanket is required").error();
 		}
 		transactionid = nep2EngNum(transactionid);
 		if(transactionid.length()< 8) {
-			return Messenger.getMessenger().setMessage("Invalid Transaction id format.").error();
+			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
 		}
 		char forthChar = transactionid.charAt(3);
+		if(forthChar=='2') {
+			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
+		}
 		if(forthChar == '9') {
 			return getTransDetailsCheque();
 		}
-
-		String sql = "select usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,bd.voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
-		//String sql = "select bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
+		String sql = "select usestatus where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
-		if(data==null) {
-			JSONObject dt =  api.getTransDetails(transactionid);
-			if(dt!=null) {
-				try {
-					if(dt.getInt("status")==1) {
-						JSONObject d = dt.getJSONObject("data");
-						db.execute("insert into "+table+" (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount,usestatus) values (?,?,?,?,?,?,?,?,?,?,?)",Arrays.asList(d.get("id"),d.get("fyid"),d.get("transactionid"),d.get("officename"),d.get("collectioncenterid"),d.get("lgid"),d.get("voucherdate"),d.get("voucherdateint"),d.get("bankid"),d.get("accountnumber"),d.get("amount"),d.get("usestatus")));
-						sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bankid=? and bd.paymentmethod=2";
-						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
-						if(!(fdata.get("usestatus")+"").equals("0")) {
-							return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
-						}
-						return Messenger.getMessenger().setData(fdata).success();
-					}else {
-						return Messenger.getMessenger().setMessage(dt.getString("message")).error();
-					}
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
-				}
+		if(data!=null) {
+			if(!(data.get("usestatus")+"").equals("0")) {
+				return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
 			}
-			return Messenger.getMessenger().setMessage("No such transaction found.").error();
 		}
-		if(!(data.get("usestatus")+"").equals("0")) {
-			return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
+		JSONObject dt =  api.getTransDetails(transactionid);
+		if(dt!=null) {
+			try {
+				if(dt.getInt("status")==1) {
+					JSONObject d = dt.getJSONObject("data");
+					if(data==null) {
+						db.execute("insert into "+table+" (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount,usestatus) values (?,?,?,?,?,?,?,?,?,?,?)",Arrays.asList(d.get("id"),d.get("fyid"),d.get("transactionid"),d.get("officename"),d.get("collectioncenterid"),d.get("lgid"),d.get("voucherdate"),d.get("voucherdateint"),d.get("bankid"),d.get("accountnumber"),d.get("amount"),d.get("usestatus")));
+					}
+					sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bankid=? and bd.paymentmethod=2";
+					Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
+					return Messenger.getMessenger().setData(fdata).success();
+				}else {
+					return Messenger.getMessenger().setMessage(dt.getString("message")).error();
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}
+		}else {
+			return Messenger.getMessenger().setMessage("Cannot Connect to SuTRA Server.").error();
 		}
-		return Messenger.getMessenger().setData(data).success();
+		return Messenger.getMessenger().error();
 	}
 	
 	@Transactional
 	private ResponseEntity<Map<String, Object>> getTransDetailsCheque() {
-		String transactionid = request("transactionid"); 
+		String transactionid = request("transactionid");
 		transactionid = nep2EngNum(transactionid);
 		String sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.orgid where karobarSanketNo=? and bd.bankid=? ";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
@@ -263,13 +273,4 @@ public class BankVoucherService extends AutoService {
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid));
 		return Messenger.getMessenger().setData(data).success();
 	}
-
-	public ResponseEntity<Map<String, Object>> saveBankVoucher() {
-		return getTransDetails();
-	}
-	
-	
-
-	
-
 }

@@ -339,15 +339,14 @@ public class TaxPayerVoucherService extends AutoService {
 	@Transactional
 	public ResponseEntity<Map<String, Object>> chequeclear() {
 		String id = request("id");
-		Tuple c = db.getSingleResult("select id,cstatus from " + table + " where id=?", Arrays.asList(id));
-		if ((c.get("cstatus") + "").equals("1")) {
-			return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
-		}
-		db.execute("update " + table
-				+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd') where id=?",
-				Arrays.asList(auth.getUserId(), id));
-		Tuple t = db.getSingleResult("select * from " + table + " where id=? and cstatus=1", Arrays.asList(id));
+		Tuple t = db.getSingleResult("select * from " + table + " where id=?", Arrays.asList(id));
 		if (t != null) {
+			if ((t.get("cstatus") + "").equals("1")) {
+				return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
+			}
+			db.execute("update " + table
+					+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd') where id=?",
+					Arrays.asList(auth.getUserId(), id));
 			String revs = "";
 			List<Tuple> list = db.getResultList(
 					"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
@@ -359,27 +358,26 @@ public class TaxPayerVoucherService extends AutoService {
 				revs = revs.substring(0, (revs.length() - 1));
 			}
 			try {
-				JSONObject obj = api.sendDataToSutra(t, revs);
+				JSONObject obj = api.sendDataToSutra(t,revs);
 				if (obj != null) {
 					if (obj.has("status")) {
 						if (obj.getInt("status") == 1) {
-							db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
+							String message = chequeClearedSms.replace("SANKET", t.get("karobarsanket") + "");
+							if (!isDev.equals("1")) {
+								JSONObject ob = sms.sendSms(t.get("depcontact") + "", message, db.newIdInt());	
+							}
+							return Messenger.getMessenger().setMessage("Cheque cleared, SMS sent to depositor.").success();
 						}
 					}
 				}
-				String message = chequeClearedSms.replace("SANKET", t.get("karobarsanket") + "");
-				if (!isDev.equals("1")) {
-					JSONObject ob = sms.sendSms(t.get("depcontact") + "", message, db.newIdInt());
-					if (ob.getInt("status_code") == 200) {
-						return Messenger.getMessenger().setMessage("Cheque cleared, SMS sent to depositor.").success();
-					}
-				}
-
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return Messenger.getMessenger().setMessage("Cheque cleared.").success();
+			db.execute("update " + table
+					+ " set cstatus=0,updatedon=getdate(),approverid=null,cleardateint=null where id=?",
+					Arrays.asList(auth.getUserId(), id));
+			return Messenger.getMessenger().setMessage("Cheque not cleared.").error();
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
 

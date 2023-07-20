@@ -72,7 +72,7 @@ public class ApiController {
 	@PostMapping("bankvoucher")
 	public ResponseEntity<Map<String, Object>> saveBankVoucher() {
 		if(auth.canSystemApi()) {
-			return  bv.saveBankVoucher();
+			return  bv.getTransDetails();
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
 	}
