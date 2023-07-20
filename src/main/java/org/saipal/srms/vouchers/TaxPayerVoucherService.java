@@ -126,7 +126,7 @@ public class TaxPayerVoucherService extends AutoService {
 			condition += " and tx.deposituserid='" + auth.getUserId() + "'";
 		}
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(tx.id as char) as id,tx.chequetype,cast(date as date) as date,(case when tx.cstatus='1' OR tx.chequetype='2' then karobarsanket else 'To be Cleared' end) as cheque_text,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,chequeamount as amount,  ba.accountnumber as accountno")
+				.select("cast(tx.id as char) as id,tx.chequetype,cast(date as date) as date,(case when tx.cstatus='1' OR tx.chequetype='2' then cast(karobarsanket as varchar) else 'To be Cleared' end) as cheque_text,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,chequeamount as amount,  ba.accountnumber as accountno")
 				.sqlBody("from " + table + " tx join bankaccount ba on ba.id=tx.bankorgid " + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -344,9 +344,6 @@ public class TaxPayerVoucherService extends AutoService {
 			if ((t.get("cstatus") + "").equals("1")) {
 				return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
 			}
-			db.execute("update " + table
-					+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd') where id=?",
-					Arrays.asList(auth.getUserId(), id));
 			String revs = "";
 			List<Tuple> list = db.getResultList(
 					"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
@@ -358,6 +355,10 @@ public class TaxPayerVoucherService extends AutoService {
 				revs = revs.substring(0, (revs.length() - 1));
 			}
 			try {
+				db.execute("update " + table
+						+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd') where id=?",
+						Arrays.asList(auth.getUserId(), id));
+				t = db.getSingleResult("select * from " + table + " where id=?", Arrays.asList(id));
 				JSONObject obj = api.sendDataToSutra(t,revs);
 				if (obj != null) {
 					if (obj.has("status")) {

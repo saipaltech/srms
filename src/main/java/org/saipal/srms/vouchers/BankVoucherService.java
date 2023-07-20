@@ -71,16 +71,19 @@ public class BankVoucherService extends AutoService {
 	@Transactional
 	public ResponseEntity<Map<String, Object>> chequeDeposit() throws JSONException {
 		String items=request("selection");
+		if(items.length()==0) {
+			return Messenger.getMessenger().setMessage("No Data to save").error();
+		}
 		if (!items.startsWith("[")) {
 			items = "[" + items + "]";
 		}
-		JSONArray jarr = new JSONArray(items);
 		try {
+			JSONArray jarr = new JSONArray(items);
 			if (jarr.length() > 0) {
-				String qry = "select STRING_AGG(ksno,',') as karobarsankets from chequeBankDakhilaDetail whre did in ("+items.replaceAll("[","").replaceAll("]", ")");
+				String qry = "select STRING_AGG(ksno,',') as karobarsankets from chequeBankDakhilaDetail where did in ("+(items.replace("[","").replace("]", "").replace("\"","'"))+")";
 				Tuple t = db.getSingleResult(qry);
 				String karobarsanket = t.get("karobarsankets")+"";
-				JSONObject resp = api.chequeReceived(karobarsanket.substring(0,karobarsanket.length()-1),auth.getBankId());
+				JSONObject resp = api.chequeReceived(karobarsanket,auth.getBankId());
 				if(resp!=null) {
 					if(resp.getInt("status")==1){
 						for (int i = 0; i < jarr.length(); i++) {
@@ -112,6 +115,7 @@ public class BankVoucherService extends AutoService {
 				return Messenger.getMessenger().setMessage("No Data to save").error();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return Messenger.getMessenger().setMessage("Unable to save data").error();
 		}
 		
@@ -142,7 +146,7 @@ public class BankVoucherService extends AutoService {
 				JSONObject resp =  api.updateToSutra(model.transactionid,model.bankvoucherno,model.depositdate,model.remarks,"1");
 				if(resp!=null) {
 					if(resp.getInt("status")==1) {
-						String sql = "UPDATE " + table + " set syncstatus=2 depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,deposituserid=?,approverid=?,approved=1, depositbankid=?,depositbranchid=?,usestatus=1 where transactionid=? and bankid=?";
+						String sql = "UPDATE " + table + " set syncstatus=2, depositdate=?,depositdateint=format(getdate(),'yyyyMMdd'),bankvoucherno=?,remarks=?,deposituserid=?,approverid=?,approved=1, depositbankid=?,depositbranchid=?,usestatus=1 where transactionid=? and bankid=?";
 						 rowEffect = db.execute(sql, Arrays.asList(model.depositdate,model.bankvoucherno,model.remarks,auth.getUserId(),auth.getUserId(),auth.getBankId(), auth.getBranchId(),model.transactionid,auth.getBankId()));
 						 if (rowEffect.getErrorNumber() == 0) {
 								return Messenger.getMessenger().success();
@@ -177,7 +181,7 @@ public class BankVoucherService extends AutoService {
 		if(forthChar == '9') {
 			return getTransDetailsCheque();
 		}
-		String sql = "select usestatus where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
+		String sql = "select usestatus from "+table+" where transactionid=? and bankid=? and paymentmethod=2";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
 		if(data!=null) {
 			if(!(data.get("usestatus")+"").equals("0")) {
@@ -188,13 +192,20 @@ public class BankVoucherService extends AutoService {
 		if(dt!=null) {
 			try {
 				if(dt.getInt("status")==1) {
-					JSONObject d = dt.getJSONObject("data");
-					if(data==null) {
-						db.execute("insert into "+table+" (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount,usestatus) values (?,?,?,?,?,?,?,?,?,?,?)",Arrays.asList(d.get("id"),d.get("fyid"),d.get("transactionid"),d.get("officename"),d.get("collectioncenterid"),d.get("lgid"),d.get("voucherdate"),d.get("voucherdateint"),d.get("bankid"),d.get("accountnumber"),d.get("amount"),d.get("usestatus")));
+					if(data!=null) {
+						sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
+						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
+						return Messenger.getMessenger().setData(fdata).success();
 					}
-					sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bankid=? and bd.paymentmethod=2";
-					Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
-					return Messenger.getMessenger().setData(fdata).success();
+					JSONObject d = dt.getJSONObject("data");
+					DbResponse rs = db.execute("insert into "+table+" (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount,usestatus) values (?,?,?,?,?,?,?,?,?,?,?,?)",Arrays.asList(d.get("id"),d.get("fyid"),d.get("transactionid"),d.get("officename"),d.get("collectioncenterid"),d.get("lgid"),d.get("voucherdate"),d.get("voucherdateint"),d.get("bankid"),d.get("accountnumber"),d.get("amount"),d.get("usestatus")));
+					if(rs.getErrorNumber()==0) {
+						sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from " + table + " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
+						Map<String, Object> fdata = db.getSingleResultMap(sql, Arrays.asList(transactionid,auth.getBankId()));
+						return Messenger.getMessenger().setData(fdata).success();
+					}else {
+						return Messenger.getMessenger().setMessage(rs.getMessage()).error();
+					}
 				}else {
 					return Messenger.getMessenger().setMessage(dt.getString("message")).error();
 				}
