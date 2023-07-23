@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.persistence.Tuple;
 import javax.transaction.Transactional;
@@ -344,41 +346,41 @@ public class TaxPayerVoucherService extends AutoService {
 			if ((t.get("cstatus") + "").equals("1")) {
 				return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
 			}
-			String revs = "";
-			List<Tuple> list = db.getResultList(
-					"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
-					Arrays.asList(id));
-			if (list.size() > 0) {
-				for (Tuple tp : list) {
-					revs += tp.get(0) + ",";
-				}
-				revs = revs.substring(0, (revs.length() - 1));
-			}
-			try {
-				db.execute("update " + table
-						+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd') where id=?",
-						Arrays.asList(auth.getUserId(), id));
-				t = db.getSingleResult("select * from " + table + " where id=?", Arrays.asList(id));
-				JSONObject obj = api.sendDataToSutra(t,revs);
-				if (obj != null) {
-					if (obj.has("status")) {
-						if (obj.getInt("status") == 1) {
-							String message = chequeClearedSms.replace("SANKET", t.get("karobarsanket") + "");
-							if (!isDev.equals("1")) {
-								JSONObject ob = sms.sendSms(t.get("depcontact") + "", message, db.newIdInt());	
+				TransactionTemplate tran = db.getTransTemplate();
+				ResponseEntity<Map<String, Object>> data= tran.execute(status->{
+					List<Tuple> list = db.getResultList(
+							"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
+							Arrays.asList(id));
+					String revs = "";
+					if (list.size() > 0) {
+						for (Tuple tp : list) {
+							revs += tp.get(0) + ",";
+						}
+						revs = revs.substring(0, (revs.length() - 1));
+					}
+					db.execute("update " + table
+							+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd') where id=?",
+							Arrays.asList(auth.getUserId(), id));
+					Tuple tp = db.getSingleResult("select * from " + table + " where id=?", Arrays.asList(id));
+					JSONObject obj = api.sendDataToSutra(tp,revs);
+					if (obj != null) {
+						try {
+							if (obj.getInt("status") == 1) {
+								String message = chequeClearedSms.replace("SANKET", (t.get("karobarsanket") + ""));
+								if (!isDev.equals("1")) {
+									JSONObject ob = sms.sendSms(t.get("depcontact") + "", message, db.newIdInt());	
+								}
+								return Messenger.getMessenger().setMessage("Cheque cleared, SMS sent to depositor.").success();
 							}
-							return Messenger.getMessenger().setMessage("Cheque cleared, SMS sent to depositor.").success();
+						} catch (Exception e) {
+							status.setRollbackOnly();
+							return Messenger.getMessenger().setMessage("Cheque not cleared.").error();
 						}
 					}
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			db.execute("update " + table
-					+ " set cstatus=0,updatedon=getdate(),approverid=null,cleardateint=null where id=?",
-					Arrays.asList(auth.getUserId(), id));
-			return Messenger.getMessenger().setMessage("Cheque not cleared.").error();
+					status.setRollbackOnly();
+					return Messenger.getMessenger().setMessage("Cheque not cleared.").error();
+				});
+				return data;
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
 

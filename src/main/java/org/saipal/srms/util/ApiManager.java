@@ -271,6 +271,7 @@ public class ApiManager {
 					.setParam("bankvoucherno",bankVoucherid)
 					.setParam("remarks",remarks)
 					.setParam("usestatus",usestatus)
+					.setParam("sessionid",auth.getBranchId())
 					.setParam("status","1")
 					.post(url + "/srms/bankdeposit-voucher");
 			if (response.getInt("status_code") == 200) {
@@ -291,7 +292,7 @@ public class ApiManager {
 		try {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
-					.get(url + "/srms/get-trans-details?transactionid="+transactionid);
+					.get(url + "/srms/get-trans-details?transactionid="+transactionid+"&sessionid="+auth.getBranchId());
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
 			}
@@ -420,6 +421,26 @@ public class ApiManager {
 					.setParam("karobarsankets",karobarsanket)
 					.setParam("bankid",bankId)
 					.post(url + "/srms/cheque-revceived");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+
+	public JSONObject getLock(String karobarsanket) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
+					.setParam("karobarsanket",karobarsanket)
+					.setParam("bankid",auth.getBankId())
+					.setParam("sessionid",auth.getBranchId())
+					.post(url + "/srms/get-lock");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
 			}

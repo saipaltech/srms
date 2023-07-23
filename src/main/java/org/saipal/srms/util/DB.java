@@ -212,6 +212,41 @@ public class DB {
 		}
 		return dbResp;
 	}
+	public DbResponse execute(String sql, List<Object> args,boolean tran) {
+		DbResponse dbResp = new DbResponse();
+		try {
+			LOG.info(dumpQuery(sql, args));
+			if(tran) {
+				sql ="declare @tranname nvarchar(50)='T"+ this.newIdInt() +"'\r\n" + 
+						"	begin tran @tranname\r\n" + 
+						"	begin try \r\n" +
+						sql +" \r\n" +
+						"commit tran @tranname\r\n" + 
+						"end try\r\n" + 
+						"begin catch\r\n" + 
+						"	declare @emst as nvarchar(800)\r\n" + 
+						"	set @emst=ERROR_MESSAGE()\r\n" + 
+						"	rollback tran @tranname\r\n" + 
+						"	RAISERROR (@emst,18,10)\r\n" + 
+						"	return\r\n" + 
+						"end catch";
+			}
+			Query qry = em.createNativeQuery(sql);
+			if (args != null) {
+				for (int i = 0; i < args.size(); i++) {
+					qry.setParameter(i + 1, args.get(i));
+				}
+			}
+			int dt = qry.executeUpdate();
+			dbResp.setRows(dt);
+			dbResp.setErrorNumber(0);
+		} catch (Exception e) {
+			dbResp.setRows(0);
+			dbResp.setErrorNumber(1);
+			dbResp.setMessage(e.getMessage());
+		}
+		return dbResp;
+	}
 
 	/**
 	 * method to execute multiple update with single sql statement and different
