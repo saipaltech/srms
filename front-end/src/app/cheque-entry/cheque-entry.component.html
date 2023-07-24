@@ -1,3 +1,14 @@
+
+  <style>
+  .lc {
+  background-color: #0563bb;
+  color: white;
+  border-radius: 5px;
+  padding: 4px;
+}
+  
+</style>
+
 <div class="row g-5 justify-content-center">
   <div class="col-12">
     
@@ -504,6 +515,16 @@
       <div class="d-flex justify-content-center">
         <button class="btn btn-success btn-sm" type="button" (click)="clearCheque(details.id)">  Cheque Cleared</button>
       </div>
+    </div>
+  </div>
+
+  <div id="" class="overlay" #myNav>
+    <div class="overlay-content">
+      <span class="lc">
+      <div class="spinner-border spinner-border-sm">
+      </div>
+      Loading...
+    </span>
     </div>
   </div>
 
