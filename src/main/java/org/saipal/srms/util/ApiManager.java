@@ -202,6 +202,7 @@ public class ApiManager {
 					.setParam("lgid",tpv.get("lgid")+"")
 					.setParam("collectioncenterid",tpv.get("collectioncenterid")+"")
 					.setParam("bankorgid",tpv.get("bankorgid")+"")
+					.setParam("accountnumber",tpv.get("accountnumber")+"")
 					.setParam("purpose",tpv.get("purpose")+"")
 					.setParam("bankid",tpv.get("bankid")+"")
 					.setParam("branchid",tpv.get("branchid")+"")
@@ -340,7 +341,7 @@ public class ApiManager {
 		return null;
 	}
 
-	public JSONObject saveVoucherUpdates(String id, String taxpayername, String taxpayerpan, String amount,String lgid,String ccid,String acno,String voucher,String cs) {
+	public JSONObject saveVoucherUpdates(String id, String taxpayername, String taxpayerpan, String amount,String lgid,String ccid,String acno,String accountnumber,String voucher,String cs) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
@@ -355,6 +356,7 @@ public class ApiManager {
 					.setParam("lgid",lgid)
 					.setParam("collectioncenterid",ccid)
 					.setParam("bankorgid",acno)
+					.setParam("accountnumber",accountnumber)
 					.setParam("cs",cs)
 					.post(url + "/srms/taxpayer-voucher-update-namechange");
 			if (response.getInt("status_code") == 200) {
