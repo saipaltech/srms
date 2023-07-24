@@ -383,7 +383,6 @@ public class TaxPayerVoucherService extends AutoService {
 				return data;
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
-
 	}
 
 	public ResponseEntity<Map<String, Object>> destroy(String id) {

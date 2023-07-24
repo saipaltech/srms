@@ -260,7 +260,7 @@ public class BankVoucherService extends AutoService {
 	private ResponseEntity<Map<String, Object>> getTransDetailsCheque() {
 		String transactionid = request("transactionid");
 		transactionid = nep2EngNum(transactionid);
-		String sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.orgid where karobarSanketNo=? and bd.bankid=? ";
+		String sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.adminid where karobarSanketNo=? and bd.bankid=? ";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid, auth.getBankId()));
 		if (data == null) {
 			JSONObject dt = api.getChequeDetails(transactionid);
@@ -277,7 +277,6 @@ public class BankVoucherService extends AutoService {
 										d.get("bankid"), d.get("accountno"), d.get("entrydate"), d.get("enterby")));
 
 						JSONArray dtls = d.getJSONArray("details_rows");
-
 						if (dtls.length() > 0) {
 							for (int i = 0; i < dtls.length(); i++) {
 								JSONObject dd = dtls.getJSONObject(i);
@@ -289,7 +288,7 @@ public class BankVoucherService extends AutoService {
 
 							}
 						}
-						sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.orgid where karobarSanketNo=? and bd.bankid=?";
+						sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.adminid where karobarSanketNo=? and bd.bankid=?";
 						Map<String, Object> fdata = db.getSingleResultMap(sql,
 								Arrays.asList(transactionid, auth.getBankId()));
 						String sqld = "select cast(cb.did as varchar) as did ,cb.mainid ,cb.rcid ,cb.ksno ,cb.bankid ,cb.chequeno ,cb.chequeamount ,cb.taxpayername ,cb.isbankreceived ,cb.bankreceivedby ,cb.bankreceiveddate,bi.namenp as bankname from chequeBankDakhilaDetail cb join bankinfo bi on bi.id=cb.bankid where mainid=?";
