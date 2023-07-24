@@ -156,8 +156,8 @@ model1:any;
   changeFields() {
     this.showList = !this.showList;
     this.showForm = !this.showForm;
-    var fd = document.getElementsByClassName('formdiv')[0]
-    var td = document.getElementsByClassName('listdiv')[0]
+    var fd = document.getElementsByClassName('formdiv')[0];
+    var td = document.getElementsByClassName('listdiv')[0];
 
     fd.classList.toggle('hide');
     td.classList.toggle('hide');
@@ -165,9 +165,11 @@ model1:any;
 
   resetForm() {
     this.bankForm = this.fb.group(this.formLayout);
-    this.showForm = !this.showForm;
+    // this.showForm = !this.showForm;
     this.transDetails = "";
   }
+
+  
 
   transDetails: any;
   istab = 1;

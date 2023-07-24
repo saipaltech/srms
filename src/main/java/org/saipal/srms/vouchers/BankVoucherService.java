@@ -221,7 +221,7 @@ public class BankVoucherService extends AutoService {
 					if (data != null) {
 						sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
 								+ table
-								+ " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
+								+ " bd join bankaccount ba on ba.id=bd.bankorgid  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
 						Map<String, Object> fdata = db.getSingleResultMap(sql,
 								Arrays.asList(transactionid, auth.getBankId()));
 						return Messenger.getMessenger().setData(fdata).success();
@@ -236,7 +236,7 @@ public class BankVoucherService extends AutoService {
 					if (rs.getErrorNumber() == 0) {
 						sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
 								+ table
-								+ " bd join bankaccount ba on ba.accountnumber=bd.accountnumber  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
+								+ " bd join bankaccount ba on ba.id=bd.bankorgid  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
 						Map<String, Object> fdata = db.getSingleResultMap(sql,
 								Arrays.asList(transactionid, auth.getBankId()));
 						return Messenger.getMessenger().setData(fdata).success();

@@ -206,8 +206,10 @@ public class TaxPayerVoucherService extends AutoService {
 		if (model.chequeamount.isBlank()) {
 			model.chequeamount = "0";
 		}
-
-		Tuple tb = db.getSingleResult("select accounttype from bankaccount where id=?", Arrays.asList(model.bankorgid));
+		String accountnumber="";
+		Tuple tb = db.getSingleResult("select accounttype,accountnumber from bankaccount where id=?", Arrays.asList(model.bankorgid));
+		accountnumber=tb.get("accountnumber")+"";
+//		System.out.println(accountnumber);
 		int bact = Integer.parseInt(tb.get(0) + "");
 		if (jarr.length() > 0) {
 			for (int i = 0; i < jarr.length(); i++) {
@@ -236,13 +238,15 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 
 		String id = db.newIdInt();
-		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,cleardateint,amountcr,depositbankid,depositbranchid,cstatus) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),format(getdate(),'yyyyMMdd'),?,?,?,?)";
+		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,cleardateint,amountcr,depositbankid,depositbranchid,cstatus,accountnumber)"
+				+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),format(getdate(),'yyyyMMdd'),?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
 				Arrays.asList(id, model.date, model.voucherno, model.taxpayername, model.taxpayerpan, model.depositedby,
 						model.depcontact, model.lgid, model.collectioncenterid, model.bankorgid, model.purpose,
 						auth.getUserId(), auth.getBankId(), auth.getBranchId(), model.ttype, model.chequebank,
 						model.chequeno, model.chequeamount, model.chequetype, model.amount, auth.getBankId(),
-						auth.getBranchId(), ct));
+						auth.getBranchId(), ct,accountnumber));
+		System.out.println(rowEffect.getMessage());
 		if (rowEffect.getErrorNumber() == 0) {
 			if (jarr.length() > 0) {
 				for (int i = 0; i < jarr.length(); i++) {
@@ -929,6 +933,8 @@ public class TaxPayerVoucherService extends AutoService {
 		String lgid = request("lgid");
 		String ccid = request("collectioncenterid");
 		String acno = request("bankorgid");
+		
+		String accountnumber="";
 		if (voucher.startsWith("{")) {
 			voucher = "[" + voucher + "]";
 		}
@@ -936,7 +942,8 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("Cannot update record.Already Day closed.").error();
 		}
 		JSONArray jarr = new JSONArray(voucher);
-		Tuple tb = db.getSingleResult("select accounttype from bankaccount where id=?", Arrays.asList(acno));
+		Tuple tb = db.getSingleResult("select accounttype,accountnumber from bankaccount where id=?", Arrays.asList(acno));
+		accountnumber=tb.get("accountnumber")+"";
 		int bact = Integer.parseInt(tb.get(0) + "");
 		if (jarr.length() > 0) {
 			for (int i = 0; i < jarr.length(); i++) {
@@ -998,8 +1005,8 @@ public class TaxPayerVoucherService extends AutoService {
 					// ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid
 					// ,depositbranchid ,deposituserid from "+table+" where
 					// id=?",Arrays.asList(id));
-					db.execute("update " + table + " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=? where id=?",
-							Arrays.asList(amount, lgid, ccid, acno, id));
+					db.execute("update " + table + " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=? where id=?",
+							Arrays.asList(amount, lgid, ccid, acno,accountnumber, id));
 				}
 				db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",
 						Arrays.asList(taxpayername, taxpayerpan, amount, id));
@@ -1032,20 +1039,20 @@ public class TaxPayerVoucherService extends AutoService {
 							if (!((t.get("lgid") + "").equals(lgid) && (t.get("bankorgid") + "").equals(acno))) {
 								// same day palika change
 								JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, amount, lgid,
-										ccid, acno, request("voucherinfo"), "SDPAC");
+										ccid, acno,accountnumber, request("voucherinfo"), "SDPAC");
 								if (ups != null) {
 									if (ups.getInt("status") == 1) {
 										db.execute(
-												"insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid from "
+												"insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid,accountnumber) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid,accountnumber from "
 														+ table + " where id=?",
 												Arrays.asList(id));
 										db.execute(
-												"insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid ,depositbranchid ,deposituserid from "
+												"insert into taxvouchers_log (id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountdr ,amountcr ,depositbankid ,depositbranchid ,deposituserid,accountnumber) select id ,fyid ,voucherno ,karobarsanket ,date ,taxpayername ,taxpayerpan ,depositedby ,depcontact ,lgid ,collectioncenterid ,bankid ,branchid ,bankorgid ,purpose ,syncstatus ,approved ,approverid ,createdon ,updatedon ,tasklog ,approvelog ,ttype ,chequebank ,chequeno ,chequeamount ,cstatus ,chequetype ,dateint ,isused ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid ,depositbranchid ,deposituserid,accountnumber from "
 														+ table + " where id=?",
 												Arrays.asList(id));
 										db.execute("update " + table
-												+ " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=? where id=?",
-												Arrays.asList(amount, lgid, ccid, acno, id));
+												+ " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=? where id=?",
+												Arrays.asList(amount, lgid, ccid, acno,accountnumber, id));
 										db.execute(
 												"update " + table
 														+ " set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",
@@ -1069,7 +1076,7 @@ public class TaxPayerVoucherService extends AutoService {
 
 							} else {
 								JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, amount, lgid,
-										ccid, acno, request("voucherinfo"), "SDC");
+										ccid, acno,accountnumber, request("voucherinfo"), "SDC");
 								if (ups != null) {
 									if (ups.getInt("status") == 1) {
 										db.execute("update " + table+ " set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",
@@ -1091,7 +1098,7 @@ public class TaxPayerVoucherService extends AutoService {
 								}
 							}
 						} else {
-							JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, "", "", "", "", "",
+							JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, "", "", "", "", "","",
 									"AC");
 							if (ups != null) {
 								if (ups.getInt("status") == 1) {
@@ -1109,13 +1116,13 @@ public class TaxPayerVoucherService extends AutoService {
 						if ((t.get("today") + "").equals(t.get("dateint") + "")) {
 							if (!((t.get("lgid") + "").equals(lgid) && (t.get("bankorgid") + "").equals(acno))) {
 								JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, amount, lgid,
-										ccid, acno, request("voucherinfo"), "SDPACNA");
+										ccid, acno,accountnumber, request("voucherinfo"), "SDPACNA");
 								if (ups != null) {
 									if (ups.getInt("status") == 1) {
 										db.execute(
 												"update " + table
-														+ " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=? where id=?",
-												Arrays.asList(amount, lgid, ccid, acno, id));
+														+ " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=? where id=?",
+												Arrays.asList(amount, lgid, ccid, acno,accountnumber, id));
 										db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",
 												Arrays.asList(taxpayername, taxpayerpan, amount, id));
 										db.execute("delete from taxvouchers_detail where mainid=?", Arrays.asList(id));
@@ -1131,7 +1138,7 @@ public class TaxPayerVoucherService extends AutoService {
 								}
 							}else {
 								JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, amount, lgid,
-										ccid, acno, request("voucherinfo"), "SDC");
+										ccid, acno,accountnumber, request("voucherinfo"), "SDC");
 								if (ups != null) {
 									if (ups.getInt("status") == 1) {
 										db.execute("update " + table+ " set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",
@@ -1153,7 +1160,7 @@ public class TaxPayerVoucherService extends AutoService {
 								}
 							}
 						} else {
-							JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, "", "", "", "", "",
+							JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, "", "", "", "", "","",
 									"AC");
 							if (ups != null) {
 								if (ups.getInt("status") == 1) {
@@ -1566,6 +1573,7 @@ public class TaxPayerVoucherService extends AutoService {
 				data.put("lgid", t.get("lgid") + "");
 				data.put("collectioncenterid", t.get("collectioncenterid") + "");
 				data.put("bankorgid", t.get("bankorgid") + "");
+				data.put("accountnumber", t.get("accountnumber") + "");
 				data.put("purpose", t.get("purpose") + "");
 				data.put("bankid", t.get("bankid") + "");
 				data.put("branchid", t.get("branchid") + "");

@@ -116,8 +116,8 @@ clearCheque(id:any){
     // window.open("/#/cheque-report?voucherno="+this.details.karobarsanket+'&palika='+this.details.lgid +'&formvalue='+this.formvalue, '_blank');
     this.modalRef?.hide();
   },error:err=>{
-    console.log(err);
-    this.toastr.error("Unable to Fetch Data","Error")
+    // console.log(err);
+    this.toastr.error(err.message,"Error")
   }});
 }
 }
@@ -502,6 +502,7 @@ createItem(id = null) {
       this.toastr.success('Item Successfully Saved!', 'Success');
       this.resetForm();
       this.getList();  
+      this.checks=false;
       let ks=result.data.karobarsanket;
       let ct=result.data.chequetype;
       let formValue=false;

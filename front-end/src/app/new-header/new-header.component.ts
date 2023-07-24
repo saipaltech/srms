@@ -53,8 +53,10 @@ export class NewHeaderComponent implements OnInit{
   }
 
   changeLang(lan: string, e:any) {
+    // console.log(e);
     localStorage.setItem("lang",lan);
     this.translateService.use(lan);
+    if(e!=null){
     var element = e.target;
     var ele: any= this.document.getElementsByClassName("langHighlight")
 
@@ -63,6 +65,7 @@ export class NewHeaderComponent implements OnInit{
     }
 
     element.classList.add("langHighlight");
+  }
   }
   
   logout() {

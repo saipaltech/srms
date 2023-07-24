@@ -242,6 +242,10 @@ export class VoucherBankComponent implements OnInit {
 
   resetForm() {
     this.acs = undefined;
+    this.items = new Array();
+    this.items1 = new Array();
+    this.isNote==false;
+    this.checks=false;
     this.voucherBankForm = this.fb.group(this.formLayout);
     this.voucherBankForm.get("lgid")?.valueChanges.subscribe({
       next: (d) => {
@@ -250,8 +254,7 @@ export class VoucherBankComponent implements OnInit {
       }
     });
     this.voucherBankForm.patchValue({ 'lgid': this.dlgid });
-    this.items = new Array();
-    this.items1 = new Array();
+  
 
   }
 
@@ -563,6 +566,7 @@ export class VoucherBankComponent implements OnInit {
           // this.istab=1;
           // this.r.navigate(['report'], { state: { data: upd } });
           this.resetForm();
+          this.isNote=false;
           this.getList();
           let ks = result.data.karobarsanket;
           // upd.approved=result.data.approved;
