@@ -17,8 +17,6 @@ import org.saipal.srms.util.Paginator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionTemplate;
-
 import javax.persistence.Tuple;
 import javax.transaction.Transactional;
 
@@ -222,17 +220,19 @@ public class BankVoucherService extends AutoService {
 						sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
 								+ table
 								+ " bd join bankaccount ba on ba.id=bd.bankorgid  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
+						System.out.println(sql);
 						Map<String, Object> fdata = db.getSingleResultMap(sql,
 								Arrays.asList(transactionid, auth.getBankId()));
 						return Messenger.getMessenger().setData(fdata).success();
 					}
 					JSONObject d = dt.getJSONObject("data");
+					System.out.println(d.toString());
 					DbResponse rs = db.execute("insert into " + table
-							+ " (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount,usestatus) values (?,?,?,?,?,?,?,?,?,?,?,?)",
+							+ " (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount,usestatus,bankorgid) values (?,?,?,?,?,?,?,?,?,?,?,?,?)",
 							Arrays.asList(d.get("id"), d.get("fyid"), d.get("transactionid"), d.get("officename"),
 									d.get("collectioncenterid"), d.get("lgid"), d.get("voucherdate"),
 									d.get("voucherdateint"), d.get("bankid"), d.get("accountnumber"), d.get("amount"),
-									d.get("usestatus")));
+									d.get("usestatus"),d.get("bankorgid")));
 					if (rs.getErrorNumber() == 0) {
 						sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
 								+ table
@@ -248,7 +248,7 @@ public class BankVoucherService extends AutoService {
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				// e.printStackTrace();
+				 e.printStackTrace();
 			}
 		} else {
 			return Messenger.getMessenger().setMessage("Cannot Connect to SuTRA Server.").error();
