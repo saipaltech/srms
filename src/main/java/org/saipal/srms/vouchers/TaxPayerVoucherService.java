@@ -1118,7 +1118,9 @@ public class TaxPayerVoucherService extends AutoService {
 							if (!((t.get("lgid") + "").equals(lgid) && (t.get("bankorgid") + "").equals(acno))) {
 								JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, amount, lgid,
 										ccid, acno,accountnumber, request("voucherinfo"), "SDPACNA");
+							
 								if (ups != null) {
+									
 									if (ups.getInt("status") == 1) {
 										db.execute(
 												"update " + table
@@ -1135,6 +1137,9 @@ public class TaxPayerVoucherService extends AutoService {
 														Arrays.asList(db.newIdInt(), id, objects.get("rc"), objects.get("amt")));
 											}
 										}
+										// added return
+										
+										return Messenger.getMessenger().setMessage("Voucher Updated").success();
 									}
 								}
 							}else {
