@@ -220,13 +220,11 @@ public class BankVoucherService extends AutoService {
 						sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
 								+ table
 								+ " bd join bankaccount ba on ba.id=bd.bankorgid  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
-						System.out.println(sql);
 						Map<String, Object> fdata = db.getSingleResultMap(sql,
 								Arrays.asList(transactionid, auth.getBankId()));
 						return Messenger.getMessenger().setData(fdata).success();
 					}
 					JSONObject d = dt.getJSONObject("data");
-					System.out.println(d.toString());
 					DbResponse rs = db.execute("insert into " + table
 							+ " (id,fyid,transactionid,officename,collectioncenterid,lgid,voucherdate,voucherdateint,bankid,accountnumber,amount,usestatus,bankorgid) values (?,?,?,?,?,?,?,?,?,?,?,?,?)",
 							Arrays.asList(d.get("id"), d.get("fyid"), d.get("transactionid"), d.get("officename"),
@@ -248,7 +246,7 @@ public class BankVoucherService extends AutoService {
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
-				 e.printStackTrace();
+				// e.printStackTrace();
 			}
 		} else {
 			return Messenger.getMessenger().setMessage("Cannot Connect to SuTRA Server.").error();

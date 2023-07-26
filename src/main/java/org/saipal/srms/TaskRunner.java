@@ -33,8 +33,8 @@ public class TaskRunner {
 	public void automaticDayClose() {
 		log.info("Automatic DayClose Started");
 		try {
-			//ds.daycloseScheduler();
-			new JSONObject("{}") ;
+			ds.daycloseScheduler();
+			//new JSONObject("{}") ;
 			log.info("Automatic Dayclose Done");
 		} catch (JSONException e) {
 			log.error(e.getMessage());
