@@ -98,11 +98,11 @@ public class BankVoucherService extends AutoService {
 							Tuple rs1 = db.getSingleResult(sq1, Arrays.asList(res.get("did")));
 							if (!rs1.get("cid").toString().equals("1")) {
 								karobarsanket += res.get("ksno") + ",";
-								String sql = "insert into taxvouchers(cref,dateint,bankid,branchid,karobarsanket,chequeno,chequeamount,cstatus,chequebank,lgid,date,taxpayername,bankorgid,amountcr,ttype,depositbankid,depositbranchid,deposituserid,depositedby) values(?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+								String sql = "insert into taxvouchers(cref,dateint,bankid,branchid,karobarsanket,chequeno,chequeamount,cstatus,chequebank,lgid,collectioncenterid,date,taxpayername,bankorgid,amountcr,ttype,depositbankid,depositbranchid,deposituserid,depositedby) values(?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,getdate(),?,?,?,?,?,?,?,?)";
 								DbResponse rf = db.execute(sql,
 										Arrays.asList(res.get("did"), auth.getBankId(), auth.getBranchId(),
 												res.get("ksno"), res.get("chequeno"), res.get("chequeamount"), 0,
-												res.get("bankid"), rs.get("orgid"), new Date(), res.get("taxpayername"),
+												res.get("bankid"), rs.get("adminid"),rs.get("orgid"), res.get("taxpayername"),
 												rs.get("bankorgid"), res.get("chequeamount"), 2, auth.getBankId(),
 												auth.getBranchId(), auth.getUserId(), res.get("taxpayername")));
 								// System.out.println(rf.getMessage());
