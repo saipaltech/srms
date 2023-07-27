@@ -217,7 +217,7 @@ public class BankVoucherService extends AutoService {
 			try {
 				if (dt.getInt("status") == 1) {
 					if (data != null) {
-						sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
+						sql = "select bd.usestatus,bd.fyid,substring(cast(bd.transactionid as varchar),4,1) as trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
 								+ table
 								+ " bd join bankaccount ba on ba.id=bd.bankorgid  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
 						Map<String, Object> fdata = db.getSingleResultMap(sql,
@@ -232,7 +232,7 @@ public class BankVoucherService extends AutoService {
 									d.get("voucherdateint"), d.get("bankid"), d.get("accountnumber"), d.get("amount"),
 									d.get("usestatus"),d.get("bankorgid")));
 					if (rs.getErrorNumber() == 0) {
-						sql = "select bd.usestatus,bd.fyid,bd.trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
+						sql = "select bd.usestatus,bd.fyid,substring(cast(bd.transactionid as varchar),4,1) as trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
 								+ table
 								+ " bd join bankaccount ba on ba.id=bd.bankorgid  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
 						Map<String, Object> fdata = db.getSingleResultMap(sql,
@@ -258,7 +258,7 @@ public class BankVoucherService extends AutoService {
 	private ResponseEntity<Map<String, Object>> getTransDetailsCheque() {
 		String transactionid = request("transactionid");
 		transactionid = nep2EngNum(transactionid);
-		String sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.adminid where karobarSanketNo=? and bd.bankid=? ";
+		String sql = "select bd.fyid,substring(cast(bd.karobarsanketno as varchar),4,1) as trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.adminid where karobarSanketNo=? and bd.bankid=? ";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid, auth.getBankId()));
 		if (data == null) {
 			JSONObject dt = api.getChequeDetails(transactionid);
@@ -286,7 +286,7 @@ public class BankVoucherService extends AutoService {
 
 							}
 						}
-						sql = "select bd.fyid,bd.trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.adminid where karobarSanketNo=? and bd.bankid=?";
+						sql = "select bd.fyid,substring(cast(bd.karobarsanketno as varchar),4,1) as trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from chequeBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.adminid where karobarSanketNo=? and bd.bankid=?";
 						Map<String, Object> fdata = db.getSingleResultMap(sql,
 								Arrays.asList(transactionid, auth.getBankId()));
 						String sqld = "select cast(cb.did as varchar) as did ,cb.mainid ,cb.rcid ,cb.ksno ,cb.bankid ,cb.chequeno ,cb.chequeamount ,cb.taxpayername ,cb.isbankreceived ,cb.bankreceivedby ,cb.bankreceiveddate,bi.namenp as bankname from chequeBankDakhilaDetail cb join bankinfo bi on bi.id=cb.bankid where mainid=?";
