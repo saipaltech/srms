@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DataValidation;
@@ -17,14 +18,10 @@ import org.apache.poi.ss.usermodel.DataValidationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
-import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.usermodel.XSSFDataValidation;
-import org.apache.poi.xssf.usermodel.XSSFDataValidationConstraint;
 import org.apache.poi.xssf.usermodel.XSSFName;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.saipal.srms.auth.Authenticated;
-import org.saipal.srms.excel.Excel;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.settings.SettingsService;
 import org.saipal.srms.util.DB;
@@ -309,7 +306,7 @@ public class UsersService extends AutoService {
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
 
-	public ResponseEntity<List<Map<String, Object>>> frontMenu() {
+	public ResponseEntity<Object> frontMenu() {
 		List<String> exclude = new ArrayList<>();
 		exclude.add("bank");
 		exclude.add("branch");
@@ -348,9 +345,22 @@ public class UsersService extends AutoService {
 			}
 			exclude.remove("approve-voucher");
 		}
-
-		sql = "select * from front_menu where link not in ('" + String.join("','", exclude) + "') order by morder";
-		return ResponseEntity.ok(db.getResultListMap(sql));
+		
+		List<Tuple> glt = db.getResultList(sql);
+		Map<String,Menu> menu= new LinkedHashMap<>();
+		sql = "select *,(case when groupid is not null then ((groupid*11)+morder) else morder end) as ord  from front_menu where link not in ('" + String.join("','", exclude) + "') order by ord";
+		List<Tuple> lt = db.getResultList(sql);
+		for(Tuple t : lt) {
+			String gkey = t.get("groupid")==null?"":(t.get("groupid")+"");
+			if(!gkey.isBlank()) {
+				if(menu.containsKey(gkey)){
+					menu.get(gkey).childs.add(new Menu(t.get("id")+"",t.get("name")+"",t.get("icon")+"",t.get("link")+""));
+				}
+			}else {
+				menu.put(t.get("id")+"",new Menu(t.get("id")+"",t.get("name")+"",t.get("icon")+"",t.get("link")+""));
+			}
+		}
+		return ResponseEntity.ok(menu.values().toArray());
 	}
 
 	public ResponseEntity<Map<String, Object>> resetPassword(String id) {
@@ -619,5 +629,24 @@ public class UsersService extends AutoService {
 		usheet.addValidationData(validationr);
 		wb.setSheetHidden(1, true);
 		return wb;
+	}
+}
+
+class Menu{
+	public String id;
+	public String name;
+	public String icon;
+	public String link;
+	public List<Menu> childs = new ArrayList<>();
+	public Menu(String id,String name,String icon) {
+		this.id=id;
+		this.name=name;
+		this.icon=icon;
+	}
+	public Menu(String id,String name,String icon,String link) {
+		this.id=id;
+		this.name=name;
+		this.icon=icon;
+		this.link = link;
 	}
 }

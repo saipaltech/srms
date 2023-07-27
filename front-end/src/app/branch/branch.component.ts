@@ -28,7 +28,7 @@ export class BranchComponent {
   column: string = '';
   isDesc: boolean = false;
   srchForm!: FormGroup;
-  
+
   bankForm!: FormGroup;
   formLayout: any;
   banks:any;
@@ -46,10 +46,11 @@ export class BranchComponent {
       maddress:[''],
       disabled: ['0',Validators.required],
       approved: ['1',Validators.required],
-      
+      twofa:['1']
+
     }
     this.bankForm =fb.group(this.formLayout)
-    
+
     this.srchForm = new FormGroup({
       entries: new FormControl('10'),
       srch_term: new FormControl('')})
@@ -194,27 +195,27 @@ createItem(id = null) {
 }
 
 
-getUpdateItem(id: any) {
-  this.RS.getEdit(id).subscribe(
-    (result: any) => {
+getUpdateItem(id: string) {
+  this.RS.getEdit(id).subscribe({
+    next:(result: any) => {
       this.model = result;
       this.bankForm.patchValue(result);
       this.changeFields();
     },
-    (error: any) => {
+    error: (error: any) => {
       this.toastr.error(error.error, 'Error');
     }
-  );
+});
 }
 
-deleteItem(id: any) {
+deleteItem(id: string) {
   if (window.confirm('Are sure you want to delete this item?')) {
-    this.RS.remove(id).subscribe((result: any) => {
+    this.RS.remove(id).subscribe({next:(result: any) => {
       this.toastr.success('Item Successfully Deleted!', 'Success');
       this.getList();
-    }, (error: { error: any; }) => {
+    }, error:(error: { error: any; }) => {
       this.toastr.error(error.error, 'Error');
-    });
+    }});
   }
 }
 

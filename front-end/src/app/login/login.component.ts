@@ -38,6 +38,10 @@ export class LoginComponent {
         this.model = this.loginForm.value;
         this.AuthService.login(this.model.username, this.model.password)
           .subscribe({next:data=>{
+            if(data.token){
+              this.router.navigate(['/']);
+              return;
+            }
             this.openModalWithComponent(data.reqid,data.userid);
                 //this.notify.success("Login successful.");
                 //this.router.navigate(['/']);
@@ -85,7 +89,7 @@ export class LoginComponent {
     </div>
   `
 })
- 
+
 export class TwoFaModalComponent implements OnInit {
   @ViewChild("otpInput") otpField?: ElementRef;
   reqid?: string;
@@ -100,7 +104,7 @@ export class TwoFaModalComponent implements OnInit {
   }
   submitOtp(){
     if (this.otpForm.valid) {
-      const otp = this.otpForm.value['otp']; 
+      const otp = this.otpForm.value['otp'];
       if(this.reqid && this.userid && otp){
         const data = {
           otp:otp,
@@ -127,7 +131,7 @@ export class TwoFaModalComponent implements OnInit {
       });
     }
   }
- 
+
   ngOnInit() {
     this.timer(2);
     setTimeout(()=>{

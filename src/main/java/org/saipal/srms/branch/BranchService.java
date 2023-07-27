@@ -60,7 +60,7 @@ public class BranchService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("id,name,bankid, approved,disabled").sqlBody("from " + table + condition).paginate();
+				.select("cast(id as varchar) as id,name,bankid, approved,disabled").sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {
@@ -80,8 +80,8 @@ public class BranchService extends AutoService {
 		if ((!(res.get(0) + "").equals("0"))) {
 			return Messenger.getMessenger().setMessage("Branch Code already exists.").error();
 		}
-		sql = "INSERT INTO branches(name,district,maddress, bankid,code,dlgid, disabled, approved) VALUES (?,?,?,?,?,?,?,?)";
-		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name,model.district,model.maddress,model.bankid, model.code,model.dlgid.isBlank()? 0 : model.dlgid,model.disabled, model.approved));
+		sql = "INSERT INTO branches(name,district,maddress, bankid,code,dlgid, disabled, approved,twofa) VALUES (?,?,?,?,?,?,?,?,?)";
+		DbResponse rowEffect = db.execute(sql, Arrays.asList(model.name,model.district,model.maddress,model.bankid, model.code,model.dlgid.isBlank()? 0 : model.dlgid,model.disabled, model.approved,model.twofa));
 
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
@@ -91,7 +91,7 @@ public class BranchService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> edit(String id) {
-		String sql = "select id,name,district,maddress,code,bankid,cast(dlgid as varchar) as dlgid, disabled, approved from " + table + " where id=?";
+		String sql = "select cast(id as varchar) as id,name,district,maddress,code,bankid,cast(dlgid as varchar) as dlgid, disabled, approved, twofa from " + table + " where id=?";
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		return ResponseEntity.ok(data);
 	}
@@ -103,8 +103,8 @@ public class BranchService extends AutoService {
 		DbResponse rowEffect;
 		Branch model = new Branch();
 		model.loadData(document);
-		String sql = "UPDATE branches set name=?,district=?,maddress=?,code=?,dlgid=?,disabled=?,approved=? where id=?";
-		rowEffect = db.execute(sql, Arrays.asList(model.name,model.district,model.maddress,model.code,model.dlgid,model.disabled,model.approved,model.id));
+		String sql = "UPDATE branches set name=?,district=?,maddress=?,code=?,dlgid=?,disabled=?,approved=?, twofa=? where id=?";
+		rowEffect = db.execute(sql, Arrays.asList(model.name,model.district,model.maddress,model.code,model.dlgid,model.disabled,model.approved,model.twofa,model.id));
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().success();
 
