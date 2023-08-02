@@ -327,7 +327,7 @@ voucherBankFormSubmit(){
    
   if (window.confirm('Are  you sure you want to save this voucher?')) {
   this.addItem();
-  this.voucherBankForm.patchValue({amount:this.totalAmt});
+  // this.voucherBankForm.patchValue({amount:this.totalAmt});
   const camt=this.voucherBankForm.value['chequeamount'];
   if(camt!=this.totalAmt){
     this.toastr.error('Cheque Amount and total amount should be equal.', 'Error');
@@ -342,6 +342,7 @@ voucherBankFormSubmit(){
     }
     this.model = this.voucherBankForm.value;
     this.model.voucherinfo=this.items;
+    this.model.amount=this.totalAmt;
     this.createItem(this.voucherBankForm.value.id);
     // alert('submit but not create')
     // console.log(this.voucherBankForm.value)
@@ -423,6 +424,7 @@ addItem(){
       this.totalAmt+=parseFloat(item.amt);
    
     }
+    this.totalAmt=parseFloat(this.totalAmt.toFixed(2));
   }
 
   altmsg(msg:any){
@@ -476,7 +478,7 @@ delete(id:any){
       this.toastr.success('Item Successfully Deleted!', 'Success');
       this.getList();
     }, (error: { error: any; }) => {
-      this.toastr.error(error.error, 'Error');
+      this.toastr.error(error.error.message, 'Error');
     });
   }
 }

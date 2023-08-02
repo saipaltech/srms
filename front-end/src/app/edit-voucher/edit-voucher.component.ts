@@ -163,9 +163,10 @@ ccs:any;
     calctotal(){
       this.totalAmt=0;
       for(const item of this.items){
-        this.totalAmt+=parseInt(item.amt);
+        this.totalAmt+=parseFloat(item.amt);
      
       }
+      this.totalAmt=parseFloat(this.totalAmt.toFixed(2));
     }
     
   
@@ -185,7 +186,7 @@ ccs:any;
 
     // this.bankForm.controls['transactionid'].setValue(this.transDetails.id)
     this.addItem();
-    this.bankForm.patchValue({amount:this.totalAmt});
+    // this.bankForm.patchValue({amount:this.totalAmt});
     if (window.confirm('Are  you sure you want to save this voucher?')) {
     if (this.bankForm.valid) {
       
@@ -194,6 +195,7 @@ ccs:any;
       this.bankForm.patchValue({ "id": this.transDetails.id });
       this.model = this.bankForm.value;
       this.model.voucherinfo=this.items;
+      this.model.amount=this.totalAmt;
       // this.createItem(this.bankForm.value.id);
       this.RS.create(this.model).subscribe({
         next: (result: any) => {
@@ -261,7 +263,7 @@ ccs:any;
            console.log(this.revvs);
           this.items=dt.data.revs;
           this.calctotal();
-          this.bankForm.patchValue({lgid:this.transDetails.lgid,'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'amount':this.transDetails.amount});
+          this.bankForm.patchValue({lgid:this.transDetails.lgid,'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername});
         
           if (this.transDetails.trantype == 1) {
             this.istab = 1;
