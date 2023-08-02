@@ -89,7 +89,7 @@ public class AuthService {
 	public ResponseEntity<Map<String, Object>> checkUser() {
 		String username = doc.getElementById("username").value;
 		String password = doc.getElementById("password").value;
-		String sql = "select id,username,password,mobile,approved,disabled,email,bankid from users where username=?";
+		String sql = "select u.id,u.username,u.password,u.mobile,u.approved,u.disabled,u.email,u.bankid,bs.twofa from users u join branches bs on bs.id=u.branchid where username=?";
 		Tuple t = db.getSingleResult(sql, Arrays.asList(username));
 		if (t != null) {
 			if (!(t.get("approved") + "").equals("1")) {
@@ -103,6 +103,10 @@ public class AuthService {
 				return Messenger.getMessenger().setMessage("Please register your mobile number to login.").error();
 			}
 			if (pwdEncoder.matches(password, t.get("password") + "")) {
+				System.out.println(t.get("twofa")+"");
+				if((t.get("twofa")+"").equals("0")) {
+					return login();
+				}
 				Map<String, String> data = new HashMap<>();
 				String reqid = db.newIdInt();
 				data.put("reqid", reqid);

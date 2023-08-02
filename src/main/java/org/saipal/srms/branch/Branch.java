@@ -19,6 +19,7 @@ public class Branch {
 	public String maddress;
 	public String approved;
 	public String disabled;
+	public String twofa;
 
     
 	public void loadData(RequestParser doc) {

@@ -42,6 +42,7 @@ export class BranchService {
 
   }
   getEdit(id: string) {
+    console.log(id+"");
     return this.api.get(this.url + '/' + id);
 
   }

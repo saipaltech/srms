@@ -100,7 +100,7 @@ public class UsersController {
 	}
 	
 	@GetMapping("/get-front-menu")
-	public ResponseEntity<List<Map<String, Object>>> frontMenu() {
+	public ResponseEntity<Object> frontMenu() {
 		return objService.frontMenu();
 	}
 	

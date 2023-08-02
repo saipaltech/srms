@@ -11,16 +11,16 @@
   <span class="text-center text-info" style="font-size:small; overflow-x:hidden;"><i class="bi bi-person ico text-warning"></i>&nbsp;{{name}}</span>
   <hr>
   <ul class="nav nav-pills flex-column">
-   
+
     <ng-container *ngIf="navcontent">
       <li *ngFor="let i of navcontent">
         <a href="javascript:void(0)" class="nav-link text-white" routerLink="{{i.link}}"  (click)="buttonactive($event)">
             <i class="{{i.icon}} ico"></i>
-            {{i.name}}
+            {{i.name}}{{'aaa'}}
         </a>
       </li>
     </ng-container>
-    
+
     <li>
       <a href="javascript:void(0)" class="nav-link text-white" (click)="logout()" (click)="buttonactive($event)">
           <i class="bi bi-box-arrow-in-left ico"></i>

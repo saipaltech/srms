@@ -38,7 +38,7 @@
               </div>
             </div>
           </div>
-  
+
           <div class="col-6">
             <label class="form-label req">{{'Code' | translate}}</label>
             <div class="input-group has-validation">
@@ -53,7 +53,7 @@
               </div>
             </div>
           </div>
-  
+
           <div class="col-6">
             <label class="form-label req">{{'Name' | translate}}</label>
             <div class="input-group has-validation">
@@ -100,8 +100,8 @@
             </div>
           </div>
 
-        
-  
+
+
           <div class="col-6">
             <label class="form-label">{{"Default Local Level" | translate}}</label>
             <div class="input-group has-validation">
@@ -117,7 +117,7 @@
               </div>
             </div>
           </div>
-  
+
           <div class="col-sm-6">
             <label class="form-label req">{{"Disabled" | translate}}</label>
             <div class="input-group has-validation">
@@ -134,7 +134,7 @@
               </div>
             </div>
           </div>
-  
+
           <div class="col-sm-6" style="display: none;">
             <label for="username" class="form-label req">Approved</label>
             <div class="input-group has-validation">
@@ -151,8 +151,24 @@
               </div>
             </div>
           </div>
+          <div class="col-sm-6">
+            <label for="twofa" class="form-label">2FA Authentication</label>
+            <div class="input-group has-validation">
+              <select
+                class="form-select form-select-sm"
+                formControlName="twofa"
+                [ngClass]="vs.getControlClass(bankForm.controls['twofa'])"
+              >
+                <option value="1">{{"Enable" | translate}}</option>
+                <option value="0">{{"Disable" | translate}}</option>
+              </select>
+              <div [ngClass]="vs.getMessageClass(bankForm.controls['twofa'])">
+                {{ vs.getMessage(bankForm.controls["twofa"]) }}
+              </div>
+            </div>
+          </div>
         </div>
-  
+
         <br />
         <div class="row">
           <div class="col-md-12">
@@ -168,7 +184,7 @@
           </div>
         </div>
       </form>
-  
+
       <div class="tab hide">
         <form class="form-srch" [formGroup]="srchForm">
           <div class="input-group mb-3">
@@ -218,7 +234,7 @@
             </tr>
           </tbody>
         </table>
-  
+
         <div class="row">
           <div class="col-6 text-start">
             <pagination
@@ -235,7 +251,7 @@
               lastText="&raquo;"
             ></pagination>
           </div>
-  
+
           <div class="col-6 text-end">
             <form [formGroup]="srchForm">
               <div class="row" style="float: right">
@@ -262,6 +278,6 @@
     </div>
     </div>
 
-  
+
   </div>
 </div>
