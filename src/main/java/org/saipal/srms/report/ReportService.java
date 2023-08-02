@@ -464,7 +464,7 @@ public class ReportService extends AutoService {
 		excl.title = repTitle;
 		String OldPalika = "";
 		float ptotal = 0;
-		int totalAmount = 0;
+		float totalAmount = 0;
 		Excel.excelRow hrow = new Excel().ExcelRow();
 		hrow.addColumn((new Excel().ExcelCell("S.N.")))
 		.addColumn((new Excel().ExcelCell("Office Name")))
