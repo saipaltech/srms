@@ -349,10 +349,11 @@ voucherBankFormSubmit(){
    
   if (window.confirm('Are  you sure you want to save this voucher?')) {
  
-  this.voucherBankForm.patchValue({amount:this.totalAmt});
+  // this.voucherBankForm.patchValue({amount:this.totalAmt});
   if (this.voucherBankForm.valid) {   
     this.model = this.voucherBankForm.value;
     this.model.voucherinfo=this.items;
+    this.model.amount=this.totalAmt;
     this.model.noteinfo=this.items1;
     this.createItem(this.voucherBankForm.value.id);
     // alert('submit but not create')
@@ -471,6 +472,7 @@ addItem(){
       this.totalAmt+=parseFloat(item.amt);
    
     }
+    this.totalAmt=parseFloat(this.totalAmt.toFixed(2));
   }
   
 

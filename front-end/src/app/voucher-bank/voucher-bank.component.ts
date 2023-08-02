@@ -360,7 +360,7 @@ export class VoucherBankComponent implements OnInit {
      
     if (window.confirm('Are  you sure you want to save this voucher?')) {
     
-      this.voucherBankForm.patchValue({ amount: this.totalAmt });
+      // this.voucherBankForm.patchValue({ amount: this.totalAmt });
       if (this.voucherBankForm.valid) {
         const llgCode = this.voucherBankForm.value['lgid'];
         if (llgCode != this.dlgid) {
@@ -370,6 +370,7 @@ export class VoucherBankComponent implements OnInit {
         }
         this.model = this.voucherBankForm.value;
         this.model.voucherinfo = this.items;
+        this.model.amount=this.totalAmt;
         this.model.noteinfo=this.items1;
       
 
@@ -510,6 +511,7 @@ export class VoucherBankComponent implements OnInit {
       this.totalAmt += parseFloat(item.amt);
 
     }
+    this.totalAmt=parseFloat(this.totalAmt.toFixed(2));
   }
 
   calctotal1() {
