@@ -39,6 +39,7 @@ public class EmailSender {
     	    //return mailSender;
             // Creating a simple mail message
             SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom(config.get("mail.username"));
             mailMessage.setTo(toEmail);
             mailMessage.setSubject(subject);
             mailMessage.setText(message);
