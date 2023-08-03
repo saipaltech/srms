@@ -191,11 +191,8 @@ public class BankVoucherService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> getTransDetails() {
 		String transactionid = request("transactionid");
-		if (transactionid.isBlank()) {
-			return Messenger.getMessenger().setMessage("Karobarsanket is required").error();
-		}
-		transactionid = nep2EngNum(transactionid);
-		if (transactionid.length() < 8) {
+		transactionid = nep2EngNum(transactionid).trim();
+		if (!isKarobarsanketValid(transactionid)) {
 			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
 		}
 		char forthChar = transactionid.charAt(3);

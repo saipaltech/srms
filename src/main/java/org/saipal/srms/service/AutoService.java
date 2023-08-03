@@ -13,6 +13,7 @@ import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.parser.Element;
 import org.saipal.srms.parser.RequestParser;
 import org.saipal.srms.util.DB;
+import org.saipal.srms.util.Messenger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -278,5 +279,15 @@ public class AutoService {
 		str=str.replace("8","८");
 		str=str.replace("9","९");
 		return str.trim();
+	}
+	
+	public boolean isKarobarsanketValid(String karobarsanket) {
+		if (karobarsanket.isBlank()) {
+			return false;
+		}
+		if (karobarsanket.length() < 8) {
+			return false;
+		}
+		return karobarsanket.chars().allMatch(Character::isDigit);
 	}
 }
