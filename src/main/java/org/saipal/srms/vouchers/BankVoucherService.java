@@ -195,6 +195,7 @@ public class BankVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("Karobarsanket is required").error();
 		}
 		transactionid = nep2EngNum(transactionid);
+//		System.out.println(transactionid);
 		if (transactionid.length() < 8) {
 			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
 		}
