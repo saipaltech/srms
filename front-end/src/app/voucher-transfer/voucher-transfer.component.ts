@@ -294,6 +294,7 @@ getRevenue(){
   transDetails: any;
   istab = 1;
   search() {
+    this.transDetails=undefined;
     if (this.srchForm.valid) {
       this.RS.getTranactionData(this.srchForm.value.srch_term).subscribe({
         next: (dt) => {

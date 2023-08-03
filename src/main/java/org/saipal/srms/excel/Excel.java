@@ -912,8 +912,8 @@ public class Excel {
 
 	private void makeExcelHeader() {
 		String orgname = "";
-		orgname = orgname.replace("<span style='font-size:14px;'>", "").replace("</span >", "")
-				.replace("<span style='font-size:13px;'>", "").replace("</span>", "");
+		orgname = orgname.replace("<span>", "").replace("</span>", "").replace("</br>", "");
+//				.replace("<span style='font-size:13px;'>", "").replace("</span>", "");
 		InputStream is;
 		/*try {
 			ClassPathResource keyResource = new ClassPathResource("static/Emblem_of_Nepal_2020.svg");
@@ -962,10 +962,13 @@ public class Excel {
 				mTitle = mTitle + "<br>" + mSubTitle;
 			}
 		}
-
-		if (mAnusuchi.isBlank()) {
-			firstRow.addColumn(new excelCell(orgname, ActiveSheet().getTotalColumns(), "text-align:center"));
-			secondRow.addColumn(new excelCell(mTitle, ActiveSheet().getTotalColumns(), "text-align:center"));
+		
+		mTitle = mTitle.replace("<span>", "").replace("</span>", "");
+		String[] mTitle1=mTitle.split("<br/>");
+		if (true /* mAnusuchi.isBlank() */) {
+			firstRow.addColumn(new excelCell(mTitle1[0], ActiveSheet().getTotalColumns(), "text-align:center"));
+			secondRow.addColumn(new excelCell(mTitle1[1], ActiveSheet().getTotalColumns(), "text-align:center"));
+			thirdRow.addColumn(new excelCell( mTitle1[2]+" "+ mTitle1[3], ActiveSheet().getTotalColumns(), "text-align:center"));
 
 		} else {
 			firstRow.addColumn(new excelCell(orgname, ActiveSheet().getTotalColumns() - 1, "text-align:center"));
@@ -974,20 +977,20 @@ public class Excel {
 
 		}
 
-		String mFigureIn = ActiveSheet().figurein;
-		if (mFigureIn.isBlank()) {
-			mFigureIn = figurein;
-		}
-		String mCriteria = ActiveSheet().criteria;
-		if (mCriteria.isBlank()) {
-			mCriteria = criteria;
-		}
-		if (mFigureIn.isBlank()) {
-			thirdRow.addColumn(new excelCell(mCriteria, ActiveSheet().getTotalColumns(), "text-align:left"));
-		} else {
-			thirdRow.addColumn(new excelCell(mCriteria, ActiveSheet().getTotalColumns() - 1, "text-align:left"));
-			thirdRow.addColumn(new excelCell(mFigureIn, 1, "text-align:right"));
-		}
+//		String mFigureIn = ActiveSheet().figurein;
+//		if (mFigureIn.isBlank()) {
+//			mFigureIn = figurein;
+//		}
+//		String mCriteria = ActiveSheet().criteria;
+//		if (mCriteria.isBlank()) {
+//			mCriteria = criteria;
+//		}
+//		if (mFigureIn.isBlank()) {
+//			thirdRow.addColumn(new excelCell(mCriteria, ActiveSheet().getTotalColumns(), "text-align:left"));
+//		} else {
+//			thirdRow.addColumn(new excelCell(mCriteria, ActiveSheet().getTotalColumns() - 1, "text-align:left"));
+//			thirdRow.addColumn(new excelCell(mFigureIn, 1, "text-align:right"));
+//		}
 
 		ActiveSheet().htr.add(0, firstRow);
 		ActiveSheet().htr.add(1, secondRow);
