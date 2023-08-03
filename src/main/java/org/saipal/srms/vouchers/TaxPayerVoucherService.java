@@ -616,7 +616,9 @@ public class TaxPayerVoucherService extends AutoService {
 
 	public ResponseEntity<String> getCostCentres() {
 		String llgCode = request("llgcode");
-		// check if data is cached
+		if(llgCode.isBlank()) {
+			return ResponseEntity.ok("{\"status\":0,\"message\":\"Lcal level required\"}");
+		}
 		List<Tuple> d = db.getResultList("select id,code,namenp,nameen from collectioncenter where lgid=?",
 				Arrays.asList(llgCode));
 		if (d.size() > 0) {
@@ -872,10 +874,10 @@ public class TaxPayerVoucherService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> getEditDetails() {
 		String voucherno = request("voucherno");
-		if (voucherno.isBlank()) {
-			return Messenger.getMessenger().setMessage("Karobarsanket not provided.").error();
+		voucherno = nep2EngNum(voucherno).trim();
+		if (!isKarobarsanketValid(voucherno)) {
+			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
 		}
-		voucherno = nep2EngNum(voucherno);
 		Tuple tk = db.getSingleResult("select count(*) as c from karobarsanketRef where fromkarobarsanket=?",
 				Arrays.asList(voucherno));
 		if (Integer.parseInt(tk.get("c") + "") > 0) {
@@ -1193,10 +1195,10 @@ public class TaxPayerVoucherService extends AutoService {
 
 	public ResponseEntity<Map<String, Object>> getEditDetailsOff() {
 		String voucherno = request("voucherno");
-		if (voucherno.isBlank()) {
-			return Messenger.getMessenger().setMessage("Karobarsanketno not provided.").error();
+		voucherno = nep2EngNum(voucherno).trim();
+		if (!isKarobarsanketValid(voucherno)) {
+			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
 		}
-		voucherno = nep2EngNum(voucherno);
 		Tuple tk = db.getSingleResult("select count(*) as c from karobarsanketRef where fromkarobarsanket=?",
 				Arrays.asList(voucherno));
 		if (Integer.parseInt(tk.get("c") + "") > 0) {
