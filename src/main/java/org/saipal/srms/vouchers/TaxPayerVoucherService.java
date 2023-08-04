@@ -392,16 +392,21 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String sq = "select (case when ttype=1 then approved else cstatus end) as status,cref  from " + table
+		String sq = "select (case when ttype=1 then approved else cstatus end) as status,cref,karobarsanket  from " + table
 				+ " where id=?";
+		
 		Tuple tt = db.getSingleResult(sq, Arrays.asList(id));
+		char forthChar = (tt.get("karobarsanket")+"").charAt(3);
+		if (forthChar != '2') {
+			return Messenger.getMessenger().setMessage("This voucher can not be deleted.").error();
+		}
 		if ((tt.get(0) + "").equals("1")) {
 			return Messenger.getMessenger().setMessage("This voucher can not be deleted.").error();
 		}
 		
-		if (!(tt.get("cref") + "").equals("NULL")) {
-			return Messenger.getMessenger().setMessage("This voucher can not be deleted.").error();
-		}
+//		if (!(tt.get("cref") + "").equals("NULL")) {
+//			return Messenger.getMessenger().setMessage("This voucher can not be deleted.").error();
+//		}
 		String sql = "delete from " + table + " where id  = ?";
 		DbResponse rowEffect = db.execute(sql, Arrays.asList(id));
 		if (rowEffect.getErrorNumber() == 0) {
