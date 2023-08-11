@@ -478,7 +478,7 @@ public class ReportService extends AutoService {
 		if (!lists.isEmpty()) {
 			int i = 1;
 			for (Tuple t : lists) {
-				totalAmount.add(new BigDecimal(t.get("amount") + ""));
+				totalAmount = totalAmount.add(new BigDecimal(t.get("amount") + ""));
 				if (OldPalika.isBlank()) {
 					OldPalika = t.get("officename") + "";
 				}
@@ -489,7 +489,7 @@ public class ReportService extends AutoService {
 					OldPalika = t.get("officename") + "";
 					ptotal = new BigDecimal(t.get("amount") + "");
 				} else {
-					ptotal.add(new BigDecimal(t.get("amount") + ""));
+					ptotal = ptotal.add(new BigDecimal(t.get("amount") + ""));
 				}
 				if (ptrow != null) {
 					excl.addRow(ptrow);
