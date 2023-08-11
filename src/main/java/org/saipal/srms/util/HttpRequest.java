@@ -1,6 +1,7 @@
 package org.saipal.srms.util;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,12 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.ConnectTimeoutException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
@@ -97,8 +100,14 @@ public class HttpRequest {
 		
 		try (CloseableHttpResponse response = getHttpClient().execute(http)) {
 			String resp;
+			HttpEntity respEntity = response.getEntity();
+			if(respEntity == null) {
+				//ambigious situation handling
+				ErrorMessage erm = new ErrorMessage("Ambigious Situation",400);
+				return new JSONObject(erm, errorflds);
+			}
 			try {
-				resp = EntityUtils.toString(response.getEntity());
+				resp = EntityUtils.toString(respEntity);
 			} catch (ParseException e) {
 				ErrorMessage erm = new ErrorMessage(e.getMessage(),400);
 				return new JSONObject(erm, errorflds);
@@ -116,7 +125,14 @@ public class HttpRequest {
 		} catch (ClientProtocolException e) {
 			ErrorMessage erm = new ErrorMessage(e.getMessage(),400);
 			return new JSONObject(erm, errorflds);
-		} catch (IOException e) {
+		}catch(ConnectTimeoutException e) {
+			ErrorMessage erm = new ErrorMessage(e.getMessage(),400);
+			return new JSONObject(erm, errorflds);
+		}catch(SocketTimeoutException e) {
+			//ambigious situation handling
+			ErrorMessage erm = new ErrorMessage(e.getMessage(),400);
+			return new JSONObject(erm, errorflds);
+		}catch (IOException e) {
 			ErrorMessage erm = new ErrorMessage(e.getMessage(),400);
 			return new JSONObject(erm, errorflds);
 		} catch (JSONException e) {
@@ -156,6 +172,12 @@ public class HttpRequest {
 		}
 		try (CloseableHttpResponse response = getHttpClient().execute(http)) {
 			String resp;
+			HttpEntity respEntity = response.getEntity();
+			if(respEntity == null) {
+				//ambigious situation handling
+				ErrorMessage erm = new ErrorMessage("Ambigious Situation",400);
+				return new JSONObject(erm, errorflds);
+			}
 			try {
 				resp = EntityUtils.toString(response.getEntity()).trim();
 			} catch (ParseException e) {
@@ -174,6 +196,13 @@ public class HttpRequest {
 			data.put("status_code", response.getCode());
 			return data;
 		} catch (ClientProtocolException e) {
+			ErrorMessage erm = new ErrorMessage(e.getMessage(),400);
+			return new JSONObject(erm, errorflds);
+		} catch(ConnectTimeoutException e) {
+			ErrorMessage erm = new ErrorMessage(e.getMessage(),400);
+			return new JSONObject(erm, errorflds);
+		} catch(SocketTimeoutException e) {
+			//ambigious situation handling
 			ErrorMessage erm = new ErrorMessage(e.getMessage(),400);
 			return new JSONObject(erm, errorflds);
 		} catch (IOException e) {

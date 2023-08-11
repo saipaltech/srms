@@ -3,6 +3,7 @@ package org.saipal.srms.report;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import javax.persistence.Tuple;
 
@@ -463,8 +464,8 @@ public class ReportService extends AutoService {
 		List<Tuple> lists = db.getResultList(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
-		float ptotal = 0;
-		float totalAmount = 0;
+		BigDecimal ptotal = new BigDecimal("0");
+		BigDecimal totalAmount = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
 		hrow.addColumn((new Excel().ExcelCell("S.N.")))
 		.addColumn((new Excel().ExcelCell("Office Name")))
@@ -477,7 +478,7 @@ public class ReportService extends AutoService {
 		if (!lists.isEmpty()) {
 			int i = 1;
 			for (Tuple t : lists) {
-				totalAmount += (Float.parseFloat(t.get("amount") + ""));
+				totalAmount.add(new BigDecimal(t.get("amount") + ""));
 				if (OldPalika.isBlank()) {
 					OldPalika = t.get("officename") + "";
 				}
@@ -486,9 +487,9 @@ public class ReportService extends AutoService {
 					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 4, 1)))
 							.addColumn((new Excel().ExcelCell(ptotal + "")));
 					OldPalika = t.get("officename") + "";
-					ptotal = Float.parseFloat(t.get("amount") + "");
+					ptotal = new BigDecimal(t.get("amount") + "");
 				} else {
-					ptotal += Float.parseFloat(t.get("amount") + "");
+					ptotal.add(new BigDecimal(t.get("amount") + ""));
 				}
 				if (ptrow != null) {
 					excl.addRow(ptrow);
@@ -501,11 +502,15 @@ public class ReportService extends AutoService {
 						//.addColumn((new Excel().ExcelCell(t.get("voucherdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("amount") + "")));
 				excl.addRow(drow);
+				if(i==lists.size()) {
+					excl.addRow((new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 4, 1)))
+							.addColumn((new Excel().ExcelCell(ptotal.toPlainString()))));
+				}
 				i++;
 			}
-			if (totalAmount > 0) {
+			if (!totalAmount.toPlainString().equals("0")) {
 				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 4, 1)))
-						.addColumn((new Excel().ExcelCell(totalAmount + "")));
+						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())));
 				excl.addRow(trow);
 			}
 		}
