@@ -20,7 +20,7 @@ public class ReportService extends AutoService {
 	@Autowired
 	Authenticated auth;
 	public ResponseEntity<Map<String, Object>> getFys() {
-		String sql = " select fyid,(case when fyid=dbo.getfyid('') then 1 else 0 end) as isdef from (select distinct fyid from (select distinct fyid from taxvouchers union select distinct fyid from bank_deposits) a)b";
+		String sql = " select fyid,(case when fyid=dbo.getfyid('') then 1 else 0 end) as isdef from (select distinct fyid from (select distinct fyid from taxvouchers union all select distinct fyid from bank_deposits) a)b";
 		List<Tuple> lt = db.getResultList(sql);
 		List<Map<String, Object>> fys = new ArrayList<>();
 		for (Tuple t : lt) {
@@ -132,9 +132,9 @@ public class ReportService extends AutoService {
 			}
 			sql = "select * from (select accountno,accountname,accountnumber,palika,lgid,amountdr,amountcr,karobarsanket from ("
 					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,karobarsanket,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+branchid+"   where  dc.id is null and t.dateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=1 and t.branchid=? "+cond 
-					+" union"
+					+" union all "
 					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,karobarsanket,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+branchid+"  where  dc.id is null and  t.dateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.ttype=1 and t.branchid=? "+cond 
-					+ " union"
+					+ " union all "
 					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,transactionid as karobarsanket,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint and dc.branchid="+branchid+"   where  dc.id is null and  t.depositdateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.depositbranchid=? "+cond1
 					+" ) a ) b ";
 			data = db.getResultList(sql,Arrays.asList(bankid,branchid,bankid,branchid,bankid,branchid));
@@ -198,9 +198,9 @@ public class ReportService extends AutoService {
 			}
 			sql = "select * from (select accountno,accountname,accountnumber,palika,lgid,amountdr,amountcr,karobarsanket,taxpayername,chequeno from ("
 					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,karobarsanket,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr,t.taxpayername,t.chequeno from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+branchid+"  where  dc.id is null and t.dateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=2 and t.cstatus=1 and t.branchid=? "+cond 
-					+" union"
+					+" union all "
 					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,karobarsanket,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr,t.taxpayername,t.chequeno from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+branchid+"  where  dc.id is null and  t.dateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.ttype=2 and t.cstatus=1 and t.branchid=? "+cond 
-//					+ " union"
+//					+ " union all "
 //					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,transactionid as karobarsanket,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint   where  dc.id is null and  t.depositdateint=format(getdate(),'yyyyMMdd') and  t.bankid=?  and t.depositbranchid=?"+cond1
 					+" ) a ) b ";
 			data = db.getResultList(sql,Arrays.asList(bankid,branchid,bankid,branchid));
@@ -386,9 +386,9 @@ public class ReportService extends AutoService {
 
 		sql = "select * from (select accountno,accountname,palika,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from ("
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+" union"
+				+" union all "
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+ " union"
+				+ " union all "
 				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
 				+" ) a ) b order by tdate,medium";
 
@@ -645,9 +645,9 @@ if (!lists.isEmpty()) {
 //		repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
 		String sql = " select sum(cash) as cash,sum(cheque) as cheque from (select (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
 				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.branchid=? and (t.approved=1 or t.cstatus=1) "+condition 
-				+" union"
+				+" union all "
 				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1 and t.branchid=? and t.approved=1 "+condition 
-				+ " union"
+				+ " union all "
 				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?  and t.depositbranchid=? and t.approved=1 "+condition1
 				+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype) c group by ttype) d";
 		List<Tuple> lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId()));
@@ -726,9 +726,9 @@ if (!lists.isEmpty()) {
 
 		sql = "select tdate,accountno,accountname,palika,sum(debit) as debit,sum(credit) as credit,medium,(sum(credit)-sum(debit)) as balance,branch from (select accountno,accountname,palika,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from ("
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+" union"
+				+" union all "
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+ " union"
+				+ " union all "
 				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1 and tx.paymentmethod='2'"
 				+" ) a ) b group by tdate,accountno,accountname,palika,branch,medium order by tdate,medium,branch";
 
@@ -831,9 +831,9 @@ if (!lists.isEmpty()) {
 
 		sql = "select accountno,accountname,palika,ad.namenp as district,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from (select accountno,accountname,districtid,palika,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from ("
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,lls.districtid,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+" union"
+				+" union all "
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,lls.districtid,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+ " union"
+				+ " union all "
 				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,lls.districtid,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
 				+" ) a ) b join admin_district ad on ad.districtid=b.districtid ";
 
@@ -939,9 +939,9 @@ if (!lists.isEmpty()) {
 		sql = "select b.accountno,b.accountname,b.palika,ad.namenp as district,sum(b.debit) as debit,sum(b.credit) as credit,medium,(sum(b.credit)-sum(b.debit)) as balance,b.tdate"
 				+ " from (select accountno,accountname,palika,districtid,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from ("
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,lls.districtid,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+" union"
+				+" union all "
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,lls.districtid,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+ " union"
+				+ " union all "
 				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,lls.districtid,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
 				+" ) a ) b join admin_district ad on ad.districtid=b.districtid"
 				+ " group by b.accountno,b.accountname,b.palika,ad.namenp,b.medium,b.tdate order by b.tdate,ad.namenp,b.palika,b.medium";
@@ -1036,9 +1036,9 @@ if (!lists.isEmpty()) {
 
 		sql = "select * from (select accountno,accountname,palika,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from ("
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+" union"
+				+" union all "
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+ " union"
+				+ " union all "
 				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
 				+" ) a ) b ";
 
@@ -1136,9 +1136,9 @@ if (!lists.isEmpty()) {
 
 		sql = "select * from (select accountno,accountname,palika,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from ("
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+" union"
+				+" union all "
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+ " union"
+				+ " union all "
 				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
 				+" ) a ) b ";
 
@@ -1235,17 +1235,17 @@ if (!lists.isEmpty()) {
 
 //		sql = "select * from (select accountno,accountname,sum(debit) as debit,sum(credit) as credit,medium,sum(balance) as balance,tdate,branch from ("
 //				+" SELECT (case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-//				+" union"
+//				+" union all "
 //				+" SELECT (case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-//				+ " union"
+//				+ " union all "
 //				+" SELECT (case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
 //				+" ) a ) b  ";
 		sql = "select b.accountno,b.accountname,b.palika,sum(b.debit) as debit,sum(b.credit) as credit,medium,(sum(b.credit)-sum(b.debit)) as balance,b.tdate,b.branch"
 				+ " from (select accountno,accountname,palika,districtid,debit,credit,karobarsanket,medium,balance,tdate,branch from ("
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,lls.districtid,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+" union"
+				+" union all "
 				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,lls.districtid,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-				+ " union"
+				+ " union all "
 				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,lls.districtid,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
 				+" ) a ) b "
 				+ " group by b.accountno,b.accountname,b.palika,b.medium,b.tdate,b.branch order by b.tdate,b.palika,b.medium";
@@ -1328,9 +1328,9 @@ if (!lists.isEmpty()) {
 
 //		sql = "select * from (select accountno,accountname,palika,debit,credit,karobarsanket,medium,balance,tdate,branch,taxpayername from ("
 //				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-//				+" union"
+//				+" union all "
 //				+" SELECT tx.karobarsanket,tx.taxpayername,lls.namenp as palika,(case when tx.ttype='1' then 'Cash' else 'Cheque' end) as medium,cast(tx.date as date) as tdate,branches.name as branch ,tx.amountcr as credit,tx.amountdr as debit,(tx.amountcr-tx.amountdr) as balance,ba.accountnumber as accountno, ba.accountname FROM taxvouchers_log tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid"+ condition + " and (tx.approved=1 or tx.cstatus=1) " 
-//				+ " union"
+//				+ " union all "
 //				+" SELECT tx.transactionid as taxpayername,tx.taxpayername,lls.namenp as palika,(case when tx.paymentmethod='2' then 'Cash' else 'Cheque' end) as medium,cast(tx.depositdate as date) as tdate,branches.name as branch ,tx.amount as credit,0 as debit,tx.amount as balance,ba.accountnumber as accountno, ba.accountname FROM bank_deposits tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid join branches on branches.id=tx.depositbranchid "+ condition1 + " and tx.approved=1  "
 //				+" ) a ) b ";
 
