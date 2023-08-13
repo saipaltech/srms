@@ -380,7 +380,7 @@ public class TaxPayerVoucherService extends AutoService {
 						revs = revs.substring(0, (revs.length() - 1));
 					}
 					db.execute("update " + table
-							+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd') where id=?",
+							+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd'),dateint=format(getdate(),'yyyyMMdd') where id=?",
 							Arrays.asList(auth.getUserId(), id));
 					Tuple tp = db.getSingleResult("select * from " + table + " where id=?", Arrays.asList(id));
 					JSONObject obj = api.sendDataToSutra(tp,revs);
@@ -903,6 +903,7 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 		Tuple tk = db.getSingleResult("select count(*) as c from karobarsanketRef where fromkarobarsanket=?",
 				Arrays.asList(voucherno));
+		
 		if (Integer.parseInt(tk.get("c") + "") > 0) {
 			return Messenger.getMessenger().setMessage("This karobarsanket is not updateable, Already updated once.")
 					.error();
