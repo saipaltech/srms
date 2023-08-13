@@ -127,7 +127,7 @@ public class TaxPayerVoucherService extends AutoService {
 			condition += " and tx.deposituserid='" + auth.getUserId() + "'";
 		}
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(tx.id as char) as id,tx.chequetype,cast(date as date) as date,(case when tx.cstatus='1' OR tx.chequetype='2' then cast(karobarsanket as varchar) else 'To be Cleared' end) as cheque_text,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,chequeamount as amount,  ba.accountnumber as accountno")
+				.select("cast(tx.id as char) as id,tx.chequetype,cast(date as date) as date,(case when tx.cstatus='1' OR tx.chequetype='2' then cast(karobarsanket as varchar) else 'To be Cleared' end) as cheque_text,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,amountcr as amount,  ba.accountnumber as accountno")
 				.sqlBody("from " + table + " tx join bankaccount ba on ba.id=tx.bankorgid " + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -320,20 +320,38 @@ public class TaxPayerVoucherService extends AutoService {
 		return ResponseEntity.ok(data);
 	}
 
-	public ResponseEntity<Map<String, Object>> update(String id) {
+	@Transactional
+	public ResponseEntity<Map<String, Object>> update(String id) throws JSONException {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
 		DbResponse rowEffect;
 		TaxPayerVoucher model = new TaxPayerVoucher();
 		model.loadData(document);
+		String voucher = request("voucherinfo");
+		if (voucher.startsWith("{")) {
+			voucher = "[" + voucher + "]";
+		}
+
+		
+			JSONArray jarr = new JSONArray(voucher);
+	
 		String sql = "UPDATE " + table
-				+ " set date=?,voucherno=?,taxpayername=?,taxpayerpan=?,depositedby=?,depcontact=?,lgid=?,collectioncenterid=?,bankorgid=?,purpose=?,amountcr=? where id=?";
+				+ " set date=?,voucherno=?,taxpayername=?,taxpayerpan=?,depositedby=?,depcontact=?,lgid=?,collectioncenterid=?,bankorgid=?,purpose=?,amountcr=?,chequeamount=? where id=?";
 		rowEffect = db.execute(sql,
 				Arrays.asList(model.date, model.voucherno, model.taxpayername, model.taxpayerpan, model.depositedby,
 						model.depcontact, model.lgid, model.collectioncenterid, model.bankorgid, model.purpose,
-						model.amount, id));
+						model.amount,model.chequeamount, id));
 		if (rowEffect.getErrorNumber() == 0) {
+			if (jarr.length() > 0) {
+				String sqls = "delete from taxvouchers_detail where mainid  = ?";
+				DbResponse rowEffects = db.execute(sqls, Arrays.asList(id));
+				for (int i = 0; i < jarr.length(); i++) {
+					JSONObject objects = jarr.getJSONObject(i);
+					String sq1 = "INSERT INTO taxvouchers_detail (mainid,revenueid,amount) values(?,?,?)";
+					db.execute(sq1, Arrays.asList(id, objects.get("rc"), objects.get("amt")));
+				}
+			}
 			return Messenger.getMessenger().success();
 		} else {
 			return Messenger.getMessenger().error();

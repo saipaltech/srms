@@ -68,7 +68,7 @@ public class TaxPayerVoucherController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Map<String, Object>> update(HttpServletRequest request, @PathVariable String id) {
+	public ResponseEntity<Map<String, Object>> update(HttpServletRequest request, @PathVariable String id) throws JSONException {
 		Validator validator = validationService.validate(TaxPayerVoucher.rules());
 		if (validator.isFailed()) {
 			return Messenger.getMessenger().setMessage(validator.getErrorMessages()).error();

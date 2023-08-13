@@ -249,6 +249,11 @@ public class ReportService extends AutoService {
 		String sql = "";
 		String chkstatus= request("chkstatus")+"";
 		//		String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "' and tx.lgid="+palika+" and tx.fyid="+fy+ " and tx.branchid="+branch;
+		if (type.equals("cad")) {
+			String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "'";
+		}else {
+			String condition = " WHERE cleardateint >= '" + startDate + "' AND cleardateint <= '" + endDate + "'";
+		}
 		String condition = " WHERE dateint >= '" + startDate + "' AND dateint <= '" + endDate + "'";
 		if (!fy.isBlank()) {
 			condition  = condition + " and tx.fyid="+fy+" ";
@@ -280,8 +285,8 @@ public class ReportService extends AutoService {
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);
 		String OldPalika = "";
-		float ptotal = 0;
-		float totalAmount = 0;
+		BigDecimal ptotal = new BigDecimal("0");
+		BigDecimal totalAmount = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
 		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Palika")))
 				.addColumn((new Excel().ExcelCell("Account Number")))
@@ -293,7 +298,7 @@ public class ReportService extends AutoService {
 		if (!lists.isEmpty()) {
 			int i = 1;
 			for (Tuple t : lists) {
-				totalAmount += (Float.parseFloat(t.get("amount") + ""));
+				totalAmount = totalAmount.add(new BigDecimal(t.get("amount") + ""));
 				if (OldPalika.isBlank()) {
 					OldPalika = t.get("palika") + "";
 				}
@@ -302,9 +307,9 @@ public class ReportService extends AutoService {
 					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
 							.addColumn((new Excel().ExcelCell(ptotal + "")));
 					OldPalika = t.get("palika") + "";
-					ptotal = Float.parseFloat(t.get("amount") + "");
+					ptotal = new BigDecimal(t.get("amount") + "");
 				} else {
-					ptotal += Float.parseFloat(t.get("amount") + "");
+					ptotal = ptotal.add( new BigDecimal(t.get("amount") + ""));
 				}
 				if (ptrow != null) {
 					excl.addRow(ptrow);
@@ -319,9 +324,9 @@ public class ReportService extends AutoService {
 				excl.addRow(drow);
 				i++;
 			}
-			if (totalAmount > 0) {
+			if (totalAmount.compareTo(BigDecimal.valueOf(0d))==1) {
 				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
-						.addColumn((new Excel().ExcelCell(totalAmount + "")));
+						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())));
 				excl.addRow(trow);
 			}
 		}
@@ -413,11 +418,13 @@ public class ReportService extends AutoService {
 			excl.addHeadRow(hrow);
 			
 			int i = 1;
-			float dtotal=0,ctotal=0,total=0;
+			BigDecimal dtotal=new BigDecimal("0");
+			BigDecimal ctotal=new BigDecimal("0");
+			BigDecimal total=new BigDecimal("0");
 			for (Tuple t : lists) {
-				dtotal +=Float.parseFloat(t.get("debit")+"");
-				ctotal +=Float.parseFloat(t.get("credit")+"");
-				total +=Float.parseFloat(t.get("balance")+"");
+				dtotal =dtotal.add(new BigDecimal(t.get("debit")+""));
+				ctotal =ctotal.add(new BigDecimal(t.get("credit")+""));
+				total =total.add(new BigDecimal(t.get("balance")+""));
 				Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell(t.get("tdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("karobarsanket") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("medium") + "")))
@@ -429,9 +436,9 @@ public class ReportService extends AutoService {
 				i++;
 			}
 			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",3)))
-					.addColumn((new Excel().ExcelCell(dtotal + "")))
-					.addColumn((new Excel().ExcelCell(ctotal + "")))
-					.addColumn((new Excel().ExcelCell(total + "",2)));
+					.addColumn((new Excel().ExcelCell(dtotal.toPlainString() )))
+					.addColumn((new Excel().ExcelCell(ctotal.toPlainString())))
+					.addColumn((new Excel().ExcelCell(total.toPlainString(),2)));
 			excl.addRow(drow);
 		}
 		return excl;
@@ -545,8 +552,8 @@ public class ReportService extends AutoService {
 		List<Tuple> lists = db.getResultList(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
-		float ptotal = 0;
-		float totalAmount = 0;
+		BigDecimal ptotal = new BigDecimal("0");
+		BigDecimal totalAmount = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
 		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Palika")))
 		.addColumn((new Excel().ExcelCell("Account Number")))
@@ -557,7 +564,7 @@ excl.addHeadRow(hrow);
 if (!lists.isEmpty()) {
 	int i = 1;
 	for (Tuple t : lists) {
-		totalAmount += (Float.parseFloat(t.get("balance") + ""));
+		totalAmount =totalAmount.add(new BigDecimal(t.get("balance") + ""));
 		if (OldPalika.isBlank()) {
 			OldPalika = t.get("palika") + "";
 		}
@@ -566,9 +573,9 @@ if (!lists.isEmpty()) {
 			ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
 					.addColumn((new Excel().ExcelCell(ptotal + "", 2,1)));
 			OldPalika = t.get("palika") + "";
-			ptotal = Float.parseFloat(t.get("balance") + "");
+			ptotal = new BigDecimal(t.get("balance") + "");
 		} else {
-			ptotal += Float.parseFloat(t.get("balance") + "");
+			ptotal = ptotal.add(new BigDecimal(t.get("balance") + ""));
 		}
 		if (ptrow != null) {
 			excl.addRow(ptrow);
@@ -583,9 +590,9 @@ if (!lists.isEmpty()) {
 		excl.addRow(drow);
 		i++;
 	}
-	if (totalAmount > 0) {
+	if (totalAmount.compareTo(BigDecimal.valueOf(0d))==1) {
 		Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
-				.addColumn((new Excel().ExcelCell(totalAmount + "",2,1)));
+				.addColumn((new Excel().ExcelCell(totalAmount.toPlainString(),2,1)));
 		excl.addRow(trow);
 	}
 }
@@ -646,8 +653,8 @@ if (!lists.isEmpty()) {
 		List<Tuple> lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId()));
 		excl.title = repTitle;
 		String OldPalika = "";
-		float ptotal = 0;
-		float totalAmount = 0;
+		BigDecimal ptotal = new BigDecimal("0");
+		BigDecimal totalAmount = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
 		hrow.addColumn((new Excel().ExcelCell("Cash"))).addColumn((new Excel().ExcelCell("Cheque")))
 				.addColumn((new Excel().ExcelCell("Total")));
@@ -656,7 +663,7 @@ if (!lists.isEmpty()) {
 		if (!lists.isEmpty()) {
 			int i = 1;
 			for (Tuple t : lists) {
-				totalAmount = (Float.parseFloat(t.get("cash") + ""))+(Float.parseFloat(t.get("cheque") + ""));
+				totalAmount = totalAmount.add((new BigDecimal(t.get("cash") + "")).add(new BigDecimal(t.get("cheque") + "")));
 				
 				
 				
@@ -664,7 +671,7 @@ if (!lists.isEmpty()) {
 						
 						.addColumn((new Excel().ExcelCell(t.get("cash") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cheque") + "")))
-						.addColumn((new Excel().ExcelCell(totalAmount+"")));
+						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())));
 						
 				excl.addRow(drow);
 				i++;
@@ -732,7 +739,9 @@ if (!lists.isEmpty()) {
 		List<Tuple> lists = db.getResultList(sql);
 		
 		if (!lists.isEmpty()) {
-			float dtotal=0,ctotal=0,total=0;
+			BigDecimal dtotal=new BigDecimal("0");
+			BigDecimal ctotal=new BigDecimal("0");
+			BigDecimal total=new BigDecimal("0");
 			Excel.excelRow hrow0 = new Excel().ExcelRow();
 			hrow0	.addColumn((new Excel().ExcelCell("AC No.: "+lists.get(0).get("accountno"),2)))
 					.addColumn((new Excel().ExcelCell("AC Name: "+lists.get(0).get("accountname"),2)))
@@ -750,9 +759,9 @@ if (!lists.isEmpty()) {
 			excl.addHeadRow(hrow);
 			int i = 1;
 			for (Tuple t : lists) {
-				dtotal +=Float.parseFloat(t.get("debit")+"");
-				ctotal +=Float.parseFloat(t.get("credit")+"");
-				total +=Float.parseFloat(t.get("balance")+"");
+				dtotal =dtotal.add(new BigDecimal(t.get("debit")+""));
+				ctotal =ctotal.add(new BigDecimal(t.get("credit")+""));
+				total =total.add(new BigDecimal(t.get("balance")+""));
 				Excel.excelRow drow = (new Excel().ExcelRow())
 						.addColumn((new Excel().ExcelCell(t.get("tdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("medium") + "")))
@@ -766,9 +775,9 @@ if (!lists.isEmpty()) {
 				i++;
 			}
 			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",2)))
-					.addColumn((new Excel().ExcelCell(dtotal + "")))
-					.addColumn((new Excel().ExcelCell(ctotal + "")))
-					.addColumn((new Excel().ExcelCell(total + "",2)));
+					.addColumn((new Excel().ExcelCell(dtotal.toPlainString() )))
+					.addColumn((new Excel().ExcelCell(ctotal.toPlainString())))
+					.addColumn((new Excel().ExcelCell(total.toPlainString(),2)));
 			excl.addRow(drow);
 		}
 		return excl;
@@ -848,12 +857,14 @@ if (!lists.isEmpty()) {
 				
 		excl.addHeadRow(hrow);
 		if (!lists.isEmpty()) {
-			float dtotal=0,ctotal=0,total=0;
+			BigDecimal dtotal=new BigDecimal("0");
+			BigDecimal ctotal=new BigDecimal("0");
+			BigDecimal total=new BigDecimal("0");
 			int i = 1;
 			for (Tuple t : lists) {
-				dtotal +=Float.parseFloat(t.get("debit")+"");
-				ctotal +=Float.parseFloat(t.get("credit")+"");
-				total +=Float.parseFloat(t.get("balance")+"");
+				dtotal =dtotal.add(new BigDecimal(t.get("debit")+""));
+				ctotal =ctotal.add(new BigDecimal(t.get("credit")+""));
+				total =total.add(new BigDecimal(t.get("balance")+""));
 				Excel.excelRow drow = (new Excel().ExcelRow())
 						.addColumn((new Excel().ExcelCell(t.get("tdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("district") + "")))
@@ -871,9 +882,9 @@ if (!lists.isEmpty()) {
 				i++;
 			}
 			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",7)))
-					.addColumn((new Excel().ExcelCell(dtotal + "")))
-					.addColumn((new Excel().ExcelCell(ctotal + "")))
-					.addColumn((new Excel().ExcelCell(total + "")));
+					.addColumn((new Excel().ExcelCell(dtotal.toPlainString() )))
+					.addColumn((new Excel().ExcelCell(ctotal.toPlainString())))
+					.addColumn((new Excel().ExcelCell(total.toPlainString())));
 			excl.addRow(drow);
 		}
 		return excl;
@@ -952,12 +963,14 @@ if (!lists.isEmpty()) {
 				
 		excl.addHeadRow(hrow);
 		if (!lists.isEmpty()) {
-			float dtotal=0,ctotal=0,total=0;
+			BigDecimal dtotal=new BigDecimal("0");
+			BigDecimal ctotal=new BigDecimal("0");
+			BigDecimal total=new BigDecimal("0");
 			int i = 1;
 			for (Tuple t : lists) {
-				dtotal +=Float.parseFloat(t.get("debit")+"");
-				ctotal +=Float.parseFloat(t.get("credit")+"");
-				total +=Float.parseFloat(t.get("balance")+"");
+				dtotal =dtotal.add(new BigDecimal(t.get("debit")+""));
+				ctotal =ctotal.add(new BigDecimal(t.get("credit")+""));
+				total =total.add(new BigDecimal(t.get("balance")+""));
 				Excel.excelRow drow = (new Excel().ExcelRow())
 						.addColumn((new Excel().ExcelCell(t.get("tdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("district") + "")))
@@ -973,9 +986,9 @@ if (!lists.isEmpty()) {
 				i++;
 			}
 			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",6)))
-					.addColumn((new Excel().ExcelCell(dtotal + "")))
-					.addColumn((new Excel().ExcelCell(ctotal + "")))
-					.addColumn((new Excel().ExcelCell(total + "")));
+					.addColumn((new Excel().ExcelCell(dtotal.toPlainString() )))
+					.addColumn((new Excel().ExcelCell(ctotal.toPlainString())))
+					.addColumn((new Excel().ExcelCell(total.toPlainString())));
 			excl.addRow(drow);
 		}
 		return excl;
@@ -1031,7 +1044,9 @@ if (!lists.isEmpty()) {
 
 
 			repTitle = getHeaderString("Outside branch Collection for own branch, From:" + request("from") + " To:" + request("to"));
-		float dtotal=0,ctotal=0,total=0;
+			BigDecimal dtotal=new BigDecimal("0");
+			BigDecimal ctotal=new BigDecimal("0");
+			BigDecimal total=new BigDecimal("0");
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);
 		if (!lists.isEmpty()) {
@@ -1055,9 +1070,9 @@ if (!lists.isEmpty()) {
 		if (!lists.isEmpty()) {
 			int i = 1;
 			for (Tuple t : lists) {
-				dtotal +=Float.parseFloat(t.get("debit")+"");
-				ctotal +=Float.parseFloat(t.get("credit")+"");
-				total +=Float.parseFloat(t.get("balance")+"");
+				dtotal =dtotal.add(new BigDecimal(t.get("debit")+""));
+				ctotal =ctotal.add(new BigDecimal(t.get("credit")+""));
+				total =total.add(new BigDecimal(t.get("balance")+""));
 				Excel.excelRow drow = (new Excel().ExcelRow())
 						.addColumn((new Excel().ExcelCell(t.get("tdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("karobarsanket") + "")))
@@ -1072,9 +1087,9 @@ if (!lists.isEmpty()) {
 				i++;
 			}
 			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",3)))
-					.addColumn((new Excel().ExcelCell(dtotal + "")))
-					.addColumn((new Excel().ExcelCell(ctotal + "")))
-					.addColumn((new Excel().ExcelCell(total + "",2)));
+					.addColumn((new Excel().ExcelCell(dtotal.toPlainString() )))
+					.addColumn((new Excel().ExcelCell(ctotal.toPlainString())))
+					.addColumn((new Excel().ExcelCell(total.toPlainString(),2)));
 			excl.addRow(drow);
 		}
 		
@@ -1129,7 +1144,9 @@ if (!lists.isEmpty()) {
 
 
 			repTitle = getHeaderString("Outside branch Collection for own branch Summary, From:" + request("from") + " To:" + request("to"));
-		float dtotal=0,ctotal=0,total=0;
+			BigDecimal dtotal=new BigDecimal("0");
+			BigDecimal ctotal=new BigDecimal("0");
+			BigDecimal total=new BigDecimal("0");
 		excl.title = repTitle;
 		List<Tuple> lists = db.getResultList(sql);
 		if (!lists.isEmpty()) {
@@ -1152,9 +1169,9 @@ if (!lists.isEmpty()) {
 		if (!lists.isEmpty()) {
 			int i = 1;
 			for (Tuple t : lists) {
-				dtotal +=Float.parseFloat(t.get("debit")+"");
-				ctotal +=Float.parseFloat(t.get("credit")+"");
-				total +=Float.parseFloat(t.get("balance")+"");
+				dtotal =dtotal.add(new BigDecimal(t.get("debit")+""));
+				ctotal =ctotal.add(new BigDecimal(t.get("credit")+""));
+				total =total.add(new BigDecimal(t.get("balance")+""));
 				Excel.excelRow drow = (new Excel().ExcelRow())
 						.addColumn((new Excel().ExcelCell(t.get("tdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("medium") + "")))
@@ -1168,9 +1185,9 @@ if (!lists.isEmpty()) {
 			}
 			
 			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",2)))
-					.addColumn((new Excel().ExcelCell(dtotal + "")))
-					.addColumn((new Excel().ExcelCell(ctotal + "")))
-					.addColumn((new Excel().ExcelCell(total + "",2)));
+					.addColumn((new Excel().ExcelCell(dtotal.toPlainString() )))
+					.addColumn((new Excel().ExcelCell(ctotal.toPlainString())))
+					.addColumn((new Excel().ExcelCell(total.toPlainString(),2)));
 			excl.addRow(drow);
 		}
 		return excl;
@@ -1251,12 +1268,14 @@ if (!lists.isEmpty()) {
 				
 		excl.addHeadRow(hrow);
 		if (!lists.isEmpty()) {
-			float dtotal=0,ctotal=0,total=0;
+			BigDecimal dtotal=new BigDecimal("0");
+			BigDecimal ctotal=new BigDecimal("0");
+			BigDecimal total=new BigDecimal("0");
 			int i = 1;
 			for (Tuple t : lists) {
-				dtotal +=Float.parseFloat(t.get("debit")+"");
-				ctotal +=Float.parseFloat(t.get("credit")+"");
-				total +=Float.parseFloat(t.get("balance")+"");
+				dtotal =dtotal.add(new BigDecimal(t.get("debit")+""));
+				ctotal =ctotal.add(new BigDecimal(t.get("credit")+""));
+				total =total.add(new BigDecimal(t.get("balance")+""));
 				Excel.excelRow drow = (new Excel().ExcelRow())
 						.addColumn((new Excel().ExcelCell(t.get("tdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("branch") + "")))
@@ -1272,9 +1291,9 @@ if (!lists.isEmpty()) {
 				i++;
 			}
 			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",5)))
-					.addColumn((new Excel().ExcelCell(dtotal + "")))
-					.addColumn((new Excel().ExcelCell(ctotal + "")))
-					.addColumn((new Excel().ExcelCell(total + "")));
+					.addColumn((new Excel().ExcelCell(dtotal.toPlainString() )))
+					.addColumn((new Excel().ExcelCell(ctotal.toPlainString())))
+					.addColumn((new Excel().ExcelCell(total.toPlainString())));
 			excl.addRow(drow);
 		}
 		return excl;
@@ -1289,7 +1308,9 @@ if (!lists.isEmpty()) {
 		String repTitle="";
 		String sql = "";
 		String condition = " WHERE tx.dateint >= '" + startDate + "' AND tx.dateint <= '" + endDate + "'";
-		float dtotal=0,ctotal=0,total=0;
+		BigDecimal dtotal=new BigDecimal("0");
+		BigDecimal ctotal=new BigDecimal("0");
+		BigDecimal total=new BigDecimal("0");
 		if (!fy.isBlank()) {
 			condition  = condition + " and tx.fyid="+fy+" ";
 		}
@@ -1335,9 +1356,9 @@ if (!lists.isEmpty()) {
 			
 			int i = 1;
 			for (Tuple t : lists) {
-				dtotal +=Float.parseFloat(t.get("debit")+"");
-				ctotal +=Float.parseFloat(t.get("credit")+"");
-				total +=Float.parseFloat(t.get("balance")+"");
+				dtotal =dtotal.add(new BigDecimal(t.get("debit")+""));
+				ctotal =ctotal.add(new BigDecimal(t.get("credit")+""));
+				total =total.add(new BigDecimal(t.get("balance")+""));
 				Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell((i + ""))))
 						.addColumn((new Excel().ExcelCell(t.get("tdate") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("palika") + "")))
@@ -1357,9 +1378,9 @@ if (!lists.isEmpty()) {
 			}
 		}
 		Excel.excelRow crow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",6)))
-				.addColumn((new Excel().ExcelCell(dtotal + "")))
-				.addColumn((new Excel().ExcelCell(ctotal + "")))
-				.addColumn((new Excel().ExcelCell(total + "",2)));
+				.addColumn((new Excel().ExcelCell(dtotal.toPlainString() )))
+				.addColumn((new Excel().ExcelCell(ctotal.toPlainString())))
+				.addColumn((new Excel().ExcelCell(total.toPlainString(),2)));
 		excl.addRow(crow);
 		return excl;
 	}
