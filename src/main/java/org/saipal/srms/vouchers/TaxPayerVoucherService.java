@@ -368,22 +368,23 @@ public class TaxPayerVoucherService extends AutoService {
 				return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
 			}
 				TransactionTemplate tran = db.getTransTemplate();
-				ResponseEntity<Map<String, Object>> data= tran.execute(status->{
-					List<Tuple> list = db.getResultList(
-							"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
-							Arrays.asList(id));
-					String revs = "";
-					if (list.size() > 0) {
-						for (Tuple tp : list) {
-							revs += tp.get(0) + ",";
-						}
-						revs = revs.substring(0, (revs.length() - 1));
+				List<Tuple> list = db.getResultList(
+						"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
+						Arrays.asList(id));
+				String revs = "";
+				if (list.size() > 0) {
+					for (Tuple tp : list) {
+						revs += tp.get(0) + ",";
 					}
+					revs = revs.substring(0, (revs.length() - 1));
+				}
+				final String rev = revs;
+				ResponseEntity<Map<String, Object>> data= tran.execute(status->{
 					db.execute("update " + table
 							+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd'),dateint=format(getdate(),'yyyyMMdd') where id=?",
 							Arrays.asList(auth.getUserId(), id));
 					Tuple tp = db.getSingleResult("select * from " + table + " where id=?", Arrays.asList(id));
-					JSONObject obj = api.sendDataToSutra(tp,revs);
+					JSONObject obj = api.sendDataToSutra(tp,rev);
 					if (obj != null) {
 						try {
 							if (obj.getInt("status") == 1) {
@@ -392,6 +393,14 @@ public class TaxPayerVoucherService extends AutoService {
 									JSONObject ob = sms.sendSms(t.get("depcontact") + "", message, db.newIdInt());	
 								}
 								return Messenger.getMessenger().setMessage("Cheque cleared, SMS sent to depositor.").success();
+							}else {
+								if(obj.getString("message").startsWith("Already Verified Voucher")) {
+									String message = chequeClearedSms.replace("SANKET", (t.get("karobarsanket") + ""));
+									if (!isDev.equals("1")) {
+										JSONObject ob = sms.sendSms(t.get("depcontact") + "", message, db.newIdInt());	
+									}
+									return Messenger.getMessenger().setMessage("Cheque cleared, SMS sent to depositor.").success();
+								}
 							}
 						} catch (Exception e) {
 							status.setRollbackOnly();
