@@ -367,6 +367,23 @@ public class TaxPayerVoucherService extends AutoService {
 			if ((t.get("cstatus") + "").equals("1")) {
 				return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
 			}
+			
+			char forthChar = (t.get("karobarsanket")+"").charAt(3);
+			if (forthChar == '2') {
+				db.execute("update " + table
+						+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd'),dateint=format(getdate(),'yyyyMMdd') where id=?",
+						Arrays.asList(auth.getUserId(), id));
+				String message = chequeClearedSms.replace("SANKET", (t.get("karobarsanket") + ""));
+				if (!isDev.equals("1")) {
+					try {
+						JSONObject ob = sms.sendSms(t.get("depcontact") + "", message, db.newIdInt());
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						//e.printStackTrace();
+					}	
+				}
+				return Messenger.getMessenger().setMessage("Cheque cleared, SMS sent to depositor.").success();
+			}
 				TransactionTemplate tran = db.getTransTemplate();
 				List<Tuple> list = db.getResultList(
 						"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
@@ -384,7 +401,23 @@ public class TaxPayerVoucherService extends AutoService {
 							+ " set cstatus=1,updatedon=getdate(),approverid=?,cleardateint=format(getdate(),'yyyyMMdd'),dateint=format(getdate(),'yyyyMMdd') where id=?",
 							Arrays.asList(auth.getUserId(), id));
 					Tuple tp = db.getSingleResult("select * from " + table + " where id=?", Arrays.asList(id));
+//					String ks=t.get("karobarsanket")+"";
+//					char forthChar =ks.charAt(3);
+//					if(forthChar=='2') {
+//						String message = chequeClearedSms.replace("SANKET", (t.get("karobarsanket") + ""));
+//						if (!isDev.equals("1")) {
+//							try {
+//								JSONObject ob = sms.sendSms(t.get("depcontact") + "", message, db.newIdInt());
+//							} catch (JSONException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}	
+//						}
+//						return Messenger.getMessenger().setMessage("Cheque cleared, SMS sent to depositor.").success();
+//					}
 					JSONObject obj = api.sendDataToSutra(tp,rev);
+					
+					System.out.println(obj.toString());
 					if (obj != null) {
 						try {
 							if (obj.getInt("status") == 1) {

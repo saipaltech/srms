@@ -272,14 +272,14 @@ public class ReportService extends AutoService {
 		
 		if (type.equals("cad")) {
 			repTitle = getHeaderString("Cash Deposit, From:" + request("from") + " To:" + request("to"));
-			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
+			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 					+ condition + " and tx.approved=1 order by palika, ba.accountnumber";
 		} else if (type.equals("chd")) {
 			if (!chkstatus.isEmpty()) {
 				condition = condition + " and tx.cstatus="+chkstatus+" ";
 			}
 			repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
-			sql = "SELECT tx.*,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
+			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
 					+ condition + " and tx.ttype=2 and tx.cstatus=1 order by palika, accountno";
 		}
 		excl.title = repTitle;
@@ -288,7 +288,9 @@ public class ReportService extends AutoService {
 		BigDecimal ptotal = new BigDecimal("0");
 		BigDecimal totalAmount = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
-		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Palika")))
+		hrow.addColumn((new Excel().ExcelCell("S.N.")))
+				.addColumn((new Excel().ExcelCell("Date")))
+				.addColumn((new Excel().ExcelCell("Palika")))
 				.addColumn((new Excel().ExcelCell("Account Number")))
 				.addColumn((new Excel().ExcelCell("Account Name")))
 				.addColumn((new Excel().ExcelCell("Karobar Sanket")))
@@ -304,7 +306,7 @@ public class ReportService extends AutoService {
 				}
 				Excel.excelRow ptrow = null;
 				if (!OldPalika.equals(t.get("palika") + "")) {
-					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
+					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 7, 1)))
 							.addColumn((new Excel().ExcelCell(ptotal + "")));
 					OldPalika = t.get("palika") + "";
 					ptotal = new BigDecimal(t.get("amount") + "");
@@ -315,6 +317,7 @@ public class ReportService extends AutoService {
 					excl.addRow(ptrow);
 				}
 				Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell((i + ""))))
+						.addColumn((new Excel().ExcelCell(t.get("dates") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("palika") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("accountno") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("accountname") + "")))
@@ -325,7 +328,7 @@ public class ReportService extends AutoService {
 				i++;
 			}
 			if (totalAmount.compareTo(BigDecimal.valueOf(0d))==1) {
-				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
+				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 7, 1)))
 						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())));
 				excl.addRow(trow);
 			}
@@ -467,7 +470,7 @@ public class ReportService extends AutoService {
 		condition = condition+" and depositbankid="+ auth.getBankId();
 		condition += " order by officename,accountnumber";
 		String repTitle = getHeaderString("Verified Vouchers, From:" + request("from") + " To:" + request("to"));
-		String sql = "select * from bank_deposits " + condition;
+		String sql = "select *,cast(voucherdate as Date) as dates from bank_deposits " + condition;
 		List<Tuple> lists = db.getResultList(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
@@ -475,6 +478,7 @@ public class ReportService extends AutoService {
 		BigDecimal totalAmount = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
 		hrow.addColumn((new Excel().ExcelCell("S.N.")))
+		.addColumn((new Excel().ExcelCell("Date")))
 		.addColumn((new Excel().ExcelCell("Office Name")))
 				.addColumn((new Excel().ExcelCell("Account Number")))
 				.addColumn((new Excel().ExcelCell("Karobar Sanket")))
@@ -491,7 +495,7 @@ public class ReportService extends AutoService {
 				}
 				Excel.excelRow ptrow = null;
 				if (!OldPalika.equals(t.get("officename") + "")) {
-					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 4, 1)))
+					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
 							.addColumn((new Excel().ExcelCell(ptotal + "")));
 					OldPalika = t.get("officename") + "";
 					ptotal = new BigDecimal(t.get("amount") + "");
@@ -502,6 +506,7 @@ public class ReportService extends AutoService {
 					excl.addRow(ptrow);
 				}
 				Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell((i + ""))))
+						.addColumn((new Excel().ExcelCell(t.get("dates") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("officename") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("accountnumber") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("transactionid") + "")))
@@ -510,13 +515,13 @@ public class ReportService extends AutoService {
 						.addColumn((new Excel().ExcelCell(t.get("amount") + "")));
 				excl.addRow(drow);
 				if(i==lists.size()) {
-					excl.addRow((new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 4, 1)))
+					excl.addRow((new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
 							.addColumn((new Excel().ExcelCell(ptotal.toPlainString()))));
 				}
 				i++;
 			}
 			if (!totalAmount.toPlainString().equals("0")) {
-				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 4, 1)))
+				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
 						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())));
 				excl.addRow(trow);
 			}
@@ -545,9 +550,9 @@ public class ReportService extends AutoService {
 			condition = condition + " and deposituserid="+username+" ";
 		condition = condition+" and dc.bankid="+ auth.getBankId();
 		String repTitle = getHeaderString("Day Close, From:" + request("from") + " To:" + request("to"));
-		String sql = "select dc.id,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp as palika,(dc.amountcr-dc.amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid join dayclose_details dcd on dc.id = dcd.dcid "
+		String sql = "select dc.id,cast(dcd.date as Date) as dates,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp as palika,(dc.amountcr-dc.amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid join dayclose_details dcd on dc.id = dcd.dcid "
 				+condition
-				+" group by dc.id,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp"
+				+" group by dc.id,dcd.date,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp"
 				+ " order by palika ";
 		List<Tuple> lists = db.getResultList(sql);
 		excl.title = repTitle;
@@ -555,7 +560,9 @@ public class ReportService extends AutoService {
 		BigDecimal ptotal = new BigDecimal("0");
 		BigDecimal totalAmount = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
-		hrow.addColumn((new Excel().ExcelCell("S.N."))).addColumn((new Excel().ExcelCell("Palika")))
+		hrow.addColumn((new Excel().ExcelCell("S.N.")))
+		.addColumn((new Excel().ExcelCell("Date")))
+		.addColumn((new Excel().ExcelCell("Palika")))
 		.addColumn((new Excel().ExcelCell("Account Number")))
 		.addColumn((new Excel().ExcelCell("Debit")))
 		.addColumn((new Excel().ExcelCell("Credit"))).addColumn((new Excel().ExcelCell("Balance")))
@@ -570,7 +577,7 @@ if (!lists.isEmpty()) {
 		}
 		Excel.excelRow ptrow = null;
 		if (!OldPalika.equals(t.get("palika") + "")) {
-			ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
+			ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
 					.addColumn((new Excel().ExcelCell(ptotal + "", 2,1)));
 			OldPalika = t.get("palika") + "";
 			ptotal = new BigDecimal(t.get("balance") + "");
@@ -581,6 +588,7 @@ if (!lists.isEmpty()) {
 			excl.addRow(ptrow);
 		}
 		Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell((i + ""))))
+				.addColumn((new Excel().ExcelCell(t.get("dates") + "")))
 				.addColumn((new Excel().ExcelCell(t.get("palika") + "")))
 				.addColumn((new Excel().ExcelCell(t.get("accountno") + "")))
 				.addColumn((new Excel().ExcelCell(t.get("amountdr") + "")))
@@ -591,7 +599,7 @@ if (!lists.isEmpty()) {
 		i++;
 	}
 	if (totalAmount.compareTo(BigDecimal.valueOf(0d))==1) {
-		Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 5, 1)))
+		Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 6, 1)))
 				.addColumn((new Excel().ExcelCell(totalAmount.toPlainString(),2,1)));
 		excl.addRow(trow);
 	}
