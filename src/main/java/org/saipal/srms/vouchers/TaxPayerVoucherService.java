@@ -367,7 +367,7 @@ public class TaxPayerVoucherService extends AutoService {
 			if ((t.get("cstatus") + "").equals("1")) {
 				return Messenger.getMessenger().setMessage("Cheque is already Cleared.").error();
 			}
-			
+
 			char forthChar = (t.get("karobarsanket")+"").charAt(3);
 			if (forthChar == '2') {
 				db.execute("update " + table

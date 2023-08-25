@@ -1,7 +1,5 @@
 package org.saipal.srms;
 
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.dayclose.DaycloseService;
 import org.saipal.srms.util.DB;
 import org.slf4j.Logger;
@@ -29,16 +27,10 @@ public class TaskRunner {
 //		log.info("Auto Delete Unverified Vouchers End");
 //	}
 	
-	@Scheduled(cron="0 55 23 * * *")
+	@Scheduled(cron="5 00 00 * * *")
 	public void automaticDayClose() {
 		log.info("Automatic DayClose Started");
-		try {
-			ds.daycloseScheduler();
-			//new JSONObject("{}") ;
-			log.info("Automatic Dayclose Done");
-		} catch (JSONException e) {
-			log.error(e.getMessage());
-		}
+		ds.daycloseScheduler();
 		log.info("Automatic Dayclose End");
 	}
 }
