@@ -30,6 +30,7 @@ public class TaxPayerVoucher {
 	public String chequetype;
 	public String depositbankid;
 	public String depositbranchid;
+	public String directdeposit;
 	
 
     

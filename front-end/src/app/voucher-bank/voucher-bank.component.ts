@@ -85,7 +85,8 @@ export class VoucherBankComponent implements OnInit {
       cb1:[''],
       note:[''],
       totalno:['',Validators.pattern('[0-9]+')],
-      return:['0',Validators.pattern('[0-9]+')]
+      return:['0',Validators.pattern('[0-9]+')],
+      directdeposit:['']
     }
     this.voucherBankForm = fb.group(this.formLayout)
     this.srchForm = new FormGroup({
@@ -333,6 +334,8 @@ export class VoucherBankComponent implements OnInit {
   }
 
   voucherBankFormSubmit() {
+    const dbd=this.voucherBankForm.value['directdeposit'];
+
 
     if (!this.voucherBankForm.value['collectioncenterid']){
         this.toastr.error('Please fill the संकलन केन्द्र field', 'Error'); 
@@ -356,7 +359,7 @@ export class VoucherBankComponent implements OnInit {
         return;
       }
     }
-    
+   
      
     if (window.confirm('Are  you sure you want to save this voucher?')) {
     
@@ -368,12 +371,18 @@ export class VoucherBankComponent implements OnInit {
             return;
           }
         }
+
+       
         this.model = this.voucherBankForm.value;
         this.model.voucherinfo = this.items;
         this.model.amount=this.totalAmt;
         this.model.noteinfo=this.items1;
       
-
+        if(dbd==true){
+          this.model.directdeposit=1;
+        }else{
+          this.model.directdeposit=0;
+        }
         this.createItem(this.voucherBankForm.value.id);
         // alert('submit but not create')
         // console.log(this.voucherBankForm.value)

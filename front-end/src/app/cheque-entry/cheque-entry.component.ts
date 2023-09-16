@@ -80,7 +80,8 @@ constructor(private appconfig:AppConfig,private datePipe: DatePipe,private bs:Ba
       ttype:['2'],
       chequetype:['',Validators.required],
       cb:[''],
-      district:['']
+      district:[''],
+      directdeposit:['0']
     }
     this.voucherBankForm =fb.group(this.formLayout)
     this.srchForm = new FormGroup({
@@ -343,6 +344,7 @@ voucherBankFormSubmit(){
     this.model = this.voucherBankForm.value;
     this.model.voucherinfo=this.items;
     this.model.amount=this.totalAmt;
+    this.model.directdeposit=0;
     this.createItem(this.voucherBankForm.value.id);
     // alert('submit but not create')
     // console.log(this.voucherBankForm.value)

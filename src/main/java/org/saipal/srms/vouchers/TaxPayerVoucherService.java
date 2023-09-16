@@ -237,14 +237,14 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 
 		String id = db.newIdInt();
-		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,cleardateint,amountcr,depositbankid,depositbranchid,cstatus,accountnumber)"
-				+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),format(getdate(),'yyyyMMdd'),?,?,?,?,?)";
+		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,cleardateint,amountcr,depositbankid,depositbranchid,cstatus,accountnumber,directdeposit)"
+				+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),format(getdate(),'yyyyMMdd'),?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
 				Arrays.asList(id, model.date, model.voucherno, model.taxpayername, model.taxpayerpan, model.depositedby,
 						model.depcontact, model.lgid, model.collectioncenterid, model.bankorgid, model.purpose,
 						auth.getUserId(), auth.getBankId(), auth.getBranchId(), model.ttype, model.chequebank,
 						model.chequeno, model.chequeamount, model.chequetype, model.amount, auth.getBankId(),
-						auth.getBranchId(), ct,accountnumber));
+						auth.getBranchId(), ct,accountnumber,model.directdeposit));
 		System.out.println(rowEffect.getMessage());
 		if (rowEffect.getErrorNumber() == 0) {
 			if (jarr.length() > 0) {
@@ -973,6 +973,7 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().setData(t).success();
 		}
 		JSONObject sdata = api.getVoucherDetails(t.get("id") + "");
+		System.out.println(sdata.toString());
 		if (sdata != null) {
 			try {
 				if (sdata.getInt("status") == 1) {
