@@ -48,7 +48,7 @@ MIT
 MIT
 
 @ngx-translate/http-loader
-MIT
+SEE LICENSE IN LICENSE
 
 bootstrap-icons
 MIT

@@ -16,7 +16,7 @@ export class AppConfig {
 
     loadConfig() {
         return new Promise((resolve, reject) => {
-            this.httpClient.get('/assets/config.json').subscribe({
+            this.httpClient.get('/web/assets/config.json').subscribe({
                 next: (resp: any) => {
                     this.baseUrl = resp.baseUrl;
                     resolve(true);
