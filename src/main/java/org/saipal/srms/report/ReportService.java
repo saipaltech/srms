@@ -555,6 +555,7 @@ public class ReportService extends AutoService {
 				+" group by dc.id,dcd.date,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp"
 				+ " order by palika ";
 		List<Tuple> lists = db.getResultList(sql);
+		System.out.println(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
 		BigDecimal ptotal = new BigDecimal("0");
