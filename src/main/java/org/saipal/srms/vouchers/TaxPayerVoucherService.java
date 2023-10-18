@@ -1005,6 +1005,8 @@ public class TaxPayerVoucherService extends AutoService {
 		String lgid = request("lgid");
 		String ccid = request("collectioncenterid");
 		String acno = request("bankorgid");
+		String depname=request("depositedby");
+		String depc=request("depcontact");
 		
 		String accountnumber="";
 		if (voucher.startsWith("{")) {
@@ -1077,11 +1079,11 @@ public class TaxPayerVoucherService extends AutoService {
 					// ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid
 					// ,depositbranchid ,deposituserid from "+table+" where
 					// id=?",Arrays.asList(id));
-					db.execute("update " + table + " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=? where id=?",
-							Arrays.asList(amount, lgid, ccid, acno,accountnumber, id));
+					db.execute("update " + table + " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=?,depositedby=?,depcontact=? where id=?",
+							Arrays.asList(amount, lgid, ccid, acno,accountnumber,depname,depc, id));
 				}
-				db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",
-						Arrays.asList(taxpayername, taxpayerpan, amount, id));
+				db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,amountcr=?,depositedby=?,depcontact=? where id=?",
+						Arrays.asList(taxpayername, taxpayerpan, amount,depname,depc, id));
 				db.execute("delete from taxvouchers_detail where mainid=?", Arrays.asList(id));
 				if (jarr.length() > 0) {
 					for (int i = 0; i < jarr.length(); i++) {
@@ -1092,8 +1094,8 @@ public class TaxPayerVoucherService extends AutoService {
 				}
 				return Messenger.getMessenger().setMessage("Voucher Updated").success();
 			} else {
-				db.execute("update " + table + " set taxpayername=? ,taxpayerpan=? where id=?",
-						Arrays.asList(taxpayername, taxpayerpan, id));
+				db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,depositedby=?,depcontact=? where id=?",
+						Arrays.asList(taxpayername, taxpayerpan,depname,depc, id));
 				return Messenger.getMessenger().setMessage("Voucher Updated").success();
 			}
 		}
@@ -1111,7 +1113,7 @@ public class TaxPayerVoucherService extends AutoService {
 							if (!((t.get("lgid") + "").equals(lgid) && (t.get("bankorgid") + "").equals(acno))) {
 								// same day palika change
 								JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, amount, lgid,
-										ccid, acno,accountnumber, request("voucherinfo"), "SDPAC");
+										ccid, acno,accountnumber, request("voucherinfo"),depname,depc, "SDPAC");
 								if (ups != null) {
 									if (ups.getInt("status") == 1) {
 										db.execute(
@@ -1123,8 +1125,8 @@ public class TaxPayerVoucherService extends AutoService {
 														+ table + " where id=?",
 												Arrays.asList(id));
 										db.execute("update " + table
-												+ " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=? where id=?",
-												Arrays.asList(amount, lgid, ccid, acno,accountnumber, id));
+												+ " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=?,depositedby=?,depcontact=? where id=?",
+												Arrays.asList(amount, lgid, ccid, acno,accountnumber,depname,depc, id));
 										db.execute(
 												"update " + table
 														+ " set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",
@@ -1148,11 +1150,11 @@ public class TaxPayerVoucherService extends AutoService {
 
 							} else {
 								JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, amount, lgid,
-										ccid, acno,accountnumber, request("voucherinfo"), "SDC");
+										ccid, acno,accountnumber, request("voucherinfo"),depname,depc, "SDC");
 								if (ups != null) {
 									if (ups.getInt("status") == 1) {
-										db.execute("update " + table+ " set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",
-												Arrays.asList(taxpayername, taxpayerpan, amount, id));
+										db.execute("update " + table+ " set taxpayername=? ,taxpayerpan=?,amountcr=?,depositedby=?,depcontact=? where id=?",
+												Arrays.asList(taxpayername, taxpayerpan, amount,depname,depc, id));
 										db.execute("delete from taxvouchers_detail where mainid=?", Arrays.asList(id));
 										if (jarr.length() > 0) {
 											for (int i = 0; i < jarr.length(); i++) {
@@ -1170,12 +1172,12 @@ public class TaxPayerVoucherService extends AutoService {
 								}
 							}
 						} else {
-							JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, "", "", "", "", "","",
+							JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, "", "", "", "", "","",depname,depc,
 									"AC");
 							if (ups != null) {
 								if (ups.getInt("status") == 1) {
-									db.execute("update " + table + " set taxpayername=? ,taxpayerpan=? where id=?",
-											Arrays.asList(taxpayername, taxpayerpan, id));
+									db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,depositedby=?,depcontact=? where id=?",
+											Arrays.asList(taxpayername, taxpayerpan,depname,depc, id));
 									return Messenger.getMessenger().setMessage("Voucher Updated").success();
 								} else {
 									return Messenger.getMessenger().setMessage("Unable to update, Try again later")
@@ -1188,15 +1190,15 @@ public class TaxPayerVoucherService extends AutoService {
 						if ((t.get("today") + "").equals(t.get("dateint") + "")) {
 							if (!((t.get("lgid") + "").equals(lgid) && (t.get("bankorgid") + "").equals(acno))) {
 								JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, amount, lgid,
-										ccid, acno,accountnumber, request("voucherinfo"), "SDPACNA");
+										ccid, acno,accountnumber, request("voucherinfo"),depname,depc, "SDPACNA");
 							
 								if (ups != null) {
 									
 									if (ups.getInt("status") == 1) {
 										db.execute(
 												"update " + table
-														+ " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=? where id=?",
-												Arrays.asList(amount, lgid, ccid, acno,accountnumber, id));
+														+ " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=?,depositedby=?,depcontact=? where id=?",
+												Arrays.asList(amount, lgid, ccid, acno,accountnumber,depname,depc, id));
 										db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",
 												Arrays.asList(taxpayername, taxpayerpan, amount, id));
 										db.execute("delete from taxvouchers_detail where mainid=?", Arrays.asList(id));
@@ -1215,11 +1217,11 @@ public class TaxPayerVoucherService extends AutoService {
 								}
 							}else {
 								JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, amount, lgid,
-										ccid, acno,accountnumber, request("voucherinfo"), "SDC");
+										ccid, acno,accountnumber, request("voucherinfo"),depname,depc, "SDC");
 								if (ups != null) {
 									if (ups.getInt("status") == 1) {
-										db.execute("update " + table+ " set taxpayername=? ,taxpayerpan=?,amountcr=? where id=?",
-												Arrays.asList(taxpayername, taxpayerpan, amount, id));
+										db.execute("update " + table+ " set taxpayername=? ,taxpayerpan=?,amountcr=?,depositedby=?,depcontact=? where id=?",
+												Arrays.asList(taxpayername, taxpayerpan, amount,depname,depc, id));
 										db.execute("delete from taxvouchers_detail where mainid=?", Arrays.asList(id));
 										if (jarr.length() > 0) {
 											for (int i = 0; i < jarr.length(); i++) {
@@ -1237,12 +1239,12 @@ public class TaxPayerVoucherService extends AutoService {
 								}
 							}
 						} else {
-							JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, "", "", "", "", "","",
+							JSONObject ups = api.saveVoucherUpdates(id, taxpayername, taxpayerpan, "", "", "", "", "","",depname,depc,
 									"AC");
 							if (ups != null) {
 								if (ups.getInt("status") == 1) {
-									db.execute("update " + table + " set taxpayername=? ,taxpayerpan=? where id=?",
-											Arrays.asList(taxpayername, taxpayerpan, id));
+									db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,depositedby=?,depcontact=? where id=?",
+											Arrays.asList(taxpayername, taxpayerpan,depname,depc, id));
 									return Messenger.getMessenger().setMessage("Voucher Updated").success();
 								} else {
 									return Messenger.getMessenger().setMessage("Unable to update, Try again later")

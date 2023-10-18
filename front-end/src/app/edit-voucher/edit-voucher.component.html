@@ -96,7 +96,7 @@
           <div class="row g-3">
             <input type="hidden" formControlName="id" />
             <div class="col-6">
-              <label class="form-label req">{{"Pan No" | translate}}</label>
+              <label class="form-label req">{{"Taxpayer Pan No" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="taxpayerpan" type="text" 
                   class="form-control form-control-sm" [ngClass]="
@@ -111,7 +111,7 @@
             </div>
 
             <div class="col-6">
-              <label class="form-label req">{{"Name" | translate}}</label>
+              <label class="form-label req">{{"Taxpayer Name" | translate}}</label>
               <div class="input-group has-validation">
                 <input formControlName="taxpayername" type="text" class="form-control form-control-sm"
                   [ngClass]="vs.getControlClass(bankForm.controls['taxpayername'])" />
@@ -223,6 +223,26 @@
               </table>
     
             </div>
+
+            <div class="col-sm-6">
+              <label for="username" class="form-label req">{{"Depositor Name" | translate}}</label>
+              <div class="input-group has-validation">
+                <input formControlName="depositedby" type="text" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['depositedby'])">
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['depositedby'])">
+                  {{vs.getMessage(bankForm.controls['depositedby'])}}</div>
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="username" class="form-label req">{{"Depositer Contact Number" | translate}}</label>
+              <div class="input-group has-validation">
+                <input formControlName="depcontact" type="text" class="form-control form-control-sm"
+                  [ngClass]="vs.getControlClass(bankForm.controls['depcontact'])">
+                <div [ngClass]="vs.getMessageClass(bankForm.controls['depcontact'])">
+                  {{mobile(vs.getMessage(bankForm.controls['depcontact']))}}</div>
+              </div>
+              </div>
          
 
           </div>

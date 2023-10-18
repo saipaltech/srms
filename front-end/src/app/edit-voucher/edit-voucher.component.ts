@@ -50,7 +50,9 @@ export class EditVoucherComponent {
       revenuecode: [''],
       lgid:['',Validators.required],
       bankorgid:['',Validators.required],
-      collectioncenterid:['',Validators.required]
+      collectioncenterid:['',Validators.required],
+      depositedby:[''],
+      depcontact:['']
 
 
 
@@ -263,7 +265,7 @@ ccs:any;
            console.log(this.revvs);
           this.items=dt.data.revs;
           this.calctotal();
-          this.bankForm.patchValue({lgid:this.transDetails.lgid,'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername});
+          this.bankForm.patchValue({lgid:this.transDetails.lgid,'taxpayerpan':this.transDetails.taxpayerpan,'taxpayername':this.transDetails.taxpayername,'depcontact':this.transDetails.depcontact,'depositedby':this.transDetails.depositedby});
         
           if (this.transDetails.trantype == 1) {
             this.istab = 1;

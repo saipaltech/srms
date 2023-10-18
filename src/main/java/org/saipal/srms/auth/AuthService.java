@@ -3,8 +3,15 @@ package org.saipal.srms.auth;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.persistence.Tuple;
 
 import org.codehaus.jettison.json.JSONException;
@@ -128,6 +135,7 @@ public class AuthService {
 					}
 					try {
 						String otpSetting = ss.getSetting(SettingsService.otpKey,t.get("bankid")+"");
+//						System.out.println(otpSetting);
 						if(otpSetting.isBlank() || otpSetting.equals("1")) {
 							//only sms
 							JSONObject ob = sms.sendSms(t.get("mobile")+"", message, reqid);
@@ -317,4 +325,51 @@ public class AuthService {
 			return Messenger.getMessenger().setMessage("No Such user exists.").error();
 		}
 	}
+	
+//
+//    public  void sendEmail() {
+//        // Sender's email and password
+//        String senderEmail = "doipresspass@gmail.com";
+//        String senderPassword = "nojddfhaxlgtopch";
+//        
+//        // Recipient's email
+//        String recipientEmail = "niroulabhai1@gmail.com";
+//
+//        // Set up mail server properties
+//        Properties properties = System.getProperties();
+//        properties.put("mail.smtp.host", "smtp.gmail.com");
+//        properties.put("mail.smtp.port", "587");
+//        properties.put("mail.smtp.auth", "true");
+//        properties.put("mail.smtp.starttls.enable", "true");
+//
+//        // Create a session with the mail server
+//        Session session = Session.getDefaultInstance(properties, null);
+//
+//        try {
+//            // Create a MimeMessage object
+//            MimeMessage message = new MimeMessage(session);
+//
+//            // Set the sender's and recipient's email addresses
+//            message.setFrom(new InternetAddress(senderEmail));
+//            message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientEmail));
+//
+//            // Set the email subject and content
+//            message.setSubject("Hello, this is a JavaMail test");
+//            message.setText("This is a test email sent from Java.");
+//
+//            // Authenticate and connect to the mail server
+//            Transport transport = session.getTransport("smtp");
+//            transport.connect("smtp.gmail.com", senderEmail, senderPassword);
+//
+//            // Send the email
+//            transport.sendMessage(message, message.getAllRecipients());
+//
+//            // Close the connection
+//            transport.close();
+//
+//            System.out.println("Email sent successfully.");
+//        } catch (MessagingException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

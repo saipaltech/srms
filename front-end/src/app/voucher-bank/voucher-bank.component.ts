@@ -130,7 +130,7 @@ export class VoucherBankComponent implements OnInit {
     this.hideForm = !this.hideForm;
   }
 
-  approveVoucher(id: string) {
+  approveVoucher(id: string,lgid:any,ks:any) {
 
     if (confirm("Are you sure you want to Approve this item?")) {
       // user clicked Yes
@@ -139,6 +139,7 @@ export class VoucherBankComponent implements OnInit {
           this.toastr.success(d.message, "Success");
           this.getList();
           this.modalRef?.hide();
+          this.showSlip(lgid,ks);
         }, error: err => {
           this.toastr.error(err.error.message, "Error")
         }

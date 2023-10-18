@@ -547,7 +547,7 @@ public class ReportService extends AutoService {
 			condition = condition + " and dc.branchid="+branch+" ";
 		String username= request("users")+"";
 		if (!username.isBlank())
-			condition = condition + " and deposituserid="+username+" ";
+			condition = condition + " and creatorid="+username+" ";
 		condition = condition+" and dc.bankid="+ auth.getBankId();
 		String repTitle = getHeaderString("Day Close, From:" + request("from") + " To:" + request("to"));
 		String sql = "select dc.id,cast(dcd.date as Date) as dates,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp as palika,(dc.amountcr-dc.amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid join dayclose_details dcd on dc.id = dcd.dcid "
