@@ -238,9 +238,9 @@ public class TaxPayerVoucherService extends AutoService {
 
 		String id = db.newIdInt();
 		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,cleardateint,amountcr,depositbankid,depositbranchid,cstatus,accountnumber,directdeposit)"
-				+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),format(getdate(),'yyyyMMdd'),?,?,?,?,?,?)";
+				+ " VALUES (?,getdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),format(getdate(),'yyyyMMdd'),?,?,?,?,?,?)";
 		DbResponse rowEffect = db.execute(sql,
-				Arrays.asList(id, model.date, model.voucherno, model.taxpayername, model.taxpayerpan, model.depositedby,
+				Arrays.asList(id, model.voucherno, model.taxpayername, model.taxpayerpan, model.depositedby,
 						model.depcontact, model.lgid, model.collectioncenterid, model.bankorgid, model.purpose,
 						auth.getUserId(), auth.getBankId(), auth.getBranchId(), model.ttype, model.chequebank,
 						model.chequeno, model.chequeamount, model.chequetype, model.amount, auth.getBankId(),
