@@ -550,9 +550,9 @@ public class ReportService extends AutoService {
 			condition = condition + " and creatorid="+username+" ";
 		condition = condition+" and dc.bankid="+ auth.getBankId();
 		String repTitle = getHeaderString("Day Close, From:" + request("from") + " To:" + request("to"));
-		String sql = "select dc.id,cast(dcd.date as Date) as dates,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp as palika,(dc.amountcr-dc.amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid join dayclose_details dcd on dc.id = dcd.dcid "
+		String sql = "select dc.id,CAST(CAST(CAST(dc.dateint as int) as char(8))as date) as dates,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp as palika,(dc.amountcr-dc.amountdr) as balance from dayclose dc join admin_local_level_structure lls on lls.id = dc.lgid  "
 				+condition
-				+" group by dc.id,dcd.date,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp"
+				+" group by dc.id,dc.dateint,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp"
 				+ " order by palika ";
 		List<Tuple> lists = db.getResultList(sql);
 		System.out.println(sql);
