@@ -70,6 +70,16 @@ public class BankController {
 		return objService.getList();
 	}
 	
+	@GetMapping("get-bank-list")
+	public ResponseEntity<List<Map<String, Object>>> getListAll() {
+		return objService.getListAll();
+	}
+	
+	@GetMapping("get-Branches")
+	public ResponseEntity<List<Map<String, Object>>> getBranches() {
+		return objService.getBranches();
+	}
+	
 	@GetMapping("/banks-from-sutra")
 	public ResponseEntity<List<Map<String, Object>>> getBanksFromSutra() {
 		return objService.getBanksFromSutra();

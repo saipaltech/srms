@@ -105,19 +105,30 @@ public class UsersService extends AutoService {
 	}
 
 	public ResponseEntity<Map<String, Object>> indexAll() {
+		String bankid=request("bankid");
+		String branchid=request("branchid");
+		
 		if (!auth.hasPermissionOnly("loginuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = "";
+		String condition = " where 1=1 ";
+		if(!bankid.equals("0")) {
+			condition += " and u.bankid="+bankid+ " ";
+		}
+		if(!branchid.equals("0")) {
+			condition += " and u.branchid="+branchid + " ";
+		}
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = Users.searchables();
-			condition += "and (";
+			condition += " and (";
 			for (String field : searchbles) {
 				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
 			}
+			
 			condition = condition.substring(0, condition.length() - 3);
 			condition += ")";
 		}
+		System.out.println(condition);
 		String sort = "";
 		if (!request("sortKey").isBlank()) {
 			if (!request("sortDir").isBlank()) {

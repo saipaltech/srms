@@ -427,7 +427,7 @@ public class TaxPayerVoucherService extends AutoService {
 								}
 								return Messenger.getMessenger().setMessage("Cheque cleared, SMS sent to depositor.").success();
 							}else {
-								if(obj.getString("message").startsWith("Already Verified Voucher")) {
+								if(obj.getString("message").startsWith("Already Verified Voucher") || obj.getString("message").startsWith("Already Payed Voucher")) {
 									String message = chequeClearedSms.replace("SANKET", (t.get("karobarsanket") + ""));
 									if (!isDev.equals("1")) {
 										JSONObject ob = sms.sendSms(t.get("depcontact") + "", message, db.newIdInt());	

@@ -46,7 +46,9 @@ export class AllUsersComponent implements OnInit, OnDestroy {
   constructor(private auth:AuthService ,private toastr: ToastrService, private RS: AllUsersService,private router:Router) {
     this.srchForm = new FormGroup({
       entries: new FormControl('10'),
-      srch_term: new FormControl('')
+      srch_term: new FormControl(''),
+      bankid: new FormControl('0'),
+      branchid: new FormControl('0')
     })
   }
   ngOnDestroy(): void {
@@ -67,12 +69,15 @@ export class AllUsersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.pagination.perPage = this.perPages[0];
     this.getList();
+    this.getBanks();
   }
 
+  bankid='0';
+  branchid='0';
 
   getList(pageno?: number | undefined) {
     const page = pageno || 1;
-    this.RS.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(
+    this.RS.getList(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc,this.bankid,this.branchid).subscribe(
       (result: any) => {
         this.lists = result.data;
         this.pagination.total = result.total;
@@ -90,7 +95,38 @@ export class AllUsersComponent implements OnInit, OnDestroy {
   search() {
     this.pagination.perPage = this.srchForm.value.entries;
     this.searchTerm = this.srchForm.value.srch_term;
+    this.bankid=this.srchForm.value.bankid;
+    this.branchid=this.srchForm.value.branchid;
     this.getList();
+  }
+
+  banks:any;
+  getBanks(){
+    this.RS.getBanks().subscribe({next:(d)=>{
+      this.banks = d;
+      // console.log(this.banks);
+    },error:err=>{
+
+    }})
+  }
+
+  branch:any;
+  getBranches(){
+    // this.srchForm.patchValue({"branchid":''});
+    let bankid=this.srchForm.value['bankid'];
+    this.RS.getBranches(bankid).subscribe({next:(d)=>{
+      this.branch = d;
+      this.search();
+      // console.log(this.banks);
+    },error:err=>{
+
+    }})
+    
+  }
+
+  getusersFrombranch(){
+    this.search();
+    // let branchid=this.srchForm.value['branchid'];
   }
 
   resetFilters() {

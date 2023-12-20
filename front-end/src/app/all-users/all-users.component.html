@@ -8,13 +8,44 @@
         <div class="tab">
           <form class="form-srch" [formGroup]="srchForm">
             <div class="input-group mb-3">
-              <input type="text" class="form-control" placeholder="Search.." id="srch_term" name="srch_term"
+              <input type="text" class="form-control" placeholder="Search Username..." id="srch_term" name="srch_term"
                 formControlName="srch_term" (keyup.enter)="search()" />
               <button class="btn btn-outline-secondary" type="button" (click)="search()">
                 <i class="bi bi-search"></i>
               </button>
             </div>
+            <div class="row">
+            <div class="col-6">
+              <label class="form-label ">Bank</label>
+              <div class="input-group has-validation">
+  
+                <ng-select formControlName="bankid"  (change)="getBranches()" class="w-100">
+                  <ng-option value="0"> Select </ng-option>
+                  <ng-option *ngFor="let op of banks" [value]="op.id">
+                    {{ op.nameen }} [ {{op.namenp}} ]</ng-option>
+                </ng-select>
+  
+               
+              </div>
+            </div>
+
+            <div class="col-6">
+              <label class="form-label ">Branch</label>
+              <div class="input-group has-validation">
+  
+                <ng-select formControlName="branchid" #brid (change)="getusersFrombranch()" class="w-100">
+                  <ng-option value="0"> Select </ng-option>
+                  <ng-option *ngFor="let op of branch" [value]="op.id">
+                    {{  op.name }}</ng-option>
+                </ng-select>
+  
+               
+              </div>
+            </div>
+
+          </div>
           </form>
+         
           <table class="display responsive-table w-100 table table-striped datatable">
             <thead>
               <tr>

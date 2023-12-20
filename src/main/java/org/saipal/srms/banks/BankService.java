@@ -140,10 +140,25 @@ public class BankService extends AutoService {
 		String bankId = auth.getBankId();
 		String sql = "";
 		if (bankId.equals("1")) {
-			sql = "select id,namenp from " + table + " where id !=1 and id not in (select distinct bankid from branches)";
+			sql = "select cast(id as varchar) as id,namenp,nameen from " + table + " where id !=1 and id not in (select distinct bankid from branches)";
 		} else {
-			sql = "select id,namenp from " + table + " where id ='" + bankId + "' and id not in (select distinct bankid from branches)";
+			sql = "select cast(id as varchar) as id,namenp,nameen from " + table + " where id ='" + bankId + "' and id not in (select distinct bankid from branches)";
 		}
+		return ResponseEntity.ok(db.getResultListMap(sql));
+	}
+	
+	
+	public ResponseEntity<List<Map<String,Object>>> getListAll() {
+//		String bankId = request("bid");
+		String sql = "select cast(id as varchar) as id,namenp,nameen from bankinfo where id  in (select distinct bankid from branches) ";
+
+		return ResponseEntity.ok(db.getResultListMap(sql));
+	}
+	
+	public ResponseEntity<List<Map<String,Object>>> getBranches() {
+		String bankId = request("bid");
+		String sql = "select cast(id as varchar) as id,name from branches where bankid="+bankId;
+
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
 
@@ -154,11 +169,12 @@ public class BankService extends AutoService {
 	}
 
 	public ResponseEntity<List<Map<String, Object>>> getDistrict() {
-		String sql = "select districtid as id,namenp from admin_district as a "
-				+ " inner join (select distinct a.districtid as did from admin_local_level_structure as a inner join bankaccount as b on a.id=b.lgid "
-				+ " where b.approved=1 and b.disabled=0 and b.bankid=? )  as b on a.districtid=b.did order by namenp ";
+//		String sql = "select districtid as id,namenp from admin_district as a "
+//				+ " inner join (select distinct a.districtid as did from admin_local_level_structure as a inner join bankaccount as b on a.id=b.lgid "
+//				+ " where b.approved=1 and b.disabled=0 and b.bankid=? )  as b on a.districtid=b.did order by namenp ";
+		String sql="select districtid as id,namenp from admin_district";
 
-		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList(auth.getBankId())));
+		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList()));
 	}
 	
 	public ResponseEntity<List<Map<String, Object>>> getPalika() {
@@ -173,7 +189,7 @@ public class BankService extends AutoService {
 				+ " admin_local_level_structure as a inner join "
 				+ " (select distinct lgid from  bankaccount  where  approved=1 and disabled=0 and  bankid=? ) as b "
 				+ " on a.id=b.lgid  where districtid=? "+ cond +" order by name ";
-		System.out.println("\n\n"+sql+"\n\n");
+//		System.out.println("\n\n"+sql+"\n\n");
 		return ResponseEntity.ok(db.getResultListMap(sql,Arrays.asList(auth.getBankId(),did)));
 	}
 	

@@ -38,7 +38,7 @@ public class Users {
 	}
 
 	public static List<String> searchables() {
-		return Arrays.asList("u.name", "u.username");
+		return Arrays.asList("u.name", "u.username","branches.name");
 	}
 
 	public static Map<String, String> rules() {
