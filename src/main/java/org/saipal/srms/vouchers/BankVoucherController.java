@@ -55,7 +55,7 @@ public class BankVoucherController {
 //	}
 
 	@PostMapping("")
-	public ResponseEntity<Map<String, Object>> update(HttpServletRequest request) {
+	public ResponseEntity<Map<String, Object>> update(HttpServletRequest request) throws JSONException {
 		Validator validator = validationService.validate(BankVoucher.rules());
 		if (validator.isFailed()) {
 			return Messenger.getMessenger().setMessage(validator.getErrorMessages()).error();

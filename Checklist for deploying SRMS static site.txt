@@ -1,4 +1,4 @@
-Checklist for deploying SRMS static Site.(Please follow the order carefully)
+   Checklist for deploying SRMS static Site.(Please follow the order carefully)
 1. Commit all changes and pull latest
 2. change the path '/assets/config.json' to '/web/assets/config.json' in src/app/app.config.ts; Here the depoloyment folder is /web/
 3. Now run the command ng build, it will build to ./dist

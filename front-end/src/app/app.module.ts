@@ -61,6 +61,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { AllUsersComponent } from './all-users/all-users.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { RevenueReportComponent } from './revenue-report/revenue-report.component';
+import { VerifyVoucherPortalComponent } from './verify-voucher-portal/verify-voucher-portal.component';
 
 @NgModule({
   declarations: [
@@ -102,7 +103,8 @@ import { RevenueReportComponent } from './revenue-report/revenue-report.componen
     SettingsComponent,
     AllUsersComponent,
     FileUploadComponent,
-    RevenueReportComponent
+    RevenueReportComponent,
+    VerifyVoucherPortalComponent
   ],
   imports: [
     BrowserModule,

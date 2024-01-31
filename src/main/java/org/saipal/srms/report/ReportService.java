@@ -652,7 +652,7 @@ if (!lists.isEmpty()) {
 		condition1 = condition1+" and t.bankid="+ auth.getBankId();
 		String repTitle = getHeaderString("Summary Report, From:" + request("from") + " To:" + request("to"));
 //		repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
-		String sql = " select sum(cash) as cash,sum(cheque) as cheque from (select (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
+		String sql = " select isnull(sum(cash),0) as cash,isnull(sum(cheque),0) as cheque from (select (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
 				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.branchid=? and (t.approved=1 or t.cstatus=1) "+condition 
 				+" union all "
 				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1 and t.branchid=? and t.approved=1 "+condition 
@@ -660,6 +660,7 @@ if (!lists.isEmpty()) {
 				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?  and t.depositbranchid=? and t.approved=1 "+condition1
 				+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype) c group by ttype) d";
 		List<Tuple> lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId()));
+//		System.out.println(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
 		BigDecimal ptotal = new BigDecimal("0");
@@ -672,6 +673,7 @@ if (!lists.isEmpty()) {
 		if (!lists.isEmpty()) {
 			int i = 1;
 			for (Tuple t : lists) {
+				System.out.println(t.get("cash"));
 				totalAmount = totalAmount.add((new BigDecimal(t.get("cash") + "")).add(new BigDecimal(t.get("cheque") + "")));
 				
 				

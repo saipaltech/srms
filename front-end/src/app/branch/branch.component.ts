@@ -199,6 +199,7 @@ getUpdateItem(id: string) {
   this.RS.getEdit(id).subscribe({
     next:(result: any) => {
       this.model = result;
+     
       this.bankForm.patchValue(result);
       this.changeFields();
     },

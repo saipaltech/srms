@@ -132,13 +132,13 @@ public class BranchService extends AutoService {
 		String bankId = auth.getBankId();
 		String sql = "";
 		if (bankId.equals("1")) {
-			sql = "select id,name from " + table + " where id !=1";
+			sql = "select cast(id as varchar) as id,name from " + table + " where id !=1";
 		} else {
 			String condition="";
 			if(auth.hasPermissionOnly("banksupervisor") && !auth.hasPermissionOnly("bankhq")) {
 				condition =" and id='"+auth.getBranchId()+"' ";
 			}
-			sql = "select id,name from " + table + " where bankid ='" + bankId + "' "+condition;
+			sql = "select cast(id as varchar) as id,name from " + table + " where bankid ='" + bankId + "' "+condition;
 		}
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}

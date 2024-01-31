@@ -105,6 +105,7 @@ export class TwoFaModalComponent implements OnInit {
   submitOtp(){
     if (this.otpForm.valid) {
       const otp = this.otpForm.value['otp'];
+      
       if(this.reqid && this.userid && otp){
         const data = {
           otp:otp,

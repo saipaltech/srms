@@ -1,7 +1,11 @@
 package org.saipal.srms.vouchers;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,10 +172,11 @@ public class TaxPayerVoucherService extends AutoService {
 		if (voucher.startsWith("{")) {
 			voucher = "[" + voucher + "]";
 		}
-
+String amt=request("amount");
+BigDecimal amount = new BigDecimal(amt);
 		JSONArray jarr = new JSONArray(voucher);
 		JSONArray jarr1 = new JSONArray();
-		System.out.println(notes.length());
+//		System.out.println(notes.length());
 		if (notes.length() == 0) {
 //			JSONArray jarr1 = new JSONArray();
 		} else {
@@ -235,7 +240,7 @@ public class TaxPayerVoucherService extends AutoService {
 		} else {
 			ct = 0;
 		}
-
+System.out.println(model.amount);
 		String id = db.newIdInt();
 		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,cleardateint,amountcr,depositbankid,depositbranchid,cstatus,accountnumber,directdeposit)"
 				+ " VALUES (?,getdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),format(getdate(),'yyyyMMdd'),?,?,?,?,?,?)";
@@ -243,9 +248,9 @@ public class TaxPayerVoucherService extends AutoService {
 				Arrays.asList(id, model.voucherno, model.taxpayername, model.taxpayerpan, model.depositedby,
 						model.depcontact, model.lgid, model.collectioncenterid, model.bankorgid, model.purpose,
 						auth.getUserId(), auth.getBankId(), auth.getBranchId(), model.ttype, model.chequebank,
-						model.chequeno, model.chequeamount, model.chequetype, model.amount, auth.getBankId(),
+						model.chequeno, model.chequeamount, model.chequetype, amount, auth.getBankId(),
 						auth.getBranchId(), ct,accountnumber,model.directdeposit));
-		System.out.println(rowEffect.getMessage());
+//		System.out.println(rowEffect.getMessage());
 		if (rowEffect.getErrorNumber() == 0) {
 			if (jarr.length() > 0) {
 				for (int i = 0; i < jarr.length(); i++) {
@@ -476,9 +481,77 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().error();
 		}
 	}
+	
+	@Transactional
+	public ResponseEntity<Map<String, Object>> updateforportal(String karobarsanket) throws JSONException {
+		if (!auth.hasPermission("bankuser")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		DbResponse rowEffect;
+//		BankVoucher model = new BankVoucher();
+//		model.loadData(document);
+		String usq = "select amountcr,isused from taxvouchers where karobarsanket=? and bankid=?";
+		Tuple res = db.getSingleResult(usq, Arrays.asList(karobarsanket, auth.getBankId()));
+		if (res != null) {
+//			if (!(res.get("isused") + "").equals("0")) {
+//				return Messenger.getMessenger().setMessage("Transactionid already been used.").error();
+//			}
+//			if (Float.parseFloat(model.amount) != Float.parseFloat(res.get("amountcr") + "")) {
+//				return Messenger.getMessenger().setMessage("Deposited amount and Voucher amount does not match.")
+//						.error();
+//			}
+			String sql = "UPDATE  taxvouchers set date=getdate(),dateint=format(getdate(),'yyyyMMdd'),deposituserid=?,ttype=1, depositbankid=?,depositbranchid=?,isused=1 where karobarsanket=? and bankid=?";
+			rowEffect = db.execute(sql,
+					Arrays.asList(  auth.getUserId(), auth.getBankId(), auth.getBranchId(),karobarsanket,auth.getBankId()));
+			
+			boolean autoVerify = false;
+			Tuple u = db.getSingleResult("select id,amountlimit,permid from users where id=?",
+					Arrays.asList(auth.getUserId()));
+//			if ((u.get("permid") + "").equals("3")) {
+//				if ((u.get("amountlimit") + "").equals("-1")
+//						|| (Float.parseFloat(model.amount) <= Float.parseFloat(u.get("amountlimit") + ""))) {
+//					autoVerify = true;
+//				}
+//			}
+			if ((u.get("permid") + "").equals("4")) {
+				autoVerify = true;
+			}
+			LocalDate currentDate = LocalDate.now();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        String formattedDate = currentDate.format(formatter);
+			if (autoVerify) {
+				JSONObject resp = api.updateToSutra(karobarsanket, "",formattedDate, "approve", "1");
+				
+				
+//				System.out.println(resp);
+				if (resp != null) {
+					if (resp.getInt("status") == 1) {
+						db.execute("update taxvouchers set approved=1,updatedon=getdate(),approverid=? where karobarsanket=?",
+								Arrays.asList(auth.getUserId(), karobarsanket));
+						db.execute("update taxvouchers set syncstatus=2 where karobarsanket=?",
+								Arrays.asList(karobarsanket));
+						return Messenger.getMessenger().success();
+					}else {
+						return Messenger.getMessenger().setData(resp).error();
+					}
+				
+				
+				}
+				else {
+					return Messenger.getMessenger().setMessage("Internal Error").error();
+				}
+				
+			}
+			return Messenger.getMessenger().success();
+			
+		}else {
+			return Messenger.getMessenger().setMessage("Data Not found").error();
+		}
+//		return null;
+	}
 
 	public ResponseEntity<Map<String, Object>> approveVoucher(String id) {
-		Tuple c = db.getSingleResult("select id,amountcr as amount,approved from " + table + " where id=?",
+		Tuple c = db.getSingleResult("select id,karobarsanket,amountcr as amount,approved from " + table + " where id=?",
 				Arrays.asList(id));
 		if ((c.get("approved") + "").equals("1")) {
 			return Messenger.getMessenger().setMessage("Voucher is already Approved.").error();
@@ -494,6 +567,17 @@ public class TaxPayerVoucherService extends AutoService {
 				}
 			}
 		}
+		String karobarsanket=c.get("karobarsanket")+"";
+		char forthChar = karobarsanket.charAt(3);
+		if (forthChar == '4' || forthChar == '5') {
+			try {
+				return updateforportal(karobarsanket);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		db.execute("update " + table + " set approved=1,updatedon=getdate(),approverid=? where id=?",
 				Arrays.asList(auth.getUserId(), id));
 		Tuple t = db.getSingleResult("select * from " + table + " where id=? and approved=1", Arrays.asList(id));
