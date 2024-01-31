@@ -172,8 +172,9 @@ public class TaxPayerVoucherService extends AutoService {
 		if (voucher.startsWith("{")) {
 			voucher = "[" + voucher + "]";
 		}
-String amt=request("amount");
-BigDecimal amount = new BigDecimal(amt);
+			String amt=request("amount");
+			BigDecimal amount = new BigDecimal(amt);
+//			System.out.println(amount);
 		JSONArray jarr = new JSONArray(voucher);
 		JSONArray jarr1 = new JSONArray();
 //		System.out.println(notes.length());
@@ -232,7 +233,7 @@ BigDecimal amount = new BigDecimal(amt);
 				}
 			}
 		} else {
-			return Messenger.getMessenger().setMessage("Amount not set.").success();
+			return Messenger.getMessenger().setMessage("Amount not set.").error();
 		}
 		int ct = 0;
 		if (model.chequetype.equals("2")) {
@@ -240,7 +241,12 @@ BigDecimal amount = new BigDecimal(amt);
 		} else {
 			ct = 0;
 		}
-System.out.println(model.amount);
+		if(model.ttype.equals("2")) {
+			if(!model.amount.equals(model.chequeamount)) {
+				return Messenger.getMessenger().setMessage("Cheque Amount and total amount donot match.").error();
+			}
+		}
+//System.out.println(model.amount);
 		String id = db.newIdInt();
 		sql = "INSERT INTO taxvouchers (id,date,voucherno,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankorgid,purpose,deposituserid, bankid, branchid,ttype,chequebank,chequeno,chequeamount,chequetype,dateint,cleardateint,amountcr,depositbankid,depositbranchid,cstatus,accountnumber,directdeposit)"
 				+ " VALUES (?,getdate(),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,format(getdate(),'yyyyMMdd'),format(getdate(),'yyyyMMdd'),?,?,?,?,?,?)";
