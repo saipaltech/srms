@@ -1098,6 +1098,7 @@ public class TaxPayerVoucherService extends AutoService {
 		String depname=request("depositedby");
 		String depc=request("depcontact");
 		
+		
 		String accountnumber="";
 		if (voucher.startsWith("{")) {
 			voucher = "[" + voucher + "]";
@@ -1137,6 +1138,7 @@ public class TaxPayerVoucherService extends AutoService {
 		if ((t.get("isused") + "").equals("1")) {
 			return Messenger.getMessenger().setMessage("Already used voucher").error();
 		}
+		String ct=t.get("ttype")+"";
 		if ((t.get("approved") + "").equals("0")) {
 			if ((t.get("today") + "").equals(t.get("dateint") + "")) {
 				if (!((t.get("lgid") + "").equals(lgid) && (t.get("bankorgid") + "").equals(acno))) {
@@ -1169,11 +1171,23 @@ public class TaxPayerVoucherService extends AutoService {
 					// ,hasChangeReqest ,changeReqestDate ,amountcr ,amountdr ,depositbankid
 					// ,depositbranchid ,deposituserid from "+table+" where
 					// id=?",Arrays.asList(id));
-					db.execute("update " + table + " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=?,depositedby=?,depcontact=? where id=?",
-							Arrays.asList(amount, lgid, ccid, acno,accountnumber,depname,depc, id));
+					if(ct.equals("2")) {
+						db.execute("update " + table + " set amountcr=?,chequeamount=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=?,depositedby=?,depcontact=? where id=?",
+								Arrays.asList(amount,amount, lgid, ccid, acno,accountnumber,depname,depc, id));
+					}else {
+						db.execute("update " + table + " set amountcr=?,lgid=?,collectioncenterid=?,bankorgid=?,accountnumber=?,depositedby=?,depcontact=? where id=?",
+								Arrays.asList(amount, lgid, ccid, acno,accountnumber,depname,depc, id));
+					}
+					
 				}
-				db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,amountcr=?,depositedby=?,depcontact=? where id=?",
-						Arrays.asList(taxpayername, taxpayerpan, amount,depname,depc, id));
+				if(ct.equals("2")) {
+					db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,amountcr=?,chequeamount=?,depositedby=?,depcontact=? where id=?",
+							Arrays.asList(taxpayername, taxpayerpan, amount,amount,depname,depc, id));
+				}else {
+					db.execute("update " + table + " set taxpayername=? ,taxpayerpan=?,amountcr=?,depositedby=?,depcontact=? where id=?",
+							Arrays.asList(taxpayername, taxpayerpan, amount,depname,depc, id));
+				}
+				
 				db.execute("delete from taxvouchers_detail where mainid=?", Arrays.asList(id));
 				if (jarr.length() > 0) {
 					for (int i = 0; i < jarr.length(); i++) {
