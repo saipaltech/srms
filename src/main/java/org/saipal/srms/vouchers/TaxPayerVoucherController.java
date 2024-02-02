@@ -166,6 +166,11 @@ public class TaxPayerVoucherController {
 		return objService.getSpecific(id);
 	}
 	
+	@GetMapping("get-specific-own/{id}")
+	public ResponseEntity<Map<String, Object>> getSpecificOwn(HttpServletRequest request, @PathVariable String id){
+		return objService.getSpecificOwn(id);
+	}
+	
 	@GetMapping("generate-report")
 	public ResponseEntity<Map<String, Object>> generateReport(HttpServletRequest request){
 		return objService.generateReport();

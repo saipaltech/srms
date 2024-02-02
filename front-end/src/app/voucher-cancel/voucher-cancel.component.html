@@ -1,0 +1,156 @@
+<div class="row g-5 justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <p>Voucher Cancel (Reconciliation)</p>
+        </div>
+  
+        <div class="card-body mt-3">
+          <form class="needs-validation"
+          [formGroup]="voucherBankForm"
+          (ngSubmit)="voucherBankFormSubmit()">
+            <div class="row">
+              <div class="col-6">
+                <label for="username" class="form-label req"> {{"SuTRA  Karobarsanket" | translate}}</label>
+                <div class="input-group has-validation">
+                  <input #sk
+                    (blur)="getSutraDetails(sk.value)"
+                    formControlName="sksno"
+                    type="text"
+                    class="form-control form-control-sm"
+                    [ngClass]="vs.getControlClass(voucherBankForm.controls['sksno'])">
+                    <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['sksno'])">{{vs.getMessage(voucherBankForm.controls['sksno'])}}</div>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <label for="username" class="form-label req"> {{"Bank Interface  Karobarsanket" | translate}}</label>
+                <div class="input-group has-validation">
+                  <input #bk
+                   (blur)="getOwnDetails(bk.value)"
+                    formControlName="bksno"
+                    type="text"
+                    class="form-control form-control-sm"
+                    [ngClass]="vs.getControlClass(voucherBankForm.controls['bksno'])">
+                    <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['bksno'])">{{vs.getMessage(voucherBankForm.controls['bksno'])}}</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <!-- // sutra -->
+                <div  *ngIf="sdetails">
+
+                  <div class="row">
+                    <div class="col-6">
+                      जम्मा गरेको मिति : {{sdetails.voucherdate}}
+                    </div>
+                    <div class="col-6">
+                      दाखिला फारम (Deposit Slip) नं.: 
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      पालिका: {{sdetails.officename}}
+                    </div>
+                    <div class="col-md-6">
+                      संकलन केन्द्र: {{sdetails.officename}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6">
+                      खाता नंबर: {{sdetails.accountnumber}}
+                    </div>
+                    <div class="col-6">
+                      रकम: {{sdetails.amount}}
+                    </div>
+                  </div>
+              
+                  <div class="row">
+                    <div class="col-6">
+                      करदाताको नाम: {{sdetails.taxpayername}}
+                    </div>
+                    <div class="col-6">
+                      कारोबार संकेत : {{ sdetails.transactionid }}
+                    </div>
+                  </div>
+              
+              
+                  <br>
+                
+                
+                  </div>
+              </div>
+
+              <div class="col-6">
+                <!-- //portal -->
+                <div  *ngIf="bdetails">
+
+                  <div class="row">
+                    <div class="col-6">
+                      जम्मा गरेको मिति : {{bdetails.date}}
+                    </div>
+                    <div class="col-6">
+                      दाखिला फारम (Deposit Slip) नं.: {{bdetails.voucherno}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      पालिका: {{bdetails.llsname}}
+                    </div>
+                    <div class="col-md-6">
+                      संकलन केन्द्र: {{bdetails.collectioncentername}}
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-6">
+                      खाता नंबर: {{bdetails.accountno}}
+                    </div>
+                    <div class="col-6">
+                      रकम: {{bdetails.amount}}
+                    </div>
+                  </div>
+              
+                  <div class="row">
+                    <div class="col-6">
+                      करदाताको नाम: {{bdetails.taxpayername}}
+                    </div>
+                    <div class="col-6">
+                      कारोबार संकेत : {{ bdetails.approved === 1 ? bdetails.karobarsanket : 'To be Approved' }}
+                    </div>
+                  </div>
+              
+              
+                  <br>
+                
+                
+                  </div>
+              </div>
+
+              <div class="col-6">
+                <label for="username" class="form-label req"> {{"Remarks" | translate}}</label>
+                <div class="input-group has-validation">
+                  <input 
+                   
+                    formControlName="remarks"
+                    type="text"
+                    class="form-control form-control-sm"
+                    [ngClass]="vs.getControlClass(voucherBankForm.controls['remarks'])">
+                    <div [ngClass]="vs.getMessageClass(voucherBankForm.controls['remarks'])">{{vs.getMessage(voucherBankForm.controls['remarks'])}}</div>
+                </div>
+              </div>
+             
+             
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-success btn-sm" type="submit">View</button>
+                &nbsp; &nbsp;
+               
+              </div>
+            </div>
+          </form>
+        
+        </div>
+      </div>
+    </div>
+  </div>

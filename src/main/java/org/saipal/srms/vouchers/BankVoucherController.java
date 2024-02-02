@@ -79,6 +79,11 @@ public class BankVoucherController {
 		return objService.getTransDetails();
 	}
 	
+	@GetMapping("search-payment-sutra")
+	public ResponseEntity<Map<String, Object>> getTransDetails() {
+		return objService.getTransDetailsSutra();
+	}
+	
 
 //	
 //	@GetMapping("banks-from-sutra")

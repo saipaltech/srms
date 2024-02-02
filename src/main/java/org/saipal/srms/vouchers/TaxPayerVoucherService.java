@@ -139,7 +139,7 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().error();
 		}
 	}
-
+	
 	public ResponseEntity<Map<String, Object>> getSpecific(String id) {
 		String sql = "select cast(bd.id as varchar) as id,karobarsanket, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid,"
@@ -150,6 +150,28 @@ public class TaxPayerVoucherService extends AutoService {
 		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
 		List<Map<String, Object>> revs = db.getResultListMap(
 				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid join crevenue cr on cr.id=td.revenueid where td.mainid=?",
+				Arrays.asList(id));
+
+		if (revs.size() == 0) {
+			System.out.println(revs.size());
+			data.put("revs", null);
+		} else {
+			data.put("revs", revs);
+		}
+
+		return ResponseEntity.ok(data);
+	}
+	
+	public ResponseEntity<Map<String, Object>> getSpecificOwn(String id) {
+		String sql = "select cast(bd.id as varchar) as id,karobarsanket, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno, "
+				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid,"
+				+ "amountcr as amount, ba.accountnumber as accountno ,bd.purpose, bd.approved ,bd.taxpayerpan, bd.taxpayername, bd.depcontact, bd.depositedby "
+				+ "from taxvouchers as bd " + "left join collectioncenter cc on cc.id = bd.collectioncenterid  "
+				+ " join bankaccount ba on ba.id = bd.bankorgid "
+				+ "join admin_local_level_structure lls on lls.id = bd.lgid where bd.karobarsanket=?";
+		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(id));
+		List<Map<String, Object>> revs = db.getResultListMap(
+				"select td.revenueid,cr.namenp,td.amount from taxvouchers_detail td join taxvouchers t on t.id=td.mainid left join crevenue cr on cr.id=td.revenueid where t.karobarsanket=?",
 				Arrays.asList(id));
 
 		if (revs.size() == 0) {

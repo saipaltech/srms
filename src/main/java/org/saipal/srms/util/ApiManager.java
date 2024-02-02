@@ -303,6 +303,22 @@ public class ApiManager {
 		return null;
 	}
 	
+	public JSONObject getTransDetailsForview(String transactionid) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/get-trans-details-forview?transactionid="+transactionid+"&sessionid="+auth.getBranchId());
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/*
 	 * Calls Sutra API to get the cheque details by the karobarsanket and bankid
 	 * */

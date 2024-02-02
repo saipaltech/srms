@@ -2,6 +2,7 @@ package org.saipal.srms.vouchers;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -311,6 +312,59 @@ public class BankVoucherService extends AutoService {
 					} else {
 						return Messenger.getMessenger().setMessage(rs.getMessage()).error();
 					}
+				} else {
+					return Messenger.getMessenger().setMessage(dt.getString("message")).error();
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				// e.printStackTrace();
+			}
+		} else {
+			return Messenger.getMessenger().setMessage("Cannot Connect to SuTRA Server.").error();
+		}
+		return Messenger.getMessenger().error();
+	}
+	
+	public ResponseEntity<Map<String, Object>> getTransDetailsSutra() {
+		String transactionid = request("transactionid");
+		transactionid = nep2EngNum(transactionid).trim();
+		if (!isKarobarsanketValid(transactionid)) {
+			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
+		}
+		char forthChar = transactionid.charAt(3);
+		if (forthChar == '2') {
+			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
+		}
+		if (forthChar == '9') {
+			return getTransDetailsCheque();
+		}
+		if (forthChar == '4' || forthChar == '5') {
+			return getTransDetailsRmisPortal();
+		}
+		
+		String sql = "select usestatus from " + table + " where transactionid=? and bankid=? and paymentmethod=2";
+		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid, auth.getBankId()));
+//		System.out.println(data);
+		if (data != null) {
+			sql = "select bd.usestatus,bd.fyid,substring(cast(bd.transactionid as varchar),4,1) as trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
+					+ table
+					+ " bd join bankaccount ba on ba.id=bd.bankorgid  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
+			Map<String, Object> fdata = db.getSingleResultMap(sql,
+					Arrays.asList(transactionid, auth.getBankId()));
+			return Messenger.getMessenger().setData(fdata).success();
+		}
+		JSONObject dt = api.getTransDetailsForview(transactionid);
+		if (dt != null) {
+			try {
+				if (dt.getInt("status") == 1) {
+
+					JSONObject d = dt.getJSONObject("data");
+//					System.out.println(d);
+//					Map<String, Object> datas = new HashMap<>();
+//					datas.put("data", d);
+
+						return Messenger.getMessenger().setData(d.toString()).success();
+
 				} else {
 					return Messenger.getMessenger().setMessage(dt.getString("message")).error();
 				}

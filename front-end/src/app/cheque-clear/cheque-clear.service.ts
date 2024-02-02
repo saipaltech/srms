@@ -5,7 +5,7 @@ import { ApiService } from '../api.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ChequeEntryService {
+export class ChequeClearService {
   getPanDetails(panno:any){
     return this.http.get(this.url+"/pan-details?panno="+panno);
   }
@@ -39,7 +39,6 @@ export class ChequeEntryService {
   }
   url1="dayclose";
   url="taxpayer-voucher"; 
-  url3="bank-voucher";
   create(data: any) {
     // console.log(data);
     return this.http.post(this.url, data);
@@ -64,14 +63,6 @@ export class ChequeEntryService {
 
   getDetails(id: string) {
     return this.http.get(this.url + '/get-specific/' + id);  
-  }
-
-  getDetailsOwn(id: string) {
-    return this.http.get(this.url + '/get-specific-own/' + id);  
-  }
-
-  getDetailsSutra(id:any){
-    return this.http.get(this.url3 + '/search-payment-sutra?transactionid=' + id); 
   }
 
   getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean, approve?: string) {

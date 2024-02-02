@@ -30,6 +30,8 @@ import { AllUsersComponent } from './all-users/all-users.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { RevenueReportComponent } from './revenue-report/revenue-report.component';
 import { VerifyVoucherPortalComponent } from './verify-voucher-portal/verify-voucher-portal.component';
+import { ChequeClearComponent } from './cheque-clear/cheque-clear.component';
+import { VoucherCancelComponent } from './voucher-cancel/voucher-cancel.component';
 
 const routes: Routes = [
 {
@@ -80,6 +82,14 @@ const routes: Routes = [
           {
             path: 'verify-voucher-portal',
             component: VerifyVoucherPortalComponent
+          },
+          {
+            path: 'clear-cheque',
+            component: ChequeClearComponent
+          },
+          {
+            path: 'voucher-cancel',
+            component: VoucherCancelComponent
           },
           {
             path: 'user-profile',

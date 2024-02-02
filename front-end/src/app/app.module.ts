@@ -62,6 +62,8 @@ import { AllUsersComponent } from './all-users/all-users.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { RevenueReportComponent } from './revenue-report/revenue-report.component';
 import { VerifyVoucherPortalComponent } from './verify-voucher-portal/verify-voucher-portal.component';
+import { ChequeClearComponent } from './cheque-clear/cheque-clear.component';
+import { VoucherCancelComponent } from './voucher-cancel/voucher-cancel.component';
 
 @NgModule({
   declarations: [
@@ -104,7 +106,9 @@ import { VerifyVoucherPortalComponent } from './verify-voucher-portal/verify-vou
     AllUsersComponent,
     FileUploadComponent,
     RevenueReportComponent,
-    VerifyVoucherPortalComponent
+    VerifyVoucherPortalComponent,
+    ChequeClearComponent,
+    VoucherCancelComponent
   ],
   imports: [
     BrowserModule,
