@@ -140,6 +140,48 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 	}
 	
+	public ResponseEntity<Map<String, Object>> vouchercancel() {
+		String tables="tblreconcilation";
+		if (!auth.hasPermission("bankuser")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		String condition = " where tx.id!=1 ";
+		String approve = request("approvelog");
+		if (!request("searchTerm").isEmpty()) {
+			List<String> searchbles = VoucherCancel.searchables();
+			condition += "and (";
+			for (String field : searchbles) {
+				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
+			}
+			condition = condition.substring(0, condition.length() - 3);
+			condition += ")";
+
+		}
+		String sort = "";
+		if (!request("sortKey").isBlank()) {
+			if (!request("sortDir").isBlank()) {
+				sort = request("sortKey") + " " + request("sortDir");
+			}
+		}
+		if (sort.isBlank()) {
+			sort = "requestdate desc";
+		}
+
+		Paginator p = new Paginator();
+		condition = condition + " and tx.branchid=" + auth.getBranchId() + " and tx.bankid=" + auth.getBankId() + " ";
+		if (auth.canFromUserTable("3")) {
+			condition += " and tx.requestby='" + auth.getUserId() + "'";
+		}
+		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
+				.select("cast(tx.id as varchar) as id,tx.sutrasanket,tx.banksanket,tx.sutraamount as amount,cast(requestdate as date) as date,approvestatus,  ba.namenp as palika")
+				.sqlBody("from " + tables + " tx join admin_local_level_structure ba on ba.id=tx.lgid " + condition).paginate();
+		if (result != null) {
+			return ResponseEntity.ok(result);
+		} else {
+			return Messenger.getMessenger().error();
+		}
+	}
+	
 	public ResponseEntity<Map<String, Object>> getSpecific(String id) {
 		String sql = "select cast(bd.id as varchar) as id,karobarsanket, cast(bd.lgid as varchar) as lgid, cast (bd.date as date) as date, bd.voucherno, "
 				+ "lls.namenp as llsname,cc.namenp as collectioncentername, " + "bd.bankorgid,"

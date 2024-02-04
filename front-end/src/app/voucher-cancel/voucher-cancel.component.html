@@ -43,26 +43,20 @@
                     <div class="col-6">
                       जम्मा गरेको मिति : {{sdetails.voucherdate}}
                     </div>
-                    <div class="col-6">
-                      दाखिला फारम (Deposit Slip) नं.: 
-                    </div>
-                  </div>
-                  <div class="row">
                     <div class="col-md-6">
                       पालिका: {{sdetails.officename}}
                     </div>
-                    <div class="col-md-6">
-                      संकलन केन्द्र: {{sdetails.officename}}
-                    </div>
                   </div>
                   <div class="row">
-                    <div class="col-6">
-                      खाता नंबर: {{sdetails.accountnumber}}
+                   
+                    <div class="col-md-6">
+                      संकलन केन्द्र: {{sdetails.officename}}
                     </div>
                     <div class="col-6">
                       रकम: {{sdetails.amount}}
                     </div>
                   </div>
+                 
               
                   <div class="row">
                     <div class="col-6">
@@ -88,26 +82,20 @@
                     <div class="col-6">
                       जम्मा गरेको मिति : {{bdetails.date}}
                     </div>
-                    <div class="col-6">
-                      दाखिला फारम (Deposit Slip) नं.: {{bdetails.voucherno}}
-                    </div>
-                  </div>
-                  <div class="row">
                     <div class="col-md-6">
                       पालिका: {{bdetails.llsname}}
                     </div>
-                    <div class="col-md-6">
-                      संकलन केन्द्र: {{bdetails.collectioncentername}}
-                    </div>
                   </div>
                   <div class="row">
-                    <div class="col-6">
-                      खाता नंबर: {{bdetails.accountno}}
+                   
+                    <div class="col-md-6">
+                      संकलन केन्द्र: {{bdetails.collectioncentername}}
                     </div>
                     <div class="col-6">
                       रकम: {{bdetails.amount}}
                     </div>
                   </div>
+                 
               
                   <div class="row">
                     <div class="col-6">
@@ -143,8 +131,9 @@
             <br>
             <div class="row">
               <div class="col-md-12">
-                <button class="btn btn-success btn-sm" type="submit">View</button>
-                &nbsp; &nbsp;
+                <button class="btn btn-success btn-sm" type="submit">Save</button> &nbsp; &nbsp;
+                <button class="btn btn-danger btn-sm" type="reset">Cancel</button>
+               
                
               </div>
             </div>
@@ -153,4 +142,104 @@
         </div>
       </div>
     </div>
+
+   
   </div>
+
+
+  <div class="row g-5 justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <p>Voucher Cancel (Reconciliation) List</p>
+        </div>
+  <div class="card-body mt-3">
+    <form class="form-srch" [formGroup]="srchForm">
+      <div class="input-group mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search.."
+          id="srch_term"
+          name="srch_term"
+          formControlName="srch_term"
+          (keyup.enter)="search()"
+        />
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          (click)="search()"
+        >
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </form>
+    <table class="display responsive-table w-100 table table-striped  datatable">
+      <!--table-borderless-->
+      <thead>
+        <tr>
+          <th scope="col">{{"Sutra Karobarsanket" | translate}}</th>
+          <th scope="col">{{"Bank Karobarsanket" | translate}}</th>
+          <th scope="col">{{"Palika" | translate}}</th>
+          <th scope="col">{{"Request Date" | translate}}</th>
+          <th scope="col">{{"Amount" | translate}}</th>
+          <th scope="col">{{"Status" | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of lists; let i = index">
+          <td>{{ item.sutrasanket }}</td>
+          <td>{{ item.banksanket }}</td>
+          <td>{{ item.palika }}</td>
+          <td>{{ item.date }}</td>
+          <td>{{ item.amount }}</td>
+          <td *ngIf="item.approvestatus == 0"><span class="badge text-bg-warning">Not Approved</span></td>
+          <td *ngIf="item.approvestatus == 1"><span class="badge text-bg-success"> Approved</span></td>
+          <td *ngIf="item.approvestatus == 2"><span class="badge text-bg-danger"> Rejected</span></td>
+          <!--<td>{{ item.code }}</td>-->
+          
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="row">
+      <div class="col-6 text-start">
+        <pagination
+          [rotate]="true"
+          [maxSize]="5"
+          [totalItems]="pagination.total"
+          [(ngModel)]="pagination.currentPage"
+          [boundaryLinks]="true"
+          [itemsPerPage]="pagination.perPage"
+          (pageChanged)="paginatedData($event)"
+          previousText="&lsaquo;"
+          nextText="&rsaquo;"
+          firstText="&laquo;"
+          lastText="&raquo;"
+        ></pagination>
+      </div>
+
+      <div class="col-6 text-end">
+        <form [formGroup]="srchForm">
+          <div class="row" style="float: right">
+            <div class="col-md-12 smallbr">
+              Entries
+              <select
+                name="entries"
+                id="entries"
+                formControlName="entries"
+                (change)="search()"
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div></div></div>

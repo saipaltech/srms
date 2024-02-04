@@ -20,6 +20,10 @@ export class ChequeEntryService {
   getdayclose(data:any){
     return this.http.post(this.url1+"/getdayclose", data);
   }
+
+  vouchercancel(data:any){
+    return this.http.post(this.url3+"/vouchercancel", data);
+  }
   submitdayclose(data:any){
     return this.http.post(this.url1+"/submitdayclose", data);
   }
@@ -92,6 +96,27 @@ export class ChequeEntryService {
      }
      urlPart += '&approve='+ approve;
     return this.http.get(this.url+'/cheque' + urlPart);
+
+}
+
+getListVoucherCancel(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean, approve?: string) {
+
+  let urlPart = '?perPage=' + perPage + '&page=' + page;
+  if (typeof searchTerm !== 'undefined' || searchTerm !== '') {
+      urlPart += '&searchOption=all&searchTerm=' + searchTerm;
+  }
+  if (typeof sortKey !== 'undefined' || sortKey !== '') {
+      urlPart += '&sortKey=' + sortKey;
+  }
+  if (typeof sortDir !== 'undefined' && sortKey !== '') {
+      if (sortDir) {
+          urlPart += '&sortDir=desc';
+      } else {
+          urlPart += '&sortDir=asc';
+      }
+   }
+  //  urlPart += '&approve='+ approve;
+  return this.http.get(this.url+'/vouchercancel' + urlPart);
 
 }
 // getEdit(id: string) {

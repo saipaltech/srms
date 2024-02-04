@@ -1,6 +1,7 @@
 package org.saipal.srms.vouchers;
 
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -68,6 +69,18 @@ public class BankVoucherController {
 	public ResponseEntity<Map<String, Object>> chequeDeposit(HttpServletRequest request) throws JSONException {
 			return objService.chequeDeposit();
 	}
+	
+	
+	
+	@PostMapping("vouchercancel")
+	public ResponseEntity<Map<String, Object>> vouchercancel(HttpServletRequest request) throws JSONException {
+		Validator validator = validationService.validate(VoucherCancel.rules());
+		if (validator.isFailed()) {
+			return Messenger.getMessenger().setMessage(validator.getErrorMessages()).error();
+		} else {
+			return objService.vouchercancel();
+		}	
+	}
 
 //	@DeleteMapping("/{id}")
 //	public ResponseEntity<Map<String, Object>> destroy(HttpServletRequest request, @PathVariable String id) {
@@ -77,6 +90,11 @@ public class BankVoucherController {
 	@GetMapping("search-payment")
 	public ResponseEntity<Map<String, Object>> getList() {
 		return objService.getTransDetails();
+	}
+	
+	@GetMapping("getreconcilation")
+	public ResponseEntity<List<Map<String, Object>>>  getreconcilation() {
+		return objService.getreconcilation();
 	}
 	
 	@GetMapping("search-payment-sutra")

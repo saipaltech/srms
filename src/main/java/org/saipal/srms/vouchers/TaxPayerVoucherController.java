@@ -50,6 +50,12 @@ public class TaxPayerVoucherController {
 		return objService.indexcheque();
 	}
 	
+	@GetMapping("vouchercancel")
+	public ResponseEntity<Map<String, Object>> vouchercancel(HttpServletRequest request) {
+//		System.out.println("Reached at Index");
+		return objService.vouchercancel();
+	}
+	
 	@PostMapping("")
 	public ResponseEntity<Map<String, Object>> store(HttpServletRequest request) throws JSONException {
 		Validator validator = validationService.validate(TaxPayerVoucher.rules());

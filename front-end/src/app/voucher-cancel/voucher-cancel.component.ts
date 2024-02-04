@@ -36,6 +36,16 @@ export class VoucherCancelComponent {
   voucherBankForm!: FormGroup;
   daycloseForm!: FormGroup;
   formBuilder: any;
+  perPages = [10, 20, 50, 100];
+  pagination = {
+    total: 0,
+    currentPage: 0,
+    perPage: 10
+  };
+  searchTerm: string = '';
+  column: string = '';
+  isDesc: boolean = false;
+  srchForm!: FormGroup;
   selectedval=new Array();
     constructor(private renderer: Renderer2,private appconfig:AppConfig,private datePipe: DatePipe, private toastr: ToastrService, private fb: FormBuilder,private bvs:ChequeEntryService, private modalService: BsModalService, private r: Router,private auth:AuthService){
       const ud = this.auth.getUserDetails();
@@ -49,6 +59,10 @@ export class VoucherCancelComponent {
           
           
         }
+        this.srchForm = new FormGroup({
+          entries: new FormControl('10'),
+          srch_term: new FormControl('')})
+      
         
         this.formLayout1 = {
           date: [this.myDate],
@@ -70,7 +84,8 @@ export class VoucherCancelComponent {
     
 
     ngOnInit(): void {
-     
+      this.pagination.perPage = this.perPages[0];
+     this.getList();
      
       // this.bvs.getLocalLevels().subscribe({next:(dt)=>{
       //     this.llgs = dt.data;
@@ -83,24 +98,52 @@ export class VoucherCancelComponent {
     bdetails:any;
     sdetails:any;
     getSutraDetails(ksno:any){
+      this.sdetails=undefined;
       this.bvs.getDetailsSutra(ksno).subscribe({
         next: (dt) => {
-          this.sdetails = JSON.parse(dt.data);
-          console.log(this.sdetails.amount);
+            this.sdetails = JSON.parse(dt.data);
+          
+          console.log(this.sdetails);
         }, error: err => {
           this.toastr.error("Unable to Fetch Data", "Error")
         }
       });
     }
     getOwnDetails(ksno:any){
+      this.bdetails=undefined;
       this.bvs.getDetailsOwn(ksno).subscribe({
         next: (dt) => {
           this.bdetails = dt;
-          // console.log(this.details);
+          console.log(this.bdetails);
         }, error: err => {
           this.toastr.error("Unable to Fetch Data", "Error")
         }
       });
+    }
+
+    getList(pageno?: number | undefined) {
+      const page = pageno || 1;
+      this.bvs.getListVoucherCancel(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(
+        (result: any) => {
+          this.lists = result.data;
+          this.pagination.total = result.total;
+          this.pagination.currentPage = result.currentPage;
+          // console.log(result);
+        },
+        error => {
+           this.toastr.error(error.error);
+        }
+      );
+    }
+
+    paginatedData($event: { page: number | undefined; }) {
+      this.getList($event.page);
+    }
+    
+    changePerPage(perPage: number) {
+      this.pagination.perPage = perPage;
+      this.pagination.currentPage = 1;
+      this.getList();
     }
    
     onCheckboxChange(e:any,item:any) {
@@ -143,40 +186,41 @@ acs:any;
       }
       
     }
+
+    search(){
+
+    }
     model: any = {};
     lists:any;
     voucherBankFormSubmit(){
-     if(this.voucherBankForm.value.lgid==null){
-       this.voucherBankForm.patchValue({'lgid':''});
-     }
-     if(this.voucherBankForm.value.acno==null){
-      this.voucherBankForm.patchValue({'acno':''});
-    }
-      this.lists=undefined;
+      if(this.sdetails && this.bdetails){
       this.model = this.voucherBankForm.value;
+      this.model.sutralgid=this.sdetails.lgid;
+      this.model.banklgid=this.bdetails.lgid;
+      this.model.sutraccid=this.sdetails.collectioncenterid;
+      this.model.bankccid=this.bdetails.collectioncenterid;
+      this.model.sutraamount=this.sdetails.amount;
+      this.model.bankamount=this.bdetails.amount;
+        if(this.model.sutralgid!=this.model.banklgid){
+          this.toastr.error("Local Level not matched", 'Error');
+          return;
+        }
+      
+
+        if(this.model.sutraamount!=this.model.bankamount){
+          this.toastr.error("Amount not matched", 'Error');
+          return;
+        }
+
       // console.log(this.model.acno);
       if (this.voucherBankForm.valid) {
-      this.bvs.getdayclose(this.model).subscribe({
+      this.bvs.vouchercancel(this.model).subscribe({
         next:(result:any) => {
-          this.lists=result.data;
-          let cb=[];
-          for(var i in this.lists){
-            cb[this.lists[i].accountno]=[''];
-          }
-          this.daycloseForm=this.fb.group({
-            date: [this.myDate],
-            acno: ['',Validators.required],
-            lgid: ['',Validators.required],
-            corebank:this.fb.group(cb),
-            options: this.fb.array([], [Validators.required])
-          
-            
-          });
-          // this.daycloseForm.patchValue({'lgid':this.model.lgid,'acno':this.model.acno});
+          this.toastr.success('Item Successfully Saved!', 'Success');
+          this.resetForm();
+          this.sdetails=undefined;
+          this.bdetails=undefined;
         
-        // this.toastr.success('Item Successfully Saved!', 'Success');
-        // this.resetForm();
-        // this.getList();
       
       }, error:err => {
         this.toastr.error(err.error.message, 'Error');
@@ -188,6 +232,9 @@ acs:any;
         singleFormControl?.markAsTouched({onlySelf: true});
       });
     }
+  }else{
+    this.toastr.error("Invalid karobarsanket", 'Error');
+  }
     }
     model1:any;
     daycloseFormSubmit(){

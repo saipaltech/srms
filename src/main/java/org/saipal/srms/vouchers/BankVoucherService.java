@@ -69,6 +69,37 @@ public class BankVoucherService extends AutoService {
 			return Messenger.getMessenger().error();
 		}
 	}
+	
+
+	@Transactional
+	public ResponseEntity<Map<String, Object>> vouchercancel() throws JSONException {
+		VoucherCancel model = new VoucherCancel();
+		model.loadData(document);
+		String usq = "select count(id) as total from tblreconcilation where sutrasanket=? and banksanket=?";
+		Tuple res = db.getSingleResult(usq, Arrays.asList(model.sksno, model.bksno));
+		if (res != null) {
+			if (!(res.get("total") + "").equals("0")) {
+				return Messenger.getMessenger().setMessage("Transaction already been submitted.").error();
+			}
+		}
+		if(!model.sutralgid.equals(model.banklgid)) {
+			return Messenger.getMessenger().setMessage("Palika not matched").error();
+		}
+		
+		if(!model.sutraamount.equals(model.bankamount)) {
+			return Messenger.getMessenger().setMessage("Palika not matched").error();
+		}
+		
+		DbResponse rs = db.execute("insert into tblreconcilation (lgid,collectioncenterid,bankid,branchid,sutrasanket,banksanket,sutraamount,bankamount,remarks,requestby) values (?,?,?,?,?,?,?,?,?,?)",
+				Arrays.asList(model.sutralgid,model.sutraccid,auth.getBankId(),auth.getBranchId(),model.sksno,model.bksno,model.sutraamount,model.bankamount,model.remarks,auth.getUserId()));
+		if (rs.getErrorNumber() == 0) {
+			
+			return Messenger.getMessenger().success();
+		} else {
+			return Messenger.getMessenger().setMessage(rs.getMessage()).error();
+		}
+		
+	}
 
 	@Transactional
 	public ResponseEntity<Map<String, Object>> chequeDeposit() throws JSONException {
@@ -259,7 +290,13 @@ public class BankVoucherService extends AutoService {
 		}
 		return Messenger.getMessenger().setMessage("Unable to connect to SuTRA.").error();
 	}
-
+	
+	
+	public ResponseEntity<List<Map<String, Object>>> getreconcilation() {
+		String adminid=request("adminid");
+		String sql = "select sutrasanket,banksanket,cast(lgid as varchar) as lgid,cast(collectioncenterid as varchar) as collectioncenterid,cast(bankid as varchar)as bankid,cast(branchid as varchar) as branchid,sutraamount,bankamount,remarks,requestdate,requestby from tblreconcilation where approvestatus=0 and lgid="+adminid;
+		return ResponseEntity.ok(db.getResultListMap(sql));
+	}
 	public ResponseEntity<Map<String, Object>> getTransDetails() {
 		String transactionid = request("transactionid");
 		transactionid = nep2EngNum(transactionid).trim();
@@ -336,33 +373,28 @@ public class BankVoucherService extends AutoService {
 			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
 		}
 		if (forthChar == '9') {
-			return getTransDetailsCheque();
+			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
 		}
 		if (forthChar == '4' || forthChar == '5') {
-			return getTransDetailsRmisPortal();
+			return Messenger.getMessenger().setMessage("Invalid Karobarsanket format.").error();
 		}
 		
-		String sql = "select usestatus from " + table + " where transactionid=? and bankid=? and paymentmethod=2";
-		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid, auth.getBankId()));
-//		System.out.println(data);
-		if (data != null) {
-			sql = "select bd.usestatus,bd.fyid,substring(cast(bd.transactionid as varchar),4,1) as trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
-					+ table
-					+ " bd join bankaccount ba on ba.id=bd.bankorgid  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
-			Map<String, Object> fdata = db.getSingleResultMap(sql,
-					Arrays.asList(transactionid, auth.getBankId()));
-			return Messenger.getMessenger().setData(fdata).success();
-		}
+//		String sql = "select usestatus from " + table + " where transactionid=? and bankid=? and paymentmethod=2";
+//		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid, auth.getBankId()));
+//		if (data != null) {
+//			sql = "select bd.usestatus,bd.fyid,substring(cast(bd.transactionid as varchar),4,1) as trantype,bd.taxpayername,bd.vatpno,bd.address,bd.transactionid,bd.officename,bd.collectioncenterid,bd.lgid,cast(bd.voucherdate as date) as voucherdate,bd.voucherdateint,bd.bankid,bd.accountnumber,bd.amount,ba.accountname from "
+//					+ table
+//					+ " bd join bankaccount ba on ba.id=bd.bankorgid  where transactionid=? and bd.bankid=? and bd.paymentmethod=2";
+//			Map<String, Object> fdata = db.getSingleResultMap(sql,
+//					Arrays.asList(transactionid, auth.getBankId()));
+//			return Messenger.getMessenger().setData(fdata).success();
+//		}
 		JSONObject dt = api.getTransDetailsForview(transactionid);
 		if (dt != null) {
 			try {
 				if (dt.getInt("status") == 1) {
 
 					JSONObject d = dt.getJSONObject("data");
-//					System.out.println(d);
-//					Map<String, Object> datas = new HashMap<>();
-//					datas.put("data", d);
-
 						return Messenger.getMessenger().setData(d.toString()).success();
 
 				} else {
