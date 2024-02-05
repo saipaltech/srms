@@ -70,6 +70,10 @@ public class BankVoucherController {
 			return objService.chequeDeposit();
 	}
 	
+	@PostMapping("reconcilation")
+	public ResponseEntity<Map<String, Object>> reconcilation(HttpServletRequest request) throws JSONException {
+			return objService.reconcilation();
+	}
 	
 	
 	@PostMapping("vouchercancel")

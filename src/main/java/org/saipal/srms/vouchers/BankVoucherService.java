@@ -70,7 +70,26 @@ public class BankVoucherService extends AutoService {
 		}
 	}
 	
-
+	@Transactional
+	public ResponseEntity<Map<String, Object>> reconcilation() throws JSONException {
+		String id=request("id");
+		String status=request("status");
+		String remarks=request("remarks");
+		String approvedate=request("approvedate");
+		String approvedby=request("approvedby");
+		if(status.equals("1")) {
+			// voucher modify
+		}
+		String sql="update tblreconcilation set approvestatus=?,rejectremarks=?,approvedate=?,approvedby=? where id=?";
+		DbResponse rs = db.execute(sql,
+				Arrays.asList(status, remarks, approvedate,approvedby,id));
+		if (rs.getErrorNumber() == 0) {
+			return Messenger.getMessenger().success();
+			} else {
+			return Messenger.getMessenger().setMessage(rs.getMessage()).error();
+		}
+    }
+	
 	@Transactional
 	public ResponseEntity<Map<String, Object>> vouchercancel() throws JSONException {
 		VoucherCancel model = new VoucherCancel();
@@ -87,7 +106,7 @@ public class BankVoucherService extends AutoService {
 		}
 		
 		if(!model.sutraamount.equals(model.bankamount)) {
-			return Messenger.getMessenger().setMessage("Palika not matched").error();
+			return Messenger.getMessenger().setMessage("Amount not matched").error();
 		}
 		
 		DbResponse rs = db.execute("insert into tblreconcilation (lgid,collectioncenterid,bankid,branchid,sutrasanket,banksanket,sutraamount,bankamount,remarks,requestby) values (?,?,?,?,?,?,?,?,?,?)",
