@@ -372,8 +372,8 @@
         
           <th scope="col">{{"Date" | translate}}</th>
           <th scope="col">{{"Tax Payer Name" | translate}}</th>
-          <th scope="col">{{"Account No" | translate}}</th>
-          <th scope="col">{{"Deposit slip No." | translate}}</th>
+          <th scope="col">{{"Cheque Type" | translate}}</th>
+          <th scope="col">{{"Cheque No." | translate}}</th>
           <th scope="col">{{"Karobar Sanket" | translate}}</th>
           <th scope="col">{{"Amount" | translate}}</th>
           <th scope="col">{{"Status" | translate}}</th>
@@ -385,7 +385,8 @@
         
           <td>{{ item.date }}</td>
           <td>{{ item.taxpayername }}</td>
-          <td>{{ item.accountno }}</td>
+          <td  *ngIf="item.chequetype==0">Verify From Palika</td>
+          <td  *ngIf="item.chequetype!=0">Self Entry</td>
           <td>{{ item.voucherno }}</td>
           <td >{{ item.cheque_text }}</td>
           <td>{{ item.amount }}</td>
@@ -400,8 +401,8 @@
             &nbsp; -->
             <button *ngIf="item.cstatus == 0" class="btn btn-info btn-sm" (click)="clearCheque(item.id)" title="Cheque Cleared"><i class="bi bi-arrow-return-right"></i></button>
             &nbsp;
-            <button *ngIf="item.cstatus == 0" class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i></button>
-            &nbsp;  <button *ngIf="item.cstatus == 0" class="btn btn-success btn-sm" (click)="getUpdateItem(item.id)" title="Edit" href="javascript:void(0)"
+            <button *ngIf="item.cstatus == 0 && item.chequetype!=0" class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i></button>
+            &nbsp;  <button *ngIf="item.cstatus == 0 && item.chequetype!=0" class="btn btn-success btn-sm" (click)="getUpdateItem(item.id)" title="Edit" href="javascript:void(0)"
             ><i class="bi bi-pencil-square"></i
           ></button>
           </td>

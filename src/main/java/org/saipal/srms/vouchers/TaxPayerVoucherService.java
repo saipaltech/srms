@@ -131,7 +131,7 @@ public class TaxPayerVoucherService extends AutoService {
 			condition += " and tx.deposituserid='" + auth.getUserId() + "'";
 		}
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(tx.id as char) as id,tx.chequetype,cast(date as date) as date,(case when tx.cstatus='1' OR tx.chequetype='2' then cast(karobarsanket as varchar) else 'To be Cleared' end) as cheque_text,cstatus,voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,amountcr as amount,  ba.accountnumber as accountno")
+				.select("cast(tx.id as char) as id,tx.chequetype,cast(date as date) as date,(case when tx.cstatus='1' OR tx.chequetype='2' then cast(karobarsanket as varchar) else 'To be Cleared' end) as cheque_text,cstatus,chequeno as voucherno,taxpayername,karobarsanket,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,amountcr as amount,  ba.accountnumber as accountno")
 				.sqlBody("from " + table + " tx join bankaccount ba on ba.id=tx.bankorgid " + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
@@ -306,7 +306,7 @@ public class TaxPayerVoucherService extends AutoService {
 			ct = 0;
 		}
 		if(model.ttype.equals("2")) {
-			if(!model.amount.equals(model.chequeamount)) {
+			if(!amount.toString().equals(model.chequeamount)) {
 				return Messenger.getMessenger().setMessage("Cheque Amount and total amount donot match.").error();
 			}
 		}

@@ -193,9 +193,13 @@
           <td>{{ item.palika }}</td>
           <td>{{ item.date }}</td>
           <td>{{ item.amount }}</td>
-          <td *ngIf="item.approvestatus == 0"><span class="badge text-bg-warning">Not Approved</span></td>
-          <td *ngIf="item.approvestatus == 1"><span class="badge text-bg-success"> Approved</span></td>
+          <td *ngIf="item.approvestatus == 0">
+            <button type="button" class="btn btn-success btn-sm" (click)="submitToPalika(item.id)">Submit to palika</button>
+          &nbsp;&nbsp;  <button  class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i> Delete</button>
+          </td>
+          <td *ngIf="item.approvestatus == 1"><span class="badge text-bg-info"> Submitted</span></td>
           <td *ngIf="item.approvestatus == 2"><span class="badge text-bg-danger"> Rejected</span></td>
+          <td *ngIf="item.approvestatus == 3"><span class="badge text-bg-success"> Approved</span></td>
           <!--<td>{{ item.code }}</td>-->
           
         </tr>

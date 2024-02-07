@@ -96,6 +96,16 @@ public class BankVoucherController {
 		return objService.getTransDetails();
 	}
 	
+	@GetMapping("submitToPalika")
+	public ResponseEntity<Map<String, Object>> submitToPalika() {
+		return objService.submitToPalika();
+	}
+	
+	@GetMapping("deleteVoucher")
+	public ResponseEntity<Map<String, Object>> deleteVoucher() {
+		return objService.deleteVoucher();
+	}
+	
 	@GetMapping("getreconcilation")
 	public ResponseEntity<List<Map<String, Object>>>  getreconcilation() {
 		return objService.getreconcilation();

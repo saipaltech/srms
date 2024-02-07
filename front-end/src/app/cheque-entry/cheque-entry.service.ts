@@ -74,6 +74,14 @@ export class ChequeEntryService {
     return this.http.get(this.url + '/get-specific-own/' + id);  
   }
 
+  submitToPalika(id:any){
+    return this.http.get(this.url3 + '/submitToPalika?id=' + id);
+  }
+
+  deleteVoucher(id:any){
+    return this.http.get(this.url3 + '/deleteVoucher?id=' + id);
+  }
+
   getDetailsSutra(id:any){
     return this.http.get(this.url3 + '/search-payment-sutra?transactionid=' + id); 
   }

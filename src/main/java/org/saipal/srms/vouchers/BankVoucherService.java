@@ -316,6 +316,26 @@ public class BankVoucherService extends AutoService {
 		String sql = "select sutrasanket,banksanket,cast(lgid as varchar) as lgid,cast(collectioncenterid as varchar) as collectioncenterid,cast(bankid as varchar)as bankid,cast(branchid as varchar) as branchid,sutraamount,bankamount,remarks,requestdate,requestby from tblreconcilation where approvestatus=0 and lgid="+adminid;
 		return ResponseEntity.ok(db.getResultListMap(sql));
 	}
+	
+	public ResponseEntity<Map<String, Object>> submitToPalika() {
+		String id=request("id");
+		DbResponse rowEffect = db.execute("update tblreconcilation set approvestatus=1 where id="+id);
+		if (rowEffect.getErrorNumber() == 0) {
+			return Messenger.getMessenger().setMessage("Submitted").success();
+		} else {
+			return Messenger.getMessenger().setMessage("could not submit").error();
+		}
+	}
+	
+	public ResponseEntity<Map<String, Object>> deleteVoucher() {
+		String id=request("id");
+		DbResponse rowEffect = db.execute("delete from  tblreconcilation where id="+id);
+		if (rowEffect.getErrorNumber() == 0) {
+			return Messenger.getMessenger().setMessage("deleted").success();
+		} else {
+			return Messenger.getMessenger().setMessage("could not delete").error();
+		}
+	}
 	public ResponseEntity<Map<String, Object>> getTransDetails() {
 		String transactionid = request("transactionid");
 		transactionid = nep2EngNum(transactionid).trim();

@@ -121,6 +121,32 @@ export class VoucherCancelComponent {
       });
     }
 
+    submitToPalika(id:any){
+      if (window.confirm('Are you sure you want to submit to palika?')) {
+        this.bvs.submitToPalika(id).subscribe({
+          next: (dt) => {
+            this.toastr.success("Data submitted successfully!", "Success");
+            this.getList();
+          }, error: err => {
+            this.toastr.error("Unable to submit data", "Error")
+          }
+        });
+      }
+    }
+
+    delete(id:any){
+      if (window.confirm('Are you sure you want to delete this item?')) {
+        this.bvs.deleteVoucher(id).subscribe({
+          next: (dt) => {
+            this.toastr.success("Data deleted successfully!", "Success");
+            this.getList();
+          }, error: err => {
+            this.toastr.error("Unable to delete data", "Error")
+          }
+        });
+      }
+    }
+
     getList(pageno?: number | undefined) {
       const page = pageno || 1;
       this.bvs.getListVoucherCancel(this.pagination.perPage, page, this.searchTerm, this.column, this.isDesc).subscribe(
@@ -220,7 +246,7 @@ acs:any;
           this.resetForm();
           this.sdetails=undefined;
           this.bdetails=undefined;
-        
+        this.getList();
       
       }, error:err => {
         this.toastr.error(err.error.message, 'Error');
