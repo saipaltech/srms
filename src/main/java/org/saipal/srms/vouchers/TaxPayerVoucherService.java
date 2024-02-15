@@ -109,7 +109,7 @@ public class TaxPayerVoucherService extends AutoService {
 			List<String> searchbles = TaxPayerVoucher.searchables();
 			condition += "and (";
 			for (String field : searchbles) {
-				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
+				condition += field + " LIKE N'%" + db.esc(request("searchTerm")) + "%' or ";
 			}
 			condition = condition.substring(0, condition.length() - 3);
 			condition += ")";
@@ -122,7 +122,7 @@ public class TaxPayerVoucherService extends AutoService {
 			}
 		}
 		if (sort.isBlank()) {
-			sort = "date desc";
+			sort = "cstatus asc,date desc";
 		}
 
 		Paginator p = new Paginator();
@@ -306,7 +306,7 @@ public class TaxPayerVoucherService extends AutoService {
 			ct = 0;
 		}
 		if(model.ttype.equals("2")) {
-			if(!amount.toString().equals(model.chequeamount)) {
+			if(Float.parseFloat(amount.toString())!=Float.parseFloat(model.chequeamount)) {
 				return Messenger.getMessenger().setMessage("Cheque Amount and total amount donot match.").error();
 			}
 		}
