@@ -62,6 +62,8 @@ public class ReportService extends AutoService {
 			getDc(excl);
 		} else if (type.equals("sr")) {
 			getSr(excl);
+		}else if (type.equals("bsr")) {
+			getBSr(excl);
 		}
 		
 		return excl;
@@ -272,14 +274,14 @@ public class ReportService extends AutoService {
 		
 		if (type.equals("cad")) {
 			repTitle = getHeaderString("Cash Deposit, From:" + request("from") + " To:" + request("to"));
-			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
+			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname,u.name as createdby,u1.name as collectedby,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid join users u on u.id=tx.deposituserid join users u1 on u1.id=tx.approverid join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 					+ condition + " and tx.approved=1 order by palika, ba.accountnumber";
 		} else if (type.equals("chd")) {
 			if (!chkstatus.isEmpty()) {
 				condition = condition + " and tx.cstatus="+chkstatus+" ";
 			}
 			repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
-			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname FROM taxvouchers tx join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
+			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname,u.name as createdby,u1.name as collectedby,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid join users u on u.id=tx.deposituserid join users u1 on u1.id=tx.approverid join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
 					+ condition + " and tx.ttype=2 and tx.cstatus=1 order by palika, accountno";
 		}
 		excl.title = repTitle;
@@ -289,12 +291,21 @@ public class ReportService extends AutoService {
 		BigDecimal totalAmount = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
 		hrow.addColumn((new Excel().ExcelCell("S.N.")))
-				.addColumn((new Excel().ExcelCell("Date")))
+				.addColumn((new Excel().ExcelCell("Karobar Sanket")))
+				.addColumn((new Excel().ExcelCell("Request Date")))
 				.addColumn((new Excel().ExcelCell("Palika")))
 				.addColumn((new Excel().ExcelCell("Account Number")))
 				.addColumn((new Excel().ExcelCell("Account Name")))
-				.addColumn((new Excel().ExcelCell("Karobar Sanket")))
+				.addColumn((new Excel().ExcelCell("Pan no.")))
 				.addColumn((new Excel().ExcelCell("TaxPayer")))
+				.addColumn((new Excel().ExcelCell("TaxPayer Phone")))
+				.addColumn((new Excel().ExcelCell("Deposit Slip no.")))
+				.addColumn((new Excel().ExcelCell("Description")))
+				.addColumn((new Excel().ExcelCell("Created by")))
+				.addColumn((new Excel().ExcelCell("Collected by")))
+				.addColumn((new Excel().ExcelCell("Payment Date")))
+				.addColumn((new Excel().ExcelCell("Bank")))
+				.addColumn((new Excel().ExcelCell("Branch")))
 				.addColumn((new Excel().ExcelCell("Amount")));
 		excl.addHeadRow(hrow);
 		if (!lists.isEmpty()) {
@@ -306,7 +317,7 @@ public class ReportService extends AutoService {
 				}
 				Excel.excelRow ptrow = null;
 				if (!OldPalika.equals(t.get("palika") + "")) {
-					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 7, 1)))
+					ptrow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 16, 1)))
 							.addColumn((new Excel().ExcelCell(ptotal + "")));
 					OldPalika = t.get("palika") + "";
 					ptotal = new BigDecimal(t.get("amount") + "");
@@ -317,18 +328,28 @@ public class ReportService extends AutoService {
 					excl.addRow(ptrow);
 				}
 				Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell((i + ""))))
+						.addColumn((new Excel().ExcelCell(t.get("karobarsanket") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("dates") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("palika") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("accountno") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("accountname") + "")))
-						.addColumn((new Excel().ExcelCell(t.get("karobarsanket") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("taxpayerpan") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("taxpayername") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("depcontact") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("voucherno") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("purpose") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("createdby") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("collectedby") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("updatedon") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("bankname") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("branchname") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("amount") + "")));
+						
 				excl.addRow(drow);
 				i++;
 			}
 			if (totalAmount.compareTo(BigDecimal.valueOf(0d))==1) {
-				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 7, 1)))
+				Excel.excelRow trow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total", 16, 1)))
 						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())));
 				excl.addRow(trow);
 			}
@@ -653,14 +674,14 @@ if (!lists.isEmpty()) {
 		String repTitle = getHeaderString("Summary Report, From:" + request("from") + " To:" + request("to"));
 //		repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
 		String sql = " select isnull(sum(cash),0) as cash,isnull(sum(cheque),0) as cheque from (select (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
-				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.branchid=? and (t.approved=1 or t.cstatus=1) "+condition 
+				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.branchid=? and (t.approved=1 or t.cstatus=1) "+condition 
 				+" union all "
-				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1 and t.branchid=? and t.approved=1 "+condition 
+				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers_log t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1 and t.branchid=? and t.approved=1 "+condition 
 				+ " union all "
-				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?  and t.depositbranchid=? and t.approved=1 "+condition1
+				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as  amountdr from bank_deposits t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?  and t.depositbranchid=? and t.approved=1 "+condition1
 				+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype) c group by ttype) d";
 		List<Tuple> lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId()));
-//		System.out.println(sql);
+	//	System.out.println(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
 		BigDecimal ptotal = new BigDecimal("0");
@@ -673,13 +694,16 @@ if (!lists.isEmpty()) {
 		if (!lists.isEmpty()) {
 			int i = 1;
 			for (Tuple t : lists) {
-				System.out.println(t.get("cash"));
+//				System.out.println(t.get("cash"));
 				totalAmount = totalAmount.add((new BigDecimal(t.get("cash") + "")).add(new BigDecimal(t.get("cheque") + "")));
 				
 				
 				
 				Excel.excelRow drow = (new Excel().ExcelRow())
-						
+//						.addColumn((new Excel().ExcelCell(request("from"))))
+//						.addColumn((new Excel().ExcelCell(request("to"))))
+//						.addColumn((new Excel().ExcelCell(t.get("branchcode") + "")))
+//						.addColumn((new Excel().ExcelCell(t.get("branchname") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cash") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cheque") + "")))
 						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())));
@@ -692,6 +716,82 @@ if (!lists.isEmpty()) {
 
 		return excl;
 	}
+	
+	private Excel getBSr(Excel excl) {
+		excl.subtitle = "";
+		String startDate = request("from").replace("-", "");
+		String endDate = request("to").replace("-", "");
+		String fy= request("fy")+"";
+		String palika= request("palika")+"";
+		String branch= request("branch")+"";
+		String condition = " and t.dateint >= '" + startDate + "' AND t.dateint <= '" + endDate + "'";
+		String condition1 = " and t.depositdateint >= '" + startDate + "' AND t.depositdateint <= '" + endDate + "'";
+		if (!fy.isBlank()) {
+			condition  = condition + " and t.fyid="+fy+" ";
+			condition1  = condition1 + " and t.fyid="+fy+" ";
+		}
+		if (!palika.isBlank()) {
+			condition = condition + " and t.lgid="+palika+" ";
+		 condition1 = condition1 + " and t.lgid="+palika+" ";
+		}
+		if (!branch.isBlank()) {
+			condition = condition + " and t.branchid="+branch+" ";
+		condition1 = condition1 + " and t.depositbranchid="+branch+" ";
+		}
+		String username= request("users")+"";
+		if (!username.isBlank()) {
+			condition = condition + " and deposituserid="+username+" ";
+		condition1 = condition1 + " and deposituserid="+username+" ";
+		}
+		condition = condition+" and t.bankid="+ auth.getBankId();
+		condition1 = condition1+" and t.bankid="+ auth.getBankId();
+		String repTitle = getHeaderString("Summary Report, From:" + request("from") + " To:" + request("to"));
+//		repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
+		String sql = " select isnull(sum(cash),0) as cash,isnull(sum(cheque),0) as cheque,branchcode,branchname,ISNULL(SUM(cid), 0) AS cid from (select (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque,branchcode,branchname ,ISNULL(SUM(cid), 0) AS cid  from (select accountno,bankid,depositbranchid,accountname,accountnumber,branchcode,branchname,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr,COUNT(id) AS cid from ("
+				+" select t.id , cast(t.bankorgid as varchar) as accountno,br.code as branchcode,br.name as branchname,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?   and (t.approved=1 or t.cstatus=1) "+condition 
+				+" union all "
+				+" select t.id , cast(t.bankorgid as varchar) as accountno,br.code as branchcode,br.name as branchname,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers_log t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1  and t.approved=1 "+condition 
+				+ " union all "
+				+" select t.id, cast(t.bankorgid as varchar) as accountno,br.code as branchcode,br.name as branchname,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as  amountdr from bank_deposits t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?   and t.approved=1 "+condition1
+				+" ) a group by accountno,branchcode,branchname,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype) c group by branchcode,branchname,ttype) d group by branchcode,branchname";
+		List<Tuple> lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBankId(),auth.getBankId()));
+	//	System.out.println(sql);
+		excl.title = repTitle;
+		String OldPalika = "";
+		BigDecimal ptotal = new BigDecimal("0");
+		BigDecimal totalAmount = new BigDecimal("0");
+		Excel.excelRow hrow = new Excel().ExcelRow();
+		hrow.addColumn((new Excel().ExcelCell("Date From"))).addColumn((new Excel().ExcelCell("Date To"))).addColumn((new Excel().ExcelCell("Branch Code"))).addColumn((new Excel().ExcelCell("Branchname"))).addColumn((new Excel().ExcelCell("Cash"))).addColumn((new Excel().ExcelCell("Cheque")))
+				.addColumn((new Excel().ExcelCell("Total"))).addColumn((new Excel().ExcelCell("Number of voucher")));
+				
+		excl.addHeadRow(hrow);
+		if (!lists.isEmpty()) {
+			int i = 1;
+			for (Tuple t : lists) {
+//				System.out.println(t.get("cash"));
+				totalAmount = totalAmount.add((new BigDecimal(t.get("cash") + "")).add(new BigDecimal(t.get("cheque") + "")));
+				
+				
+				
+				Excel.excelRow drow = (new Excel().ExcelRow())
+						.addColumn((new Excel().ExcelCell(request("from"))))
+						.addColumn((new Excel().ExcelCell(request("to"))))
+						.addColumn((new Excel().ExcelCell(t.get("branchcode") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("branchname") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("cash") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("cheque") + "")))
+						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())))
+						.addColumn((new Excel().ExcelCell(t.get("cid") + "")));
+						
+				excl.addRow(drow);
+				i++;
+			}
+			
+		}
+
+		return excl;
+	}
+
 
 	
 	private Excel getDefaultBranchReport(Excel excl) {

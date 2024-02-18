@@ -109,6 +109,11 @@ export class ReportComponent implements OnInit {
       this.chkstatus = false;
 
     }
+    else if (this.type == 'bsr') {
+      this.reportType = "Branch wise Collection ";
+      this.chkstatus = false;
+
+    }
   }
 
 
@@ -118,6 +123,7 @@ export class ReportComponent implements OnInit {
   vv = false;
   dc = false;
   sr = false;
+  bsr = false;
 
   chkstatus!: boolean;
 
@@ -130,12 +136,14 @@ export class ReportComponent implements OnInit {
       this.dc = false;
       this.chkstatus = false;
       this.sr = false;
+      this.bsr = false;
     }
     else if (svalue == "chd") {
       this.cad = false;
       this.vv = false;
       this.dc = false
       this.chd = true;
+      this.bsr = false;
       this.chkstatus = true;
     }
     else if (svalue == "vv") {
@@ -145,6 +153,7 @@ export class ReportComponent implements OnInit {
       this.vv = true;
       this.chkstatus = false;
       this.sr = false;
+      this.bsr = false;
     }
     else if (svalue == "dc") {
       this.cad = false;
@@ -153,6 +162,7 @@ export class ReportComponent implements OnInit {
       this.vv = false;
       this.chkstatus = false;
       this.sr = false;
+      this.bsr = false;
     }
     else if (svalue == "sr") {
       this.cad = false;
@@ -160,6 +170,16 @@ export class ReportComponent implements OnInit {
       this.dc = false;
       this.vv = false;
       this.sr = true;
+      this.bsr = false;
+      this.chkstatus = false;
+    }
+    else if (svalue == "bsr") {
+      this.cad = false;
+      this.chd = false;
+      this.dc = false;
+      this.vv = false;
+      this.sr = false;
+      this.bsr = true;
       this.chkstatus = false;
     }
   }

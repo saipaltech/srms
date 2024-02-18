@@ -306,6 +306,7 @@ public class ApiManager {
 	public JSONObject getTransDetailsForview(String transactionid) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
+		System.out.println("here token "+tok);
 		try {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)

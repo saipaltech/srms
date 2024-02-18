@@ -429,6 +429,7 @@ public class BankVoucherService extends AutoService {
 //			return Messenger.getMessenger().setData(fdata).success();
 //		}
 		JSONObject dt = api.getTransDetailsForview(transactionid);
+		System.out.println(dt.toString());
 		if (dt != null) {
 			try {
 				if (dt.getInt("status") == 1) {
