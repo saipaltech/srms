@@ -6,6 +6,9 @@ import { ApiService } from '../api.service';
   providedIn: 'root'
 })
 export class ChequeEntryService {
+  getListDirectDeposit(perPage: number, page: number, searchTerm: string, column: string, isDesc: boolean) {
+    throw new Error('Method not implemented.');
+  }
   getPanDetails(panno:any){
     return this.http.get(this.url+"/pan-details?panno="+panno);
   }
@@ -125,6 +128,27 @@ getListVoucherCancel(perPage: string | number, page: string | number, searchTerm
    }
   //  urlPart += '&approve='+ approve;
   return this.http.get(this.url+'/vouchercancel' + urlPart);
+
+}
+
+getListDirectdeposit(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean, approve?: string) {
+
+  let urlPart = '?perPage=' + perPage + '&page=' + page;
+  if (typeof searchTerm !== 'undefined' || searchTerm !== '') {
+      urlPart += '&searchOption=all&searchTerm=' + searchTerm;
+  }
+  if (typeof sortKey !== 'undefined' || sortKey !== '') {
+      urlPart += '&sortKey=' + sortKey;
+  }
+  if (typeof sortDir !== 'undefined' && sortKey !== '') {
+      if (sortDir) {
+          urlPart += '&sortDir=desc';
+      } else {
+          urlPart += '&sortDir=asc';
+      }
+   }
+  //  urlPart += '&approve='+ approve;
+  return this.http.get(this.url+'/getListDirectdeposit' + urlPart);
 
 }
 // getEdit(id: string) {

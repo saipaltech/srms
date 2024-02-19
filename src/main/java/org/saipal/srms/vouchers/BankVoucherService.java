@@ -319,11 +319,21 @@ public class BankVoucherService extends AutoService {
 	
 	public ResponseEntity<Map<String, Object>> submitToPalika() {
 		String id=request("id");
+		boolean canSubmit = false;
+		Tuple u = db.getSingleResult("select id,amountlimit,permid from users where id=?",
+				Arrays.asList(auth.getUserId()));
+		if ((u.get("permid") + "").equals("4")) {
+			canSubmit = true;
+		}
+		if(canSubmit) {
 		DbResponse rowEffect = db.execute("update tblreconcilation set approvestatus=1 where id="+id);
 		if (rowEffect.getErrorNumber() == 0) {
 			return Messenger.getMessenger().setMessage("Submitted").success();
 		} else {
 			return Messenger.getMessenger().setMessage("could not submit").error();
+		}
+		}else {
+			return Messenger.getMessenger().setMessage("Only supervisor user can sumbmit to palika").error();
 		}
 	}
 	

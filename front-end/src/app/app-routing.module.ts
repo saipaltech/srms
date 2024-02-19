@@ -32,6 +32,7 @@ import { RevenueReportComponent } from './revenue-report/revenue-report.componen
 import { VerifyVoucherPortalComponent } from './verify-voucher-portal/verify-voucher-portal.component';
 import { ChequeClearComponent } from './cheque-clear/cheque-clear.component';
 import { VoucherCancelComponent } from './voucher-cancel/voucher-cancel.component';
+import { VerifyDirectBankDepositComponent } from './verify-direct-deposit/verify-direct-deposit.component';
 
 const routes: Routes = [
 {
@@ -90,6 +91,10 @@ const routes: Routes = [
           {
             path: 'voucher-cancel',
             component: VoucherCancelComponent
+          },
+          {
+            path: 'verify-direct-deposit',
+            component: VerifyDirectBankDepositComponent
           },
           {
             path: 'user-profile',

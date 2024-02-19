@@ -1,8 +1,8 @@
-<div class="row g-5 justify-content-center">
+<div class="row g-5 justify-content-center" style="display: none;">
     <div class="col-md-12 col-lg-12">
       <div class="card">
         <div class="card-header">
-          <p>Delete Duplicate Vouchers</p>
+          <p>Verify Direct Bank Deposit</p>
         </div>
   
         <div class="card-body mt-3">
@@ -151,7 +151,7 @@
     <div class="col-md-12 col-lg-12">
       <div class="card">
         <div class="card-header">
-          <p>Requested Duplicate Vouchers List</p>
+          <p>Verify Direct Bank Deposit</p>
         </div>
   <div class="card-body mt-3">
     <form class="form-srch" [formGroup]="srchForm">
@@ -178,18 +178,16 @@
       <!--table-borderless-->
       <thead>
         <tr>
-          <th scope="col">{{"Sutra Karobarsanket" | translate}}</th>
-          <th scope="col">{{"Bank Karobarsanket" | translate}}</th>
+          <th scope="col">{{"Karobarsanket" | translate}}</th>
           <th scope="col">{{"Palika" | translate}}</th>
           <th scope="col">{{"Request Date" | translate}}</th>
           <th scope="col">{{"Amount" | translate}}</th>
-          <th scope="col">{{"Status" | translate}}</th>
+          <th scope="col">{{"Action" | translate}}</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let item of lists; let i = index">
           <td>{{ item.sutrasanket }}</td>
-          <td>{{ item.banksanket }}</td>
           <td>{{ item.palika }}</td>
           <td>{{ item.date }}</td>
           <td>{{ item.amount }}</td>
