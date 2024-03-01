@@ -303,10 +303,29 @@ public class ApiManager {
 		return null;
 	}
 	
+	
+	
+	public JSONObject getdirectDepositList() {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+//		System.out.println("here token "+tok);
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/get-trans-details-directdeposit?&sessionid="+auth.getBranchId());
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public JSONObject getTransDetailsForview(String transactionid) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
-		System.out.println("here token "+tok);
+//		System.out.println("here token "+tok);
 		try {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
@@ -323,6 +342,7 @@ public class ApiManager {
 	/*
 	 * Calls Sutra API to get the cheque details by the karobarsanket and bankid
 	 * */
+	
 	public JSONObject getChequeDetails(String karobarsanket) {
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
@@ -330,6 +350,23 @@ public class ApiManager {
 			JSONObject response = req
 					.setHeader("Authorization", "Bearer "+tok)
 					.get(url + "/srms/get-cheque-details?karobarsanket="+karobarsanket);
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JSONObject getdirectbankDetails(String karobarsanket) {
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+//		System.out.println("here token "+tok);
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.get(url + "/srms/get-direct-bank-details?karobarsanket="+karobarsanket);
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
 			}
@@ -442,6 +479,26 @@ public class ApiManager {
 					.setParam("karobarsankets",karobarsanket)
 					.setParam("bankid",bankId)
 					.post(url + "/srms/cheque-revceived");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public JSONObject directBankReceived(String karobarsanket, String bankId) {
+		System.out.println(karobarsanket);
+		HttpRequest req = new HttpRequest();
+		String tok = this.getToken();
+		try {
+			JSONObject response = req
+					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
+					.setParam("karobarsankets",karobarsanket)
+					.setParam("bankid",bankId)
+					.post(url + "/srms/directBank-revceived");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
 			}

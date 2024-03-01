@@ -98,6 +98,53 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().error();
 		}
 	}
+	
+	public ResponseEntity<Map<String, Object>> getDirectbank() {
+		if (!auth.hasPermission("bankuser")) {
+			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
+		}
+		String condition = " where ttype=4 ";
+		String approve = request("approve");
+		if (!request("searchTerm").isEmpty()) {
+			List<String> searchbles = TaxPayerVoucher.searchables();
+			condition += "and (";
+			for (String field : searchbles) {
+				condition += field + " LIKE '%" + db.esc(request("searchTerm")) + "%' or ";
+			}
+			condition = condition.substring(0, condition.length() - 3);
+			condition += ")";
+		}
+
+		if (!approve.isBlank()) {
+			condition += " and tx.approved='" + approve + "'";
+		}
+
+		String sort = "";
+		if (!request("sortKey").isBlank()) {
+			if (!request("sortDir").isBlank()) {
+				sort = request("sortKey") + " " + request("sortDir");
+			}
+		}
+		if (sort.isBlank()) {
+			sort = "date desc";
+		}
+
+		Paginator p = new Paginator();
+		condition = condition + " and tx.branchid=" + auth.getBranchId() + " and tx.bankid=" + auth.getBankId() + " ";
+		if (auth.canFromUserTable("3")) {
+			condition += " and tx.deposituserid='" + auth.getUserId() + "'";
+		}
+		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
+				.select("cast(tx.id as char) as id,cast(date as date) as date,tx.approved, voucherno,karobarsanket,taxpayername,taxpayerpan,depositedby,depcontact,cast(tx.lgid as varchar) as lgid,collectioncenterid,bankorgid,purpose,ba.accountnumber as accountno,amountcr as amount")
+				.sqlBody("from taxvouchers tx join bankaccount ba on  ba.id = tx.bankorgid " + condition).paginate();
+//		System.out.println(result);
+		if (result != null) {
+			return ResponseEntity.ok(result);
+		} else {
+			return Messenger.getMessenger().error();
+		}
+	}
+
 
 	public ResponseEntity<Map<String, Object>> indexcheque() {
 		if (!auth.hasPermission("bankuser")) {
@@ -680,6 +727,63 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 		return Messenger.getMessenger().setMessage("Invalid Request").error();
 	}
+	
+	
+	public ResponseEntity<Map<String, Object>> approvedirectbankvoucher(String id) throws JSONException {
+		Tuple c = db.getSingleResult("select id,karobarsanket,amountcr as amount,approved from " + table + " where id=?",
+				Arrays.asList(id));
+		if ((c.get("approved") + "").equals("1")) {
+			return Messenger.getMessenger().setMessage("Voucher is already Approved.").error();
+		}
+		Tuple u = db.getSingleResult("select id,amountlimit,permid from users where id=?",
+				Arrays.asList(auth.getUserId()));
+		if ((u.get("permid") + "").equals("3")) {
+			if (!(u.get("amountlimit") + "").equals("-1")) {
+				if (Float.parseFloat(c.get("amount") + "") > Float.parseFloat(u.get("amountlimit") + "")) {
+					return Messenger.getMessenger()
+							.setMessage("Amount Limit exceeds, Only upto Rs." + u.get("amountlimit") + " is allowed.")
+							.error();
+				}
+			}
+		}
+		String karobarsanket=c.get("karobarsanket")+"";
+		JSONObject resp = api.directBankReceived(karobarsanket, auth.getBankId());
+		if (resp != null) {
+			if (resp.getInt("status") == 1) {
+		db.execute("update " + table + " set approved=1,updatedon=getdate(),approverid=? where id=?",
+				Arrays.asList(auth.getUserId(), id));
+		Tuple t = db.getSingleResult("select * from " + table + " where id=? and approved=1", Arrays.asList(id));
+		if (t != null) {
+			String revs = "";
+			List<Tuple> list = db.getResultList(
+					"select concat(did,'|',revenueid,'|',amount) as ar from taxvouchers_detail where mainid=?",
+					Arrays.asList(id));
+			if (list.size() > 0) {
+				for (Tuple tp : list) {
+					revs += tp.get(0) + ",";
+				}
+				revs = revs.substring(0, (revs.length() - 1));
+			}
+//			try {
+//				JSONObject obj = api.sendDataToSutra(t, revs);
+//				if (obj != null) {
+//					if (obj.has("status")) {
+//						if (obj.getInt("status") == 1) {
+//							db.execute("update taxvouchers set syncstatus=2 where id=?", Arrays.asList(id));
+//						}
+//					}
+//				}
+//			} catch (JSONException e) {
+//				e.printStackTrace();
+//			}
+
+			return Messenger.getMessenger().setMessage("Voucher approved.").success();
+		}
+			}
+		}
+		return Messenger.getMessenger().setMessage("Invalid Request").error();
+	}
+
 
 	public ResponseEntity<Map<String, Object>> searchVoucher() {
 		String voucherno = request("voucherno");

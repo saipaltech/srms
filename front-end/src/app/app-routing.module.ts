@@ -33,6 +33,8 @@ import { VerifyVoucherPortalComponent } from './verify-voucher-portal/verify-vou
 import { ChequeClearComponent } from './cheque-clear/cheque-clear.component';
 import { VoucherCancelComponent } from './voucher-cancel/voucher-cancel.component';
 import { VerifyDirectBankDepositComponent } from './verify-direct-deposit/verify-direct-deposit.component';
+import { VerifyVoucherDirectDepositComponent } from './verify-voucher-direct-deposit/verify-voucher-direct-deposit.component';
+import { ApproveDirectVoucherComponent } from './approve-direct-voucher/approve-direct-voucher.component';
 
 const routes: Routes = [
 {
@@ -94,7 +96,11 @@ const routes: Routes = [
           },
           {
             path: 'verify-direct-deposit',
-            component: VerifyDirectBankDepositComponent
+            component: VerifyVoucherDirectDepositComponent
+          },
+          {
+            path: 'approve-direct-deposit',
+            component: ApproveDirectVoucherComponent
           },
           {
             path: 'user-profile',

@@ -89,6 +89,10 @@ export class ChequeEntryService {
     return this.http.get(this.url3 + '/search-payment-sutra?transactionid=' + id); 
   }
 
+  getListFromSutra(){
+    return this.http.get(this.url3 + '/getListFromSutra'); 
+  }
+
   getList(perPage: string | number, page: string | number, searchTerm?: string, sortKey?: string, sortDir?: boolean, approve?: string) {
 
     let urlPart = '?perPage=' + perPage + '&page=' + page;

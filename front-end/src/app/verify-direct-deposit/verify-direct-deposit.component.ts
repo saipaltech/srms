@@ -86,6 +86,7 @@ export class VerifyDirectBankDepositComponent {
     ngOnInit(): void {
       this.pagination.perPage = this.perPages[0];
      this.getList();
+     this.getListFromSutra();
      
       // this.bvs.getLocalLevels().subscribe({next:(dt)=>{
       //     this.llgs = dt.data;
@@ -105,7 +106,19 @@ export class VerifyDirectBankDepositComponent {
           
           console.log(this.sdetails);
         }, error: err => {
-          this.toastr.error("Unable to Fetch Data", "Error")
+          this.toastr.error("Unable to Fetch Data", "Error");
+        }
+      });
+    }
+    sutralist:any;
+    getListFromSutra(){
+      this.bvs.getListFromSutra().subscribe({
+        next: (dt) => {
+            this.sutralist = JSON.parse(dt.data);
+          
+          console.log(this.sutralist);
+        }, error: err => {
+          // this.toastr.error("Unable to Fetch Data", "Error")
         }
       });
     }

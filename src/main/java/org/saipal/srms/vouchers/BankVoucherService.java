@@ -179,6 +179,68 @@ public class BankVoucherService extends AutoService {
 		}
 
 	}
+	
+	@Transactional
+	public ResponseEntity<Map<String, Object>> directBankDeposit() throws JSONException {
+		String items = request("selection");
+		if (items.length() == 0) {
+			return Messenger.getMessenger().setMessage("No Data to save").error();
+		}
+		if (!items.startsWith("[")) {
+			items = "[" + items + "]";
+		}
+		try {
+			JSONArray jarr = new JSONArray(items);
+			if (jarr.length() > 0) {
+				String qry = "select STRING_AGG(ksno,',') as karobarsankets from revDirectBankDakhilaDetail where did in ("
+						+ (items.replace("[", "").replace("]", "").replace("\"", "'")) + ")";
+				Tuple t = db.getSingleResult(qry);
+				String karobarsanket = t.get("karobarsankets") + "";
+//				JSONObject resp = api.directBankReceived(karobarsanket, auth.getBankId());
+//				if (resp != null) {
+//					if (resp.getInt("status") == 1) {
+						for (int i = 0; i < jarr.length(); i++) {
+							String usq = "select * from revDirectBankDakhilaDetail where did=?";
+							Tuple res = db.getSingleResult(usq, Arrays.asList(jarr.get(i)));
+							String sq = "select * from revDirectBankDakhilaMain where cdid=?";
+							Tuple rs = db.getSingleResult(sq, Arrays.asList(res.get("mainid")));
+
+							String sq1 = "select count(id) as cid from taxvouchers where cref=?";
+							Tuple rs1 = db.getSingleResult(sq1, Arrays.asList(res.get("did")));
+							if (!rs1.get("cid").toString().equals("1")) {
+								karobarsanket += res.get("ksno") + ",";
+								String sql = "insert into taxvouchers(cref,dateint,bankid,branchid,karobarsanket,voucherno,amountcr,approved,approverid,lgid,collectioncenterid,date,updatedon,taxpayername,bankorgid,ttype,depositbankid,depositbranchid,deposituserid,depositedby,directdeposit) values(?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,getdate(),getdate(),?,?,?,?,?,?,?,?)";
+								DbResponse rf = db.execute(sql,
+										Arrays.asList(res.get("did"), auth.getBankId(), auth.getBranchId(),
+												res.get("ksno"), res.get("refcode"), res.get("amount"), 0,auth.getUserId(),
+												rs.get("adminid"),rs.get("orgid"), res.get("taxpayername"),
+												rs.get("bankorgid"), 4, auth.getBankId(),
+												auth.getBranchId(), auth.getUserId(), res.get("taxpayername"),1));
+//								 System.out.println(rf.getMessage());
+								String usqq = "select * from taxvouchers where cref=?";
+								Tuple resq = db.getSingleResult(usqq, Arrays.asList(res.get("did")));
+								String sqq = "INSERT INTO taxvouchers_detail (did,mainid,revenueid,amount) values(?,?,?,?)";
+								db.execute(sqq, Arrays.asList(db.newIdInt(), resq.get("id"), res.get("revid"),
+										res.get("amount")));
+								String squ = "update revDirectBankDakhilaDetail set isbankreceived=?,bankreceivedby=?,bankreceiveddate=? where did=?";
+								db.execute(squ, Arrays.asList(1, auth.getBankId(), new Date(), jarr.get(i)));
+							}
+						}
+						return Messenger.getMessenger().success();
+//					}
+//				}
+//				return Messenger.getMessenger().setMessage("Unable to update to sutra").error();
+			} else {
+				return Messenger.getMessenger().setMessage("No Data to save").error();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Messenger.getMessenger().setMessage("Unable to save data").error();
+		}
+
+	}
+	
+	
 	@Transactional
 	public ResponseEntity<Map<String, Object>> updateforportal() throws JSONException {
 		if (!auth.hasPermission("bankuser")) {
@@ -359,6 +421,9 @@ public class BankVoucherService extends AutoService {
 		if (forthChar == '9') {
 			return getTransDetailsCheque();
 		}
+		if (forthChar == '8') {
+			return getTransDetailsDirectBankDeposit();
+		}
 		if (forthChar == '4' || forthChar == '5') {
 			return getTransDetailsRmisPortal();
 		}
@@ -404,6 +469,33 @@ public class BankVoucherService extends AutoService {
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
+			}
+		} else {
+			return Messenger.getMessenger().setMessage("Cannot Connect to SuTRA Server.").error();
+		}
+		return Messenger.getMessenger().error();
+	}
+	
+	
+	
+	public ResponseEntity<Map<String, Object>> getListFromSutra() {
+		
+
+		JSONObject dt = api.getdirectDepositList();
+		
+		if (dt != null) {
+			try {
+				if (dt.getInt("status") == 1) {
+
+					JSONObject d = dt.getJSONObject("data");
+						return Messenger.getMessenger().setData(d.toString()).success();
+
+				} else {
+					return Messenger.getMessenger().setMessage(dt.getString("message")).error();
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				 e.printStackTrace();
 			}
 		} else {
 			return Messenger.getMessenger().setMessage("Cannot Connect to SuTRA Server.").error();
@@ -487,7 +579,7 @@ public class BankVoucherService extends AutoService {
 				if (dt.getInt("status") == 1) {
 					
 					JSONObject d = dt.getJSONObject("data");
-					;
+					
 					JSONArray dtl = dt.getJSONArray("detail");
 					System.out.println(dtl);
 					
@@ -525,6 +617,69 @@ public class BankVoucherService extends AutoService {
 		}
 		return Messenger.getMessenger().error();
 		
+	}
+	
+	@Transactional
+	private ResponseEntity<Map<String, Object>> getTransDetailsDirectBankDeposit() {
+		String transactionid = request("transactionid");
+		transactionid = nep2EngNum(transactionid);
+		String sql = "select bd.fyid,substring(cast(bd.karobarsanketno as varchar),4,1) as trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from revDirectBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.adminid where karobarSanketNo=? and bd.bankid=? ";
+		Map<String, Object> data = db.getSingleResultMap(sql, Arrays.asList(transactionid, auth.getBankId()));
+		if (data == null) {
+			JSONObject dt = api.getdirectbankDetails(transactionid);
+			if (dt != null) {
+				try {
+					if (dt.getInt("status") == 1) {
+//						System.out.println("here");
+						JSONObject d = dt.getJSONObject("data");
+						DbResponse rf = db.execute(
+								"insert into revDirectBankDakhilaMain (cdid ,adminid ,orgid ,fyid ,trantype ,karobarSanketNo ,trandate ,trandatetint ,refNo ,narration ,bankorgid ,bankid ,accountno ,entrydate ,enterby) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+								Arrays.asList(d.get("cdid"), d.get("adminid"), d.get("orgid"), d.get("fyid"),
+										d.get("trantype"), d.get("karobarsanketno"), d.get("trandate"),
+										d.get("trandatetint"), d.get("refno"), d.get("narration"), d.get("bankorgid"),
+										d.get("bankid"), d.get("accountno"), d.get("entrydate"), d.get("enterby")));
+
+						JSONArray dtls = d.getJSONArray("details_rows");
+						if (dtls.length() > 0) {
+							for (int i = 0; i < dtls.length(); i++) {
+								JSONObject dd = dtls.getJSONObject(i);
+								db.execute(
+										"insert into revDirectBankDakhilaDetail(did ,mainid ,rcid ,ksno ,bankid ,refcode ,amount ,taxpayername,adminid1,orgid1,fyid1,revid ) values(?,?,?,?,?,?,?,?,?,?,?,?)",
+										Arrays.asList(dd.get("did"), dd.get("mainid"), dd.get("rcid"), dd.get("ksno"),
+												dd.get("bankid"), dd.get("refcode"), dd.get("amount"),
+												dd.get("taxpayername"),d.get("adminid"), d.get("orgid"), d.get("fyid"),dd.get("revid")));
+
+							}
+						}
+						sql = "select bd.fyid,substring(cast(bd.karobarsanketno as varchar),4,1) as trantype,bd.cdid,bd.karobarSanketNo,bd.orgid as lgid,bd.trandate,bd.trandatetint,bd.bankid,bd.accountno,ba.accountname,bi.namenp as bankname,ll.namenp as palika from revDirectBankDakhilaMain bd join bankaccount ba on ba.id=bd.bankorgid join bankinfo bi on bi.id=bd.bankid join admin_local_level_structure ll on ll.id=bd.adminid where karobarSanketNo=? and bd.bankid=?";
+						Map<String, Object> fdata = db.getSingleResultMap(sql,
+								Arrays.asList(transactionid, auth.getBankId()));
+						String sqld = "select cast(cb.did as varchar) as did ,cb.mainid ,cb.rcid ,cb.ksno ,cb.bankid ,cb.refcode ,cb.amount ,cb.taxpayername ,cb.isbankreceived ,cb.bankreceivedby ,cb.bankreceiveddate,bi.namenp as bankname from revDirectBankDakhilaDetail cb join bankinfo bi on bi.id=cb.bankid where mainid=?";
+						List<Map<String, Object>> dtl = db.getResultListMap(sqld, Arrays.asList(fdata.get("cdid")));
+						fdata.put("details", dtl);
+						return Messenger.getMessenger().setData(fdata).success();
+					} else {
+						return Messenger.getMessenger().setMessage(dt.getString("message")).error();
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			} else {
+				return Messenger.getMessenger().setMessage("Cannot Connect to SuTRA Server.").error();
+			}
+			return Messenger.getMessenger().setMessage("No such transaction found.").error();
+		}
+		String sqld = "select cast(cb.did as varchar) as did ,cb.mainid ,cb.rcid ,cb.ksno ,cb.bankid ,cb.refcode ,cb.amount ,cb.taxpayername ,cb.isbankreceived ,cb.bankreceivedby ,cb.bankreceiveddate,bi.namenp as bankname from revDirectBankDakhilaDetail cb join bankinfo bi on bi.id=cb.bankid where mainid=? and isbankreceived=?";
+		List<Map<String, Object>> dtl = db.getResultListMap(sqld, Arrays.asList(data.get("cdid"), 0));
+		data.put("details", dtl);
+		if (dtl.size() > 0) {
+			return Messenger.getMessenger().setData(data).success();
+		} else {
+			return Messenger.getMessenger()
+					.setMessage("Already received.Please approve the voucher.").error();
+		}
 	}
 
 	@Transactional

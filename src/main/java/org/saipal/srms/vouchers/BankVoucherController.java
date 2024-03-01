@@ -70,6 +70,11 @@ public class BankVoucherController {
 			return objService.chequeDeposit();
 	}
 	
+	@PostMapping("directBankDeposit")
+	public ResponseEntity<Map<String, Object>> directBankDeposit(HttpServletRequest request) throws JSONException {
+			return objService.directBankDeposit();
+	}
+	
 	@PostMapping("reconcilation")
 	public ResponseEntity<Map<String, Object>> reconcilation(HttpServletRequest request) throws JSONException {
 			return objService.reconcilation();
@@ -114,6 +119,11 @@ public class BankVoucherController {
 	@GetMapping("search-payment-sutra")
 	public ResponseEntity<Map<String, Object>> getTransDetails() {
 		return objService.getTransDetailsSutra();
+	}
+	
+	@GetMapping("getListFromSutra")
+	public ResponseEntity<Map<String, Object>> getListFromSutra() {
+		return objService.getListFromSutra();
 	}
 	
 

@@ -50,6 +50,11 @@ public class TaxPayerVoucherController {
 		return objService.indexcheque();
 	}
 	
+	@GetMapping("getDirectbank")
+	public ResponseEntity<Map<String, Object>> getDirectbank(HttpServletRequest request) {
+		return objService.getDirectbank();
+	}
+	
 	@GetMapping("vouchercancel")
 	public ResponseEntity<Map<String, Object>> vouchercancel(HttpServletRequest request) {
 //		System.out.println("Reached at Index");
@@ -91,6 +96,11 @@ public class TaxPayerVoucherController {
 	@PostMapping("approve/{id}")
 	public ResponseEntity<Map<String, Object>> approveVoucher(@PathVariable String id) {
 		return objService.approveVoucher(id);
+	}
+	
+	@PostMapping("approvedirectbankvoucher/{id}")
+	public ResponseEntity<Map<String, Object>> approvedirectbankvoucher(@PathVariable String id) throws JSONException {
+		return objService.approvedirectbankvoucher(id);
 	}
 	
 	@GetMapping("get-list")
