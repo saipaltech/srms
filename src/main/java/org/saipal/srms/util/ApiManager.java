@@ -22,6 +22,9 @@ public class ApiManager {
 
 	@Value("${sutra.password}")
 	String password;
+	
+	@Value("${rmisportal.url}")
+	String rmisurl;
 
 	public String token="";
 
@@ -489,7 +492,7 @@ public class ApiManager {
 	}
 	
 	public JSONObject directBankReceived(String karobarsanket, String bankId) {
-		System.out.println(karobarsanket);
+//		System.out.println(karobarsanket);
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
 		try {
@@ -519,6 +522,30 @@ public class ApiManager {
 					.setParam("bankid",auth.getBankId())
 					.setParam("sessionid",auth.getBranchId())
 					.post(url + "/srms/get-lock");
+			if (response.getInt("status_code") == 200) {
+				return response.getJSONObject("data");
+			}
+		} catch (JSONException e) {
+			// e.printStackTrace();
+		}
+		return null;
+	}
+
+	public JSONObject getPortalCollection(String startDate, String endDate, String palika, String branch) {
+		// TODO Auto-generated method stub
+		HttpRequest req = new HttpRequest();
+//		String tok = this.getToken();
+		try {
+			JSONObject response = req
+//					.setHeader("Authorization", "Bearer "+tok)
+					.setHeader("Content-Type", "application/x-www-form-urlencoded")
+					.setParam("startDate",startDate)
+					.setParam("endDate",endDate)
+					.setParam("palika",palika)
+					.setParam("bankid",auth.getBankId())
+					.setParam("branchid",branch)
+					.setParam("sessionid",auth.getBranchId())
+					.post(rmisurl + "/api/getPortalCollection");
 			if (response.getInt("status_code") == 200) {
 				return response.getJSONObject("data");
 			}

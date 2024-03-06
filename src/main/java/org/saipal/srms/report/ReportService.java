@@ -7,9 +7,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import javax.persistence.Tuple;
 
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
 import org.saipal.srms.excel.Excel;
 import org.saipal.srms.service.AutoService;
+import org.saipal.srms.util.ApiManager;
 import org.saipal.srms.util.Messenger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,8 @@ import org.springframework.stereotype.Component;
 public class ReportService extends AutoService {
 	@Autowired
 	Authenticated auth;
+	@Autowired
+	ApiManager api;
 	public ResponseEntity<Map<String, Object>> getFys() {
 		String sql = " select fyid,(case when fyid=dbo.getfyid('') then 1 else 0 end) as isdef from (select distinct fyid from (select distinct fyid from taxvouchers union all select distinct fyid from bank_deposits) a)b";
 		List<Tuple> lt = db.getResultList(sql);
@@ -576,7 +581,7 @@ public class ReportService extends AutoService {
 				+" group by dc.id,dc.dateint,dc.lgid,dc.accountno,dc.dateint,dc.amountcr,dc.amountdr,dc.bankorgid,lls.namenp"
 				+ " order by palika ";
 		List<Tuple> lists = db.getResultList(sql);
-		System.out.println(sql);
+//		System.out.println(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
 		BigDecimal ptotal = new BigDecimal("0");
@@ -669,6 +674,15 @@ if (!lists.isEmpty()) {
 			condition = condition + " and deposituserid="+username+" ";
 		condition1 = condition1 + " and deposituserid="+username+" ";
 		}
+		String portalAmount="0";
+		try {
+			JSONObject resp = api.getPortalCollection(request("from"),request("to"),palika,branch);
+//			System.out.println(resp.getString("totalamount")+"");
+			portalAmount=resp.getString("totalamount")+"";
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		condition = condition+" and t.bankid="+ auth.getBankId();
 		condition1 = condition1+" and t.bankid="+ auth.getBankId();
 		String repTitle = getHeaderString("Summary Report, From:" + request("from") + " To:" + request("to"));
@@ -687,7 +701,7 @@ if (!lists.isEmpty()) {
 		BigDecimal ptotal = new BigDecimal("0");
 		BigDecimal totalAmount = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
-		hrow.addColumn((new Excel().ExcelCell("Cash"))).addColumn((new Excel().ExcelCell("Cheque")))
+		hrow.addColumn((new Excel().ExcelCell("Cash"))).addColumn((new Excel().ExcelCell("Cheque"))).addColumn((new Excel().ExcelCell("Online Payment")))
 				.addColumn((new Excel().ExcelCell("Total")));
 				
 		excl.addHeadRow(hrow);
@@ -695,7 +709,7 @@ if (!lists.isEmpty()) {
 			int i = 1;
 			for (Tuple t : lists) {
 //				System.out.println(t.get("cash"));
-				totalAmount = totalAmount.add((new BigDecimal(t.get("cash") + "")).add(new BigDecimal(t.get("cheque") + "")));
+				totalAmount = totalAmount.add((new BigDecimal(t.get("cash") + "")).add(new BigDecimal(t.get("cheque") + "")).add(new BigDecimal(portalAmount)));
 				
 				
 				
@@ -706,7 +720,9 @@ if (!lists.isEmpty()) {
 //						.addColumn((new Excel().ExcelCell(t.get("branchname") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cash") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cheque") + "")))
+						.addColumn((new Excel().ExcelCell(portalAmount)))
 						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())));
+						
 						
 				excl.addRow(drow);
 				i++;
