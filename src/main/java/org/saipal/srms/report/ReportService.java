@@ -650,6 +650,11 @@ if (!lists.isEmpty()) {
 	}
 	private Excel getSr(Excel excl) {
 		excl.subtitle = "";
+		
+		String sql1="select ishead,dlgid from branches  where id= "+auth.getBranchId();
+		Map<String, Object> data1 = db.getSingleResultMap(sql1);
+		String ishead=data1.get("ishead")+"";
+		
 		String startDate = request("from").replace("-", "");
 		String endDate = request("to").replace("-", "");
 		String fy= request("fy")+"";
@@ -672,61 +677,92 @@ if (!lists.isEmpty()) {
 		String username= request("users")+"";
 		if (!username.isBlank()) {
 			condition = condition + " and deposituserid="+username+" ";
-		condition1 = condition1 + " and deposituserid="+username+" ";
+		    condition1 = condition1 + " and deposituserid="+username+" ";
 		}
 		String portalAmount="0";
-		try {
-			JSONObject resp = api.getPortalCollection(request("from"),request("to"),palika,branch);
-//			System.out.println(resp.getString("totalamount")+"");
-			portalAmount=resp.getString("totalamount")+"";
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			JSONObject resp = api.getPortalCollection(request("from"),request("to"),palika,branch);
+////			System.out.println(resp.getString("totalamount")+"");
+//			portalAmount=resp.getString("totalamount")+"";
+//		} catch (JSONException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		condition = condition+" and t.bankid="+ auth.getBankId();
 		condition1 = condition1+" and t.bankid="+ auth.getBankId();
 		String repTitle = getHeaderString("Summary Report, From:" + request("from") + " To:" + request("to"));
-//		repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
-		String sql = " select isnull(sum(cash),0) as cash,isnull(sum(cheque),0) as cheque from (select (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
+		List<Tuple> lists;
+		if(ishead.equals("0")) {
+		String sql = " select isnull(sum(cash),0) as cash,isnull(sum(cheque),0) as cheque,accountnumber,palika from (select accountnumber,palika, (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
 				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.branchid=? and (t.approved=1 or t.cstatus=1) "+condition 
 				+" union all "
 				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr from taxvouchers_log t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1 and t.branchid=? and t.approved=1 "+condition 
 				+ " union all "
 				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as  amountdr from bank_deposits t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?  and t.depositbranchid=? and t.approved=1 "+condition1
-				+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype) c group by ttype) d";
-		List<Tuple> lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId()));
-	//	System.out.println(sql);
+				+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype) c group by ttype,accountnumber,palika) d group by accountnumber,palika";
+		 lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId()));
+		}else {
+			String sql = " select isnull(sum(cash),0) as cash,isnull(sum(cheque),0) as cheque,accountnumber,palika,isnull(sum(online),0) as online from (select accountnumber,palika,sum(online) as online, (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr,sum(online) as online from ("
+					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr,0 as online from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?   and (t.approved=1 or t.cstatus=1) "+condition 
+					+" union all "
+					+" select  cast(t.bankorgid as varchar) as accountno,"+auth.getBranchId()+" as depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr, t.amountcr as online,t.ttype, 0 as amountdr from taxportal.dbo.taxvouchers t  join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.paymentstatus=1 "+condition 
+					+" union all "
+					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr,0 as online from taxvouchers_log t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1  and t.approved=1 "+condition 
+					+ " union all "
+					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as  amountdr,0 as online from bank_deposits t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?   and t.approved=1 "+condition1
+					+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype) c group by ttype,accountnumber,palika) d group by accountnumber,palika";
+			 lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBankId(),auth.getBankId(),auth.getBankId()));
+		}
+//		System.out.println(sql);
 		excl.title = repTitle;
 		String OldPalika = "";
 		BigDecimal ptotal = new BigDecimal("0");
-		BigDecimal totalAmount = new BigDecimal("0");
+		BigDecimal totalCash = new BigDecimal("0");
+		BigDecimal totalCheque = new BigDecimal("0");
+		BigDecimal nettotal = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
-		hrow.addColumn((new Excel().ExcelCell("Cash"))).addColumn((new Excel().ExcelCell("Cheque"))).addColumn((new Excel().ExcelCell("Online Payment")))
-				.addColumn((new Excel().ExcelCell("Total")));
+		hrow
+		.addColumn((new Excel().ExcelCell("SN")))
+		.addColumn((new Excel().ExcelCell("Palika")))
+		.addColumn((new Excel().ExcelCell("Account Number")))
+		.addColumn((new Excel().ExcelCell("Cash")))
+		.addColumn((new Excel().ExcelCell("Cheque")))
+		.addColumn((new Excel().ExcelCell("Online Payment")))
+		.addColumn((new Excel().ExcelCell("Total")));
 				
 		excl.addHeadRow(hrow);
 		if (!lists.isEmpty()) {
+			
 			int i = 1;
 			for (Tuple t : lists) {
-//				System.out.println(t.get("cash"));
-				totalAmount = totalAmount.add((new BigDecimal(t.get("cash") + "")).add(new BigDecimal(t.get("cheque") + "")).add(new BigDecimal(portalAmount)));
+//				System.out.println(t);
+				BigDecimal totalAmount = new BigDecimal("0");
+				totalAmount = totalAmount.add((new BigDecimal(t.get("cash") + "")).add(new BigDecimal(t.get("cheque") + "")).add(new BigDecimal(t.get("online") + "")));
+				totalCash=totalCash.add((new BigDecimal(t.get("cash") + "")));
+				totalCheque=totalCheque.add((new BigDecimal(t.get("cheque") + "")));
+				nettotal=nettotal.add((new BigDecimal(totalAmount + "")));
 				
 				
 				
 				Excel.excelRow drow = (new Excel().ExcelRow())
-//						.addColumn((new Excel().ExcelCell(request("from"))))
-//						.addColumn((new Excel().ExcelCell(request("to"))))
-//						.addColumn((new Excel().ExcelCell(t.get("branchcode") + "")))
-//						.addColumn((new Excel().ExcelCell(t.get("branchname") + "")))
+						.addColumn((new Excel().ExcelCell(i + "")))
+						.addColumn((new Excel().ExcelCell(t.get("palika") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("accountnumber") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cash") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cheque") + "")))
-						.addColumn((new Excel().ExcelCell(portalAmount)))
+						.addColumn((new Excel().ExcelCell(t.get("online") + "")))
 						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())));
 						
 						
 				excl.addRow(drow);
 				i++;
 			}
+			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",3)))
+					.addColumn((new Excel().ExcelCell(totalCash.toPlainString() )))
+					.addColumn((new Excel().ExcelCell(totalCheque.toPlainString())))
+					.addColumn((new Excel().ExcelCell(ptotal.toPlainString())))
+					.addColumn((new Excel().ExcelCell(nettotal.toPlainString())));
+			excl.addRow(drow);
 			
 		}
 

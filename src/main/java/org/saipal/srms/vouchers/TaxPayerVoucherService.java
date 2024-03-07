@@ -57,7 +57,7 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = " where ttype=1 ";
+		String condition = " where ttype=1 and directdeposit<2 ";
 		String approve = request("approve");
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
@@ -103,7 +103,7 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = " where ttype=4 ";
+		String condition = " where ttype=1 and directdeposit=2 ";
 		String approve = request("approve");
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
@@ -730,7 +730,7 @@ public class TaxPayerVoucherService extends AutoService {
 	
 	
 	public ResponseEntity<Map<String, Object>> approvedirectbankvoucher(String id) throws JSONException {
-		Tuple c = db.getSingleResult("select id,karobarsanket,amountcr as amount,approved from " + table + " where id=?",
+		Tuple c = db.getSingleResult("select id,karobarsanket,amountcr as amount,cref,approved from " + table + " where id=?",
 				Arrays.asList(id));
 		if ((c.get("approved") + "").equals("1")) {
 			return Messenger.getMessenger().setMessage("Voucher is already Approved.").error();
@@ -747,7 +747,7 @@ public class TaxPayerVoucherService extends AutoService {
 			}
 		}
 		String karobarsanket=c.get("karobarsanket")+"";
-		JSONObject resp = api.directBankReceived(karobarsanket, auth.getBankId());
+		JSONObject resp = api.directBankReceived(karobarsanket,c.get("cref")+"", auth.getBankId());
 		if (resp != null) {
 			if (resp.getInt("status") == 1) {
 		db.execute("update " + table + " set approved=1,updatedon=getdate(),approverid=? where id=?",

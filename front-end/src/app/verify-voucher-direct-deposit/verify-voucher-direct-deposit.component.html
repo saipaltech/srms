@@ -191,7 +191,7 @@
               <tr>
 
                 <th scope="col">Action</th>
-                <th scope="col">Karobar Sanket</th>
+              
                 <th scope="col">Bank</th>
                 <th scope="col">Taxpayer Name</th>
                 <th scope="col">Ref. No.</th>
@@ -202,7 +202,7 @@
               <tr  *ngFor="let r of transDetails.details; let i = index">
                 <!-- <td>{{ i+1 }}</td> -->
                 <td><input class="form-check-input" type="checkbox" (change)="onCheckboxChange($event)" value="{{r.did}}"   name="dayclose"></td>
-                <td>{{r.ksno}}</td>
+              
                 <td>{{r.bankname}}</td>
                 <td>{{r.taxpayername}}</td>
                 <td>{{r.refcode}}</td>

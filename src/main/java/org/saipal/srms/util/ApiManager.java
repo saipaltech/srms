@@ -491,7 +491,7 @@ public class ApiManager {
 		return null;
 	}
 	
-	public JSONObject directBankReceived(String karobarsanket, String bankId) {
+	public JSONObject directBankReceived(String karobarsanket,String cref, String bankId) {
 //		System.out.println(karobarsanket);
 		HttpRequest req = new HttpRequest();
 		String tok = this.getToken();
@@ -500,6 +500,7 @@ public class ApiManager {
 					.setHeader("Authorization", "Bearer "+tok)
 					.setHeader("Content-Type", "application/x-www-form-urlencoded")
 					.setParam("karobarsankets",karobarsanket)
+					.setParam("cref",cref)
 					.setParam("bankid",bankId)
 					.post(url + "/srms/directBank-revceived");
 			if (response.getInt("status_code") == 200) {

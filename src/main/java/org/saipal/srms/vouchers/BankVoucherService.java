@@ -192,10 +192,10 @@ public class BankVoucherService extends AutoService {
 		try {
 			JSONArray jarr = new JSONArray(items);
 			if (jarr.length() > 0) {
-				String qry = "select STRING_AGG(ksno,',') as karobarsankets from revDirectBankDakhilaDetail where did in ("
-						+ (items.replace("[", "").replace("]", "").replace("\"", "'")) + ")";
-				Tuple t = db.getSingleResult(qry);
-				String karobarsanket = t.get("karobarsankets") + "";
+//				String qry = "select STRING_AGG(ksno,',') as karobarsankets from revDirectBankDakhilaDetail where did in ("
+//						+ (items.replace("[", "").replace("]", "").replace("\"", "'")) + ")";
+//				Tuple t = db.getSingleResult(qry);
+//				String karobarsanket = t.get("karobarsankets") + "";
 //				JSONObject resp = api.directBankReceived(karobarsanket, auth.getBankId());
 //				if (resp != null) {
 //					if (resp.getInt("status") == 1) {
@@ -204,18 +204,20 @@ public class BankVoucherService extends AutoService {
 							Tuple res = db.getSingleResult(usq, Arrays.asList(jarr.get(i)));
 							String sq = "select * from revDirectBankDakhilaMain where cdid=?";
 							Tuple rs = db.getSingleResult(sq, Arrays.asList(res.get("mainid")));
+							String fyid=rs.get("fyid")+"";
 
 							String sq1 = "select count(id) as cid from taxvouchers where cref=?";
 							Tuple rs1 = db.getSingleResult(sq1, Arrays.asList(res.get("did")));
 							if (!rs1.get("cid").toString().equals("1")) {
-								karobarsanket += res.get("ksno") + ",";
-								String sql = "insert into taxvouchers(cref,dateint,bankid,branchid,karobarsanket,voucherno,amountcr,approved,approverid,lgid,collectioncenterid,date,updatedon,taxpayername,bankorgid,ttype,depositbankid,depositbranchid,deposituserid,depositedby,directdeposit) values(?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,getdate(),getdate(),?,?,?,?,?,?,?,?)";
+//								karobarsanket += res.get("ksno") + ",";
+//								String karobarsanket=getKarobarSanketNo(rs.get("adminid")+"",fyid,"2");
+								String sql = "insert into taxvouchers(cref,dateint,bankid,branchid,voucherno,amountcr,approved,approverid,lgid,collectioncenterid,date,updatedon,taxpayername,bankorgid,ttype,depositbankid,depositbranchid,deposituserid,depositedby,directdeposit) values(?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,getdate(),getdate(),?,?,?,?,?,?,?,?)";
 								DbResponse rf = db.execute(sql,
 										Arrays.asList(res.get("did"), auth.getBankId(), auth.getBranchId(),
-												res.get("ksno"), res.get("refcode"), res.get("amount"), 0,auth.getUserId(),
+												 res.get("refcode"), res.get("amount"), 0,auth.getUserId(),
 												rs.get("adminid"),rs.get("orgid"), res.get("taxpayername"),
-												rs.get("bankorgid"), 4, auth.getBankId(),
-												auth.getBranchId(), auth.getUserId(), res.get("taxpayername"),1));
+												rs.get("bankorgid"), 1, auth.getBankId(),
+												auth.getBranchId(), auth.getUserId(), res.get("taxpayername"),2));
 //								 System.out.println(rf.getMessage());
 								String usqq = "select * from taxvouchers where cref=?";
 								Tuple resq = db.getSingleResult(usqq, Arrays.asList(res.get("did")));
@@ -239,6 +241,17 @@ public class BankVoucherService extends AutoService {
 		}
 
 	}
+	
+	 public String getKarobarSanketNo(String adminid,String fyid,String genFor) {
+	    	String ret="";
+	    	String sql="declare @sanket varchar(20)\r\n" + 
+	    			"exec [dbo].[revCreateKarobarSanketNo] "+adminid+","+fyid+","+genFor+",@sanket out\r\n" + 
+	    			"select isnull(@sanket,0) as sanket";
+	    	Tuple rs = db.getSingleResult(sql);
+	    	ret=rs.get(0).toString();
+	    
+	    	return ret;
+	    }
 	
 	
 	@Transactional
