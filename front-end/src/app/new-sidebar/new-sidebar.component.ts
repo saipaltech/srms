@@ -48,6 +48,12 @@ export class NewSidebarComponent {
                   link: '/report',
                   queryparameter:{ type: 'sr' },
                   icon: "bi bi-circle",
+                },
+                {
+                  name: "Detail Report",
+                  link: '/report',
+                  queryparameter:{ type: 'bsr' },
+                  icon: "bi bi-circle",
                 }
               ]
             }
