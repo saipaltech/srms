@@ -421,19 +421,19 @@ public class ReportService extends AutoService {
 		
 //		if (type.equals("cad")) {
 			repTitle = getHeaderString("Detail Report, From:" + request("from") + " To:" + request("to"));
-			sql = "SELECT cast(tx.date as Date) as dates,tx.karobarsanket,tx.taxpayername,tx.taxpayerpan,tx.depcontact,lls.namenp as palika ,tx.amountcr as cash,0 as cheque,tx.amountcr as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
+			sql = "SELECT cast(tx.date as Date) as dates,tx.karobarsanket,tx.taxpayername,tx.taxpayerpan,tx.depcontact,lls.namenp as palika ,(case when tx.ttype=1 and tx.directdeposit=0 then tx.amountcr else 0 end) as cash,(case when tx.ttype=1 and tx.directdeposit!=0 then tx.amountcr else 0 end) as direct,0 as cheque,tx.amountcr as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 					+ condition + " and tx.ttype=1 and tx.approved=1 "
 							+ " union all "
-							+ " SELECT cast(tx.date as Date) as dates,tx.karobarsanket,tx.taxpayername,tx.taxpayerpan,tx.depcontact,lls.namenp as palika ,0 as cash,tx.amountcr as cheque,tx.amountcr as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
+							+ " SELECT cast(tx.date as Date) as dates,tx.karobarsanket,tx.taxpayername,tx.taxpayerpan,tx.depcontact,lls.namenp as palika ,0 as cash,0  as direct,tx.amountcr as cheque,tx.amountcr as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 							+  condition + " and tx.ttype=2 and tx.cstatus=1 "
 							+ " union all "
-							+ " SELECT cast(tx.depositdate as Date) as dates,tx.transactionid as karobarsanket,tx.officename as taxpayername,tx.vatpno as taxpayerpan,tx.mobileno as depcontact,lls.namenp as palika ,tx.amount as cash,0 as cheque,tx.amount as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM bank_deposits tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
+							+ " SELECT cast(tx.depositdate as Date) as dates,tx.transactionid as karobarsanket,tx.officename as taxpayername,tx.vatpno as taxpayerpan,tx.mobileno as depcontact,lls.namenp as palika ,tx.amount as cash,0 as  direct,0 as cheque,tx.amount as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM bank_deposits tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 							+  condition1
 							+ " union all "
-							+ " SELECT cast(tx.paymentdate as Date) as dates,tx.karobarsanket ,tx.taxpayername,tx.taxpayerpan,tx.depcontact,lls.namenp as palika ,0 as cash,0 as cheque,tx.amountcr as amount,tx.amountcr as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,'"+branchname+"' as branchname FROM taxportal.dbo.taxvouchers tx join bankinfo bi on bi.id=tx.bankid   join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
+							+ " SELECT cast(tx.paymentdate as Date) as dates,tx.karobarsanket ,tx.taxpayername,tx.taxpayerpan,tx.depcontact,lls.namenp as palika ,0 as cash,0 as  direct,0 as cheque,tx.amountcr as amount,tx.amountcr as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,'"+branchname+"' as branchname FROM taxportal.dbo.taxvouchers tx join bankinfo bi on bi.id=tx.bankid   join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 							+ condition2 +" and tx.paymentstatus=1 "
 							+ " union all "
-							+ " SELECT cast(tx.paymentdate as Date) as dates,tx.karobarsanket ,NULLIF(tx.taxpayername,'') as taxpayername,NULLIF(tx.vatpan,'') as taxpayerpan,NULLIF(tx.mobile,'') as depcontact,lls.namenp as palika ,0 as cash,0 as cheque,tx.amount as amount,tx.amount as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,'"+branchname+"' as branchname FROM taxportal.dbo.taxpaymentown tx join bankinfo bi on bi.id=tx.bankid   join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
+							+ " SELECT cast(tx.paymentdate as Date) as dates,tx.karobarsanket ,NULLIF(tx.taxpayername,'') as taxpayername,NULLIF(tx.vatpan,'') as taxpayerpan,NULLIF(tx.mobile,'') as depcontact,lls.namenp as palika ,0 as cash,0 as  direct,0 as cheque,tx.amount as amount,tx.amount as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,'"+branchname+"' as branchname FROM taxportal.dbo.taxpaymentown tx join bankinfo bi on bi.id=tx.bankid   join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 							+ condition2 +" and tx.status=1 order by palika, accountno";
 							
 //		}
@@ -449,6 +449,7 @@ public class ReportService extends AutoService {
 		List<Tuple> lists = db.getResultList(sql);
 		String OldPalika = "";
 		BigDecimal ctotal = new BigDecimal("0");
+		BigDecimal dtotal = new BigDecimal("0");
 		BigDecimal chtotal = new BigDecimal("0");
 		BigDecimal ontotal = new BigDecimal("0");
 		Excel.excelRow hrow = new Excel().ExcelRow();
@@ -461,8 +462,9 @@ public class ReportService extends AutoService {
 				.addColumn((new Excel().ExcelCell("Mobile")))
 				.addColumn((new Excel().ExcelCell("Karobarsanket")))
 				.addColumn((new Excel().ExcelCell("Cash")))
+				.addColumn((new Excel().ExcelCell("Direct Deposit")))
 				.addColumn((new Excel().ExcelCell("Cheque Cleared")))
-				.addColumn((new Excel().ExcelCell("Online")))
+				.addColumn((new Excel().ExcelCell("Local Level Revenue Portal")))
 				.addColumn((new Excel().ExcelCell("Collection Branch")));
 		excl.addHeadRow(hrow);
 		if (!lists.isEmpty()) {
@@ -485,6 +487,7 @@ public class ReportService extends AutoService {
 //					excl.addRow(ptrow);
 //				}
 				ctotal=ctotal.add((new BigDecimal(t.get("cash") + "")));
+				dtotal=dtotal.add((new BigDecimal(t.get("direct") + "")));
 				chtotal=chtotal.add((new BigDecimal(t.get("cheque") + "")));
 				ontotal=ontotal.add((new BigDecimal(t.get("online") + "")));
 				Object taxpayername = t.get("taxpayername");
@@ -513,6 +516,7 @@ public class ReportService extends AutoService {
 						.addColumn((new Excel().ExcelCell(depcontact + "")))
 						.addColumn((new Excel().ExcelCell(t.get("karobarsanket") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cash") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("direct") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cheque") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("online") + "")))
 //						.addColumn((new Excel().ExcelCell(t.get("updatedon") + "")))
@@ -525,6 +529,7 @@ public class ReportService extends AutoService {
 			}
 			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",8)))
 					.addColumn((new Excel().ExcelCell(ctotal.toPlainString() )))
+					.addColumn((new Excel().ExcelCell(dtotal.toPlainString() )))
 					.addColumn((new Excel().ExcelCell(chtotal.toPlainString())))
 					.addColumn((new Excel().ExcelCell(ontotal.toPlainString()))).addColumn((new Excel().ExcelCell("")));
 			excl.addRow(drow);
@@ -873,34 +878,34 @@ if (!lists.isEmpty()) {
 		List<Tuple> lists;
 		if(ishead.equals("0")) {
 			condition2 = condition2 + " and t.lgid="+dlgid+" ";
-		String sql = " select isnull(sum(cash),0) as cash,isnull(sum(cheque),0) as cheque,accountnumber,palika,isnull(sum(online),0) as online,isnull(sum(cdep),0) as cdep from (select accountnumber,palika,sum(online) as online,sum(cdep) as cdep, (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr,sum(online) as online,sum(cdep) as cdep from ("
-				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr,0 as online,0 as cdep from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.branchid=? and (t.approved=1 or t.cstatus=1) "+condition 
+		String sql = " select isnull(sum(cash),0) as cash,isnull(sum(direct),0) as direct,isnull(sum(cheque),0) as cheque,accountnumber,palika,isnull(sum(online),0) as online,isnull(sum(cdep),0) as cdep from (select accountnumber,palika,sum(online) as online,sum(cdep) as cdep, (case when ttype=1 and directdeposit=0 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=1 and directdeposit!=0 then sum(amountcr-amountdr) else 0 end) as direct,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,directdeposit,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr,sum(online) as online,sum(cdep) as cdep from ("
+				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype,t.directdeposit, t.amountdr,0 as online,0 as cdep from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.branchid=? and (t.approved=1 or t.cstatus=1) "+condition 
 				+" union all "
-				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,t.ttype, 0 as amountdr,0 as online,t.amountcr as cdep from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=? and t.branchid=?  and t.ttype=2 and t.cstatus=0 "+condition 
+				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,t.ttype,0 as directdeposit, 0 as amountdr,0 as online,t.amountcr as cdep from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=? and t.branchid=?  and t.ttype=2 and t.cstatus=0 "+condition 
 					+" union all "
-				+" select  cast(t.bankorgid as varchar) as accountno,"+auth.getBranchId()+" as depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,3 as ttype,  0 as amountdr,t.amountcr as online,0 as cdep from taxportal.dbo.taxvouchers t  join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.paymentstatus=1 "+condition2 
+				+" select  cast(t.bankorgid as varchar) as accountno,"+auth.getBranchId()+" as depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,3 as ttype,0 as directdeposit,  0 as amountdr,t.amountcr as online,0 as cdep from taxportal.dbo.taxvouchers t  join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.paymentstatus=1 "+condition2 
 				+" union all "
-				+" select  cast(t.bankorgid as varchar) as accountno,"+auth.getBranchId()+" as depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,3 as ttype,  0 as amountdr,t.amount as online,0 as cdep from taxportal.dbo.taxpaymentown t  join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.status=1 "+condition2 
+				+" select  cast(t.bankorgid as varchar) as accountno,"+auth.getBranchId()+" as depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,3 as ttype,0 as directdeposit,  0 as amountdr,t.amount as online,0 as cdep from taxportal.dbo.taxpaymentown t  join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.status=1 "+condition2 
 				+" union all "
-				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr,0 as online,0 as cdep from taxvouchers_log t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1 and t.branchid=? and t.approved=1 "+condition 
+				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype,0 as directdeposit, t.amountdr,0 as online,0 as cdep from taxvouchers_log t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1 and t.branchid=? and t.approved=1 "+condition 
 				+ " union all "
-				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as  amountdr,0 as online,0 as cdep from bank_deposits t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?  and t.depositbranchid=? and t.approved=1 "+condition1
-				+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype) c group by ttype,accountnumber,palika) d group by accountnumber,palika";
+				+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as directdeposit,0 as  amountdr,0 as online,0 as cdep from bank_deposits t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?  and t.depositbranchid=? and t.approved=1 "+condition1
+				+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype,directdeposit) c group by ttype,directdeposit,accountnumber,palika) d group by accountnumber,palika";
 		 lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBankId(),auth.getBankId(),auth.getBranchId(),auth.getBankId(),auth.getBranchId()));
 		}else {
-			String sql = " select isnull(sum(cash),0) as cash,isnull(sum(cheque),0) as cheque,accountnumber,palika,isnull(sum(online),0) as online,isnull(sum(cdep),0) as cdep from (select accountnumber,palika,sum(online) as online,sum(cdep) as cdep, (case when ttype=1 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr,sum(online) as online,sum(cdep) as cdep from ("
-					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr,0 as online,0 as cdep from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?   and (t.approved=1 or t.cstatus=1) "+condition 
+			String sql = " select isnull(sum(cash),0) as cash,isnull(sum(direct),0) as direct,isnull(sum(cheque),0) as cheque,accountnumber,palika,isnull(sum(online),0) as online,isnull(sum(cdep),0) as cdep from (select accountnumber,palika,sum(online) as online,sum(cdep) as cdep, (case when ttype=1 and directdeposit=0 then sum(amountcr-amountdr) else 0 end) as cash,(case when ttype=1 and directdeposit!=0 then sum(amountcr-amountdr) else 0 end) as direct,(case when ttype=2 then sum(amountcr-amountdr) else 0 end) as cheque   from (select accountno,bankid,depositbranchid,accountname,accountnumber,ttype,directdeposit,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr,sum(online) as online,sum(cdep) as cdep from ("
+					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype,t.directdeposit, t.amountdr,0 as online,0 as cdep from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?   and (t.approved=1 or t.cstatus=1) "+condition 
 					+" union all "
-					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,t.ttype, 0 as amountdr,0 as online,t.amountcr as cdep from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?   and t.ttype=2 and t.cstatus=0 "+condition 
+					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,t.ttype,0 as directdeposit ,0 as amountdr,0 as online,t.amountcr as cdep from taxvouchers t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?   and t.ttype=2 and t.cstatus=0 "+condition 
 					+" union all "
-					+" select  cast(t.bankorgid as varchar) as accountno,"+auth.getBranchId()+" as depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,3 as ttype,  0 as amountdr,t.amountcr as online,0 as cdep from taxportal.dbo.taxvouchers t  join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.paymentstatus=1 "+condition2 
+					+" select  cast(t.bankorgid as varchar) as accountno,"+auth.getBranchId()+" as depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,3 as ttype,0 as directdeposit,  0 as amountdr,t.amountcr as online,0 as cdep from taxportal.dbo.taxvouchers t  join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.paymentstatus=1 "+condition2 
 					+" union all "
-					+" select  cast(t.bankorgid as varchar) as accountno,"+auth.getBranchId()+" as depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,3 as ttype,  0 as amountdr,t.amount as online,0 as cdep from taxportal.dbo.taxpaymentown t  join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.status=1 "+condition2 
+					+" select  cast(t.bankorgid as varchar) as accountno,"+auth.getBranchId()+" as depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,0 as amountcr,3 as ttype,0 as directdeposit,  0 as amountdr,t.amount as online,0 as cdep from taxportal.dbo.taxpaymentown t  join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid   where   t.bankid=?  and t.status=1 "+condition2 
 					+" union all "
-					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype, t.amountdr,0 as online,0 as cdep from taxvouchers_log t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1  and t.approved=1 "+condition 
+					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr,t.ttype,0 as directdeposit, t.amountdr,0 as online,0 as cdep from taxvouchers_log t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid     where  t.bankid=? and t.ttype=1  and t.approved=1 "+condition 
 					+ " union all "
-					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as  amountdr,0 as online,0 as cdep from bank_deposits t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?   and t.approved=1 "+condition1
-					+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype) c group by ttype,accountnumber,palika) d group by accountnumber,palika";
+					+" select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,1 as ttype,0 as directdeposit,0 as  amountdr,0 as online,0 as cdep from bank_deposits t join branches br on br.id=t.depositbranchid join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid    where   t.bankid=?   and t.approved=1 "+condition1
+					+" ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid,ttype,directdeposit) c group by ttype,directdeposit,accountnumber,palika) d group by accountnumber,palika";
 			 lists = db.getResultList(sql, Arrays.asList(auth.getBankId(),auth.getBankId(),auth.getBankId(),auth.getBankId(),auth.getBankId(),auth.getBankId()));
 		}
 //		System.out.println(sql);
@@ -909,6 +914,7 @@ if (!lists.isEmpty()) {
 		BigDecimal ptotal = new BigDecimal("0");
 		BigDecimal totalCash = new BigDecimal("0");
 		BigDecimal totalCheque = new BigDecimal("0");
+		BigDecimal totalDirect = new BigDecimal("0");
 		BigDecimal totalOnline = new BigDecimal("0");
 		BigDecimal totalcdep = new BigDecimal("0");
 		BigDecimal nettotal = new BigDecimal("0");
@@ -918,8 +924,9 @@ if (!lists.isEmpty()) {
 		.addColumn((new Excel().ExcelCell("Palika")))
 		.addColumn((new Excel().ExcelCell("Account Number")))
 		.addColumn((new Excel().ExcelCell("Cash")))
+		.addColumn((new Excel().ExcelCell("Direct Bank Deposit")))
 		.addColumn((new Excel().ExcelCell("Cheque")))
-		.addColumn((new Excel().ExcelCell("Online Payment")))
+		.addColumn((new Excel().ExcelCell("Local Level Revenue Portal")))
 		.addColumn((new Excel().ExcelCell("Total")))
 		.addColumn((new Excel().ExcelCell("Cheque to be cleared")));
 				
@@ -930,8 +937,13 @@ if (!lists.isEmpty()) {
 			for (Tuple t : lists) {
 //				System.out.println(t);
 				BigDecimal totalAmount = new BigDecimal("0");
-				totalAmount = totalAmount.add((new BigDecimal(t.get("cash") + "")).add(new BigDecimal(t.get("cheque") + "")).add(new BigDecimal(t.get("online") + "")));
+				totalAmount = totalAmount
+						.add((new BigDecimal(t.get("cash") + ""))
+					    .add((new BigDecimal(t.get("direct") + ""))
+						.add(new BigDecimal(t.get("cheque") + ""))
+						.add(new BigDecimal(t.get("online") + ""))));
 				totalCash=totalCash.add((new BigDecimal(t.get("cash") + "")));
+				totalDirect=totalDirect.add((new BigDecimal(t.get("direct") + "")));
 				totalCheque=totalCheque.add((new BigDecimal(t.get("cheque") + "")));
 				totalcdep=totalcdep.add((new BigDecimal(t.get("cdep") + "")));
 				totalOnline=totalOnline.add((new BigDecimal(t.get("online") + "")));
@@ -944,6 +956,7 @@ if (!lists.isEmpty()) {
 						.addColumn((new Excel().ExcelCell(t.get("palika") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("accountnumber") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cash") + "")))
+						.addColumn((new Excel().ExcelCell(t.get("direct") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("cheque") + "")))
 						.addColumn((new Excel().ExcelCell(t.get("online") + "")))
 						.addColumn((new Excel().ExcelCell(totalAmount.toPlainString())))
@@ -955,6 +968,7 @@ if (!lists.isEmpty()) {
 			}
 			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell("Total",3)))
 					.addColumn((new Excel().ExcelCell(totalCash.toPlainString() )))
+					.addColumn((new Excel().ExcelCell(totalDirect.toPlainString() )))
 					.addColumn((new Excel().ExcelCell(totalCheque.toPlainString())))
 					.addColumn((new Excel().ExcelCell(totalOnline.toPlainString())))
 					.addColumn((new Excel().ExcelCell(nettotal.toPlainString())))
