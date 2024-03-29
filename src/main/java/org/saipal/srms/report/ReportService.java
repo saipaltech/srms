@@ -287,7 +287,7 @@ public class ReportService extends AutoService {
 				condition = condition + " and tx.cstatus="+chkstatus+" ";
 			}
 			repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
-			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname,u.name as createdby,u1.name as collectedby,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid join users u on u.id=tx.deposituserid join users u1 on u1.id=tx.approverid join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
+			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname,u.name as createdby,u1.name as collectedby,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid join users u on u.id=tx.deposituserid join users u1 on u1.id=tx.deposituserid join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
 					+ condition + " and tx.ttype=2 and tx.cstatus=1 order by palika, accountno";
 		}
 		excl.title = repTitle;
