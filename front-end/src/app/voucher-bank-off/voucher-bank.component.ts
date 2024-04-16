@@ -118,6 +118,80 @@ changeFields() {
   
 }
 
+numberInWords:any;
+convertToWords(value: any) {
+  const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+  const teens = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+  const tens = ['', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+  const scales = ['', 'thousand', 'million', 'billion'];
+
+  if (value === 0) {
+    this.numberInWords = 'zero';
+    return;
+  }
+
+  const numStr = value.toString();
+  const [integerPart, decimalPart] = numStr.split('.');
+
+  let result = '';
+  if (integerPart) {
+    let remainingValue = parseInt(integerPart);
+    let scaleIndex = 0;
+
+    while (remainingValue > 0) {
+      const currentGroup = remainingValue % 1000;
+      remainingValue = Math.floor(remainingValue / 1000);
+
+      if (currentGroup !== 0) {
+        result = this.convertGroupToWords(currentGroup, ones, teens, tens) + ' ' + scales[scaleIndex] + ' ' + result;
+      }
+
+      scaleIndex++;
+    }
+  }
+
+  if (decimalPart) {
+    const decimalValue = parseInt(decimalPart);
+    if (decimalValue !== 0) {
+      result += 'and ' + this.convertGroupToWords(decimalValue, ones, teens, tens)+' paisa';
+    }
+  }
+
+  this.numberInWords = "Rupees "+result.trim();
+}
+
+convertGroupToWords(group: number, ones: string[], teens: string[], tens: string[]): string {
+  let result = '';
+
+  const hundreds = Math.floor(group / 100);
+  const tensUnits = group % 100;
+
+  if (hundreds > 0) {
+    result += ones[hundreds] + ' hundred';
+    if (tensUnits > 0) {
+      result += ' ';
+    }
+  }
+
+  if (tensUnits > 0) {
+    if (tensUnits < 10) {
+      result += ones[tensUnits];
+    } else if (tensUnits < 20) {
+      result += teens[tensUnits - 10];
+    } else {
+      const tensDigit = Math.floor(tensUnits / 10);
+      const unitsDigit = tensUnits % 10;
+      result += tens[tensDigit];
+      if (unitsDigit > 0) {
+        result += ' ' + ones[unitsDigit];
+      }
+    }
+  }
+
+  return result.trim();
+}
+
+
 ngOnInit(): void {
   // console.log(this.items);
   this.pagination.perPage = this.perPages[0];
@@ -428,6 +502,7 @@ addItem(){
    this.calctotal();
    this.voucherBankForm.patchValue({"revenuecode":''});
    this.voucherBankForm.patchValue({"amount":''});
+   this.numberInWords="";
   
    }
    

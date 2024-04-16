@@ -73,6 +73,10 @@ export class ChequeEntryService {
     return this.http.get(this.url + '/get-specific/' + id);  
   }
 
+  getusertype(){
+    return this.http.get(this.url + '/get-usertype');
+  }
+
   getDetailsOwn(id: string) {
     return this.http.get(this.url + '/get-specific-own/' + id);  
   }

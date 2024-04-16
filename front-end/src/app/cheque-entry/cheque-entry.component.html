@@ -204,7 +204,7 @@
         <label for="username" class="form-label req">{{"Amount" | translate}}</label>
         <div class="input-group has-validation">
           <input
-            formControlName="amount" 
+            formControlName="amount" #amt (input)="convertToWords(amt.value)"
             type="text" 
             class="form-control form-control-sm"
             [ngClass]="vs.getControlClass(voucherBankForm.controls['amount'])"
@@ -218,6 +218,8 @@
         <button type="button" class="btn btn-success btn-sm" (click)="addItem()">{{"Add" | translate}} </button>
         </div>
       </div>
+      <div class="col-6"></div>
+      <div class="col-6"><p style="color:red;font-weight: bold;">{{ numberInWords }}</p></div>
       <div  *ngIf="istab==2" class="col-12">
         <table class="layout display responsive-table">
           <thead>

@@ -128,7 +128,7 @@ export class VoucherCancelComponent {
             this.toastr.success("Data submitted successfully!", "Success");
             this.getList();
           }, error: err => {
-            this.toastr.error("Unable to submit data", "Error")
+            this.toastr.error(err.error.message, "Error");
           }
         });
       }
