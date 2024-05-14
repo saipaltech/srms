@@ -169,10 +169,14 @@ const routes: Routes = [
  
     ]
   },
+ 
   {
     path:"**",
     redirectTo:"/"
-  },/*{
+  },
+  
+
+  /*{
     path: "password-change",
     redirectTo:"/password-change"
   },

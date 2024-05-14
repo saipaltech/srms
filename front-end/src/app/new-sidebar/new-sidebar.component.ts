@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../api.service';
 import { AuthService } from '../auth/auth.service';
+import { AppConfig } from '../app.config';
 
 @Component({
   selector: 'app-new-sidebar',
@@ -10,8 +11,11 @@ import { AuthService } from '../auth/auth.service';
 })
 export class NewSidebarComponent {
   name = "";
+  baseurl:any;
   navcontent: any = [];
-  constructor(private router: Router, private authService: AuthService, private http: ApiService) { }
+  constructor(public appConfig:AppConfig,private router: Router, private authService: AuthService, private http: ApiService) {
+    this.baseurl=appConfig.baseUrl;
+   }
   ngOnInit(): void {
     this.name = this.authService.getUserDetails()?.name;
     this.http.get("users/get-front-menu").subscribe({
