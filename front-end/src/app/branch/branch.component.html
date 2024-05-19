@@ -211,13 +211,15 @@
           <thead>
             <tr>
               <th scope="col">{{"Name" | translate}}</th>
-              <!--<th scope="col">Code</th>-->
+              <th scope="col">OTP Status</th>
               <th scope="col">{{"Action" | translate}}</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of lists; let i = index">
               <td>{{ item.name }}</td>
+              <td *ngIf="item.twofa==1"><span style="background-color: blue" class="badge badge-primary">Enabled</span></td>
+              <td *ngIf="item.twofa==0"><span style="background-color: red" class="badge badge-primary">Disabled</span></td>
               <!--<td>{{ item.code }}</td>-->
               <td style="width: 120px;">
                 <button class="btn btn-success btn-sm" (click)="getUpdateItem(item.id)" href="javascript:void(0)"

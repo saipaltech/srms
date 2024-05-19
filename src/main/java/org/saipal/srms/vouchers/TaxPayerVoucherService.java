@@ -14,6 +14,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.saipal.srms.auth.Authenticated;
+import org.saipal.srms.banks.Bank;
 import org.saipal.srms.service.AutoService;
 import org.saipal.srms.service.IrdPanSearchService;
 import org.saipal.srms.sms.F1SoftSmsGateway;
@@ -150,7 +151,7 @@ public class TaxPayerVoucherService extends AutoService {
 		if (!auth.hasPermission("bankuser")) {
 			return Messenger.getMessenger().setMessage("No permission to access the resoruce").error();
 		}
-		String condition = " where tx.id!=1 and ttype=2  ";
+		String condition = " where tx.id!=1 and ttype=2 and tx.disabled=0 ";
 		String approve = request("approvelog");
 		if (!request("searchTerm").isEmpty()) {
 			List<String> searchbles = TaxPayerVoucher.searchables();
@@ -479,6 +480,19 @@ public class TaxPayerVoucherService extends AutoService {
 			return Messenger.getMessenger().error();
 		}
 
+	}
+	
+	@Transactional
+	public ResponseEntity<Map<String, Object>> cancelCheque() {
+		String id = request("id");
+		DbResponse rowEffect;
+		String sql = "UPDATE " + table + " set  disabled=? where id=?";
+		rowEffect = db.execute(sql, Arrays.asList(1,id));
+		if (rowEffect.getErrorNumber() == 0) {
+			return Messenger.getMessenger().success();
+		} else {
+			return Messenger.getMessenger().error();
+		}
 	}
 
 	@Transactional
@@ -1001,13 +1015,13 @@ public class TaxPayerVoucherService extends AutoService {
 			condi = " and code > 33300 ";
 		}
 		// check if data is cached
-		List<Tuple> d = db.getResultList("select code,namenp from crevenue where 1=1" + condi);
+		List<Tuple> d = db.getResultList("select id,code,namenp from crevenue where 1=1" + condi);
 		if (d.size() > 0) {
 			try {
 				JSONObject j = new JSONObject();
 				JSONArray dt = new JSONArray();
 				for (Tuple t : d) {
-					dt.put(Map.of("code", t.get("code"), "name", t.get("namenp")));
+					dt.put(Map.of("id", t.get("id"),"code", t.get("code"), "name", t.get("namenp")));
 				}
 				j.put("status", 1);
 				j.put("message", "Success");

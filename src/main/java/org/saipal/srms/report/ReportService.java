@@ -113,7 +113,7 @@ public class ReportService extends AutoService {
 		String repTitle="";
 		
 		if (!id.isBlank()) {
-			sql = "select dc.*, lls.namenp as palika, (amountcr-amountdr) as balance from dayclose_details dc join admin_local_level_structure lls on lls.id = dc.lgid where dcid='"+id+"'";
+			sql = "select dc.*, lls.namenp as palika, (amountcr-amountdr) as balance,CASE WHEN dc.ttype = 2 THEN 'Cheque' WHEN dc.ttype = 1 AND dc.directdeposit = 0 THEN 'Cash' WHEN dc.ttype = 1 AND dc.directdeposit = 1 THEN 'Direct bank Deposit' WHEN dc.ttype = 1 AND dc.directdeposit = 2 THEN 'Direct bank Deposit from Palika' END AS mode from dayclose_details dc join admin_local_level_structure lls on lls.id = dc.lgid where dcid='"+id+"'";
 			data = db.getResultList(sql);
 		}
 		
@@ -138,12 +138,12 @@ public class ReportService extends AutoService {
 			if(!bankorgid.isBlank()) {
 				cond1+=" and t.bankorgid='"+bankorgid+"'";
 			}
-			sql = "select * from (select accountno,accountname,accountnumber,palika,lgid,amountdr,amountcr,karobarsanket from ("
-					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,karobarsanket,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+branchid+"   where  dc.id is null and t.dateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=1 and t.branchid=? "+cond 
+			sql = "select * from (select accountno,mode,accountname,accountnumber,palika,lgid,amountdr,amountcr,karobarsanket from ("
+					+" select  cast(t.bankorgid as varchar) as accountno,CASE WHEN t.ttype = 2 THEN 'Cheque' WHEN t.ttype = 1 AND t.directdeposit = 0 THEN 'Cash' WHEN t.ttype = 1 AND t.directdeposit = 1 THEN 'Direct bank Deposit' WHEN t.ttype = 1 AND t.directdeposit = 2 THEN 'Direct bank Deposit from Palika' END AS mode,b.accountname,b.accountnumber,ll.namenp as palika,karobarsanket,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+branchid+"   where  dc.id is null and t.dateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=1 and t.branchid=? "+cond 
 					+" union all "
-					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,karobarsanket,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+branchid+"  where  dc.id is null and  t.dateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.ttype=1 and t.branchid=? "+cond 
+					+" select  cast(t.bankorgid as varchar) as accountno,'Cash' as mode,b.accountname,b.accountnumber,ll.namenp as palika,karobarsanket,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="+branchid+"  where  dc.id is null and  t.dateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.ttype=1 and t.branchid=? "+cond 
 					+ " union all "
-					+" select  cast(t.bankorgid as varchar) as accountno,b.accountname,b.accountnumber,ll.namenp as palika,transactionid as karobarsanket,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint and dc.branchid="+branchid+"   where  dc.id is null and  t.depositdateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.depositbranchid=? "+cond1
+					+" select  cast(t.bankorgid as varchar) as accountno,'Cash' as mode,b.accountname,b.accountnumber,ll.namenp as palika,transactionid as karobarsanket,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint and dc.branchid="+branchid+"   where  dc.id is null and  t.depositdateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.depositbranchid=? "+cond1
 					+" ) a ) b ";
 			data = db.getResultList(sql,Arrays.asList(bankid,branchid,bankid,branchid,bankid,branchid));
 		}
@@ -153,6 +153,7 @@ public class ReportService extends AutoService {
 		hrow
 		.addColumn((new Excel().ExcelCell("S.N.")))
 				.addColumn((new Excel().ExcelCell("Karobar Sanket")))
+				.addColumn((new Excel().ExcelCell("Transaction Type")))
 				.addColumn((new Excel().ExcelCell("Debit")))
 				.addColumn((new Excel().ExcelCell("Credit")));
 		excl.addHeadRow(hrow);
@@ -161,6 +162,7 @@ public class ReportService extends AutoService {
 			
 			Excel.excelRow drow = (new Excel().ExcelRow()).addColumn((new Excel().ExcelCell((i + ""))))
 					.addColumn((new Excel().ExcelCell(t.get("karobarsanket") + "")))
+					.addColumn((new Excel().ExcelCell(t.get("mode") + "")))
 					.addColumn((new Excel().ExcelCell(t.get("amountdr") + "")))
 					.addColumn((new Excel().ExcelCell(t.get("amountcr") + "")));
 			excl.addRow(drow);

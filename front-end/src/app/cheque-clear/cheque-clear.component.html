@@ -401,7 +401,8 @@
             &nbsp; -->
             <button *ngIf="item.cstatus == 0" class="btn btn-info btn-sm" (click)="clearCheque(item.id)" title="Cheque Cleared"><i class="bi bi-arrow-return-right"></i></button>
             &nbsp;
-            <button *ngIf="item.cstatus == 0 && item.chequetype!=0" class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i></button>
+            <button *ngIf="item.cstatus == 0 " class="btn btn-warning btn-sm" (click)="cancelCheque(item.id)" title="Cancel Cheque"><i class="bi bi-toggles"></i></button>
+            &nbsp;  <button *ngIf="item.cstatus == 0 && item.chequetype!=0" class="btn btn-danger btn-sm" (click)="delete(item.id)" title="Delete"><i class="bi bi-trash"></i></button>
             &nbsp;  <button *ngIf="item.cstatus == 0 && item.chequetype!=0" class="btn btn-success btn-sm" (click)="getUpdateItem(item.id)" title="Edit" href="javascript:void(0)"
             ><i class="bi bi-pencil-square"></i
           ></button>

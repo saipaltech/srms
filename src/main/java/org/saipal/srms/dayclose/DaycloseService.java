@@ -55,15 +55,15 @@ public class DaycloseService extends AutoService {
 		}
 
 		String sql = "select *,(amountcr-amountdr) as balance from (select accountno,bankid,depositbranchid,accountname,accountnumber,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
-				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="
+				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.ttype=1 and dc.branchid="
 				+ auth.getBranchId()
 				+ "  where  dc.id is null and t.dateint=format(getdate(),'yyyyMMdd')  and  t.bankid=? and t.ttype=1 and t.branchid=? and t.approved=1 "
 				+ cond + " union all "
-				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.branchid="
+				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.ttype=1 and dc.branchid="
 				+ auth.getBranchId()
 				+ "   where  dc.id is null and  t.dateint=format(getdate(),'yyyyMMdd') and  t.bankid=? and t.ttype=1 and t.branchid=? and t.approved=1 "
 				+ cond + " union all "
-				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint and dc.branchid="
+				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint and dc.ttype=1 and dc.branchid="
 				+ auth.getBranchId()
 				+ "   where  dc.id is null and  t.depositdateint=format(getdate(),'yyyyMMdd') and  t.bankid=?  and t.depositbranchid=? and t.approved=1 "
 				+ cond1 + " ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid) b ";
@@ -132,7 +132,7 @@ public class DaycloseService extends AutoService {
 
 					if (!admlvl.isEmpty()) {
 						for (Tuple tt : admlvl) {
-							String sql2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,purpose,syncstatus,approved,approverid,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr) values (?,?,?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?) ";
+							String sql2 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,purpose,syncstatus,approved,approverid,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr,directdeposit) values (?,?,?,format(getdate(),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?,?) ";
 							db.execute(sql2, Arrays.asList(id, tt.get("id"), tt.get("karobarsanket"),
 									tt.get("voucherno"), tt.get("date"), tt.get("taxpayername"), tt.get("taxpayerpan"),
 									tt.get("depositedby"), tt.get("depcontact"), tt.get("lgid"),
@@ -140,7 +140,7 @@ public class DaycloseService extends AutoService {
 									tt.get("bankorgid"), tt.get("purpose"), tt.get("syncstatus"), tt.get("approved"),
 									tt.get("approverid"), tt.get("ttype"), tt.get("chequebank"), tt.get("chequeno"),
 									tt.get("chequeamount"), tt.get("cstatus"), tt.get("chequetype"), tt.get("isused"),
-									tt.get("hasChangeReqest"), tt.get("amountdr"), tt.get("amountcr")));
+									tt.get("hasChangeReqest"), tt.get("amountdr"), tt.get("amountcr"),tt.get("directdeposit")));
 						}
 					}
 
@@ -197,9 +197,9 @@ public class DaycloseService extends AutoService {
 	@Transactional
 	public ResponseEntity<Map<String, Object>> daycloseScheduler() {
 		String sql = "select *,(amountcr-amountdr) as balance from (select accountno,bankid,depositbranchid,accountname,accountnumber,palika,lgid,sum(amountcr) as amountcr,sum(amountdr) as amountdr from ("
-				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.ttype=1  and (dc.dateint=t.dateint or dc.dateint=t.cleardateint)    where  dc.id is null and (t.dateint=format(dateadd(day,-1,getdate()),'yyyyMMdd') or t.cleardateint=format(dateadd(day,-1,getdate()),'yyyyMMdd'))   and ( t.approved=1 or t.cstatus=1) "
+				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid   and (dc.dateint=t.dateint or dc.dateint=t.cleardateint) and dc.ttype=t.ttype     where  dc.id is null and (t.dateint=format(dateadd(day,-1,getdate()),'yyyyMMdd') or t.cleardateint=format(dateadd(day,-1,getdate()),'yyyyMMdd'))   and ( t.approved=1 or t.cstatus=1) "
 				+ " union all "
-				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.ttype=1   where  dc.id is null and  t.dateint=format(dateadd(day,-1,getdate()),'yyyyMMdd')   and (t.approved=1 or t.cstatus=1) "
+				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amountcr, t.amountdr from taxvouchers_log t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid  left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.dateint and dc.ttype=t.ttype   where  dc.id is null and  t.dateint=format(dateadd(day,-1,getdate()),'yyyyMMdd')   and (t.approved=1 or t.cstatus=1) "
 				+ " union all "
 				+ " select  cast(t.bankorgid as varchar) as accountno,t.depositbranchid,t.bankid,b.accountname,b.accountnumber,ll.namenp as palika,cast(t.lgid as varchar) as lgid,t.amount as amountcr,0 as  amountdr from bank_deposits t join admin_local_level_structure ll on ll.id=t.lgid join bankaccount b on b.id=t.bankorgid left join dayclose dc on dc.lgid=t.lgid and dc.bankorgid=t.bankorgid and dc.dateint=t.depositdateint and dc.ttype=1  where  dc.id is null and  t.depositdateint=format(dateadd(day,-1,getdate()),'yyyyMMdd') and  t.approved=1 "
 				+ " ) a group by accountno,accountname,accountnumber,palika,lgid,bankid,depositbranchid) b ";
@@ -229,7 +229,7 @@ public class DaycloseService extends AutoService {
 //					System.out.println(txv.toString());
 					if (!txv.isEmpty()) {
 						for (Tuple tt : txv) {
-							String sql3 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,purpose,syncstatus,approved,approverid,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr) values (?,?,?,format(dateadd(day,-1,getdate()),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?) ";
+							String sql3 = "insert into dayclose_details(dcid,tvid,karobarsanket,dateint,voucherno,date,taxpayername,taxpayerpan,depositedby,depcontact,lgid,collectioncenterid,bankid,branchid,accountno,purpose,syncstatus,approved,approverid,ttype,chequebank,chequeno,chequeamount,cstatus,chequetype,isused,hasChangeReqest,changeReqestDate,amountdr,amountcr,directdeposit) values (?,?,?,format(dateadd(day,-1,getdate()),'yyyyMMdd'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?,?,?) ";
 							db.execute(sql3, Arrays.asList(id, tt.get("id"), tt.get("karobarsanket"),
 									tt.get("voucherno"), tt.get("date"), tt.get("taxpayername"), tt.get("taxpayerpan"),
 									tt.get("depositedby"), tt.get("depcontact"), tt.get("lgid"),
@@ -237,7 +237,7 @@ public class DaycloseService extends AutoService {
 									tt.get("bankorgid"), tt.get("purpose"), tt.get("syncstatus"), tt.get("approved"),
 									tt.get("approverid"), tt.get("ttype"), tt.get("chequebank"), tt.get("chequeno"),
 									tt.get("chequeamount"), tt.get("cstatus"), tt.get("chequetype"), tt.get("isused"),
-									tt.get("hasChangeReqest"), tt.get("amountdr"), tt.get("amountcr")));
+									tt.get("hasChangeReqest"), tt.get("amountdr"), tt.get("amountcr"),tt.get("directdeposit")));
 						}
 //						System.out.println("deatils done");
 					}

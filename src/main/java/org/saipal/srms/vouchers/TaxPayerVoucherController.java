@@ -158,6 +158,11 @@ public class TaxPayerVoucherController {
 		return objService.chequeclear();
 	}
 	
+	@GetMapping("cancelCheque")
+	public ResponseEntity<Map<String, Object>> cancelCheque() {
+		return objService.cancelCheque();
+	}
+	
 	@GetMapping("get-revenue-list")
 	public ResponseEntity<String> getRevenue() {
 		return objService.getRevenue();

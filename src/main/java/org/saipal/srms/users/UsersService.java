@@ -162,7 +162,7 @@ public class UsersService extends AutoService {
 		if (!(res.get(0) + "").equals("0")) {
 			return Messenger.getMessenger().setMessage("Username already exists.").error();
 		}
-		String mbl = "select count(mobile) from users where username=?";
+		String mbl = "select count(mobile) from users where mobile=? and disabled=0";
 		Tuple resu = db.getSingleResult(mbl, Arrays.asList(model.mobile));
 		if (!(resu.get(0) + "").equals("0")) {
 			return Messenger.getMessenger().setMessage("Mobile already exists.").error();
@@ -264,7 +264,7 @@ public class UsersService extends AutoService {
 		Users model = new Users();
 		model.loadData(document);
 
-		String mbl = "select count(mobile) from users where mobile=? and id<>?";
+		String mbl = "select count(mobile) from users where mobile=? and id<>? and disabled=0";
 		Tuple resu = db.getSingleResult(mbl, Arrays.asList(model.mobile, id));
 		if (!(resu.get(0) + "").equals("0")) {
 			return Messenger.getMessenger().setMessage("Mobile already exists.").error();

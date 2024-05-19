@@ -469,7 +469,7 @@ addItem(){
    if(amt && rc && this.voucherBankForm.get('amount')?.valid){
     let val;
     for (const item of this.revs) {
-     if (item.code === rc) {
+     if (item.id === rc) {
         val=item.code+'['+item.name+']';
        // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
        break;

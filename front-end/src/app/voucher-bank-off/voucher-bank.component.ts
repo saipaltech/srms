@@ -482,10 +482,15 @@ addItem(){
   
    let rc=this.voucherBankForm.value['revenuecode'];
    let amt=this.voucherBankForm.value['amount'];
+   const hasCertainValue = this.items.some(item => item.rc === rc);
+    if (hasCertainValue) {
+     alert("same revenue title cannot be added ");
+      return;
+    }
    if(amt && rc && this.voucherBankForm.get('amount')?.valid){
     let val;
     for (const item of this.revs) {
-     if (item.code === rc) {
+     if (item.id === rc) {
         val=item.code+'['+item.name+']';
        // console.log(`Found key-value pair: ${item.key} : ${item.value}`);
        break;

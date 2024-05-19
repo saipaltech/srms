@@ -60,7 +60,7 @@ public class BranchService extends AutoService {
 
 		Paginator p = new Paginator();
 		Map<String, Object> result = p.setPageNo(request("page")).setPerPage(request("perPage")).setOrderBy(sort)
-				.select("cast(id as varchar) as id,name,bankid, approved,disabled").sqlBody("from " + table + condition).paginate();
+				.select("cast(id as varchar) as id,name,bankid, approved,disabled,twofa").sqlBody("from " + table + condition).paginate();
 		if (result != null) {
 			return ResponseEntity.ok(result);
 		} else {

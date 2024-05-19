@@ -123,6 +123,20 @@ clearCheque(id:any){
 }
 }
 
+cancelCheque(id:any){
+  if (window.confirm('Are you sure you want to cancel this cheque?')) {
+    this.bvs.cancelCheque(id).subscribe({next:(dt)=>{
+      this.getList();
+      this.toastr.success("Cheque status changed to canceled.","Success")
+    
+    },error:err=>{
+      // console.log(err);
+      this.toastr.error(err.message,"Error")
+    }});
+
+  }
+}
+
 details : any;
 
 getDetails(id:any){

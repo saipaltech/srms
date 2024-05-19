@@ -97,4 +97,8 @@ remove(id: string) {
 clearCheque(id:any){
   return this.http.get(this.url+'/chequeclear?id=' + id);
 }
+
+cancelCheque(id:any){
+  return this.http.get(this.url+'/cancelCheque?id=' + id);
+}
 }
