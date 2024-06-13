@@ -1189,7 +1189,7 @@ public class TaxPayerVoucherService extends AutoService {
 				+ "       dbo.eng2nep(ROW_NUMBER() OVER (ORDER BY tvd.revenueid)) as sn,  "
 				+ "       dbo.eng2nep(tvd.amount) as amount,  " + "       dbo.eng2nep(tvd.revenueid) as revenuecode "
 				+ "FROM taxvouchers_detail tvd  " + "JOIN taxvouchers tv ON tv.id = tvd.mainid  "
-				+ "JOIN crevenue cr ON cr.code = tvd.revenueid  " + "WHERE tv.karobarsanket = ? AND tv.lgid = ?";
+				+ "JOIN crevenue cr ON cr.id = tvd.revenueid  " + "WHERE tv.karobarsanket = ? AND tv.lgid = ?";
 		List<Tuple> admlvl = db.getResultList(sql, Arrays.asList(voucher, palika));
 
 		List<Map<String, Object>> list = new ArrayList<>();

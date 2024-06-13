@@ -373,6 +373,7 @@ public class ReportService extends AutoService {
 		String fy= request("fy")+"";
 		String palika= request("palika")+"";
 		String branch= request("branch")+"";
+		String accno=request("accno")+"";
 		String repTitle="";
 		String sql = "";
 		String sql1="select name,ishead,dlgid from branches  where id= "+auth.getBranchId();
@@ -402,6 +403,11 @@ public class ReportService extends AutoService {
 		if (!branch.isBlank()) {
 			condition = condition + " and tx.branchid="+branch+" ";
 		 condition1 = condition1 + " and tx.depositbranchid="+branch+" ";
+		}
+		
+		if (!accno.isBlank()) {
+			condition = condition + " and ba.id="+accno+" ";
+		 condition1 = condition1 + " and ba.id="+accno+" ";
 		}
 		String username= request("users")+"";
 		if (!username.isBlank()) {
