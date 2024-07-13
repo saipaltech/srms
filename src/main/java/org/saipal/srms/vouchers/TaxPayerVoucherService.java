@@ -273,6 +273,30 @@ public class TaxPayerVoucherService extends AutoService {
 
 		return ResponseEntity.ok(data);
 	}
+	
+	@Transactional
+	public ResponseEntity<Map<String, Object>> balanceentry() throws JSONException {
+		String balance=request("balance");
+		String lgid=request("lgid");
+		JSONArray jarr = new JSONArray(balance);
+		try {
+			if (jarr.length() > 0) {
+				String sqls = "delete from balanceentry where lgid  = ? and bankid=? and branchid=?";
+				DbResponse rowEffects = db.execute(sqls, Arrays.asList(lgid,auth.getBankId(),auth.getBranchId()));
+				for (int i = 0; i < jarr.length(); i++) {
+					JSONObject objects = jarr.getJSONObject(i);
+					String sq1 = "INSERT INTO balanceentry (bankorgid,lgid,july15,july31,branchid,bankid,createdby) values(?,?,?,?,?,?,?)";
+					db.execute(sq1, Arrays.asList(objects.get("bankorgid"),objects.get("lgid"), objects.get("opening"), objects.get("closing"),auth.getBranchId(),auth.getBankId(),auth.getUserId()));
+				}
+			}
+//			System.out.println(balance);
+			return Messenger.getMessenger().setMessage("Successfully saved").success();
+		} catch (Exception e) {
+			// TODO: handle exception
+			return Messenger.getMessenger().setMessage("Fail to  save").error();
+		}
+		
+	}
 
 	@Transactional
 	public ResponseEntity<Map<String, Object>> store() throws JSONException {
@@ -285,6 +309,9 @@ public class TaxPayerVoucherService extends AutoService {
 			voucher = "[" + voucher + "]";
 		}
 			String amt=request("amount");
+			if(amt.startsWith("-")) {
+				return Messenger.getMessenger().setMessage("Invalid Amount.").error();
+			}
 			BigDecimal amount = new BigDecimal(amt);
 //			System.out.println(amount);
 		JSONArray jarr = new JSONArray(voucher);
@@ -331,6 +358,10 @@ public class TaxPayerVoucherService extends AutoService {
 		if (jarr.length() > 0) {
 			for (int i = 0; i < jarr.length(); i++) {
 				JSONObject objects = jarr.getJSONObject(i);
+				if(objects.get("amt").toString().startsWith("-")) {
+					return Messenger.getMessenger().setMessage("Amount is in negative.")
+							.error();
+				}
 				if (bact == 10) {
 					if (!(objects.getInt("rc") > 33300)) {
 						return Messenger.getMessenger().setMessage("Revenuecode and Bank Account are not compatible.")
@@ -984,7 +1015,7 @@ public class TaxPayerVoucherService extends AutoService {
 		}
 
 		List<Tuple> d = db.getResultList(
-				"select ba.accountname,ba.accountnumber,ba.id from bankaccount ba where ba.bankid=? and ba.lgid=? order by accounttype ",
+				"select ba.accountname,ba.accountnumber,cast(ba.id as varchar) as id from bankaccount ba where ba.bankid=? and ba.lgid=? order by accounttype ",
 				Arrays.asList(auth.getBankId(), llgCode));
 		if (d.size() > 0) {
 			try {

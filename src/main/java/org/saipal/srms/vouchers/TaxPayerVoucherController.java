@@ -98,6 +98,11 @@ public class TaxPayerVoucherController {
 		return objService.approveVoucher(id);
 	}
 	
+	@PostMapping("balance-entry")
+	public ResponseEntity<Map<String, Object>> balanceentry(HttpServletRequest request) throws JSONException {
+		return objService.balanceentry();
+	}
+	
 	@PostMapping("approvedirectbankvoucher/{id}")
 	public ResponseEntity<Map<String, Object>> approvedirectbankvoucher(@PathVariable String id) throws JSONException {
 		return objService.approvedirectbankvoucher(id);
@@ -224,6 +229,17 @@ public class TaxPayerVoucherController {
 	public ResponseEntity<Map<String, Object>> saveEditDetailsOff(){
 		return objService.saveEditDetailsOff();
 	}
+	
+	@GetMapping("balanceconfig")
+	public ResponseEntity<Map<String, Object>> balanceconfig(){
+		return rs.balanceconfig();
+	}
+	
+	@GetMapping("editbalance")
+	public ResponseEntity<Map<String, Object>> editbalance(){
+		return rs.editbalance();
+	}
+
 
 	@GetMapping("vocuher-transfer")
 	public ResponseEntity<Map<String, Object>> voucherIndex(HttpServletRequest request) {

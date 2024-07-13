@@ -1,0 +1,51 @@
+<div class="row g-5 justify-content-center">
+    <div class="col-md-12 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <p>Closing Balance Entry</p>
+        </div>
+  
+        <div class="card-body mt-3">
+          <form class="needs-validation" [formGroup]="otpSetupForm"
+          (ngSubmit)="otpSetupFormSubmit()">
+          <div class="row col-md-12">
+            <table class="display responsive-table w-100 table table-striped datatable">
+              <tr>
+                <th colspan="3" class="text-center">{{dlgname}}</th>
+                <th colspan="2" class="text-center">Closing Balance of</th>
+
+              </tr>
+              <tr>
+               
+                <th>SN.</th>
+                <th>Account Name</th>
+                <th>Account Number</th>
+                <th>Ashar 31</th>
+                <th>Shrawan 15</th>
+              </tr>
+              <tr *ngFor=" let item of branchdata; let i = index; ">
+                <td>{{i+1}} <input type="hidden" formControlName="id{{item.bankorgid}}" value="{{item.bankorgid}}"></td>
+                <td> {{item.code}}  {{item.accounttypenp}}</td>
+                <td>{{item.accountno}}</td>
+                <td><input type="hidden" formControlName="lgid{{item.lgid}}" value="{{item.lgid}}"> <input type="text" class="form-control" formControlName="o{{item.bankorgid}}"></td>
+                <td *ngIf="item.july31==1"><input type="text" class="form-control" formControlName="c{{item.bankorgid}}"></td>
+                <td *ngIf="item.july31==0"><input type="hidden" class="form-control" formControlName="c{{item.bankorgid}}" value="0"></td>
+                </tr>
+
+            </table>
+           
+           
+       </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12">
+                <input type="submit" class="btn btn-success btn-sm" value="Save">
+                &nbsp; &nbsp;
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>

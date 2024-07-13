@@ -101,7 +101,7 @@ public class BankVoucherService extends AutoService {
 				return Messenger.getMessenger().setMessage("Transaction already been submitted.").error();
 			}
 		}
-		if(!model.sutralgid.equals(model.banklgid)) {
+		if(!model.sutralgid.toString().equals(model.banklgid.toString())) {
 			return Messenger.getMessenger().setMessage("Palika not matched").error();
 		}
 		

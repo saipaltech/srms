@@ -67,6 +67,7 @@ import { VoucherCancelComponent } from './voucher-cancel/voucher-cancel.componen
 import { VerifyDirectBankDepositComponent } from './verify-direct-deposit/verify-direct-deposit.component';
 import { VerifyVoucherDirectDepositComponent } from './verify-voucher-direct-deposit/verify-voucher-direct-deposit.component';
 import { ApproveDirectVoucherComponent } from './approve-direct-voucher/approve-direct-voucher.component';
+import { BalanceEntryComponent } from './balance-entry/balance-entry.component';
 
 @NgModule({
   declarations: [
@@ -114,7 +115,8 @@ import { ApproveDirectVoucherComponent } from './approve-direct-voucher/approve-
     VoucherCancelComponent,
     VerifyDirectBankDepositComponent,
     VerifyVoucherDirectDepositComponent,
-    ApproveDirectVoucherComponent
+    ApproveDirectVoucherComponent,
+    BalanceEntryComponent
   ],
   imports: [
     BrowserModule,

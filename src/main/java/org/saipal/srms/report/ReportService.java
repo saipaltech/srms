@@ -282,14 +282,14 @@ public class ReportService extends AutoService {
 		
 		if (type.equals("cad")) {
 			repTitle = getHeaderString("Cash Deposit, From:" + request("from") + " To:" + request("to"));
-			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname,u.name as createdby,u1.name as collectedby,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid join users u on u.id=tx.deposituserid join users u1 on u1.id=tx.approverid join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
+			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr-tx.amountdr as amount,ba.accountnumber as accountno, ba.accountname,u.name as createdby,u1.name as collectedby,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid join users u on u.id=tx.deposituserid join users u1 on u1.id=tx.approverid join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 					+ condition + " and tx.approved=1 order by palika, ba.accountnumber";
 		} else if (type.equals("chd")) {
 			if (!chkstatus.isEmpty()) {
 				condition = condition + " and tx.cstatus="+chkstatus+" ";
 			}
 			repTitle = getHeaderString("Cheque Deposit, From:" + request("from") + " To:" + request("to"));
-			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr as amount,ba.accountnumber as accountno, ba.accountname,u.name as createdby,u1.name as collectedby,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid join users u on u.id=tx.deposituserid join users u1 on u1.id=tx.deposituserid join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
+			sql = "SELECT tx.*,cast(tx.date as Date) as dates,lls.namenp as palika ,tx.amountcr-tx.amountdr as amount,ba.accountnumber as accountno, ba.accountname,u.name as createdby,u1.name as collectedby,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid join users u on u.id=tx.deposituserid join users u1 on u1.id=tx.deposituserid join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid"
 					+ condition + " and tx.ttype=2 and tx.cstatus=1 order by palika, accountno";
 		}
 		excl.title = repTitle;
@@ -429,10 +429,10 @@ public class ReportService extends AutoService {
 		
 //		if (type.equals("cad")) {
 			repTitle = getHeaderString("Detail Report, From:" + request("from") + " To:" + request("to"));
-			sql = "SELECT cast(tx.date as Date) as dates,tx.karobarsanket,tx.taxpayername,tx.taxpayerpan,tx.depcontact,lls.namenp as palika ,(case when tx.ttype=1 and tx.directdeposit=0 then tx.amountcr else 0 end) as cash,(case when tx.ttype=1 and tx.directdeposit!=0 then tx.amountcr else 0 end) as direct,0 as cheque,tx.amountcr as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
+			sql = "SELECT cast(tx.date as Date) as dates,tx.karobarsanket,tx.taxpayername,tx.taxpayerpan,tx.depcontact,lls.namenp as palika ,(case when tx.ttype=1 and tx.directdeposit=0 then tx.amountcr-tx.amountdr else 0 end) as cash,(case when tx.ttype=1 and tx.directdeposit!=0 then tx.amountcr-tx.amountdr else 0 end) as direct,0 as cheque,tx.amountcr-tx.amountdr as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 					+ condition + " and tx.ttype=1 and tx.approved=1 "
 							+ " union all "
-							+ " SELECT cast(tx.date as Date) as dates,tx.karobarsanket,tx.taxpayername,tx.taxpayerpan,tx.depcontact,lls.namenp as palika ,0 as cash,0  as direct,tx.amountcr as cheque,tx.amountcr as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
+							+ " SELECT cast(tx.date as Date) as dates,tx.karobarsanket,tx.taxpayername,tx.taxpayerpan,tx.depcontact,lls.namenp as palika ,0 as cash,0  as direct,tx.amountcr-tx.amountdr as cheque,tx.amountcr-tx.amountdr as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM taxvouchers tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
 							+  condition + " and tx.ttype=2 and tx.cstatus=1 "
 							+ " union all "
 							+ " SELECT cast(tx.depositdate as Date) as dates,tx.transactionid as karobarsanket,tx.officename as taxpayername,tx.vatpno as taxpayerpan,tx.mobileno as depcontact,lls.namenp as palika ,tx.amount as cash,0 as  direct,0 as cheque,tx.amount as amount,0 as online,ba.accountnumber as accountno, ba.accountname,bi.nameen as bankname,br.name as branchname FROM bank_deposits tx join bankinfo bi on bi.id=tx.depositbankid join branches br on br.id=tx.depositbranchid  join bankaccount ba on ba.id=tx.bankorgid join admin_local_level_structure lls on lls.id=tx.lgid "
@@ -836,6 +836,20 @@ if (!lists.isEmpty()) {
 				Arrays.asList(auth.getBankId(), auth.getBranchId()));
 		return Messenger.getMessenger().setData(d).success();
 	}
+	
+	public ResponseEntity<Map<String, Object>> balanceconfig() {
+		String llgCode = request("dlgid");
+		List<Map<String, Object>> dta = db.getResultListMap("select cast(bankorgid as varchar) as bankorgid,code,cast(lgid as varchar) as lgid,lgnamenp,accounttypenp,accounttypeen,cast(accountno as varchar) as accountno,july15,july31,oddeven  from palikaAccountList where oddeven!=0 and bankid=? and lgid=? order by code ",Arrays.asList(auth.getBankId(), llgCode));
+		return Messenger.getMessenger().setData(dta).success();
+	}
+	
+	public ResponseEntity<Map<String, Object>> editbalance() {
+		String llgCode = request("dlgid");
+		List<Map<String, Object>> dta = db.getResultListMap("select cast(bankorgid as varchar) as bankorgid,july15 as opening,july31 as closing  from balanceentry where  bankid=? and branchid=?  ",Arrays.asList(auth.getBankId(), auth.getBranchId()));
+		return Messenger.getMessenger().setData(dta).success();
+	}
+	
+	
 	private Excel getSr(Excel excl) {
 		excl.subtitle = "";
 		
